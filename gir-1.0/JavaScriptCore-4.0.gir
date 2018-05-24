@@ -23,6 +23,7 @@ and/or use gtk-doc annotations.  -->
            glib:type-struct="ClassClass">
       <method name="add_constructor"
               c:identifier="jsc_class_add_constructor"
+              shadowed-by="add_constructorv"
               introspectable="0">
         <doc xml:space="preserve">Add a constructor to @jsc_class. If @name is %NULL, the class name will be used. When &lt;function&gt;new&lt;/function&gt;
 is used with the constructor or jsc_value_constructor_call() is called, @callback is invoked receiving the
@@ -76,7 +77,7 @@ jsc_context_set_value() to make the constructor available in the global object.<
           </parameter>
           <parameter name="n_params" transfer-ownership="none">
             <doc xml:space="preserve">the number of parameter types to follow or 0 if constructor doesn't receive parameters.</doc>
-            <type name="guint" c:type="unsigned"/>
+            <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="..." transfer-ownership="none">
             <doc xml:space="preserve">a list of #GType&lt;!-- --&gt;s, one for each parameter.</doc>
@@ -84,8 +85,77 @@ jsc_context_set_value() to make the constructor available in the global object.<
           </parameter>
         </parameters>
       </method>
+      <method name="add_constructorv"
+              c:identifier="jsc_class_add_constructorv"
+              shadows="add_constructor">
+        <doc xml:space="preserve">Add a constructor to @jsc_class. If @name is %NULL, the class name will be used. When &lt;function&gt;new&lt;/function&gt;
+is used with the constructor or jsc_value_constructor_call() is called, @callback is invoked receiving the
+parameters and @user_data as the last parameter. When the constructor object is cleared in the #JSCClass context,
+@destroy_notify is called with @user_data as parameter.
+
+This function creates the constructor, that needs to be added to an object as a property to be able to use it. Use
+jsc_context_set_value() to make the constructor available in the global object.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #JSCValue representing the class constructor.</doc>
+          <type name="Value" c:type="JSCValue*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="jsc_class" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCClass</doc>
+            <type name="Class" c:type="JSCClass*"/>
+          </instance-parameter>
+          <parameter name="name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the constructor name or %NULL</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="2"
+                     destroy="3">
+            <doc xml:space="preserve">a #GCallback to be called to create an instance of @jsc_class</doc>
+            <type name="GObject.Callback" c:type="GCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data to pass to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy_notify"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:space="preserve">destroy notifier for @user_data</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="return_type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GType of the constructor return value</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+          <parameter name="n_parameters" transfer-ownership="none">
+            <doc xml:space="preserve">the number of parameters</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="parameter_types"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a list of #GType&lt;!-- --&gt;s, one for each parameter, or %NULL</doc>
+            <array length="5" zero-terminated="0" c:type="GType*">
+              <type name="GType"/>
+            </array>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_method"
               c:identifier="jsc_class_add_method"
+              shadowed-by="add_methodv"
               introspectable="0">
         <doc xml:space="preserve">Add method with @name to @jsc_class. When the method is called by JavaScript or jsc_value_object_invoke_method(),
 @callback is called receiving the class instance as first parameter, followed by the method parameters and then
@@ -132,11 +202,72 @@ jsc_context_set_value() to make the constructor available in the global object.<
           </parameter>
           <parameter name="n_params" transfer-ownership="none">
             <doc xml:space="preserve">the number of parameter types to follow or 0 if the method doesn't receive parameters.</doc>
-            <type name="guint" c:type="unsigned"/>
+            <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="..." transfer-ownership="none">
             <doc xml:space="preserve">a list of #GType&lt;!-- --&gt;s, one for each parameter.</doc>
             <varargs/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_methodv"
+              c:identifier="jsc_class_add_methodv"
+              shadows="add_method">
+        <doc xml:space="preserve">Add method with @name to @jsc_class. When the method is called by JavaScript or jsc_value_object_invoke_method(),
+@callback is called receiving the class instance as first parameter, followed by the method parameters and then
+@user_data as last parameter. When the method is cleared in the #JSCClass context, @destroy_notify is called with
+@user_data as parameter.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="jsc_class" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCClass</doc>
+            <type name="Class" c:type="JSCClass*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">the method name</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="2"
+                     destroy="3">
+            <doc xml:space="preserve">a #GCallback to be called to invoke method @name of @jsc_class</doc>
+            <type name="GObject.Callback" c:type="GCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data to pass to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy_notify"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:space="preserve">destroy notifier for @user_data</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="return_type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GType of the method return value, or %G_TYPE_NONE if the method is void.</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+          <parameter name="n_parameters" transfer-ownership="none">
+            <doc xml:space="preserve">the number of parameter types to follow or 0 if the method doesn't receive parameters.</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="parameter_types"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a list of #GType&lt;!-- --&gt;s, one for each parameter, or %NULL</doc>
+            <array length="5" zero-terminated="0" c:type="GType*">
+              <type name="GType"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -953,7 +1084,7 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="1" c:type="JSC_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="2" c:type="JSC_MICRO_VERSION">
       <doc xml:space="preserve">Like jsc_get_micro_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -1040,6 +1171,7 @@ pointers to a #JSCValue.</doc>
       </constructor>
       <constructor name="new_function"
                    c:identifier="jsc_value_new_function"
+                   shadowed-by="new_functionv"
                    introspectable="0">
         <doc xml:space="preserve">Create a function in @context. If @name is %NULL an anonymous function will be created.
 When the function is called by JavaScript or jsc_value_function_call(), @callback is called
@@ -1095,6 +1227,71 @@ cleared in @context, @destroy_notify is called with @user_data as parameter.</do
           <parameter name="..." transfer-ownership="none">
             <doc xml:space="preserve">a list of #GType&lt;!-- --&gt;s, one for each parameter.</doc>
             <varargs/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_functionv"
+                   c:identifier="jsc_value_new_functionv"
+                   shadows="new_function">
+        <doc xml:space="preserve">Create a function in @context. If @name is %NULL an anonymous function will be created.
+When the function is called by JavaScript or jsc_value_function_call(), @callback is called
+receiving the function parameters and then @user_data as last parameter. When the function is
+cleared in @context, @destroy_notify is called with @user_data as parameter.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #JSCValue.</doc>
+          <type name="Value" c:type="JSCValue*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCContext:</doc>
+            <type name="Context" c:type="JSCContext*"/>
+          </parameter>
+          <parameter name="name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the function name or %NULL</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="3"
+                     destroy="4">
+            <doc xml:space="preserve">a #GCallback.</doc>
+            <type name="GObject.Callback" c:type="GCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data to pass to @callback.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy_notify"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:space="preserve">destroy notifier for @user_data</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="return_type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GType of the function return value, or %G_TYPE_NONE if the function is void.</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+          <parameter name="n_parameters" transfer-ownership="none">
+            <doc xml:space="preserve">the number of parameters</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="parameter_types"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a list of #GType&lt;!-- --&gt;s, one for each parameter, or %NULL</doc>
+            <array length="6" zero-terminated="0" c:type="GType*">
+              <type name="GType"/>
+            </array>
           </parameter>
         </parameters>
       </constructor>
@@ -1213,6 +1410,7 @@ string containing null characters, use jsc_value_new_string_from_bytes() instead
       </constructor>
       <method name="constructor_call"
               c:identifier="jsc_value_constructor_call"
+              shadowed-by="constructor_callv"
               introspectable="0">
         <doc xml:space="preserve">Invoke &lt;function&gt;new&lt;/function&gt; with constructor referenced by @value. If @first_parameter_type
 is %G_TYPE_NONE no parameters will be passed to the constructor.</doc>
@@ -1235,8 +1433,38 @@ is %G_TYPE_NONE no parameters will be passed to the constructor.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="constructor_callv"
+              c:identifier="jsc_value_constructor_callv"
+              shadows="constructor_call">
+        <doc xml:space="preserve">Invoke &lt;function&gt;new&lt;/function&gt; with constructor referenced by @value. If @n_parameters
+is 0 no parameters will be passed to the constructor.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #JSCValue referencing the newly created object instance.</doc>
+          <type name="Value" c:type="JSCValue*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCValue</doc>
+            <type name="Value" c:type="JSCValue*"/>
+          </instance-parameter>
+          <parameter name="n_parameters" transfer-ownership="none">
+            <doc xml:space="preserve">the number of parameters</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="parameters"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the #JSCValue&lt;!-- --&gt;s to pass as parameters to the constructor, or %NULL</doc>
+            <array length="0" zero-terminated="0" c:type="JSCValue**">
+              <type name="Value"/>
+            </array>
+          </parameter>
+        </parameters>
+      </method>
       <method name="function_call"
               c:identifier="jsc_value_function_call"
+              shadowed-by="function_callv"
               introspectable="0">
         <doc xml:space="preserve">Call function referenced by @value, passing the given parameters. If @first_parameter_type
 is %G_TYPE_NONE no parameters will be passed to the function.
@@ -1259,6 +1487,38 @@ This function always returns a #JSCValue, in case of void functions a #JSCValue 
           <parameter name="..." transfer-ownership="none">
             <doc xml:space="preserve">value of the first parameter, followed optionally by more type/value pairs, followed by %G_TYPE_NONE</doc>
             <varargs/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="function_callv"
+              c:identifier="jsc_value_function_callv"
+              shadows="function_call">
+        <doc xml:space="preserve">Call function referenced by @value, passing the given @parameters. If @n_parameters
+is 0 no parameters will be passed to the function.
+
+This function always returns a #JSCValue, in case of void functions a #JSCValue referencing
+&lt;function&gt;undefined&lt;/function&gt; is returned</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #JSCValue with the return value of the function.</doc>
+          <type name="Value" c:type="JSCValue*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCValue</doc>
+            <type name="Value" c:type="JSCValue*"/>
+          </instance-parameter>
+          <parameter name="n_parameters" transfer-ownership="none">
+            <doc xml:space="preserve">the number of parameters</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="parameters"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the #JSCValue&lt;!-- --&gt;s to pass as parameters to the function, or %NULL</doc>
+            <array length="0" zero-terminated="0" c:type="JSCValue**">
+              <type name="Value"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -1576,6 +1836,7 @@ flag will be collected.</doc>
       </method>
       <method name="object_invoke_method"
               c:identifier="jsc_value_object_invoke_method"
+              shadowed-by="object_invoke_methodv"
               introspectable="0">
         <doc xml:space="preserve">Invoke method with @name on object referenced by @value, passing the given parameters. If
 @first_parameter_type is %G_TYPE_NONE no parameters will be passed to the method.
@@ -1605,6 +1866,45 @@ This function always returns a #JSCValue, in case of void methods a #JSCValue re
           <parameter name="..." transfer-ownership="none">
             <doc xml:space="preserve">value of the first parameter, followed optionally by more type/value pairs, followed by %G_TYPE_NONE</doc>
             <varargs/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="object_invoke_methodv"
+              c:identifier="jsc_value_object_invoke_methodv"
+              shadows="object_invoke_method">
+        <doc xml:space="preserve">Invoke method with @name on object referenced by @value, passing the given @parameters. If
+@n_parameters is 0 no parameters will be passed to the method.
+The object instance will be handled automatically even when the method is a custom one
+registered with jsc_class_add_method(), so it should never be passed explicitly as parameter
+of this function.
+
+This function always returns a #JSCValue, in case of void methods a #JSCValue referencing
+&lt;function&gt;undefined&lt;/function&gt; is returned.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #JSCValue with the return value of the method.</doc>
+          <type name="Value" c:type="JSCValue*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCValue</doc>
+            <type name="Value" c:type="JSCValue*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">the method name</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="n_parameters" transfer-ownership="none">
+            <doc xml:space="preserve">the number of parameters</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="parameters"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the #JSCValue&lt;!-- --&gt;s to pass as parameters to the method, or %NULL</doc>
+            <array length="1" zero-terminated="0" c:type="JSCValue**">
+              <type name="Value"/>
+            </array>
           </parameter>
         </parameters>
       </method>
