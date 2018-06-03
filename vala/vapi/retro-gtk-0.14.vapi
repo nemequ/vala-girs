@@ -271,7 +271,8 @@ namespace Retro {
 	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_RUMBLE_EFFECT_", has_type_id = false)]
 	public enum RumbleEffect {
 		STRONG,
-		WEAK
+		WEAK,
+		COUNT
 	}
 	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_VIDEO_FILTER_", type_id = "retro_video_filter_get_type ()")]
 	public enum VideoFilter {

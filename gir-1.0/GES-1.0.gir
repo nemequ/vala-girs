@@ -11,65 +11,6 @@ and/or use gtk-doc annotations.  -->
   <include name="GstPbutils" version="1.0"/>
   <include name="GstVideo" version="1.0"/>
   <package name="ges-1.0"/>
-  <c:include name="ges/ges-asset.h"/>
-  <c:include name="ges/ges-audio-source.h"/>
-  <c:include name="ges/ges-audio-test-source.h"/>
-  <c:include name="ges/ges-audio-track.h"/>
-  <c:include name="ges/ges-audio-transition.h"/>
-  <c:include name="ges/ges-audio-uri-source.h"/>
-  <c:include name="ges/ges-base-effect-clip.h"/>
-  <c:include name="ges/ges-base-effect.h"/>
-  <c:include name="ges/ges-base-transition-clip.h"/>
-  <c:include name="ges/ges-base-xml-formatter.h"/>
-  <c:include name="ges/ges-clip-asset.h"/>
-  <c:include name="ges/ges-clip.h"/>
-  <c:include name="ges/ges-container.h"/>
-  <c:include name="ges/ges-effect-asset.h"/>
-  <c:include name="ges/ges-effect-clip.h"/>
-  <c:include name="ges/ges-effect.h"/>
-  <c:include name="ges/ges-enums.h"/>
-  <c:include name="ges/ges-extractable.h"/>
-  <c:include name="ges/ges-formatter.h"/>
-  <c:include name="ges/ges-gerror.h"/>
-  <c:include name="ges/ges-group.h"/>
-  <c:include name="ges/ges-image-source.h"/>
-  <c:include name="ges/ges-layer.h"/>
-  <c:include name="ges/ges-meta-container.h"/>
-  <c:include name="ges/ges-multi-file-source.h"/>
-  <c:include name="ges/ges-operation-clip.h"/>
-  <c:include name="ges/ges-operation.h"/>
-  <c:include name="ges/ges-overlay-clip.h"/>
-  <c:include name="ges/ges-pipeline.h"/>
-  <c:include name="ges/ges-pitivi-formatter.h"/>
-  <c:include name="ges/ges-project.h"/>
-  <c:include name="ges/ges-screenshot.h"/>
-  <c:include name="ges/ges-smart-adder.h"/>
-  <c:include name="ges/ges-smart-video-mixer.h"/>
-  <c:include name="ges/ges-source-clip.h"/>
-  <c:include name="ges/ges-source.h"/>
-  <c:include name="ges/ges-test-clip.h"/>
-  <c:include name="ges/ges-text-overlay-clip.h"/>
-  <c:include name="ges/ges-text-overlay.h"/>
-  <c:include name="ges/ges-timeline-element.h"/>
-  <c:include name="ges/ges-timeline.h"/>
-  <c:include name="ges/ges-title-clip.h"/>
-  <c:include name="ges/ges-title-source.h"/>
-  <c:include name="ges/ges-track-element-asset.h"/>
-  <c:include name="ges/ges-track-element.h"/>
-  <c:include name="ges/ges-track.h"/>
-  <c:include name="ges/ges-transition-clip.h"/>
-  <c:include name="ges/ges-transition.h"/>
-  <c:include name="ges/ges-types.h"/>
-  <c:include name="ges/ges-uri-asset.h"/>
-  <c:include name="ges/ges-uri-clip.h"/>
-  <c:include name="ges/ges-utils.h"/>
-  <c:include name="ges/ges-version.h"/>
-  <c:include name="ges/ges-video-source.h"/>
-  <c:include name="ges/ges-video-test-source.h"/>
-  <c:include name="ges/ges-video-track.h"/>
-  <c:include name="ges/ges-video-transition.h"/>
-  <c:include name="ges/ges-video-uri-source.h"/>
-  <c:include name="ges/ges-xml-formatter.h"/>
   <c:include name="ges/ges.h"/>
   <namespace name="GES"
              version="1.0"
@@ -144,6 +85,32 @@ been created can be requested again without overhead.</doc>
       <implements name="MetaContainer"/>
       <implements name="Gio.AsyncInitable"/>
       <implements name="Gio.Initable"/>
+      <function name="needs_reload" c:identifier="ges_asset_needs_reload">
+        <doc xml:space="preserve">Sets an asset from the internal cache as needing reload. An asset needs reload
+in the case where, for example, we were missing a GstPlugin to use it and that
+plugin has been installed, or, that particular asset content as changed
+meanwhile (in the case of the usage of proxies).
+
+Once an asset has been set as "needs reload", requesting that asset again
+will lead to it being re discovered, and reloaded as if it was not in the
+cache before.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the asset was in the cache and could be set as needing reload,
+%FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="extractable_type" transfer-ownership="none">
+            <doc xml:space="preserve">The #GType of the object that can be extracted from the
+ asset to be reloaded.</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">The identifier of the asset to mark as needing reload</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
       <function name="request" c:identifier="ges_asset_request" throws="1">
         <doc xml:space="preserve">Create a #GESAsset in the most simple cases, you should look at the @extractable_type
 documentation to see if that constructor can be called for this particular type
@@ -151,7 +118,7 @@ documentation to see if that constructor can be called for this particular type
 As it is recommanded not to instanciate assets for GESUriClip synchronously,
 it will not work with this method, but you can instead use the specific
 #ges_uri_clip_asset_request_sync method if you really want to.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">A reference to the wanted #GESAsset or %NULL</doc>
           <type name="Asset" c:type="GESAsset*"/>
         </return-value>
@@ -234,7 +201,10 @@ make sure that the asset is properly loaded using the #ges_asset_request_finish
 method. This asset can not be used as is.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">The user data to pass when @callback is called</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -244,7 +214,7 @@ method. This asset can not be used as is.</doc>
                 c:identifier="ges_asset_request_finish"
                 throws="1">
         <doc xml:space="preserve">Finalize the request of an async #GESAsset</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">The #GESAsset previously requested</doc>
           <type name="Asset" c:type="GESAsset*"/>
         </return-value>
@@ -260,7 +230,7 @@ method. This asset can not be used as is.</doc>
 defined by the extractable-type of @asset, you can check what
 type will be extracted from @asset using
 #ges_asset_get_extractable_type</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">A newly created #GESExtractable</doc>
           <type name="Extractable" c:type="GESExtractable*"/>
         </return-value>
@@ -281,6 +251,19 @@ type will be extracted from @asset using
           </instance-parameter>
           <parameter name="proxy_id" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="proxied">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Asset" c:type="GESAsset*"/>
+          </instance-parameter>
+          <parameter name="proxy" transfer-ownership="none">
+            <type name="Asset" c:type="GESAsset*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -315,13 +298,28 @@ type will be extracted from @asset using
 defined by the extractable-type of @asset, you can check what
 type will be extracted from @asset using
 #ges_asset_get_extractable_type</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">A newly created #GESExtractable</doc>
           <type name="Extractable" c:type="GESExtractable*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve">The #GESAsset to get extract an object from</doc>
+            <type name="Asset" c:type="GESAsset*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_error"
+              c:identifier="ges_asset_get_error"
+              version="1.8">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The #GError of the asset or %NULL if
+the asset was loaded without issue</doc>
+          <type name="GLib.Error" c:type="GError*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">The asset to retrieve the error from</doc>
             <type name="Asset" c:type="GESAsset*"/>
           </instance-parameter>
         </parameters>
@@ -353,6 +351,89 @@ type will be extracted from @asset using
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_proxy" c:identifier="ges_asset_get_proxy">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The proxy in use for @asset</doc>
+          <type name="Asset" c:type="GESAsset*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="asset" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESAsset to get currenlty used proxy</doc>
+            <type name="Asset" c:type="GESAsset*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_proxy_target"
+              c:identifier="ges_asset_get_proxy_target">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The #GESAsset that is proxied by @proxy</doc>
+          <type name="Asset" c:type="GESAsset*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESAsset from which to get the the asset it proxies.</doc>
+            <type name="Asset" c:type="GESAsset*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="list_proxies" c:identifier="ges_asset_list_proxies">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The list of proxies @asset has. Note that the default asset to be
+used is always the first in that list.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Asset"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="asset" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESAsset to get proxies from</doc>
+            <type name="Asset" c:type="GESAsset*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_proxy" c:identifier="ges_asset_set_proxy">
+        <doc xml:space="preserve">A proxying asset is an asset that can substitue the real @asset. For example if you
+have a full HD #GESUriClipAsset you might want to set a lower resolution (HD version
+of the same file) as proxy. Note that when an asset is proxied, calling
+#ges_asset_request will actually return the proxy asset.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @proxy has been set on @asset, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="asset" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESAsset to set proxy on</doc>
+            <type name="Asset" c:type="GESAsset*"/>
+          </instance-parameter>
+          <parameter name="proxy"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The #GESAsset that should be used as default proxy for @asset or
+%NULL if you want to use the currently set proxy. Note that an asset can proxy one and only
+one other asset.</doc>
+            <type name="Asset" c:type="GESAsset*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="unproxy" c:identifier="ges_asset_unproxy">
+        <doc xml:space="preserve">Removes @proxy from the list of known proxies for @asset.
+If @proxy was the current proxy for @asset, stop using it.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @proxy was a known proxy for @asset, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="asset" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESAsset to stop proxying with @proxy</doc>
+            <type name="Asset" c:type="GESAsset*"/>
+          </instance-parameter>
+          <parameter name="proxy" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESAsset to stop considering as a proxy for @asset</doc>
+            <type name="Asset" c:type="GESAsset*"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="extractable-type"
                 writable="1"
                 construct-only="1"
@@ -364,6 +445,12 @@ type will be extracted from @asset using
                 construct-only="1"
                 transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="proxy" writable="1" transfer-ownership="none">
+        <type name="Asset"/>
+      </property>
+      <property name="proxy-target" writable="1" transfer-ownership="none">
+        <type name="Asset"/>
       </property>
       <field name="parent">
         <type name="GObject.Object" c:type="GObject"/>
@@ -397,7 +484,7 @@ type will be extracted from @asset using
       </field>
       <field name="extract">
         <callback name="extract" throws="1">
-          <return-value transfer-ownership="none">
+          <return-value transfer-ownership="none" nullable="1">
             <doc xml:space="preserve">A newly created #GESExtractable</doc>
             <type name="Extractable" c:type="GESExtractable*"/>
           </return-value>
@@ -420,6 +507,21 @@ type will be extracted from @asset using
             </parameter>
             <parameter name="proxy_id" transfer-ownership="none">
               <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="proxied">
+        <callback name="proxied">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Asset" c:type="GESAsset*"/>
+            </parameter>
+            <parameter name="proxy" transfer-ownership="none">
+              <type name="Asset" c:type="GESAsset*"/>
             </parameter>
           </parameters>
         </callback>
@@ -466,7 +568,30 @@ type will be extracted from @asset using
            glib:type-name="GESAudioSource"
            glib:get-type="ges_audio_source_get_type"
            glib:type-struct="AudioSourceClass">
-      <doc xml:space="preserve">Base class for audio sources</doc>
+      <doc xml:space="preserve">## Children Properties
+
+You can use the following children properties through the
+#ges_track_element_set_child_property and alike set of methods:
+
+&lt;informaltable frame="none"&gt;
+&lt;tgroup cols="3"&gt;
+&lt;colspec colname="properties_type" colwidth="150px"/&gt;
+&lt;colspec colname="properties_name" colwidth="200px"/&gt;
+&lt;colspec colname="properties_flags" colwidth="400px"/&gt;
+&lt;tbody&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="gdouble"&gt;&lt;type&gt;double&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESAudioSource--volume"&gt;volume&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;volume factor, 1.0=100%.&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="gboolean"&gt;&lt;type&gt;gboolean&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESAudioSource--mute"&gt;mute&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;mute channel.&lt;/entry&gt;
+&lt;/row&gt;
+&lt;/tbody&gt;
+&lt;/tgroup&gt;
+&lt;/informaltable&gt;</doc>
       <implements name="Extractable"/>
       <implements name="MetaContainer"/>
       <field name="parent" readable="0" private="1">
@@ -617,6 +742,19 @@ track.</doc>
            glib:type-name="GESAudioTrack"
            glib:get-type="ges_audio_track_get_type"
            glib:type-struct="AudioTrackClass">
+      <doc xml:space="preserve">Sane default properties to specify and fixate the output stream are
+set as restriction-caps.
+It is advised, to modify these properties, to use
+#ges_track_update_restriction_caps, setting them directly is
+possible through #ges_track_set_restriction_caps, but not specifying
+one of them can lead to negotiation issues, only use that function
+if you actually know what you're doing :)
+
+The default properties are:
+- format: S32LE
+- channels: 2
+- rate: 44100
+- layout: interleaved</doc>
       <implements name="MetaContainer"/>
       <implements name="Gst.ChildProxy"/>
       <constructor name="new" c:identifier="ges_audio_track_new">
@@ -996,7 +1134,7 @@ ni other cases TrackElement are added automatically when adding the
 #GESClip/#GESAsset to a layer.
 
 Takes a reference on @track_element.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">Created #GESTrackElement or NULL
 if an error happened</doc>
           <type name="TrackElement" c:type="GESTrackElement*"/>
@@ -1019,9 +1157,9 @@ may optionally specify a GType to further narrow search criteria.
 
 Note: If many objects match, then the one with the highest priority will be
 returned.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">The #GESTrackElement used by @track, else %NULL,
-Unref after usage</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">The #GESTrackElement used by @track,
+else %NULL. Unref after usage</doc>
           <type name="TrackElement" c:type="GESTrackElement*"/>
         </return-value>
         <parameters>
@@ -1082,7 +1220,7 @@ for or %G_TYPE_NONE if you do not care about the track type.</doc>
       </method>
       <method name="get_layer" c:identifier="ges_clip_get_layer">
         <doc xml:space="preserve">Get the #GESLayer to which this clip belongs.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">The #GESLayer where this @clip is being
 used, or %NULL if it is not used on any layer. The caller should unref it
 usage.</doc>
@@ -1235,14 +1373,25 @@ unref each #GESBaseEffect and free the #GList.</doc>
         </parameters>
       </method>
       <method name="split" c:identifier="ges_clip_split">
-        <doc xml:space="preserve">The function modifies @clip, and creates another #GESClip so
-we have two clips at the end, splitted at the time specified by @position.
-The newly created clip will be added to the same layer as @clip is in.
-This implies that @clip must be in a #GESLayer for the operation to
-be possible.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The newly created #GESClip resulting from the
-splitting</doc>
+        <doc xml:space="preserve">The function modifies @clip, and creates another #GESClip so we have two
+clips at the end, splitted at the time specified by @position, as a position
+in the timeline (not in the clip to be split). For example, if
+ges_clip_split is called on a 4-second clip playing from 0:01.00 until
+0:05.00, with a split position of 0:02.00, this will result in one clip of 1
+second and one clip of 3 seconds, not in two clips of 2 seconds.
+
+The newly created clip will be added to the same layer as @clip is in. This
+implies that @clip must be in a #GESLayer for the operation to be possible.
+
+This method supports clips playing at a different tempo than one second per
+second. For example, splitting a clip with a #GESEffect 'pitch tempo=1.5'
+four seconds after it starts, will set the inpoint of the new clip to six
+seconds after that of the clip to split. For this, the rate-changing
+property must be registered using @ges_effect_class_register_rate_property;
+for the 'pitch' plugin, this is already done.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The newly created #GESClip resulting
+from the splitting or %NULL if the clip can't be split.</doc>
           <type name="Clip" c:type="GESClip*"/>
         </return-value>
         <parameters>
@@ -1251,7 +1400,7 @@ splitting</doc>
             <type name="Clip" c:type="GESClip*"/>
           </instance-parameter>
           <parameter name="position" transfer-ownership="none">
-            <doc xml:space="preserve">a #GstClockTime representing the position at which to split</doc>
+            <doc xml:space="preserve">a #GstClockTime representing the timeline position at which to split</doc>
             <type name="guint64" c:type="guint64"/>
           </parameter>
         </parameters>
@@ -1384,6 +1533,47 @@ a layer</doc>
       </field>
     </record>
     <record name="ClipPrivate" c:type="GESClipPrivate" disguised="1">
+    </record>
+    <class name="CommandLineFormatter"
+           c:symbol-prefix="command_line_formatter"
+           c:type="GESCommandLineFormatter"
+           parent="Formatter"
+           glib:type-name="GESCommandLineFormatter"
+           glib:get-type="ges_command_line_formatter_get_type"
+           glib:type-struct="CommandLineFormatterClass">
+      <implements name="Extractable"/>
+      <function name="get_help"
+                c:identifier="ges_command_line_formatter_get_help">
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <parameter name="nargs" transfer-ownership="none">
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="commands" transfer-ownership="none">
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+        </parameters>
+      </function>
+      <field name="parent_instance">
+        <type name="Formatter" c:type="GESFormatter"/>
+      </field>
+      <field name="priv">
+        <type name="CommandLineFormatterPrivate"
+              c:type="GESCommandLineFormatterPrivate*"/>
+      </field>
+    </class>
+    <record name="CommandLineFormatterClass"
+            c:type="GESCommandLineFormatterClass"
+            glib:is-gtype-struct-for="CommandLineFormatter">
+      <field name="parent_class">
+        <type name="FormatterClass" c:type="GESFormatterClass"/>
+      </field>
+    </record>
+    <record name="CommandLineFormatterPrivate"
+            c:type="GESCommandLineFormatterPrivate"
+            disguised="1">
     </record>
     <class name="Container"
            c:symbol-prefix="container"
@@ -1692,7 +1882,10 @@ controlled by this Container. NOTE: Do not modify.</doc>
         </array>
       </field>
       <glib:signal name="child-added" when="first">
-        <doc xml:space="preserve">Will be emitted after a child was added to @container.</doc>
+        <doc xml:space="preserve">Will be emitted after a child was added to @container.
+Usually you should connect with #g_signal_connect_after
+as in the first emission stage, the signal emission might
+get stopped internally.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2034,8 +2227,13 @@ and &lt;ulink url="http://pitivi.org/manual/usingclips.html"&gt;clip management&
       <implements name="Extractable"/>
       <implements name="MetaContainer"/>
       <constructor name="new" c:identifier="ges_effect_new">
-        <doc xml:space="preserve">Creates a new #GESEffect from the description of the bin.</doc>
-        <return-value transfer-ownership="none">
+        <doc xml:space="preserve">Creates a new #GESEffect from the description of the bin. It should be
+possible to determine the type of the effect through the element
+'klass' metadata of the GstElements that will be created.
+In that corner case, you should use:
+#ges_asset_request (GES_TYPE_EFFECT, "audio your ! bin ! description", NULL);
+and extract that asset to be in full control.</doc>
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">a newly created #GESEffect, or %NULL if something went
 wrong.</doc>
           <type name="Effect" c:type="GESEffect*"/>
@@ -2115,11 +2313,48 @@ Example: "videobalance saturation=1.5 hue=+0.5"</doc>
         <doc xml:space="preserve">parent class</doc>
         <type name="BaseEffectClass" c:type="GESBaseEffectClass"/>
       </field>
+      <field name="rate_properties" readable="0" private="1">
+        <type name="GLib.List" c:type="GList*">
+          <type name="gpointer" c:type="gpointer"/>
+        </type>
+      </field>
       <field name="_ges_reserved" readable="0" private="1">
         <array zero-terminated="0" c:type="gpointer" fixed-size="4">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
+      <method name="register_rate_property"
+              c:identifier="ges_effect_class_register_rate_property">
+        <doc xml:space="preserve">Register an element that can change the rate at which media is playing. The
+property type must be float or double, and must be a factor of the rate,
+i.e. a value of 2.0 must mean that the media plays twice as fast. For
+example, this is true for the properties 'rate' and 'tempo' of the element
+'pitch', which is already registered by default. By registering the element,
+timeline duration can be correctly converted into media duration, allowing
+the right segment seeks to be sent to the sources.
+
+A reference to the GESEffectClass can be obtained as follows:
+  GES_EFFECT_CLASS (g_type_class_ref (GES_TYPE_EFFECT));</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether the rate property was succesfully registered. When this
+method returns false, a warning is emitted with more information.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="klass" transfer-ownership="none">
+            <doc xml:space="preserve">Instance of the GESEffectClass</doc>
+            <type name="EffectClass" c:type="GESEffectClass*"/>
+          </instance-parameter>
+          <parameter name="element_name" transfer-ownership="none">
+            <doc xml:space="preserve">Name of the GstElement that changes the rate</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="property_name" transfer-ownership="none">
+            <doc xml:space="preserve">Name of the property that changes the rate</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
     </record>
     <class name="EffectClip"
            c:symbol-prefix="effect_clip"
@@ -2134,7 +2369,7 @@ Example: "videobalance saturation=1.5 hue=+0.5"</doc>
       <implements name="MetaContainer"/>
       <constructor name="new" c:identifier="ges_effect_clip_new">
         <doc xml:space="preserve">Creates a new #GESEffectClip from the description of the bin.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">a newly created #GESEffectClip, or
 %NULL if something went wrong.</doc>
           <type name="EffectClip" c:type="GESEffectClip*"/>
@@ -2237,26 +2472,37 @@ Example: "videobalance saturation=1.5 hue=+0.5"</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="set_asset" invoker="set_asset">
-        <doc xml:space="preserve">Method to set the asset which instantiated the specified object</doc>
+      <virtual-method name="set_asset">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">Target object</doc>
             <type name="Extractable" c:type="GESExtractable*"/>
           </instance-parameter>
           <parameter name="asset" transfer-ownership="none">
-            <doc xml:space="preserve">The #GESAsset to set</doc>
+            <type name="Asset" c:type="GESAsset*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="set_asset_full">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Extractable" c:type="GESExtractable*"/>
+          </instance-parameter>
+          <parameter name="asset" transfer-ownership="none">
             <type name="Asset" c:type="GESAsset*"/>
           </parameter>
         </parameters>
       </virtual-method>
       <method name="get_asset" c:identifier="ges_extractable_get_asset">
         <doc xml:space="preserve">Method for getting an asset from a #GESExtractable</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The #GESAsset or %NULL if none has been set</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The #GESAsset or %NULL if none has
+been set</doc>
           <type name="Asset" c:type="GESAsset*"/>
         </return-value>
         <parameters>
@@ -2281,7 +2527,8 @@ Example: "videobalance saturation=1.5 hue=+0.5"</doc>
       <method name="set_asset" c:identifier="ges_extractable_set_asset">
         <doc xml:space="preserve">Method to set the asset which instantiated the specified object</doc>
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <doc xml:space="preserve">%TRUE if @asset could be set %FALSE otherwize</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -2335,11 +2582,24 @@ Example: "videobalance saturation=1.5 hue=+0.5"</doc>
           </return-value>
           <parameters>
             <parameter name="self" transfer-ownership="none">
-              <doc xml:space="preserve">Target object</doc>
               <type name="Extractable" c:type="GESExtractable*"/>
             </parameter>
             <parameter name="asset" transfer-ownership="none">
-              <doc xml:space="preserve">The #GESAsset to set</doc>
+              <type name="Asset" c:type="GESAsset*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="set_asset_full">
+        <callback name="set_asset_full">
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Extractable" c:type="GESExtractable*"/>
+            </parameter>
+            <parameter name="asset" transfer-ownership="none">
               <type name="Asset" c:type="GESAsset*"/>
             </parameter>
           </parameters>
@@ -2418,10 +2678,10 @@ Example: "videobalance saturation=1.5 hue=+0.5"</doc>
       <doc xml:space="preserve">A function that will be called when the GNonLin object of a corresponding
 track element needs to be filled.
 
-The implementer of this function shall add the proper #GstElement to @gnlobj
+The implementer of this function shall add the proper #GstElement to @nleobj
 using gst_bin_add().</doc>
       <return-value transfer-ownership="none">
-        <doc xml:space="preserve">TRUE if the implementer succesfully filled the @gnlobj, else #FALSE.</doc>
+        <doc xml:space="preserve">TRUE if the implementer succesfully filled the @nleobj, else #FALSE.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
@@ -2433,7 +2693,7 @@ using gst_bin_add().</doc>
           <doc xml:space="preserve">the #GESTrackElement</doc>
           <type name="TrackElement" c:type="GESTrackElement*"/>
         </parameter>
-        <parameter name="gnlobj" transfer-ownership="none">
+        <parameter name="nleobj" transfer-ownership="none">
           <doc xml:space="preserve">the GNonLin object that needs to be filled.</doc>
           <type name="Gst.Element" c:type="GstElement*"/>
         </parameter>
@@ -2796,6 +3056,32 @@ proper subclass is selected.</doc>
           <type name="Group" c:type="GESGroup*"/>
         </return-value>
       </constructor>
+      <property name="duration" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The duration (in nanoseconds) which will be used in the container</doc>
+        <type name="guint64" c:type="guint64"/>
+      </property>
+      <property name="in-point" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The in-point at which this #GESGroup will start outputting data
+from its contents (in nanoseconds).
+
+Ex : an in-point of 5 seconds means that the first outputted buffer will
+be the one located 5 seconds in the controlled resource.</doc>
+        <type name="guint64" c:type="guint64"/>
+      </property>
+      <property name="max-duration"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The maximum duration (in nanoseconds) of the #GESGroup.</doc>
+        <type name="guint64" c:type="guint64"/>
+      </property>
+      <property name="priority" writable="1" transfer-ownership="none">
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="start" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The position of the object in its container (in nanoseconds).</doc>
+        <type name="guint64" c:type="guint64"/>
+      </property>
       <field name="parent">
         <type name="Container" c:type="GESContainer"/>
       </field>
@@ -2977,7 +3263,7 @@ elements on @clip. If you need to know when those objects (actually #GESTrackEle
 are constructed, you should connect to the container::child-added signal which
 is emited right after those elements are ready to be used.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if the clip was properly added to the layer, or FALSE
+          <doc xml:space="preserve">%TRUE if the clip was properly added to the layer, or %FALSE
 if the @layer refuses to add the clip.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -2986,7 +3272,7 @@ if the @layer refuses to add the clip.</doc>
             <doc xml:space="preserve">a #GESLayer</doc>
             <type name="Layer" c:type="GESLayer*"/>
           </instance-parameter>
-          <parameter name="clip" transfer-ownership="full">
+          <parameter name="clip" transfer-ownership="none">
             <doc xml:space="preserve">the #GESClip to add.</doc>
             <type name="Clip" c:type="GESClip*"/>
           </parameter>
@@ -3024,6 +3310,30 @@ unreffing the contained objects and freeing the list.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_clips_in_interval"
+              c:identifier="ges_layer_get_clips_in_interval">
+        <doc xml:space="preserve">Gets the clips which appear between @start and @end on @layer.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GList of clips intersecting [@start, @end) interval on @layer.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Clip"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="layer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GESLayer</doc>
+            <type name="Layer" c:type="GESLayer*"/>
+          </instance-parameter>
+          <parameter name="start" transfer-ownership="none">
+            <doc xml:space="preserve">start of the interval</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+          <parameter name="end" transfer-ownership="none">
+            <doc xml:space="preserve">end of the interval</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_duration" c:identifier="ges_layer_get_duration">
         <doc xml:space="preserve">Lets you retrieve the duration of the layer, which means
 the end time of the last clip inside it</doc>
@@ -3053,7 +3363,7 @@ the end time of the last clip inside it</doc>
       </method>
       <method name="get_timeline" c:identifier="ges_layer_get_timeline">
         <doc xml:space="preserve">Get the #GESTimeline in which #GESLayer currently is.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">the #GESTimeline in which #GESLayer
 currently is or %NULL if not in any timeline yet.</doc>
           <type name="Timeline" c:type="GESTimeline*"/>
@@ -3086,7 +3396,7 @@ Unparenting it means the reference owned by @layer on the @clip will be
 removed. If you wish to use the @clip after this function, make sure you
 call gst_object_ref() before removing it from the @layer.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if the clip could be removed, FALSE if the layer does
+          <doc xml:space="preserve">%TRUE if the clip could be removed, %FALSE if the layer does
 not want to remove the clip.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -3119,9 +3429,15 @@ property auto_transition for more information.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_priority" c:identifier="ges_layer_set_priority">
+      <method name="set_priority"
+              c:identifier="ges_layer_set_priority"
+              deprecated="1"
+              deprecated-version="1.16.0">
         <doc xml:space="preserve">Sets the layer to the given @priority. See the documentation of the
 priority property for more information.</doc>
+        <doc-deprecated xml:space="preserve">use #ges_timeline_move_layer instead. This deprecation means
+that you will not need to handle layer priorities at all yourself, GES
+will make sure there is never 'gaps' between layer priorities.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3153,11 +3469,21 @@ priority property for more information.</doc>
         <doc xml:space="preserve">Sets whether transitions are added automagically when clips overlap.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <property name="priority" writable="1" transfer-ownership="none">
+      <property name="priority"
+                deprecated="1"
+                deprecated-version="1.16.0"
+                writable="1"
+                transfer-ownership="none">
         <doc xml:space="preserve">The priority of the layer in the #GESTimeline. 0 is the highest
 priority. Conceptually, a #GESTimeline is a stack of GESLayers,
 and the priority of the layer represents its position in the stack. Two
-layers should not have the same priority within a given GESTimeline.</doc>
+layers should not have the same priority within a given GESTimeline.
+
+Note that the timeline needs to be commited (with #ges_timeline_commit)
+for the change to be taken into account.</doc>
+        <doc-deprecated xml:space="preserve">use #ges_timeline_move_layer instead. This deprecation means
+that you will not need to handle layer priorities at all yourself, GES
+will make sure there is never 'gaps' between layer priorities.</doc-deprecated>
         <type name="guint" c:type="guint"/>
       </property>
       <field name="parent">
@@ -3167,10 +3493,10 @@ layers should not have the same priority within a given GESTimeline.</doc>
         <doc xml:space="preserve">the #GESTimeline where this layer is being used.</doc>
         <type name="Timeline" c:type="GESTimeline*"/>
       </field>
-      <field name="min_gnl_priority">
+      <field name="min_nle_priority">
         <type name="guint32" c:type="guint32"/>
       </field>
-      <field name="max_gnl_priority">
+      <field name="max_nle_priority">
         <type name="guint32" c:type="guint32"/>
       </field>
       <field name="priv">
@@ -3313,6 +3639,12 @@ The rank of a formatter</doc>
 The formatter version</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="META_FORMAT_VERSION"
+              value="format-version"
+              c:type="GES_META_FORMAT_VERSION">
+      <doc xml:space="preserve">The version of the format in which a project is serialized</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="META_VOLUME" value="volume" c:type="GES_META_VOLUME">
       <doc xml:space="preserve">The volume, can be used for audio track or layers
 
@@ -3342,9 +3674,8 @@ The default volume for a track or a layer as a float</doc>
       <method name="add_metas_from_string"
               c:identifier="ges_meta_container_add_metas_from_string">
         <doc xml:space="preserve">Deserializes a meta container.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new #GESMetaContainer, or NULL in case of an
-error.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">TRUE on success, FALSE if there was an error.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -3396,7 +3727,10 @@ that if there is no metadata, the function won't be called at all.</doc>
             <doc xml:space="preserve">function to be called for each metadata</doc>
             <type name="MetaForeachFunc" c:type="GESMetaForeachFunc"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">user specified data</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -3572,10 +3906,10 @@ can not be found.</doc>
         </parameters>
       </method>
       <method name="get_meta" c:identifier="ges_meta_container_get_meta">
-        <doc xml:space="preserve">Gets the value of a given meta item, returns NULL if @meta_item
+        <doc xml:space="preserve">Gets the value of a given meta item, returns NULL if @key
 can not be found.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the vale could be optained %FALSE otherwize</doc>
+          <doc xml:space="preserve">the #GValue corresponding to the meta with the given @key.</doc>
           <type name="GObject.Value" c:type="const GValue*"/>
         </return-value>
         <parameters>
@@ -3584,7 +3918,7 @@ can not be found.</doc>
             <type name="MetaContainer" c:type="GESMetaContainer*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
-            <doc xml:space="preserve">Get the key name of the meta to retrieve</doc>
+            <doc xml:space="preserve">The key name of the meta to retrieve</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -3657,9 +3991,9 @@ can not be found.</doc>
       <method name="metas_to_string"
               c:identifier="ges_meta_container_metas_to_string">
         <doc xml:space="preserve">Serializes a meta container to a string.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a newly-allocated string, or NULL in case of an error. The
-   string must be freed with g_free() when no longer needed.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a newly-allocated string, or NULL in case of an error.
+The string must be freed with g_free() when no longer needed.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
@@ -3801,10 +4135,7 @@ type accepted for this meta on that particular @container.</doc>
             <doc xml:space="preserve">Name of the meta item to set</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="value"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+          <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">Value to set</doc>
             <type name="gdouble" c:type="gdouble"/>
           </parameter>
@@ -3832,10 +4163,7 @@ type accepted for this meta on that particular @container.</doc>
             <doc xml:space="preserve">Name of the meta item to set</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="value"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+          <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">Value to set</doc>
             <type name="gfloat" c:type="gfloat"/>
           </parameter>
@@ -3863,10 +4191,7 @@ type accepted for this meta on that particular @container.</doc>
             <doc xml:space="preserve">Name of the meta item to set</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="value"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+          <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">Value to set</doc>
             <type name="gint" c:type="gint"/>
           </parameter>
@@ -3894,10 +4219,7 @@ type accepted for this meta on that particular @container.</doc>
             <doc xml:space="preserve">Name of the meta item to set</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="value"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+          <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">Value to set</doc>
             <type name="gint64" c:type="gint64"/>
           </parameter>
@@ -3956,10 +4278,7 @@ type accepted for this meta on that particular @container.</doc>
             <doc xml:space="preserve">Name of the meta item to set</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="value"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+          <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">Value to set</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
@@ -3987,10 +4306,7 @@ type accepted for this meta on that particular @container.</doc>
             <doc xml:space="preserve">Name of the meta item to set</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="value"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+          <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">Value to set</doc>
             <type name="guint64" c:type="guint64"/>
           </parameter>
@@ -4011,10 +4327,7 @@ type accepted for this meta on that particular @container.</doc>
             <doc xml:space="preserve">Name of the meta item to set</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="value"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
+          <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">Value to set</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
@@ -4161,7 +4474,10 @@ type accepted for this meta on that particular @container.</doc>
             <doc xml:space="preserve">Name of the meta item to set</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="value" transfer-ownership="none">
+          <parameter name="value"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">Value to set
 Sets the value of a given meta item</doc>
             <type name="GObject.Value" c:type="const GValue*"/>
@@ -4298,7 +4614,11 @@ Sets the value of a given meta item</doc>
         <parameter name="value" transfer-ownership="none">
           <type name="GObject.Value" c:type="const GValue*"/>
         </parameter>
-        <parameter name="user_data" transfer-ownership="none" closure="3">
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="3">
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -4539,7 +4859,7 @@ caps. The caller should free the sample with #gst_sample_unref when finished. If
 caps are specified, the information will be returned in the whatever format
 is currently used by the sink. This information can be retrieve from caps
 associated with the buffer.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a #GstSample or %NULL</doc>
           <type name="Gst.Sample" c:type="GstSample*"/>
         </return-value>
@@ -4565,7 +4885,7 @@ with the buffer.
 
 The caller is responsible for unreffing the returned sample with
 #gst_sample_unref.</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a #GstSample or %NULL</doc>
           <type name="Gst.Sample" c:type="GstSample*"/>
         </return-value>
@@ -4744,8 +5064,8 @@ This method must be called before setting the pipeline mode to
 
 The reference to the @timeline will be stolen by the @pipeline.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if the @timeline could be successfully set on the @pipeline,
-else FALSE.</doc>
+          <doc xml:space="preserve">%TRUE if the @timeline could be successfully set on the @pipeline,
+else %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -4753,12 +5073,15 @@ else FALSE.</doc>
             <doc xml:space="preserve">a #GESPipeline</doc>
             <type name="Pipeline" c:type="GESPipeline*"/>
           </instance-parameter>
-          <parameter name="timeline" transfer-ownership="none">
+          <parameter name="timeline" transfer-ownership="full">
             <doc xml:space="preserve">the #GESTimeline to set on the @pipeline.</doc>
             <type name="Timeline" c:type="GESTimeline*"/>
           </parameter>
         </parameters>
       </method>
+      <property name="audio-filter" writable="1" transfer-ownership="none">
+        <type name="Gst.Element"/>
+      </property>
       <property name="audio-sink" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Audio sink for the preview.</doc>
         <type name="Gst.Element"/>
@@ -4772,6 +5095,9 @@ info.</doc>
         <doc xml:space="preserve">Timeline to use in this pipeline. See also
 ges_pipeline_set_timeline() for more info.</doc>
         <type name="Timeline"/>
+      </property>
+      <property name="video-filter" writable="1" transfer-ownership="none">
+        <type name="Gst.Element"/>
       </property>
       <property name="video-sink" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">Video sink for the preview.</doc>
@@ -4948,6 +5274,19 @@ the URI it will keep refering to.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="asset_loading">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="Project" c:type="GESProject*"/>
+          </instance-parameter>
+          <parameter name="asset" transfer-ownership="none">
+            <type name="Asset" c:type="GESAsset*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="asset_removed">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -4994,8 +5333,8 @@ the URI it will keep refering to.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="missing_uri">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
+        <return-value transfer-ownership="full">
+          <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -5077,8 +5416,36 @@ in the project</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="create_asset_sync"
+              c:identifier="ges_project_create_asset_sync"
+              throws="1">
+        <doc xml:space="preserve">Create and add a #GESAsset to @project. You should connect to the
+"asset-added" signal to get the asset when it finally gets added to
+@project</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">The newly created #GESAsset or %NULL.</doc>
+          <type name="Asset" c:type="GESAsset*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="project" transfer-ownership="none">
+            <doc xml:space="preserve">A #GESProject</doc>
+            <type name="Project" c:type="GESProject*"/>
+          </instance-parameter>
+          <parameter name="id"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The id of the asset to create and add to @project</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="extractable_type" transfer-ownership="none">
+            <doc xml:space="preserve">The #GType of the asset to create</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_asset" c:identifier="ges_project_get_asset">
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">The #GESAsset with
 @id or %NULL if no asset with @id as an ID</doc>
           <type name="Asset" c:type="GESAsset*"/>
@@ -5119,8 +5486,8 @@ and thus can not be used</doc>
       </method>
       <method name="get_uri" c:identifier="ges_project_get_uri">
         <doc xml:space="preserve">Retrieve the uri that is currently set on @project</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">The uri that is set on @project</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a newly allocated string representing uri.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
@@ -5157,7 +5524,7 @@ all assets</doc>
               c:identifier="ges_project_list_encoding_profiles">
         <doc xml:space="preserve">Lists the encoding profile that have been set to @project. The first one
 is the latest added.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">The
 list of #GstEncodingProfile used in @project</doc>
           <type name="GLib.List" c:type="const GList*">
@@ -5269,6 +5636,17 @@ or default to the formatter with highest rank</doc>
           </parameter>
         </parameters>
       </glib:signal>
+      <glib:signal name="asset-loading" when="last" version="1.8">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="asset" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESAsset that started loading</doc>
+            <type name="Asset"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="asset-removed" when="last">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -5332,7 +5710,7 @@ main (int argc, gchar ** argv)
   timeline = ges_asset_extract (GES_ASSET (project));
 }
 ]|</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">The new URI of @wrong_asset</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
@@ -5370,6 +5748,21 @@ only to find out what the new location is.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="asset_loading">
+        <callback name="asset_loading">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="Project" c:type="GESProject*"/>
+            </parameter>
+            <parameter name="asset" transfer-ownership="none">
+              <type name="Asset" c:type="GESAsset*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="asset_removed">
         <callback name="asset_removed">
           <return-value transfer-ownership="none">
@@ -5387,8 +5780,8 @@ only to find out what the new location is.</doc>
       </field>
       <field name="missing_uri">
         <callback name="missing_uri">
-          <return-value transfer-ownership="none">
-            <type name="gboolean" c:type="gboolean"/>
+          <return-value transfer-ownership="full">
+            <type name="utf8" c:type="gchar*"/>
           </return-value>
           <parameters>
             <parameter name="self" transfer-ownership="none">
@@ -5447,10 +5840,6 @@ only to find out what the new location is.</doc>
     </record>
     <record name="ProjectPrivate" c:type="GESProjectPrivate" disguised="1">
     </record>
-    <record name="SimpleLayer" c:type="GESSimpleLayer" disguised="1">
-    </record>
-    <record name="SimpleLayerClass" c:type="GESSimpleLayerClass" disguised="1">
-    </record>
     <class name="SmartAdder"
            c:symbol-prefix="smart_adder"
            c:type="GESSmartAdder"
@@ -5484,6 +5873,9 @@ only to find out what the new location is.</doc>
       <field name="adder">
         <type name="Gst.Element" c:type="GstElement*"/>
       </field>
+      <field name="capsfilter">
+        <type name="Gst.Element" c:type="GstElement*"/>
+      </field>
       <field name="lock">
         <type name="GLib.Mutex" c:type="GMutex"/>
       </field>
@@ -5502,66 +5894,6 @@ only to find out what the new location is.</doc>
     <record name="SmartAdderClass"
             c:type="GESSmartAdderClass"
             glib:is-gtype-struct-for="SmartAdder">
-      <field name="parent_class">
-        <type name="Gst.BinClass" c:type="GstBinClass"/>
-      </field>
-      <field name="_ges_reserved">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </record>
-    <class name="SmartMixer"
-           c:symbol-prefix="smart_mixer"
-           c:type="GESSmartMixer"
-           parent="Gst.Bin"
-           glib:type-name="GESSmartMixer"
-           glib:get-type="ges_smart_mixer_get_type"
-           glib:type-struct="SmartMixerClass">
-      <implements name="Gst.ChildProxy"/>
-      <constructor name="new" c:identifier="ges_smart_mixer_new">
-        <return-value transfer-ownership="none">
-          <type name="Gst.Element" c:type="GstElement*"/>
-        </return-value>
-        <parameters>
-          <parameter name="track" transfer-ownership="none">
-            <type name="Track" c:type="GESTrack*"/>
-          </parameter>
-        </parameters>
-      </constructor>
-      <field name="parent_instance">
-        <type name="Gst.Bin" c:type="GstBin"/>
-      </field>
-      <field name="pads_infos">
-        <type name="GLib.HashTable" c:type="GHashTable*">
-          <type name="gpointer" c:type="gpointer"/>
-          <type name="gpointer" c:type="gpointer"/>
-        </type>
-      </field>
-      <field name="srcpad">
-        <type name="Gst.Pad" c:type="GstPad*"/>
-      </field>
-      <field name="mixer">
-        <type name="Gst.Element" c:type="GstElement*"/>
-      </field>
-      <field name="lock">
-        <type name="GLib.Mutex" c:type="GMutex"/>
-      </field>
-      <field name="caps">
-        <type name="Gst.Caps" c:type="GstCaps*"/>
-      </field>
-      <field name="track">
-        <type name="Track" c:type="GESTrack*"/>
-      </field>
-      <field name="_ges_reserved">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-    </class>
-    <record name="SmartMixerClass"
-            c:type="GESSmartMixerClass"
-            glib:is-gtype-struct-for="SmartMixer">
       <field name="parent_class">
         <type name="Gst.BinClass" c:type="GstBinClass"/>
       </field>
@@ -5660,18 +5992,18 @@ capable of extracting GESTestClip-s</doc>
       <implements name="MetaContainer"/>
       <constructor name="new" c:identifier="ges_test_clip_new">
         <doc xml:space="preserve">Creates a new #GESTestClip.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The newly created #GESTestClip, or NULL if there was an
-error.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The newly created #GESTestClip,
+or %NULL if there was an error.</doc>
           <type name="TestClip" c:type="GESTestClip*"/>
         </return-value>
       </constructor>
       <constructor name="new_for_nick"
                    c:identifier="ges_test_clip_new_for_nick">
         <doc xml:space="preserve">Creates a new #GESTestClip for the provided @nick.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The newly created #GESTestClip, or NULL if there was an
-error.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The newly created #GESTestClip,
+or %NULL if there was an error.</doc>
           <type name="TestClip" c:type="GESTestClip*"/>
         </return-value>
         <parameters>
@@ -5880,6 +6212,11 @@ error.</doc>
               glib:nick="position">
         <doc xml:space="preserve">align text on xpos position</doc>
       </member>
+      <member name="absolute"
+              value="5"
+              c:identifier="GES_TEXT_HALIGN_ABSOLUTE"
+              glib:nick="absolute">
+      </member>
     </enumeration>
     <class name="TextOverlay"
            c:symbol-prefix="text_overlay"
@@ -5892,9 +6229,9 @@ error.</doc>
       <implements name="MetaContainer"/>
       <constructor name="new" c:identifier="ges_text_overlay_new">
         <doc xml:space="preserve">Creates a new #GESTextOverlay.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The newly created #GESTextOverlay or %NULL if something went
-wrong.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The newly created #GESTextOverlay or
+%NULL if something went wrong.</doc>
           <type name="TextOverlay" c:type="GESTextOverlay*"/>
         </return-value>
       </constructor>
@@ -6147,9 +6484,9 @@ of the text render by @self.</doc>
       <implements name="MetaContainer"/>
       <constructor name="new" c:identifier="ges_text_overlay_clip_new">
         <doc xml:space="preserve">Creates a new #GESTextOverlayClip</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The newly created #GESTextOverlayClip, or NULL if there was an
-error.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The newly created
+#GESTextOverlayClip, or %NULL if there was an error.</doc>
           <type name="TextOverlayClip" c:type="GESTextOverlayClip*"/>
         </return-value>
       </constructor>
@@ -6480,6 +6817,11 @@ made.</doc>
               glib:nick="center">
         <doc xml:space="preserve">draw text on the center</doc>
       </member>
+      <member name="absolute"
+              value="5"
+              c:identifier="GES_TEXT_VALIGN_ABSOLUTE"
+              glib:nick="absolute">
+      </member>
     </enumeration>
     <class name="Timeline"
            c:symbol-prefix="timeline"
@@ -6524,9 +6866,9 @@ raw video track.</doc>
                    c:identifier="ges_timeline_new_from_uri"
                    throws="1">
         <doc xml:space="preserve">Creates a timeline from the given URI.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">A new timeline if the uri was loaded successfully, or NULL if the
-uri could not be loaded</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">A new timeline if the uri was loaded
+successfully, or %NULL if the uri could not be loaded.</doc>
           <type name="Timeline" c:type="GESTimeline*"/>
         </return-value>
         <parameters>
@@ -6536,6 +6878,37 @@ uri could not be loaded</doc>
           </parameter>
         </parameters>
       </constructor>
+      <virtual-method name="group_added">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timeline" transfer-ownership="none">
+            <type name="Timeline" c:type="GESTimeline*"/>
+          </instance-parameter>
+          <parameter name="group" transfer-ownership="none">
+            <type name="Group" c:type="GESGroup*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="group_removed" introspectable="0">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timeline" transfer-ownership="none">
+            <type name="Timeline" c:type="GESTimeline*"/>
+          </instance-parameter>
+          <parameter name="group" transfer-ownership="none">
+            <type name="Group" c:type="GESGroup*"/>
+          </parameter>
+          <parameter name="children" transfer-ownership="none">
+            <array name="GLib.PtrArray" c:type="GPtrArray*">
+              <type name="gpointer" c:type="gpointer"/>
+            </array>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="layer_added">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -6592,7 +6965,7 @@ uri could not be loaded</doc>
         <doc xml:space="preserve">Add the layer to the timeline. The reference to the @layer will be stolen
 by the @timeline.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if the layer was properly added, else FALSE.</doc>
+          <doc xml:space="preserve">%TRUE if the layer was properly added, else %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -6610,7 +6983,7 @@ by the @timeline.</doc>
         <doc xml:space="preserve">Add a track to the timeline. The reference to the track will be stolen by the
 pipeline.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if the track was properly added, else FALSE.</doc>
+          <doc xml:space="preserve">%TRUE if the track was properly added, else %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -6618,7 +6991,7 @@ pipeline.</doc>
             <doc xml:space="preserve">a #GESTimeline</doc>
             <type name="Timeline" c:type="GESTimeline*"/>
           </instance-parameter>
-          <parameter name="track" transfer-ownership="none">
+          <parameter name="track" transfer-ownership="full">
             <doc xml:space="preserve">the #GESTrack to add</doc>
             <type name="Track" c:type="GESTrack*"/>
           </parameter>
@@ -6640,15 +7013,55 @@ Note that you do not own any reference to the returned layer.</doc>
         </parameters>
       </method>
       <method name="commit" c:identifier="ges_timeline_commit">
-        <doc xml:space="preserve">Commits all the pending changes of the clips contained in the
+        <doc xml:space="preserve">Commit all the pending changes of the clips contained in the
 @timeline.
 
-When timing changes happen in a timeline, the changes are not
-directly done inside GNL. This method needs to be called so any changes
-on a clip contained in the timeline actually happen at the media
-processing level.</doc>
+When changes happen in a timeline, they are not
+directly executed in the non-linear engine. Call this method once you are
+done with a set of changes and want it to be executed.
+
+The #GESTimeline::commited signal will be emitted when the (possibly updated)
+#GstPipeline is ready to output data again, except if the state of the
+timeline was #GST_STATE_READY or #GST_STATE_NULL.
+
+Note that all the pending changes will automatically be executed when the
+timeline goes from #GST_STATE_READY to #GST_STATE_PAUSED, which usually is
+triggered by corresponding state changes in a containing #GESPipeline.
+
+You should not try to change the state of the timeline, seek it or add
+tracks to it during a commit operation, that is between a call to this
+function and after receiving the #GESTimeline::commited signal.
+
+See #ges_timeline_commit_sync if you don't want to bother with waiting
+for the signal.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if something as been commited %FALSE if nothing needed
+          <doc xml:space="preserve">%TRUE if pending changes were commited or %FALSE if nothing needed
+to be commited</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timeline" transfer-ownership="none">
+            <doc xml:space="preserve">a #GESTimeline</doc>
+            <type name="Timeline" c:type="GESTimeline*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="commit_sync" c:identifier="ges_timeline_commit_sync">
+        <doc xml:space="preserve">Commit all the pending changes of the #GESClips contained in the
+@timeline.
+
+Will return once the update is complete, that is when the
+(possibly updated) #GstPipeline is ready to output data again, or if the
+state of the timeline was #GST_STATE_READY or #GST_STATE_NULL.
+
+This function will wait for any pending state change of the timeline by
+calling #gst_element_get_state with a #GST_CLOCK_TIME_NONE timeout, you
+should not try to change the state from another thread before this function
+has returned.
+
+See #ges_timeline_commit for more information.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if pending changes were commited or %FALSE if nothing needed
 to be commited</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -6689,7 +7102,7 @@ overlap or not.</doc>
       </method>
       <method name="get_element" c:identifier="ges_timeline_get_element">
         <doc xml:space="preserve">Gets a #GESTimelineElement contained in the timeline</doc>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">The #GESTimelineElement or %NULL if
 not found.</doc>
           <type name="TimelineElement" c:type="GESTimelineElement*"/>
@@ -6701,6 +7114,43 @@ not found.</doc>
           </instance-parameter>
           <parameter name="name" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_groups" c:identifier="ges_timeline_get_groups">
+        <doc xml:space="preserve">Get the list of #GESGroup present in the Timeline.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the list of
+#GESGroup that contain clips present in the timeline's layers.
+Must not be changed.</doc>
+          <type name="GLib.List" c:type="GList*">
+            <type name="Group"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timeline" transfer-ownership="none">
+            <doc xml:space="preserve">a #GESTimeline</doc>
+            <type name="Timeline" c:type="GESTimeline*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_layer" c:identifier="ges_timeline_get_layer">
+        <doc xml:space="preserve">Retrieve the layer with @priority as a priority</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">A #GESLayer or %NULL if no layer with
+@priority was found
+
+Since 1.6</doc>
+          <type name="Layer" c:type="GESLayer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timeline" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESTimeline to retrive a layer from</doc>
+            <type name="Timeline" c:type="GESTimeline*"/>
+          </instance-parameter>
+          <parameter name="priority" transfer-ownership="none">
+            <doc xml:space="preserve">The priority of the layer to find</doc>
+            <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
       </method>
@@ -6719,6 +7169,25 @@ The caller should unref each Layer once he is done with them.</doc>
             <doc xml:space="preserve">a #GESTimeline</doc>
             <type name="Timeline" c:type="GESTimeline*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_pad_for_track"
+              c:identifier="ges_timeline_get_pad_for_track">
+        <doc xml:space="preserve">Search the #GstPad corresponding to the given @timeline's @track.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The corresponding #GstPad if it is
+found, or %NULL if there is an error.</doc>
+          <type name="Gst.Pad" c:type="GstPad*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timeline" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESTimeline</doc>
+            <type name="Timeline" c:type="GESTimeline*"/>
+          </instance-parameter>
+          <parameter name="track" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESTrack</doc>
+            <type name="Track" c:type="GESTrack*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_snapping_distance"
@@ -6740,9 +7209,9 @@ information.</doc>
       <method name="get_track_for_pad"
               c:identifier="ges_timeline_get_track_for_pad">
         <doc xml:space="preserve">Search the #GESTrack corresponding to the given @timeline's @pad.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The corresponding #GESTrack if it is found,
-or %NULL if there is an error.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The corresponding #GESTrack if it is
+found, or %NULL if there is an error.</doc>
           <type name="Track" c:type="GESTrack*"/>
         </return-value>
         <parameters>
@@ -6772,12 +7241,25 @@ The caller should unref each track once he is done with them.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="is_empty" c:identifier="ges_timeline_is_empty">
+        <doc xml:space="preserve">Check whether a #GESTimeline is empty or not</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the timeline is empty %FALSE otherwize</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timeline" transfer-ownership="none">
+            <doc xml:space="preserve">a #GESTimeline</doc>
+            <type name="Timeline" c:type="GESTimeline*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="load_from_uri"
               c:identifier="ges_timeline_load_from_uri"
               throws="1">
         <doc xml:space="preserve">Loads the contents of URI into the given timeline.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if the timeline was loaded successfully, or FALSE if the uri
+          <doc xml:space="preserve">%TRUE if the timeline was loaded successfully, or %FALSE if the uri
 could not be loaded.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -6792,12 +7274,65 @@ could not be loaded.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="move_layer" c:identifier="ges_timeline_move_layer">
+        <doc xml:space="preserve">Moves @layer at @new_layer_priority meaning that @layer
+we land at that position in the stack of layers inside
+the timeline. If @new_layer_priority is superior than the number
+of layers present in the time, it will move to the end of the
+stack of layers.</doc>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timeline" transfer-ownership="none">
+            <doc xml:space="preserve">The timeline in which @layer must be</doc>
+            <type name="Timeline" c:type="GESTimeline*"/>
+          </instance-parameter>
+          <parameter name="layer" transfer-ownership="none">
+            <doc xml:space="preserve">The layer to move at @new_layer_priority</doc>
+            <type name="Layer" c:type="GESLayer*"/>
+          </parameter>
+          <parameter name="new_layer_priority" transfer-ownership="none">
+            <doc xml:space="preserve">The index at which @layer should land</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="paste_element" c:identifier="ges_timeline_paste_element">
+        <doc xml:space="preserve">Paste @element inside the timeline. @element must have been
+created using ges_timeline_element_copy with deep=TRUE set,
+i.e. it must be a deep copy, otherwise it will fail.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Shallow copy of the @element pasted</doc>
+          <type name="TimelineElement" c:type="GESTimelineElement*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="timeline" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESTimeline onto which the #GESTimelineElement should be pasted</doc>
+            <type name="Timeline" c:type="GESTimeline*"/>
+          </instance-parameter>
+          <parameter name="element" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESTimelineElement to paste</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </parameter>
+          <parameter name="position" transfer-ownership="none">
+            <doc xml:space="preserve">The position in the timeline the element should
+be pasted to, meaning it will become the start of @element</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+          <parameter name="layer_priority" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESLayer to which the element should be pasted to.
+-1 means paste to the same layer from which the @element has been copied from.</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="remove_layer" c:identifier="ges_timeline_remove_layer">
         <doc xml:space="preserve">Removes the layer from the timeline. The reference that the @timeline holds on
 the layer will be dropped. If you wish to use the @layer after calling this
 method, you need to take a reference before calling.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if the layer was properly removed, else FALSE.</doc>
+          <doc xml:space="preserve">%TRUE if the layer was properly removed, else %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -6816,7 +7351,7 @@ method, you need to take a reference before calling.</doc>
 @track will be removed. If you wish to use the @track after calling this
 function you must ensure that you have a reference to it.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if the @track was properly removed, else FALSE.</doc>
+          <doc xml:space="preserve">%TRUE if the @track was properly removed, else %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -6835,8 +7370,8 @@ function you must ensure that you have a reference to it.</doc>
               throws="1">
         <doc xml:space="preserve">Saves the timeline to the given location</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if the timeline was successfully saved to the given location,
-else FALSE.</doc>
+          <doc xml:space="preserve">%TRUE if the timeline was successfully saved to the given location,
+else %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -6938,12 +7473,45 @@ with it neighboors. 0 means no snapping.</doc>
         </array>
       </field>
       <glib:signal name="commited" when="last">
+        <doc xml:space="preserve">This signal will be emitted once the changes initiated by #ges_timeline_commit
+have been executed in the backend. Use #ges_timeline_commit_sync if you
+don't need to do anything in the meantime.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
+      <glib:signal name="group-added" when="first">
+        <doc xml:space="preserve">Will be emitted after a new group is added to to the timeline.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="group" transfer-ownership="none">
+            <doc xml:space="preserve">the #GESGroup</doc>
+            <type name="Group"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="group-removed" when="first">
+        <doc xml:space="preserve">Will be emitted after a group has been removed from the timeline.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="group" transfer-ownership="none">
+            <doc xml:space="preserve">the #GESGroup</doc>
+            <type name="Group"/>
+          </parameter>
+          <parameter name="children" transfer-ownership="container">
+            <doc xml:space="preserve">a list of #GESContainer</doc>
+            <array name="GLib.PtrArray">
+              <type name="Container"/>
+            </array>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="layer-added" when="first">
-        <doc xml:space="preserve">Will be emitted after the layer was added to the timeline.</doc>
+        <doc xml:space="preserve">Will be emitted after a new layer is added to the timeline.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -6975,10 +7543,10 @@ with it neighboors. 0 means no snapping.</doc>
         </return-value>
         <parameters>
           <parameter name="clip" transfer-ownership="none">
-            <doc xml:space="preserve">The #GESClip on which @track-element will land</doc>
+            <doc xml:space="preserve">The #GESClip on which @track_element will land</doc>
             <type name="Clip"/>
           </parameter>
-          <parameter name="track-element" transfer-ownership="none">
+          <parameter name="track_element" transfer-ownership="none">
             <doc xml:space="preserve">The #GESTrackElement for which to choose the tracks it should land into</doc>
             <type name="TrackElement"/>
           </parameter>
@@ -7108,6 +7676,41 @@ with it neighboors. 0 means no snapping.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="group_added">
+        <callback name="group_added">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="timeline" transfer-ownership="none">
+              <type name="Timeline" c:type="GESTimeline*"/>
+            </parameter>
+            <parameter name="group" transfer-ownership="none">
+              <type name="Group" c:type="GESGroup*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="group_removed" introspectable="0">
+        <callback name="group_removed" introspectable="0">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="timeline" transfer-ownership="none">
+              <type name="Timeline" c:type="GESTimeline*"/>
+            </parameter>
+            <parameter name="group" transfer-ownership="none">
+              <type name="Group" c:type="GESGroup*"/>
+            </parameter>
+            <parameter name="children" transfer-ownership="none">
+              <array name="GLib.PtrArray" c:type="GPtrArray*">
+                <type name="gpointer" c:type="gpointer"/>
+              </array>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_ges_reserved" readable="0" private="1">
         <array zero-terminated="0" c:type="gpointer" fixed-size="4">
           <type name="gpointer" c:type="gpointer"/>
@@ -7137,6 +7740,94 @@ responsible for controlling its timing properties.</doc>
           </instance-parameter>
           <parameter name="copy" transfer-ownership="none">
             <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_track_types"
+                      invoker="get_track_types"
+                      version="1.6.0">
+        <doc xml:space="preserve">Gets all the TrackTypes @self will interact with</doc>
+        <return-value transfer-ownership="none">
+          <type name="TrackType" c:type="GESTrackType"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #GESTimelineElement</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="list_children_properties" introspectable="0">
+        <return-value>
+          <type name="GObject.ParamSpec" c:type="GParamSpec**"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="n_properties" transfer-ownership="none">
+            <type name="guint" c:type="guint*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="lookup_child" invoker="lookup_child">
+        <doc xml:space="preserve">Looks up which @element and @pspec would be effected by the given @name. If various
+contained elements have this property name you will get the first one, unless you
+specify the class name in @name.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">TRUE if @element and @pspec could be found. FALSE otherwise. In that
+case the values for @pspec and @element are not modified. Unref @element after
+usage.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">object to lookup the property in</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="prop_name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the property to look up. You can specify the name of the
+    class as such: "ClassName::property-name", to guarantee that you get the
+    proper GParamSpec in case various GstElement-s contain the same property
+    name. If you don't do so, you will get the first element found, having
+    this property and the and the corresponding GParamSpec.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="child"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">pointer to a #GstElement that
+    takes the real object to set property on</doc>
+            <type name="GObject.Object" c:type="GObject**"/>
+          </parameter>
+          <parameter name="pspec"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">pointer to take the #GParamSpec
+    describing the property</doc>
+            <type name="GObject.ParamSpec" c:type="GParamSpec**"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="paste" introspectable="0">
+        <return-value>
+          <type name="TimelineElement" c:type="GESTimelineElement*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="ref_element" transfer-ownership="none">
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </parameter>
+          <parameter name="paste_position" transfer-ownership="none">
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -7224,6 +7915,25 @@ the in-point of @self according</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="set_child_property">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="child" transfer-ownership="none">
+            <type name="GObject.Object" c:type="GObject*"/>
+          </parameter>
+          <parameter name="pspec" transfer-ownership="none">
+            <type name="GObject.ParamSpec" c:type="GParamSpec*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <type name="GObject.Value" c:type="GValue*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="set_duration">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -7264,8 +7974,8 @@ the in-point of @self according</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="set_parent" invoker="set_parent">
-        <doc xml:space="preserve">Sets the parent of @self to @parent. The object's reference count will
-be incremented, and any floating reference will be removed (see gst_object_ref_sink()).</doc>
+        <doc xml:space="preserve">Sets the parent of @self to @parent. The parents needs to already
+own a hard reference on @self.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if @parent could be set or %FALSE when @self
 already had a parent or @self and @parent are the same.</doc>
@@ -7333,6 +8043,23 @@ of @self accordingly</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="add_child_property"
+              c:identifier="ges_timeline_element_add_child_property">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="pspec" transfer-ownership="none">
+            <type name="GObject.ParamSpec" c:type="GParamSpec*"/>
+          </parameter>
+          <parameter name="child" transfer-ownership="none">
+            <type name="GObject.Object" c:type="GObject*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="copy" c:identifier="ges_timeline_element_copy">
         <doc xml:space="preserve">Copies @self</doc>
         <return-value transfer-ownership="none">
@@ -7347,6 +8074,113 @@ of @self accordingly</doc>
           <parameter name="deep" transfer-ownership="none">
             <doc xml:space="preserve">whether we want to create the elements @self contains or not</doc>
             <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_child_properties"
+              c:identifier="ges_timeline_element_get_child_properties"
+              introspectable="0">
+        <doc xml:space="preserve">Gets properties of a child of @self.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">The origin #GESTimelineElement</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="first_property_name" transfer-ownership="none">
+            <doc xml:space="preserve">The name of the first property to get</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">return location for the first property, followed optionally by more
+name/return location pairs, followed by NULL</doc>
+            <varargs/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_child_property"
+              c:identifier="ges_timeline_element_get_child_property">
+        <doc xml:space="preserve">In general, a copy is made of the property contents and
+the caller is responsible for freeing the memory by calling
+g_value_unset().
+
+Gets a property of a GstElement contained in @object.
+
+Note that #ges_timeline_element_get_child_property is really
+intended for language bindings, #ges_timeline_element_get_child_properties
+is much more convenient for C programming.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the property was found, %FALSE otherwize</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">The origin #GESTimelineElement</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="property_name" transfer-ownership="none">
+            <doc xml:space="preserve">The name of the property</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="none">
+            <doc xml:space="preserve">return location for the property value, it will
+be initialized if it is initialized with 0</doc>
+            <type name="GObject.Value" c:type="GValue*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_child_property_by_pspec"
+              c:identifier="ges_timeline_element_get_child_property_by_pspec">
+        <doc xml:space="preserve">Gets a property of a child of @self.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GESTrackElement</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="pspec" transfer-ownership="none">
+            <doc xml:space="preserve">The #GParamSpec that specifies the property you want to get</doc>
+            <type name="GObject.ParamSpec" c:type="GParamSpec*"/>
+          </parameter>
+          <parameter name="value"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="none">
+            <doc xml:space="preserve">return location for the value</doc>
+            <type name="GObject.Value" c:type="GValue*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_child_property_valist"
+              c:identifier="ges_timeline_element_get_child_property_valist"
+              introspectable="0">
+        <doc xml:space="preserve">Gets a property of a child of @self. If there are various child elements
+that have the same property name, you can distinguish them using the following
+syntax: 'ClasseName::property_name' as property name. If you don't, the
+corresponding property of the first element found will be set.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESTimelineElement parent object</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="first_property_name" transfer-ownership="none">
+            <doc xml:space="preserve">The name of the first property to get</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="var_args" transfer-ownership="none">
+            <doc xml:space="preserve">value for the first property, followed optionally by more
+name/return location pairs, followed by NULL</doc>
+            <type name="va_list" c:type="va_list"/>
           </parameter>
         </parameters>
       </method>
@@ -7406,9 +8240,9 @@ Caller should g_free() the return value after usage.</doc>
       <method name="get_parent" c:identifier="ges_timeline_element_get_parent">
         <doc xml:space="preserve">Returns the parent of @self. This function increases the refcount
 of the parent object so you should gst_object_unref() it after usage.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">parent of @self, this can be %NULL if @self
-  has no parent. unref after usage.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">parent of @self, this can be %NULL if
+@self has no parent. unref after usage.</doc>
           <type name="TimelineElement" c:type="GESTimelineElement*"/>
         </return-value>
         <parameters>
@@ -7447,9 +8281,9 @@ of the parent object so you should gst_object_unref() it after usage.</doc>
               c:identifier="ges_timeline_element_get_timeline">
         <doc xml:space="preserve">Returns the timeline of @self. This function increases the refcount
 of the timeline so you should gst_object_unref() it after usage.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">timeline of @self, this can be %NULL if @self
-  has no timeline. unref after usage.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">timeline of @self, this can be %NULL if
+@self has no timeline. unref after usage.</doc>
           <type name="Timeline" c:type="GESTimeline*"/>
         </return-value>
         <parameters>
@@ -7471,6 +8305,127 @@ of the timeline so you should gst_object_unref() it after usage.</doc>
             <doc xml:space="preserve">The #GESTimelineElement to get the toplevel parent from</doc>
             <type name="TimelineElement" c:type="GESTimelineElement*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_track_types"
+              c:identifier="ges_timeline_element_get_track_types"
+              version="1.6.0">
+        <doc xml:space="preserve">Gets all the TrackTypes @self will interact with</doc>
+        <return-value transfer-ownership="none">
+          <type name="TrackType" c:type="GESTrackType"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #GESTimelineElement</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="list_children_properties"
+              c:identifier="ges_timeline_element_list_children_properties">
+        <doc xml:space="preserve">Gets an array of #GParamSpec* for all configurable properties of the
+children of @self.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">an array of #GParamSpec* which should be freed after use or
+%NULL if something went wrong</doc>
+          <array length="0" zero-terminated="0" c:type="GParamSpec**">
+            <type name="GObject.ParamSpec" c:type="GParamSpec*"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESTimelineElement to get the list of children properties from</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="n_properties"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for the length of the returned array</doc>
+            <type name="guint" c:type="guint*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="lookup_child"
+              c:identifier="ges_timeline_element_lookup_child">
+        <doc xml:space="preserve">Looks up which @element and @pspec would be effected by the given @name. If various
+contained elements have this property name you will get the first one, unless you
+specify the class name in @name.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">TRUE if @element and @pspec could be found. FALSE otherwise. In that
+case the values for @pspec and @element are not modified. Unref @element after
+usage.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">object to lookup the property in</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="prop_name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the property to look up. You can specify the name of the
+    class as such: "ClassName::property-name", to guarantee that you get the
+    proper GParamSpec in case various GstElement-s contain the same property
+    name. If you don't do so, you will get the first element found, having
+    this property and the and the corresponding GParamSpec.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="child"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">pointer to a #GstElement that
+    takes the real object to set property on</doc>
+            <type name="GObject.Object" c:type="GObject**"/>
+          </parameter>
+          <parameter name="pspec"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">pointer to take the #GParamSpec
+    describing the property</doc>
+            <type name="GObject.ParamSpec" c:type="GParamSpec**"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="paste"
+              c:identifier="ges_timeline_element_paste"
+              version="1.6.0">
+        <doc xml:space="preserve">Paste @self inside the timeline. @self must have been created
+using ges_timeline_element_copy with recurse=TRUE set,
+otherwise it will fail.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">Paste @self copying the element</doc>
+          <type name="TimelineElement" c:type="GESTimelineElement*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESTimelineElement to paste</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="paste_position" transfer-ownership="none">
+            <doc xml:space="preserve">The position in the timeline the element should
+be copied to, meaning it will become the start of @self</doc>
+            <type name="Gst.ClockTime" c:type="GstClockTime"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_child_property"
+              c:identifier="ges_timeline_element_remove_child_property">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="pspec" transfer-ownership="none">
+            <type name="GObject.ParamSpec" c:type="GParamSpec*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="ripple" c:identifier="ges_timeline_element_ripple">
@@ -7557,6 +8512,105 @@ the in-point of @self according</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_child_properties"
+              c:identifier="ges_timeline_element_set_child_properties"
+              introspectable="0">
+        <doc xml:space="preserve">Sets a property of a child of @self. If there are various child elements
+that have the same property name, you can distinguish them using the following
+syntax: 'ClasseName::property_name' as property name. If you don't, the
+corresponding property of the first element found will be set.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESTimelineElement parent object</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="first_property_name" transfer-ownership="none">
+            <doc xml:space="preserve">The name of the first property to set</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">value for the first property, followed optionally by more
+name/return location pairs, followed by NULL</doc>
+            <varargs/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_child_property"
+              c:identifier="ges_timeline_element_set_child_property">
+        <doc xml:space="preserve">Sets a property of a child of @self
+
+Note that #ges_timeline_element_set_child_property is really
+intended for language bindings, #ges_timeline_element_set_child_properties
+is much more convenient for C programming.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the property was set, %FALSE otherwize</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">The origin #GESTimelineElement</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="property_name" transfer-ownership="none">
+            <doc xml:space="preserve">The name of the property</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">the value</doc>
+            <type name="GObject.Value" c:type="GValue*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_child_property_by_pspec"
+              c:identifier="ges_timeline_element_set_child_property_by_pspec">
+        <doc xml:space="preserve">Sets a property of a child of @self.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GESTimelineElement</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="pspec" transfer-ownership="none">
+            <doc xml:space="preserve">The #GParamSpec that specifies the property you want to set</doc>
+            <type name="GObject.ParamSpec" c:type="GParamSpec*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">the value</doc>
+            <type name="GObject.Value" c:type="GValue*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_child_property_valist"
+              c:identifier="ges_timeline_element_set_child_property_valist"
+              introspectable="0">
+        <doc xml:space="preserve">Sets a property of a child of @self. If there are various child elements
+that have the same property name, you can distinguish them using the following
+syntax: 'ClasseName::property_name' as property name. If you don't, the
+corresponding property of the first element found will be set.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">The #GESTimelineElement parent object</doc>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </instance-parameter>
+          <parameter name="first_property_name" transfer-ownership="none">
+            <doc xml:space="preserve">The name of the first property to set</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="var_args" transfer-ownership="none">
+            <doc xml:space="preserve">value for the first property, followed optionally by more
+name/return location pairs, followed by NULL</doc>
+            <type name="va_list" c:type="va_list"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_duration"
               c:identifier="ges_timeline_element_set_duration">
         <doc xml:space="preserve">Set the duration of the object
@@ -7624,14 +8678,18 @@ of the name it sent.</doc>
             <doc xml:space="preserve">a #GESTimelineElement</doc>
             <type name="TimelineElement" c:type="GESTimelineElement*"/>
           </instance-parameter>
-          <parameter name="name" transfer-ownership="none">
+          <parameter name="name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The name @self should take (if avalaible&lt;)</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
       <method name="set_parent" c:identifier="ges_timeline_element_set_parent">
-        <doc xml:space="preserve">Sets the parent of @self to @parent. The object's reference count will
-be incremented, and any floating reference will be removed (see gst_object_ref_sink()).</doc>
+        <doc xml:space="preserve">Sets the parent of @self to @parent. The parents needs to already
+own a hard reference on @self.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if @parent could be set or %FALSE when @self
 already had a parent or @self and @parent are the same.</doc>
@@ -7649,8 +8707,12 @@ already had a parent or @self and @parent are the same.</doc>
         </parameters>
       </method>
       <method name="set_priority"
-              c:identifier="ges_timeline_element_set_priority">
+              c:identifier="ges_timeline_element_set_priority"
+              deprecated="1">
         <doc xml:space="preserve">Sets the priority of the object within the containing layer</doc>
+        <doc-deprecated xml:space="preserve">All priority management is done by GES itself now.
+To set #GESEffect priorities #ges_clip_set_top_effect_index should
+be used.</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7666,10 +8728,10 @@ already had a parent or @self and @parent are the same.</doc>
         </parameters>
       </method>
       <method name="set_start" c:identifier="ges_timeline_element_set_start">
-        <doc xml:space="preserve">Set the position of the object in its containing layer
+        <doc xml:space="preserve">Set the position of the object in its containing layer.
 
-Note that if the timeline snap-distance property of the timeline containing
-@self is set, @self will properly snap to its neighboors.</doc>
+Note that if the snapping-distance property of the timeline containing
+@self is set, @self will properly snap to the edges around @start.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7759,8 +8821,15 @@ be the one located 5 seconds in the controlled resource.</doc>
         <type name="TimelineElement"/>
       </property>
       <property name="priority" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">The priority of the object.</doc>
+        <doc xml:space="preserve">The priority of the object.
+
+Setting GESTimelineElement priorities is deprecated
+as all priority management is done by GES itself now.</doc>
         <type name="guint" c:type="guint"/>
+      </property>
+      <property name="serialize" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">Whether the element should be serialized.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="start" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">The position of the object in its container (in nanoseconds).</doc>
@@ -7816,6 +8885,27 @@ be the one located 5 seconds in the controlled resource.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
+      <glib:signal name="deep-notify"
+                   when="first"
+                   no-recurse="1"
+                   detailed="1"
+                   no-hooks="1">
+        <doc xml:space="preserve">The deep notify signal is used to be notified of property changes of all
+the childs of @timeline_element</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="prop_object" transfer-ownership="none">
+            <doc xml:space="preserve">the object that originated the signal</doc>
+            <type name="GObject.Object"/>
+          </parameter>
+          <parameter name="prop" transfer-ownership="none">
+            <doc xml:space="preserve">the property that changed</doc>
+            <type name="GObject.ParamSpec"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <record name="TimelineElementClass"
             c:type="GESTimelineElementClass"
@@ -8038,8 +9128,119 @@ of @self accordingly</doc>
           </parameters>
         </callback>
       </field>
+      <field name="paste" introspectable="0">
+        <callback name="paste" introspectable="0">
+          <return-value>
+            <type name="TimelineElement" c:type="GESTimelineElement*"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="TimelineElement" c:type="GESTimelineElement*"/>
+            </parameter>
+            <parameter name="ref_element" transfer-ownership="none">
+              <type name="TimelineElement" c:type="GESTimelineElement*"/>
+            </parameter>
+            <parameter name="paste_position" transfer-ownership="none">
+              <type name="Gst.ClockTime" c:type="GstClockTime"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="list_children_properties" introspectable="0">
+        <callback name="list_children_properties" introspectable="0">
+          <return-value>
+            <type name="GObject.ParamSpec" c:type="GParamSpec**"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="TimelineElement" c:type="GESTimelineElement*"/>
+            </parameter>
+            <parameter name="n_properties" transfer-ownership="none">
+              <type name="guint" c:type="guint*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="lookup_child">
+        <callback name="lookup_child">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">TRUE if @element and @pspec could be found. FALSE otherwise. In that
+case the values for @pspec and @element are not modified. Unref @element after
+usage.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">object to lookup the property in</doc>
+              <type name="TimelineElement" c:type="GESTimelineElement*"/>
+            </parameter>
+            <parameter name="prop_name" transfer-ownership="none">
+              <doc xml:space="preserve">name of the property to look up. You can specify the name of the
+    class as such: "ClassName::property-name", to guarantee that you get the
+    proper GParamSpec in case various GstElement-s contain the same property
+    name. If you don't do so, you will get the first element found, having
+    this property and the and the corresponding GParamSpec.</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="child"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full"
+                       optional="1"
+                       allow-none="1">
+              <doc xml:space="preserve">pointer to a #GstElement that
+    takes the real object to set property on</doc>
+              <type name="GObject.Object" c:type="GObject**"/>
+            </parameter>
+            <parameter name="pspec"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full"
+                       optional="1"
+                       allow-none="1">
+              <doc xml:space="preserve">pointer to take the #GParamSpec
+    describing the property</doc>
+              <type name="GObject.ParamSpec" c:type="GParamSpec**"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_track_types">
+        <callback name="get_track_types">
+          <return-value transfer-ownership="none">
+            <type name="TrackType" c:type="GESTrackType"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <doc xml:space="preserve">A #GESTimelineElement</doc>
+              <type name="TimelineElement" c:type="GESTimelineElement*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="set_child_property">
+        <callback name="set_child_property">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="TimelineElement" c:type="GESTimelineElement*"/>
+            </parameter>
+            <parameter name="child" transfer-ownership="none">
+              <type name="GObject.Object" c:type="GObject*"/>
+            </parameter>
+            <parameter name="pspec" transfer-ownership="none">
+              <type name="GObject.ParamSpec" c:type="GParamSpec*"/>
+            </parameter>
+            <parameter name="value" transfer-ownership="none">
+              <type name="GObject.Value" c:type="GValue*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_ges_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="20">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="17">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -8063,15 +9264,18 @@ with the specified background pattern.</doc>
       <implements name="MetaContainer"/>
       <constructor name="new" c:identifier="ges_title_clip_new">
         <doc xml:space="preserve">Creates a new #GESTitleClip</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The newly created #GESTitleClip, or NULL if there was an
-error.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The newly created #GESTitleClip,
+or %NULL if there was an error.</doc>
           <type name="TitleClip" c:type="GESTitleClip*"/>
         </return-value>
       </constructor>
       <method name="get_background_color"
-              c:identifier="ges_title_clip_get_background_color">
+              c:identifier="ges_title_clip_get_background_color"
+              deprecated="1">
         <doc xml:space="preserve">Get the background used by @self.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The color used by @self.</doc>
           <type name="guint32" c:type="const guint32"/>
@@ -8083,8 +9287,12 @@ error.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_font_desc" c:identifier="ges_title_clip_get_font_desc">
+      <method name="get_font_desc"
+              c:identifier="ges_title_clip_get_font_desc"
+              deprecated="1">
         <doc xml:space="preserve">Get the pango font description used by @self.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The pango font description used by @self.</doc>
           <type name="utf8" c:type="const gchar*"/>
@@ -8097,8 +9305,11 @@ error.</doc>
         </parameters>
       </method>
       <method name="get_halignment"
-              c:identifier="ges_title_clip_get_halignment">
+              c:identifier="ges_title_clip_get_halignment"
+              deprecated="1">
         <doc xml:space="preserve">Get the horizontal aligment used by @self.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The horizontal aligment used by @self.</doc>
           <type name="TextHAlign" c:type="GESTextHAlign"/>
@@ -8110,8 +9321,12 @@ error.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_text" c:identifier="ges_title_clip_get_text">
+      <method name="get_text"
+              c:identifier="ges_title_clip_get_text"
+              deprecated="1">
         <doc xml:space="preserve">Get the text currently set on @self.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The text currently set on @self.</doc>
           <type name="utf8" c:type="const gchar*"/>
@@ -8124,8 +9339,11 @@ error.</doc>
         </parameters>
       </method>
       <method name="get_text_color"
-              c:identifier="ges_title_clip_get_text_color">
+              c:identifier="ges_title_clip_get_text_color"
+              deprecated="1">
         <doc xml:space="preserve">Get the color used by @self.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The color used by @self.</doc>
           <type name="guint32" c:type="const guint32"/>
@@ -8138,8 +9356,11 @@ error.</doc>
         </parameters>
       </method>
       <method name="get_valignment"
-              c:identifier="ges_title_clip_get_valignment">
+              c:identifier="ges_title_clip_get_valignment"
+              deprecated="1">
         <doc xml:space="preserve">Get the vertical aligment used by @self.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The vertical aligment used by @self.</doc>
           <type name="TextVAlign" c:type="GESTextVAlign"/>
@@ -8151,8 +9372,12 @@ error.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_xpos" c:identifier="ges_title_clip_get_xpos">
+      <method name="get_xpos"
+              c:identifier="ges_title_clip_get_xpos"
+              deprecated="1">
         <doc xml:space="preserve">Get the horizontal position used by @self.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The horizontal position used by @self.</doc>
           <type name="gdouble" c:type="const gdouble"/>
@@ -8164,8 +9389,12 @@ error.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_ypos" c:identifier="ges_title_clip_get_ypos">
+      <method name="get_ypos"
+              c:identifier="ges_title_clip_get_ypos"
+              deprecated="1">
         <doc xml:space="preserve">Get the vertical position used by @self.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The vertical position used by @self.</doc>
           <type name="gdouble" c:type="const gdouble"/>
@@ -8178,8 +9407,11 @@ error.</doc>
         </parameters>
       </method>
       <method name="set_background"
-              c:identifier="ges_title_clip_set_background">
+              c:identifier="ges_title_clip_set_background"
+              deprecated="1">
         <doc xml:space="preserve">Sets the background of the text.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8194,8 +9426,12 @@ error.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_color" c:identifier="ges_title_clip_set_color">
+      <method name="set_color"
+              c:identifier="ges_title_clip_set_color"
+              deprecated="1">
         <doc xml:space="preserve">Sets the color of the text.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8210,8 +9446,12 @@ error.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_font_desc" c:identifier="ges_title_clip_set_font_desc">
+      <method name="set_font_desc"
+              c:identifier="ges_title_clip_set_font_desc"
+              deprecated="1">
         <doc xml:space="preserve">Sets the pango font description of the text.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8227,8 +9467,11 @@ error.</doc>
         </parameters>
       </method>
       <method name="set_halignment"
-              c:identifier="ges_title_clip_set_halignment">
+              c:identifier="ges_title_clip_set_halignment"
+              deprecated="1">
         <doc xml:space="preserve">Sets the horizontal aligment of the text.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8243,8 +9486,12 @@ error.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_text" c:identifier="ges_title_clip_set_text">
+      <method name="set_text"
+              c:identifier="ges_title_clip_set_text"
+              deprecated="1">
         <doc xml:space="preserve">Sets the text this clip will render.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8261,8 +9508,11 @@ made.</doc>
         </parameters>
       </method>
       <method name="set_valignment"
-              c:identifier="ges_title_clip_set_valignment">
+              c:identifier="ges_title_clip_set_valignment"
+              deprecated="1">
         <doc xml:space="preserve">Sets the vertical aligment of the text.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8277,8 +9527,12 @@ made.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_xpos" c:identifier="ges_title_clip_set_xpos">
+      <method name="set_xpos"
+              c:identifier="ges_title_clip_set_xpos"
+              deprecated="1">
         <doc xml:space="preserve">Sets the horizontal position of the text.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8293,8 +9547,12 @@ made.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_ypos" c:identifier="ges_title_clip_set_ypos">
+      <method name="set_ypos"
+              c:identifier="ges_title_clip_set_ypos"
+              deprecated="1">
         <doc xml:space="preserve">Sets the vertical position of the text.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8310,59 +9568,83 @@ made.</doc>
         </parameters>
       </method>
       <property name="background"
+                deprecated="1"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The background of the text</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="color"
+                deprecated="1"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The color of the text</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <type name="guint" c:type="guint"/>
       </property>
       <property name="font-desc"
+                deprecated="1"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Pango font description string</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="halignment"
+                deprecated="1"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Horizontal alignment of the text</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <type name="TextHAlign"/>
       </property>
       <property name="text"
+                deprecated="1"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The text to diplay</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="valignment"
+                deprecated="1"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">Vertical alignent of the text</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <type name="TextVAlign"/>
       </property>
       <property name="xpos"
+                deprecated="1"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The horizontal position of the text</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <type name="gdouble" c:type="gdouble"/>
       </property>
       <property name="ypos"
+                deprecated="1"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
         <doc xml:space="preserve">The vertical position of the text</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+underlying GESTrackElement instead</doc-deprecated>
         <type name="gdouble" c:type="gdouble"/>
       </property>
       <field name="parent">
@@ -8398,6 +9680,69 @@ made.</doc>
            glib:type-name="GESTitleSource"
            glib:get-type="ges_title_source_get_type"
            glib:type-struct="TitleSourceClass">
+      <doc xml:space="preserve">#GESTitleSource is a GESTimelineElement that implements the notion
+of titles in GES.
+
+## Children Properties
+
+You can use the following children properties through the
+#ges_track_element_set_child_property and alike set of methods:
+&lt;informaltable frame="none"&gt;
+&lt;tgroup cols="3"&gt;
+&lt;colspec colname="properties_type" colwidth="150px"/&gt;
+&lt;colspec colname="properties_name" colwidth="200px"/&gt;
+&lt;colspec colname="properties_flags" colwidth="400px"/&gt;
+&lt;tbody&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="guint"&gt;&lt;type&gt;guint&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESTileSource--background"&gt;background&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;The color of the background&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="guint"&gt;&lt;type&gt;guint&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESTileSource--color"&gt;color&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;The color of the text&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+  &lt;entry role="property_type"&gt;&lt;link linkend="gchar"&gt;&lt;type&gt;gchar&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+  &lt;entry role="property_name"&gt;&lt;link linkend="GESTileSource--font-desc"&gt;font-desc&lt;/link&gt;&lt;/entry&gt;
+  &lt;entry&gt;Pango font description string&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="GESTextHAlign"&gt;&lt;type&gt;GESTextHAlign&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESTileSource--halignment"&gt;halignment&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;Horizontal alignment of the text&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="gchar"&gt;&lt;type&gt;gchar&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESTileSource--text"&gt;text&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;The text to be rendered&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="GESTextVAlign"&gt;&lt;type&gt;GESTextVAlign&lt;/type&gt;&lt;/link&gt;
+ &lt;/entry&gt;&lt;entry role="property_name"&gt;&lt;link linkend="GESTileSource--valignment"&gt;valignment&lt;/link&gt;
+ &lt;/entry&gt;&lt;entry&gt;Vertical alignent of the text&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="gdouble"&gt;&lt;type&gt;gdouble&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESTileSource--xpos"&gt;xpos&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;The horizontal position of the text&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;&lt;entry role="property_type"&gt;&lt;link linkend="gdouble"&gt;&lt;type&gt;gdouble&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESTileSource--ypos"&gt;ypos&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;The vertical position of the text&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;&lt;entry role="property_type"&gt;&lt;link linkend="gboolean"&gt;&lt;type&gt;gboolean&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESTileSource--shaded-background"&gt;shaded-background&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;Whether to shade the background under the text area&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;&lt;entry role="property_type"&gt;&lt;link linkend="guint"&gt;&lt;type&gt;guint&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESTileSource--outline-color"&gt;outline-color&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;Color to use for outline the text (big-endian ARGB).&lt;/entry&gt;
+&lt;/row&gt;
+&lt;/tbody&gt;
+&lt;/tgroup&gt;
+&lt;/informaltable&gt;</doc>
       <implements name="Extractable"/>
       <implements name="MetaContainer"/>
       <method name="get_background_color"
@@ -8562,8 +9907,12 @@ the text.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="set_text" c:identifier="ges_title_source_set_text">
+      <method name="set_text"
+              c:identifier="ges_title_source_set_text"
+              deprecated="1">
         <doc xml:space="preserve">Sets the text this track element will render.</doc>
+        <doc-deprecated xml:space="preserve">use ges_track_element_get/set_children_properties on the
+GESTrackElement instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -8665,7 +10014,7 @@ made.</doc>
         <type name="VideoSourceClass" c:type="GESVideoSourceClass"/>
       </field>
       <field name="_ges_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="3">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -8683,9 +10032,7 @@ made.</doc>
            glib:type-struct="TrackClass">
       <doc xml:space="preserve">Corresponds to one output format (i.e. audio OR video).
 
-Contains the compatible TrackElement(s).
-
-Wraps GNonLin's 'gnlcomposition' element.</doc>
+Contains the compatible TrackElement(s).</doc>
       <implements name="MetaContainer"/>
       <implements name="Gst.ChildProxy"/>
       <constructor name="new" c:identifier="ges_track_new">
@@ -8733,7 +10080,7 @@ want to accept the object.</doc>
             <doc xml:space="preserve">a #GESTrack</doc>
             <type name="Track" c:type="GESTrack*"/>
           </instance-parameter>
-          <parameter name="object" transfer-ownership="full">
+          <parameter name="object" transfer-ownership="none">
             <doc xml:space="preserve">the #GESTrackElement to add</doc>
             <type name="TrackElement" c:type="GESTrackElement*"/>
           </parameter>
@@ -8744,7 +10091,7 @@ want to accept the object.</doc>
 track.
 
 When timing changes happen in a timeline, the changes are not
-directly done inside GNL. This method needs to be called so any changes
+directly done inside NLE. This method needs to be called so any changes
 on a clip contained in the timeline actually happen at the media
 processing level.</doc>
         <return-value transfer-ownership="none">
@@ -8789,7 +10136,7 @@ to be commited</doc>
         </parameters>
       </method>
       <method name="get_mixing" c:identifier="ges_track_get_mixing">
-        <doc xml:space="preserve">Gets if the underlying #GnlComposition contains an expandable mixer.</doc>
+        <doc xml:space="preserve">Gets if the underlying #NleComposition contains an expandable mixer.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">#True if there is a mixer, #False otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -8803,7 +10150,7 @@ to be commited</doc>
       </method>
       <method name="get_timeline" c:identifier="ges_track_get_timeline">
         <doc xml:space="preserve">Get the #GESTimeline this track belongs to. Can be %NULL.</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve">The #GESTimeline this track belongs to. Can be %NULL.</doc>
           <type name="Timeline" c:type="const GESTimeline*"/>
         </return-value>
@@ -8906,6 +10253,29 @@ to create #GstElement to fill gaps</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="update_restriction_caps"
+              c:identifier="ges_track_update_restriction_caps">
+        <doc xml:space="preserve">Updates the restriction caps by modifying all the fields present in @caps
+in the original restriction caps. If for example the current restriction caps
+are video/x-raw, format=I420, width=360 and @caps is video/x-raw, format=RGB,
+the restriction caps will be updated to video/x-raw, format=RGB, width=360.
+
+Modification happens for each structure in the new caps, and
+one can add new fields or structures through that function.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="track" transfer-ownership="none">
+            <doc xml:space="preserve">a #GESTrack</doc>
+            <type name="Track" c:type="GESTrack*"/>
+          </instance-parameter>
+          <parameter name="caps" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstCaps to update with</doc>
+            <type name="Gst.Caps" c:type="const GstCaps*"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="caps"
                 writable="1"
                 construct-only="1"
@@ -8962,6 +10332,11 @@ property.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
+      <glib:signal name="commited" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
       <glib:signal name="track-element-added" when="first">
         <doc xml:space="preserve">Will be emitted after a track element was added to the track.</doc>
         <return-value transfer-ownership="none">
@@ -9083,6 +10458,54 @@ priority.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="lookup_child"
+                      invoker="lookup_child"
+                      deprecated="1">
+        <doc xml:space="preserve">Looks up which @element and @pspec would be effected by the given @name. If various
+contained elements have this property name you will get the first one, unless you
+specify the class name in @name.</doc>
+        <doc-deprecated xml:space="preserve">Use #ges_timeline_element_lookup_child</doc-deprecated>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">TRUE if @element and @pspec could be found. FALSE otherwise. In that
+case the values for @pspec and @element are not modified. Unref @element after
+usage.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">object to lookup the property in</doc>
+            <type name="TrackElement" c:type="GESTrackElement*"/>
+          </instance-parameter>
+          <parameter name="prop_name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the property to look up. You can specify the name of the
+    class as such: "ClassName::property-name", to guarantee that you get the
+    proper GParamSpec in case various GstElement-s contain the same property
+    name. If you don't do so, you will get the first element found, having
+    this property and the and the corresponding GParamSpec.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="element"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">pointer to a #GstElement that
+    takes the real object to set property on</doc>
+            <type name="Gst.Element" c:type="GstElement**"/>
+          </parameter>
+          <parameter name="pspec"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">pointer to take the #GParamSpec
+    describing the property</doc>
+            <type name="GObject.ParamSpec" c:type="GParamSpec**"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <method name="add_children_props"
               c:identifier="ges_track_element_add_children_props">
         <doc xml:space="preserve">Looks for the properties defines with the various parametters and add
@@ -9157,7 +10580,7 @@ occured</doc>
             </type>
           </parameter>
           <parameter name="mode" transfer-ownership="none">
-            <doc xml:space="preserve">The #GESEditMode in which the editition will happen.</doc>
+            <doc xml:space="preserve">The #GESEditMode in which the edition will happen.</doc>
             <type name="EditMode" c:type="GESEditMode"/>
           </parameter>
           <parameter name="edge" transfer-ownership="none">
@@ -9170,10 +10593,29 @@ occured</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="get_all_control_bindings"
+              c:identifier="ges_track_element_get_all_control_bindings">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A
+#GHashTable containing all property_name: GstControlBinding</doc>
+          <type name="GLib.HashTable" c:type="GHashTable*">
+            <type name="utf8"/>
+            <type name="Gst.ControlBinding"/>
+          </type>
+        </return-value>
+        <parameters>
+          <instance-parameter name="trackelement" transfer-ownership="none">
+            <doc xml:space="preserve">The #TrackElement from which to get all set bindings</doc>
+            <type name="TrackElement" c:type="GESTrackElement*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_child_properties"
               c:identifier="ges_track_element_get_child_properties"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
         <doc xml:space="preserve">Gets properties of a child of @object.</doc>
+        <doc-deprecated xml:space="preserve">Use #ges_timeline_element_get_child_properties</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -9194,7 +10636,9 @@ name/return location pairs, followed by NULL</doc>
         </parameters>
       </method>
       <method name="get_child_property"
-              c:identifier="ges_track_element_get_child_property">
+              c:identifier="ges_track_element_get_child_property"
+              introspectable="0"
+              deprecated="1">
         <doc xml:space="preserve">In general, a copy is made of the property contents and
 the caller is responsible for freeing the memory by calling
 g_value_unset().
@@ -9204,6 +10648,7 @@ Gets a property of a GstElement contained in @object.
 Note that #ges_track_element_get_child_property is really
 intended for language bindings, #ges_track_element_get_child_properties
 is much more convenient for C programming.</doc>
+        <doc-deprecated xml:space="preserve">Use #ges_timeline_element_get_child_property</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the property was found, %FALSE otherwize</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -9228,8 +10673,11 @@ be initialized if it is initialized with 0</doc>
         </parameters>
       </method>
       <method name="get_child_property_by_pspec"
-              c:identifier="ges_track_element_get_child_property_by_pspec">
+              c:identifier="ges_track_element_get_child_property_by_pspec"
+              introspectable="0"
+              deprecated="1">
         <doc xml:space="preserve">Gets a property of a child of @object.</doc>
+        <doc-deprecated xml:space="preserve">Use #ges_timeline_element_get_child_property_by_pspec</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -9253,11 +10701,13 @@ be initialized if it is initialized with 0</doc>
       </method>
       <method name="get_child_property_valist"
               c:identifier="ges_track_element_get_child_property_valist"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
         <doc xml:space="preserve">Gets a property of a child of @object. If there are various child elements
 that have the same property name, you can distinguish them using the following
 syntax: 'ClasseName::property_name' as property name. If you don't, the
 corresponding property of the first element found will be set.</doc>
+        <doc-deprecated xml:space="preserve">Use #ges_timeline_element_get_child_property_valist</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -9281,9 +10731,9 @@ name/return location pairs, followed by NULL</doc>
               c:identifier="ges_track_element_get_control_binding">
         <doc xml:space="preserve">Looks up the various controlled properties for that #GESTrackElement,
 and returns the #GstControlBinding which controls @property_name.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GstControlBinding associated with @property_name, or %NULL
-if that property is not controlled.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the #GstControlBinding associated with
+@property_name, or %NULL if that property is not controlled.</doc>
           <type name="Gst.ControlBinding" c:type="GstControlBinding*"/>
         </return-value>
         <parameters>
@@ -9312,7 +10762,24 @@ within GNonLin.</doc>
         </parameters>
       </method>
       <method name="get_gnlobject"
-              c:identifier="ges_track_element_get_gnlobject">
+              c:identifier="ges_track_element_get_gnlobject"
+              deprecated="1">
+        <doc xml:space="preserve">Get the NleObject object this object is controlling.</doc>
+        <doc-deprecated xml:space="preserve">use #ges_track_element_get_nleobject instead.</doc-deprecated>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the NleObject object this object is controlling.</doc>
+          <type name="Gst.Element" c:type="GstElement*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">a #GESTrackElement</doc>
+            <type name="TrackElement" c:type="GESTrackElement*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_nleobject"
+              c:identifier="ges_track_element_get_nleobject"
+              version="1.6">
         <doc xml:space="preserve">Get the GNonLin object this object is controlling.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the GNonLin object this object is controlling.</doc>
@@ -9327,9 +10794,9 @@ within GNonLin.</doc>
       </method>
       <method name="get_track" c:identifier="ges_track_element_get_track">
         <doc xml:space="preserve">Get the #GESTrack to which this object belongs.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The #GESTrack to which this object belongs. Can be %NULL if it
-is not in any track</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The #GESTrack to which this object
+belongs. Can be %NULL if it is not in any track</doc>
           <type name="Track" c:type="GESTrack*"/>
         </return-value>
         <parameters>
@@ -9365,9 +10832,11 @@ or not.</doc>
         </parameters>
       </method>
       <method name="list_children_properties"
-              c:identifier="ges_track_element_list_children_properties">
+              c:identifier="ges_track_element_list_children_properties"
+              deprecated="1">
         <doc xml:space="preserve">Gets an array of #GParamSpec* for all configurable properties of the
 children of @object.</doc>
+        <doc-deprecated xml:space="preserve">Use #ges_timeline_element_list_children_properties</doc-deprecated>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">an array of #GParamSpec* which should be freed after use or
 %NULL if something went wrong</doc>
@@ -9390,10 +10859,12 @@ children of @object.</doc>
         </parameters>
       </method>
       <method name="lookup_child"
-              c:identifier="ges_track_element_lookup_child">
+              c:identifier="ges_track_element_lookup_child"
+              deprecated="1">
         <doc xml:space="preserve">Looks up which @element and @pspec would be effected by the given @name. If various
 contained elements have this property name you will get the first one, unless you
 specify the class name in @name.</doc>
+        <doc-deprecated xml:space="preserve">Use #ges_timeline_element_lookup_child</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">TRUE if @element and @pspec could be found. FALSE otherwise. In that
 case the values for @pspec and @element are not modified. Unref @element after
@@ -9435,6 +10906,25 @@ usage.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="remove_control_binding"
+              c:identifier="ges_track_element_remove_control_binding">
+        <doc xml:space="preserve">Removes a #GstControlBinding from @object.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the binding could be removed, %FALSE if an error
+occured</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">the #GESTrackElement on which to set a control binding</doc>
+            <type name="TrackElement" c:type="GESTrackElement*"/>
+          </instance-parameter>
+          <parameter name="property_name" transfer-ownership="none">
+            <doc xml:space="preserve">The name of the property to control.</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_active" c:identifier="ges_track_element_set_active">
         <doc xml:space="preserve">Sets the usage of the @object. If @active is %TRUE, the object will be used for
 playback and rendering, else it will be ignored.</doc>
@@ -9455,11 +10945,13 @@ playback and rendering, else it will be ignored.</doc>
       </method>
       <method name="set_child_properties"
               c:identifier="ges_track_element_set_child_properties"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
         <doc xml:space="preserve">Sets a property of a child of @object. If there are various child elements
 that have the same property name, you can distinguish them using the following
 syntax: 'ClasseName::property_name' as property name. If you don't, the
 corresponding property of the first element found will be set.</doc>
+        <doc-deprecated xml:space="preserve">Use #ges_timeline_element_set_child_properties</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -9480,12 +10972,15 @@ name/return location pairs, followed by NULL</doc>
         </parameters>
       </method>
       <method name="set_child_property"
-              c:identifier="ges_track_element_set_child_property">
+              c:identifier="ges_track_element_set_child_property"
+              introspectable="0"
+              deprecated="1">
         <doc xml:space="preserve">Sets a property of a GstElement contained in @object.
 
 Note that #ges_track_element_set_child_property is really
 intended for language bindings, #ges_track_element_set_child_properties
 is much more convenient for C programming.</doc>
+        <doc-deprecated xml:space="preserve">use #ges_timeline_element_set_child_property instead</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the property was set, %FALSE otherwize</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -9506,8 +11001,11 @@ is much more convenient for C programming.</doc>
         </parameters>
       </method>
       <method name="set_child_property_by_pspec"
-              c:identifier="ges_track_element_set_child_property_by_pspec">
+              c:identifier="ges_track_element_set_child_property_by_pspec"
+              introspectable="0"
+              deprecated="1">
         <doc xml:space="preserve">Sets a property of a child of @object.</doc>
+        <doc-deprecated xml:space="preserve">Use #ges_timeline_element_set_child_property_by_spec</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -9528,11 +11026,13 @@ is much more convenient for C programming.</doc>
       </method>
       <method name="set_child_property_valist"
               c:identifier="ges_track_element_set_child_property_valist"
-              introspectable="0">
+              introspectable="0"
+              deprecated="1">
         <doc xml:space="preserve">Sets a property of a child of @object. If there are various child elements
 that have the same property name, you can distinguish them using the following
 syntax: 'ClasseName::property_name' as property name. If you don't, the
 corresponding property of the first element found will be set.</doc>
+        <doc-deprecated xml:space="preserve">Use #ges_timeline_element_set_child_property_valist</doc-deprecated>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -9626,24 +11126,29 @@ If #FALSE, then its contents will not be used in the resulting track.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
-      <glib:signal name="deep-notify"
-                   when="first"
-                   no-recurse="1"
-                   detailed="1"
-                   no-hooks="1">
-        <doc xml:space="preserve">The deep notify signal is used to be notified of property changes of all
-the childs of @track_element</doc>
+      <glib:signal name="control-binding-added" when="first">
+        <doc xml:space="preserve">The control-binding-added signal is emitted each time a control binding
+is added for a child property of @track_element</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <parameter name="prop_object" transfer-ownership="none">
-            <doc xml:space="preserve">the object that originated the signal</doc>
-            <type name="Gst.Element"/>
+          <parameter name="control_binding" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstControlBinding that has been added</doc>
+            <type name="Gst.ControlBinding"/>
           </parameter>
-          <parameter name="prop" transfer-ownership="none">
-            <doc xml:space="preserve">the property that changed</doc>
-            <type name="GObject.ParamSpec"/>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="control-binding-removed" when="first">
+        <doc xml:space="preserve">The control-binding-removed signal is emitted each time a control binding
+is removed for a child property of @track_element</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="control_binding" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstControlBinding that has been removed</doc>
+            <type name="Gst.ControlBinding"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -9734,7 +11239,7 @@ of GNonLin object will be created.</doc>
       <field name="parent_class" readable="0" private="1">
         <type name="TimelineElementClass" c:type="GESTimelineElementClass"/>
       </field>
-      <field name="gnlobject_factorytype">
+      <field name="nleobject_factorytype">
         <doc xml:space="preserve">name of the GNonLin GStElementFactory type to use.</doc>
         <type name="utf8" c:type="const gchar*"/>
       </field>
@@ -9800,6 +11305,50 @@ of GNonLin object will be created.</doc>
             </parameter>
             <parameter name="n_properties" transfer-ownership="none">
               <type name="guint" c:type="guint*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="lookup_child">
+        <callback name="lookup_child">
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve">TRUE if @element and @pspec could be found. FALSE otherwise. In that
+case the values for @pspec and @element are not modified. Unref @element after
+usage.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="object" transfer-ownership="none">
+              <doc xml:space="preserve">object to lookup the property in</doc>
+              <type name="TrackElement" c:type="GESTrackElement*"/>
+            </parameter>
+            <parameter name="prop_name" transfer-ownership="none">
+              <doc xml:space="preserve">name of the property to look up. You can specify the name of the
+    class as such: "ClassName::property-name", to guarantee that you get the
+    proper GParamSpec in case various GstElement-s contain the same property
+    name. If you don't do so, you will get the first element found, having
+    this property and the and the corresponding GParamSpec.</doc>
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="element"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full"
+                       optional="1"
+                       allow-none="1">
+              <doc xml:space="preserve">pointer to a #GstElement that
+    takes the real object to set property on</doc>
+              <type name="Gst.Element" c:type="GstElement**"/>
+            </parameter>
+            <parameter name="pspec"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full"
+                       optional="1"
+                       allow-none="1">
+              <doc xml:space="preserve">pointer to take the #GParamSpec
+    describing the property</doc>
+              <type name="GObject.ParamSpec" c:type="GParamSpec**"/>
             </parameter>
           </parameters>
         </callback>
@@ -9925,9 +11474,9 @@ will be updated when needed.</doc>
       <implements name="MetaContainer"/>
       <constructor name="new" c:identifier="ges_transition_clip_new">
         <doc xml:space="preserve">Creates a new #GESTransitionClip.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a newly created #GESTransitionClip, or %NULL if something
-went wrong.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">a newly created #GESTransitionClip,
+or %NULL if something went wrong.</doc>
           <type name="TransitionClip" c:type="GESTransitionClip*"/>
         </return-value>
         <parameters>
@@ -9941,9 +11490,9 @@ went wrong.</doc>
       <constructor name="new_for_nick"
                    c:identifier="ges_transition_clip_new_for_nick">
         <doc xml:space="preserve">Creates a new #GESTransitionClip for the provided @nick.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The newly created #GESTransitionClip, or %NULL if something
-went wrong</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The newly created #GESTransitionClip,
+or %NULL if something went wrong</doc>
           <type name="TransitionClip" c:type="GESTransitionClip*"/>
         </return-value>
         <parameters>
@@ -10006,19 +11555,21 @@ to apply.</doc>
            glib:type-name="GESUriClip"
            glib:get-type="ges_uri_clip_get_type"
            glib:type-struct="UriClipClass">
+      <doc xml:space="preserve">Represents all the output streams from a particular uri. It is assumed that
+the URI points to a file of some type.</doc>
       <implements name="Extractable"/>
       <implements name="MetaContainer"/>
       <constructor name="new" c:identifier="ges_uri_clip_new">
         <doc xml:space="preserve">Creates a new #GESUriClip for the provided @uri.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The newly created #GESUriClip, or NULL if there was an
-error.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The newly created #GESUriClip, or
+%NULL if there was an error.</doc>
           <type name="UriClip" c:type="GESUriClip*"/>
         </return-value>
         <parameters>
           <parameter name="uri" transfer-ownership="none">
             <doc xml:space="preserve">the URI the source should control</doc>
-            <type name="utf8" c:type="gchar*"/>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </constructor>
@@ -10097,7 +11648,7 @@ error.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Whether this filesource represents a still image or not. This must be set
+        <doc xml:space="preserve">Whether this uri clip represents a still image or not. This must be set
 before create_track_elements is called.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
@@ -10200,7 +11751,10 @@ ges_uri_clip_asset_new (uri, (GAsyncReadyCallback) filesource_asset_loaded_cb, u
             <doc xml:space="preserve">a #GAsyncReadyCallback to call when the initialization is finished</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
-          <parameter name="user_data" transfer-ownership="none">
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">The user data to pass when @callback is called</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
@@ -10211,8 +11765,9 @@ ges_uri_clip_asset_new (uri, (GAsyncReadyCallback) filesource_asset_loaded_cb, u
                 throws="1">
         <doc xml:space="preserve">Creates a #GESUriClipAsset for @uri syncronously. You should avoid
 to use it in application, and rather create #GESUriClipAsset asynchronously</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">A reference to the requested asset or %NULL if an error happend</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">A reference to the requested asset or
+%NULL if an error happened</doc>
           <type name="UriClipAsset" c:type="GESUriClipAsset*"/>
         </return-value>
         <parameters>
@@ -10437,7 +11992,7 @@ by #GESUriClipAsset-s.</doc>
     <constant name="VERSION_MICRO" value="0" c:type="GES_VERSION_MICRO">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="VERSION_MINOR" value="3" c:type="GES_VERSION_MINOR">
+    <constant name="VERSION_MINOR" value="15" c:type="GES_VERSION_MINOR">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="VERSION_NANO" value="1" c:type="GES_VERSION_NANO">
@@ -10451,7 +12006,59 @@ by #GESUriClipAsset-s.</doc>
            glib:type-name="GESVideoSource"
            glib:get-type="ges_video_source_get_type"
            glib:type-struct="VideoSourceClass">
-      <doc xml:space="preserve">Base class for video sources</doc>
+      <doc xml:space="preserve"># Children Properties:
+You can use the following children properties through the
+#ges_track_element_set_child_property and alike set of methods:
+
+&lt;informaltable frame="none"&gt;
+&lt;tgroup cols="3"&gt;
+&lt;colspec colname="properties_type" colwidth="150px"/&gt;
+&lt;colspec colname="properties_name" colwidth="200px"/&gt;
+&lt;colspec colname="properties_flags" colwidth="400px"/&gt;
+&lt;tbody&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="gdouble"&gt;&lt;type&gt;double&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESVideoSource--alpha"&gt;alpha&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;The desired alpha for the stream.&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="gint"&gt;&lt;type&gt;gint&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESVideoSource--posx"&gt;posx&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;The desired x position for the stream.&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="gint"&gt;&lt;type&gt;gint&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESVideoSource--posy"&gt;posy&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;The desired y position for the stream&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="gint"&gt;&lt;type&gt;gint&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESVideoSource--width"&gt;width&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;The desired width for that source. Set to 0 if size is not mandatory, will be set to width of the current track.&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="gint"&gt;&lt;type&gt;gint&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESVideoSource--height"&gt;height&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;The desired height for that source. Set to 0 if size is not mandatory, will be set to height of the current track.&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="GstDeinterlaceModes"&gt;&lt;type&gt;GstDeinterlaceModes&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESVideoSource--deinterlace-mode"&gt;deinterlace-mode&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;Deinterlace Mode&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="GstDeinterlaceFields"&gt;&lt;type&gt;GstDeinterlaceFields&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESVideoSource--deinterlace-fields"&gt;deinterlace-fields&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;Fields to use for deinterlacing&lt;/entry&gt;
+&lt;/row&gt;
+&lt;row&gt;
+ &lt;entry role="property_type"&gt;&lt;link linkend="GstDeinterlaceFieldLayout"&gt;&lt;type&gt;GstDeinterlaceFieldLayout&lt;/type&gt;&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry role="property_name"&gt;&lt;link linkend="GESVideoSource--deinterlace-tff"&gt;deinterlace-tff&lt;/link&gt;&lt;/entry&gt;
+ &lt;entry&gt;Deinterlace top field first&lt;/entry&gt;
+&lt;/row&gt;
+&lt;/tbody&gt;
+&lt;/tgroup&gt;
+&lt;/informaltable&gt;</doc>
       <implements name="Extractable"/>
       <implements name="MetaContainer"/>
       <field name="parent" readable="0" private="1">
@@ -10484,11 +12091,18 @@ by #GESUriClipAsset-s.</doc>
           </parameters>
         </callback>
       </field>
-      <field name="_ges_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
+      <union name="ABI" c:type="ABI">
+        <field name="_ges_reserved" writable="1">
+          <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+            <type name="gpointer" c:type="gpointer"/>
+          </array>
+        </field>
+        <record name="abi" c:type="abi">
+          <field name="disable_scale_in_compositor" writable="1">
+            <type name="gboolean" c:type="gboolean"/>
+          </field>
+        </record>
+      </union>
     </record>
     <record name="VideoSourcePrivate"
             c:type="GESVideoSourcePrivate"
@@ -11170,9 +12784,9 @@ raw video caps ("video/x-raw");</doc>
       <implements name="MetaContainer"/>
       <constructor name="new" c:identifier="ges_video_transition_new">
         <doc xml:space="preserve">Creates a new #GESVideoTransition.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">The newly created #GESVideoTransition, or %NULL if there was an
-error.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">The newly created
+#GESVideoTransition, or %NULL if there was an error.</doc>
           <type name="VideoTransition" c:type="GESVideoTransition*"/>
         </return-value>
       </constructor>
@@ -11403,12 +13017,91 @@ for later use.</doc>
             c:type="GESXmlFormatterPrivate"
             disguised="1">
     </record>
+    <function name="add_missing_uri_relocation_uri"
+              c:identifier="ges_add_missing_uri_relocation_uri">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="uri" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="recurse" transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="deinit" c:identifier="ges_deinit">
+      <doc xml:space="preserve">Clean up any resources created by GES in ges_init().
+
+It is normally not needed to call this function in a normal application as the
+resources will automatically be freed when the program terminates.
+This function is therefore mostly used by testsuites and other memory profiling tools.
+
+After this call GES (including this method) should not be used anymore.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+    </function>
     <function name="init" c:identifier="ges_init">
       <doc xml:space="preserve">Initialize the GStreamer Editing Service. Call this before any usage of
 GES. You should take care of initilizing GStreamer before calling this
 function.</doc>
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+    </function>
+    <function name="init_check" c:identifier="ges_init_check" throws="1">
+      <doc xml:space="preserve">Initializes the GStreamer Editing Services library, setting up internal path lists,
+and loading evrything needed.
+
+This function will return %FALSE if GES could not be initialized
+for some reason.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if GES could be initialized.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="argc"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">pointer to application's argc</doc>
+          <type name="gint" c:type="int*"/>
+        </parameter>
+        <parameter name="argv"
+                   direction="inout"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">pointer to application's argv</doc>
+          <array length="0" zero-terminated="0" c:type="char**">
+            <type name="utf8" c:type="char*"/>
+          </array>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="init_get_option_group"
+              c:identifier="ges_init_get_option_group"
+              introspectable="0">
+      <doc xml:space="preserve">Returns a #GOptionGroup with GES's argument specifications. The
+group is set up to use standard GOption callbacks, so when using this
+group in combination with GOption parsing methods, all argument parsing
+and initialization is automated.
+
+This function is useful if you want to integrate GES with other
+libraries that use GOption (see g_option_context_add_group() ).
+
+If you use this function, you should make sure you initialise the GStreamer
+as one of the very first things in your program. That means you need to
+use gst_init_get_option_group() and add it to the option context before
+using the ges_init_get_option_group() result.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a pointer to GES's option group.</doc>
+        <type name="GLib.OptionGroup" c:type="GOptionGroup*"/>
       </return-value>
     </function>
     <function name="list_assets" c:identifier="ges_list_assets">
@@ -11453,10 +13146,16 @@ all assets</doc>
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
       <parameters>
-        <parameter name="key_spec_1" transfer-ownership="none">
+        <parameter name="key_spec_1"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>
-        <parameter name="key_spec_2" transfer-ownership="none">
+        <parameter name="key_spec_2"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>
       </parameters>
@@ -11466,7 +13165,10 @@ all assets</doc>
         <type name="guint" c:type="guint"/>
       </return-value>
       <parameters>
-        <parameter name="key_spec" transfer-ownership="none">
+        <parameter name="key_spec"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
           <type name="gpointer" c:type="gconstpointer"/>
         </parameter>
       </parameters>
@@ -11482,6 +13184,12 @@ all assets</doc>
           <type name="TrackType" c:type="GESTrackType"/>
         </parameter>
       </parameters>
+    </function>
+    <function name="validate_register_action_types"
+              c:identifier="ges_validate_register_action_types">
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
     </function>
     <function name="version" c:identifier="ges_version">
       <doc xml:space="preserve">Gets the version number of the GStreamer Editing Services library.</doc>

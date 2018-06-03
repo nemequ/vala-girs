@@ -395,9 +395,9 @@ not be modified or freed.</doc>
       </method>
       <method name="get_frequency"
               c:identifier="nm_access_point_get_frequency">
-        <doc xml:space="preserve">Gets the frequency of the access point.</doc>
+        <doc xml:space="preserve">Gets the frequency of the access point in MHz.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the frequency</doc>
+          <doc xml:space="preserve">the frequency in MHz</doc>
           <type name="guint32" c:type="guint32"/>
         </return-value>
         <parameters>
@@ -481,9 +481,9 @@ point.</doc>
         </parameters>
       </method>
       <method name="get_strength" c:identifier="nm_access_point_get_strength">
-        <doc xml:space="preserve">Gets the current signal strength of the access point.</doc>
+        <doc xml:space="preserve">Gets the current signal strength of the access point as a percentage.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the signal strength</doc>
+          <doc xml:space="preserve">the signal strength (0 to 100)</doc>
           <type name="guint8" c:type="guint8"/>
         </return-value>
         <parameters>
@@ -7103,7 +7103,7 @@ array and thus it is safe for callers to reference and keep using it.</doc>
       <method name="get_mtu" c:identifier="nm_device_get_mtu">
         <doc xml:space="preserve">Gets the  MTU of the #NMDevice.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the MTU of the device.</doc>
+          <doc xml:space="preserve">the MTU of the device in bytes.</doc>
           <type name="guint32" c:type="guint32"/>
         </return-value>
         <parameters>
@@ -8193,9 +8193,9 @@ device, and must not be modified.</doc>
         </parameters>
       </method>
       <method name="get_speed" c:identifier="nm_device_ethernet_get_speed">
-        <doc xml:space="preserve">Gets the speed of the #NMDeviceEthernet.</doc>
+        <doc xml:space="preserve">Gets the speed of the #NMDeviceEthernet in Mbit/s.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the speed of the device</doc>
+          <doc xml:space="preserve">the speed of the device in Mbit/s</doc>
           <type name="guint32" c:type="guint32"/>
         </return-value>
         <parameters>
@@ -13151,7 +13151,7 @@ reaches zero, the object will be destroyed.</doc>
 is compiled against.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="3" c:type="NM_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="4" c:type="NM_MICRO_VERSION">
       <doc xml:space="preserve">Evaluates to the micro version number of NetworkManager which this source
 compiled against.</doc>
       <type name="gint" c:type="gint"/>
@@ -21812,7 +21812,10 @@ slave.</doc>
                 version="1.4"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Token to generate stable IDs for the connection.
+        <doc xml:space="preserve">This represents the identity of the connection used for various purposes.
+It allows to configure multiple profiles to share the identity. Also,
+the stable-id can contain placeholders that are substituted dynamically and
+deterministically depending on the context.
 
 The stable-id is used for generating IPv6 stable private addresses
 with ipv6.addr-gen-mode=stable-privacy. It is also used to seed the
@@ -21820,26 +21823,28 @@ generated cloned MAC address for ethernet.cloned-mac-address=stable
 and wifi.cloned-mac-address=stable. It is also used as DHCP client
 identifier with ipv4.dhcp-client-id=stable.
 
-Note that also the interface name of the activating connection and a
-per-host secret key is included into the address generation so that the
-same stable-id on different hosts/devices yields different addresses.
-
-If the value is unset, an ID unique for the connection is used.
-Specifying a stable-id allows multiple connections to generate the
-same addresses. Another use is to generate IDs at runtime via
-dynamic substitutions.
+Note that depending on the context where it is used, other parameters are
+also seeded into the generation algorithm. For example, a per-host key
+is commonly also included, so that different systems end up generating
+different IDs. Or with ipv6.addr-gen-mode=stable-privacy, also the device's
+name is included, so that different interfaces yield different addresses.
 
 The '$' character is treated special to perform dynamic substitutions
-at runtime. Currently supported are "${CONNECTION}", "${BOOT}", "${RANDOM}".
-These effectively create unique IDs per-connection, per-boot, or every time.
+at runtime. Currently supported are "${CONNECTION}", "${DEVICE}",
+"${BOOT}", "${RANDOM}".
+These effectively create unique IDs per-connection, per-device, per-boot,
+or every time. Note that "${DEVICE}" corresponds the the interface name of the
+device.
 Any unrecognized patterns following '$' are treated verbatim, however
 are reserved for future use. You are thus advised to avoid '$' or
 escape it as "$$".
-For example, set it to "${CONNECTION}/${BOOT}" to create a unique id for
-this connection that changes with every reboot.
+For example, set it to "${CONNECTION}-${BOOT}-${DEVICE}" to create a unique id for
+this connection that changes with every reboot and differs depending on the
+interface where the profile activates.
 
-Note that two connections only use the same effective id if
-their stable-id is also identical before performing dynamic substitutions.</doc>
+If the value is unset, a global connection default is consulted. If the
+value is still unset, the default is similar to "${CONNECTION}" and uses
+a unique, fixed ID for the connection.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="timestamp"
@@ -23001,7 +23006,7 @@ with type ethernet type (01). Currently, these options only work for ethernet
 type of links.
 
 The special value "stable" is supported to generate a type 0 client identifier based
-on the stable-id (see connection.stable-id).
+on the stable-id (see connection.stable-id) and a per-host key.
 
 If unset, a globally configured default is used. If still unset, the
 client-id from the last lease is reused.</doc>

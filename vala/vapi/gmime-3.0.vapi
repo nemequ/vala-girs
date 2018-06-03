@@ -1411,7 +1411,9 @@ namespace GMime {
 	[Flags]
 	public enum DecryptFlags {
 		NONE,
-		EXPORT_SESSION_KEY
+		EXPORT_SESSION_KEY,
+		ENABLE_KEYSERVER_LOOKUPS,
+		ENABLE_ONLINE_CERTIFICATE_CHECKS
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_DIGEST_ALGO_", has_type_id = false)]
 	public enum DigestAlgo {
@@ -1590,9 +1592,11 @@ namespace GMime {
 		ULTIMATE
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_VERIFY_", has_type_id = false)]
+	[Flags]
 	public enum VerifyFlags {
-		[CCode (cname = "GMIME_VERIFY_NONE")]
-		VERIFY_NONE
+		NONE,
+		ENABLE_KEYSERVER_LOOKUPS,
+		ENABLE_ONLINE_CERTIFICATE_CHECKS
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", has_target = false)]
 	public delegate string HeaderRawValueFormatter (GMime.Header header, GMime.FormatOptions options, string value, string charset);
