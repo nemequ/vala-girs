@@ -193,7 +193,15 @@ functions.</doc>
       <function name="insert_vals"
                 c:identifier="g_array_insert_vals"
                 introspectable="0">
-        <doc xml:space="preserve">Inserts @len elements into a #GArray at the given index.</doc>
+        <doc xml:space="preserve">Inserts @len elements into a #GArray at the given index.
+
+If @index_ is greater than the array’s current length, the array is expanded.
+The elements between the old end of the array and the newly inserted elements
+will be initialised to zero if the array was configured to clear elements;
+otherwise their values will be undefined.
+
+@data may be %NULL if (and only if) @len is zero. If @len is zero, this
+function is a no-op.</doc>
         <return-value>
           <doc xml:space="preserve">the #GArray</doc>
           <array name="GLib.Array" c:type="GArray*">
@@ -211,7 +219,10 @@ functions.</doc>
             <doc xml:space="preserve">the index to place the elements at</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
-          <parameter name="data" transfer-ownership="none">
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">a pointer to the elements to insert</doc>
             <type name="gpointer" c:type="gconstpointer"/>
           </parameter>
@@ -251,6 +262,9 @@ functions.</doc>
                 introspectable="0">
         <doc xml:space="preserve">Adds @len elements onto the start of the array.
 
+@data may be %NULL if (and only if) @len is zero. If @len is zero, this
+function is a no-op.
+
 This operation is slower than g_array_append_vals() since the
 existing elements in the array have to be moved to make space for
 the new elements.</doc>
@@ -267,12 +281,15 @@ the new elements.</doc>
               <type name="gpointer" c:type="gpointer"/>
             </array>
           </parameter>
-          <parameter name="data" transfer-ownership="none">
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">a pointer to the elements to prepend to the start of the array</doc>
             <type name="gpointer" c:type="gconstpointer"/>
           </parameter>
           <parameter name="len" transfer-ownership="none">
-            <doc xml:space="preserve">the number of elements to prepend</doc>
+            <doc xml:space="preserve">the number of elements to prepend, which may be zero</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
@@ -35452,6 +35469,73 @@ This call acts as a full compiler and hardware memory barrier.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="atomic_ref_count_compare"
+              c:identifier="g_atomic_ref_count_compare"
+              version="2.58"
+              introspectable="0">
+      <doc xml:space="preserve">Atomically compares the current value of @arc with @val.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the reference count is the same
+  as the given value</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="arc" transfer-ownership="none">
+          <doc xml:space="preserve">the address of an atomic reference count variable</doc>
+          <type c:type="gatomicrefcount*"/>
+        </parameter>
+        <parameter name="val" transfer-ownership="none">
+          <doc xml:space="preserve">the value to compare</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="atomic_ref_count_dec"
+              c:identifier="g_atomic_ref_count_dec"
+              version="2.58"
+              introspectable="0">
+      <doc xml:space="preserve">Atomically decreases the reference count.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the reference count reached 0, and %FALSE otherwise</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="arc" transfer-ownership="none">
+          <doc xml:space="preserve">the address of an atomic reference count variable</doc>
+          <type c:type="gatomicrefcount*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="atomic_ref_count_inc"
+              c:identifier="g_atomic_ref_count_inc"
+              version="2.58"
+              introspectable="0">
+      <doc xml:space="preserve">Atomically increases the reference count.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="arc" transfer-ownership="none">
+          <doc xml:space="preserve">the address of an atomic reference count variable</doc>
+          <type c:type="gatomicrefcount*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="atomic_ref_count_init"
+              c:identifier="g_atomic_ref_count_init"
+              version="2.58"
+              introspectable="0">
+      <doc xml:space="preserve">Atomically initializes a reference count variable.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="arc" transfer-ownership="none">
+          <doc xml:space="preserve">the address of an atomic reference count variable</doc>
+          <type c:type="gatomicrefcount*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="base64_decode"
               c:identifier="g_base64_decode"
               version="2.12">
@@ -42942,6 +43026,73 @@ but care is taken to detect possible overflow during multiplication.</doc>
         <parameter name="n_block_bytes" transfer-ownership="none">
           <doc xml:space="preserve">the size of each block in bytes</doc>
           <type name="gsize" c:type="gsize"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ref_count_compare"
+              c:identifier="g_ref_count_compare"
+              version="2.58"
+              introspectable="0">
+      <doc xml:space="preserve">Compares the current value of @rc with @val.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the reference count is the same
+  as the given value</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="rc" transfer-ownership="none">
+          <doc xml:space="preserve">the address of a reference count variable</doc>
+          <type c:type="grefcount*"/>
+        </parameter>
+        <parameter name="val" transfer-ownership="none">
+          <doc xml:space="preserve">the value to compare</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ref_count_dec"
+              c:identifier="g_ref_count_dec"
+              version="2.58"
+              introspectable="0">
+      <doc xml:space="preserve">Decreases the reference count.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the reference count reached 0, and %FALSE otherwise</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="rc" transfer-ownership="none">
+          <doc xml:space="preserve">the address of a reference count variable</doc>
+          <type c:type="grefcount*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ref_count_inc"
+              c:identifier="g_ref_count_inc"
+              version="2.58"
+              introspectable="0">
+      <doc xml:space="preserve">Increases the reference count.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="rc" transfer-ownership="none">
+          <doc xml:space="preserve">the address of a reference count variable</doc>
+          <type c:type="grefcount*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ref_count_init"
+              c:identifier="g_ref_count_init"
+              version="2.58"
+              introspectable="0">
+      <doc xml:space="preserve">Initializes a reference count variable.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="rc" transfer-ownership="none">
+          <doc xml:space="preserve">the address of a reference count variable</doc>
+          <type c:type="grefcount*"/>
         </parameter>
       </parameters>
     </function>

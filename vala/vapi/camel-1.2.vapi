@@ -148,6 +148,7 @@ namespace Camel {
 		public uint refcount;
 		public static Camel.ContentDisposition decode (string @in);
 		public string format ();
+		public bool is_attachment (Camel.ContentType content_type);
 		public Camel.ContentDisposition @ref ();
 		public void unref ();
 	}
@@ -163,7 +164,7 @@ namespace Camel {
 		public static Camel.ContentType decode (string @in);
 		public void dump ();
 		public string format ();
-		public int @is (string type, string subtype);
+		public bool @is (string type, string subtype);
 		public unowned string param (string name);
 		public Camel.ContentType @ref ();
 		public void set_param (string name, string value);
@@ -567,6 +568,10 @@ namespace Camel {
 		public void take_current_message_info (Camel.MessageInfo? info);
 		[Version (since = "3.2")]
 		public static long util_add_months (long t, int months);
+		[Version (since = "3.30")]
+		public static int util_compare_date (int64 datetime1, int64 datetime2);
+		[Version (since = "3.30")]
+		public static long util_make_time (int argc, Camel.SExpResult argv);
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_folder_summary_get_type ()")]
 	public class FolderSummary : GLib.Object {
@@ -866,6 +871,7 @@ namespace Camel {
 	public class MessageContentInfo {
 		public void* childs;
 		public weak string description;
+		public weak Camel.ContentDisposition disposition;
 		public weak string encoding;
 		public weak string id;
 		public void* next;
@@ -884,6 +890,7 @@ namespace Camel {
 		public MessageContentInfo.from_message (Camel.MimePart mime_part);
 		[CCode (has_construct_function = false)]
 		public MessageContentInfo.from_parser (Camel.MimeParser parser);
+		public bool traverse (void* func, void* user_data);
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_message_info_get_type ()")]
 	public abstract class MessageInfo : GLib.Object {

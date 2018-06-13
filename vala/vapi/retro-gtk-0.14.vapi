@@ -96,12 +96,14 @@ namespace Retro {
 		public bool get_can_grab_pointer ();
 		public uint64 get_controller_capabilities ();
 		public int16 get_input_state (Retro.Input input);
+		public unowned Retro.KeyJoypadMapping get_key_joypad_mapping ();
 		public unowned Gdk.Pixbuf get_pixbuf ();
 		public bool get_snap_pointer_to_borders ();
 		public void set_as_default_controller (Retro.Core? core);
 		public void set_can_grab_pointer (bool can_grab_pointer);
 		public void set_core (Retro.Core? core);
 		public void set_filter (Retro.VideoFilter filter);
+		public void set_key_joypad_mapping (Retro.KeyJoypadMapping? mapping);
 		public void set_pixbuf (Gdk.Pixbuf pixbuf);
 		public void set_snap_pointer_to_borders (bool snap_pointer_to_borders);
 		public bool can_grab_pointer { get; set; }
@@ -120,6 +122,15 @@ namespace Retro {
 		public bool get_lightgun (out Retro.LightgunId id);
 		public bool get_mouse (out Retro.MouseId id);
 		public bool get_pointer (out Retro.PointerId id);
+	}
+	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_key_joypad_mapping_get_type ()")]
+	public class KeyJoypadMapping : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public KeyJoypadMapping ();
+		[CCode (has_construct_function = false)]
+		public KeyJoypadMapping.@default ();
+		public uint16 get_button_key (Retro.JoypadId button);
+		public void set_button_key (Retro.JoypadId button, uint16 hardware_keycode);
 	}
 	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_main_loop_get_type ()")]
 	public class MainLoop : GLib.Object {
@@ -228,7 +239,9 @@ namespace Retro {
 		R2,
 		L3,
 		R3,
-		COUNT
+		COUNT;
+		public static Retro.JoypadId from_button_code (uint16 button_code);
+		public uint16 to_button_code ();
 	}
 	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_LIGHTGUN_ID_", type_id = "retro_lightgun_id_get_type ()")]
 	public enum LightgunId {

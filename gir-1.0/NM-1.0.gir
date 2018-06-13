@@ -13441,6 +13441,11 @@ object, and must not be modified.</doc>
               c:type="NM_REMOTE_CONNECTION_DBUS_CONNECTION">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="REMOTE_CONNECTION_FILENAME"
+              value="filename"
+              c:type="NM_REMOTE_CONNECTION_FILENAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="REMOTE_CONNECTION_FLAGS"
               value="flags"
               c:type="NM_REMOTE_CONNECTION_FLAGS">
@@ -13636,6 +13641,20 @@ changed.</doc>
             <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_filename"
+              c:identifier="nm_remote_connection_get_filename"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">file that stores the connection in case the connection is file-backed.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMRemoteConnection</doc>
+            <type name="RemoteConnection" c:type="NMRemoteConnection*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_flags"
@@ -13929,6 +13948,11 @@ been written to disk, or if the connection has never been saved.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="filename" version="1.12" transfer-ownership="none">
+        <doc xml:space="preserve">File that stores the connection in case the connection is
+file-backed.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
       <property name="flags" version="1.12" transfer-ownership="none">
         <doc xml:space="preserve">The flags of the connection as unsigned integer. The values
 correspond to the #NMSettingsConnectionFlags enum.</doc>
@@ -15034,6 +15058,11 @@ through that interface to the default network.</doc>
     <constant name="SETTING_IP6_CONFIG_ADDR_GEN_MODE"
               value="addr-gen-mode"
               c:type="NM_SETTING_IP6_CONFIG_ADDR_GEN_MODE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_IP6_CONFIG_DHCP_DUID"
+              value="dhcp-duid"
+              c:type="NM_SETTING_IP6_CONFIG_DHCP_DUID">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="SETTING_IP6_CONFIG_IP6_PRIVACY"
@@ -21821,7 +21850,8 @@ The stable-id is used for generating IPv6 stable private addresses
 with ipv6.addr-gen-mode=stable-privacy. It is also used to seed the
 generated cloned MAC address for ethernet.cloned-mac-address=stable
 and wifi.cloned-mac-address=stable. It is also used as DHCP client
-identifier with ipv4.dhcp-client-id=stable.
+identifier with ipv4.dhcp-client-id=stable and to derive the DHCP
+DUID with ipv6.dhcp-duid=stable-[llt,ll,uuid].
 
 Note that depending on the context where it is used, other parameters are
 also seeded into the generation algorithm. For example, a per-host key
@@ -23070,6 +23100,23 @@ property.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_dhcp_duid"
+              c:identifier="nm_setting_ip6_config_get_dhcp_duid"
+              version="1.12">
+        <doc xml:space="preserve">Returns the value contained in the #NMSettingIP6Config:dhcp-duid
+property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The configured DUID value to be included in the DHCPv6 requests
+sent to the DHCPv6 servers.</doc>
+          <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingIP6Config</doc>
+            <type name="SettingIP6Config" c:type="NMSettingIP6Config*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_ip6_privacy"
               c:identifier="nm_setting_ip6_config_get_ip6_privacy">
         <doc xml:space="preserve">Returns the value contained in the #NMSettingIP6Config:ip6-privacy
@@ -23134,6 +23181,40 @@ Note that this setting is distinct from the Privacy Extensions as
 configured by "ip6-privacy" property and it does not affect the
 temporary addresses configured with this option.</doc>
         <type name="gint" c:type="gint"/>
+      </property>
+      <property name="dhcp-duid"
+                version="1.12"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">A string containing the DHCPv6 Unique Identifier (DUID) used by the dhcp
+client to identify itself to DHCPv6 servers (RFC 3315). The DUID is carried
+in the Client Identifier option.
+If the property is a hex string ('aa:bb:cc') it is interpreted as a binary
+DUID and filled as an opaque value in the Client Identifier option.
+
+The special value "lease" will retrieve the DUID previously used from the
+lease file belonging to the connection. If no DUID is found and "dhclient"
+is the configured dhcp client, the DUID is searched in the system-wide
+dhclient lease file. If still no DUID is found, or another dhcp client is
+used, a global and permanent DUID-UUID (RFC 6355) will be generated based
+on the machine-id.
+
+The special values "llt" and "ll" will generate a DUID of type LLT or LL
+(see RFC 3315) based on the current MAC address of the device. In order to
+try providing a stable DUID-LLT, the time field will contain a constant
+timestamp that is used globally (for all profiles) and persisted to disk.
+
+The special values "stable-llt", "stable-ll" and "stable-uuid" will generate
+a DUID of the corresponding type, derived from the connection's stable-id and
+a per-host unique key.
+So, the link-layer address of "stable-ll" and "stable-llt" will be a generated
+address derived from the stable id. The DUID-LLT time value in the "stable-llt"
+option will be picked among a static timespan of three years (the upper bound
+of the interval is the same constant timestamp used in "llt").
+
+When the property is unset, the global value provided for "ipv6.dhcp-duid" is
+used. If no global value is provided, the default "lease" value is assumed.</doc>
+        <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="ip6-privacy"
                 writable="1"

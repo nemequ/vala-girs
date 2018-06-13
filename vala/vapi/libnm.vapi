@@ -1614,6 +1614,8 @@ namespace NM {
 	public class RemoteConnection : NM.Object, GLib.AsyncInitable, GLib.Initable, NM.Connection {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_DBUS_CONNECTION")]
 		public const string DBUS_CONNECTION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_FILENAME")]
+		public const string FILENAME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_FLAGS")]
 		public const string FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_PATH")]
@@ -1629,6 +1631,8 @@ namespace NM {
 		public bool @delete (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool delete_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.12")]
+		public unowned string get_filename ();
+		[Version (since = "1.12")]
 		public NM.SettingsConnectionFlags get_flags ();
 		public GLib.Variant get_secrets (string setting_name, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async GLib.Variant get_secrets_async (string setting_name, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -1638,6 +1642,8 @@ namespace NM {
 		public async bool save_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.12")]
 		public async GLib.Variant update2 (GLib.Variant? settings, NM.SettingsUpdate2Flags flags, GLib.Variant? args, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public string filename { get; }
 		[Version (since = "1.12")]
 		public uint flags { get; }
 		public bool unsaved { get; }
@@ -2624,6 +2630,8 @@ namespace NM {
 	public class SettingIP6Config : NM.SettingIPConfig {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_ADDR_GEN_MODE")]
 		public const string ADDR_GEN_MODE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_DHCP_DUID")]
+		public const string DHCP_DUID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_IP6_PRIVACY")]
 		public const string IP6_PRIVACY;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_AUTO")]
@@ -2646,12 +2654,17 @@ namespace NM {
 		public SettingIP6Config ();
 		[Version (since = "1.2")]
 		public NM.SettingIP6ConfigAddrGenMode get_addr_gen_mode ();
+		[Version (since = "1.12")]
+		public unowned string get_dhcp_duid ();
 		public NM.SettingIP6ConfigPrivacy get_ip6_privacy ();
 		[Version (since = "1.4")]
 		public unowned string get_token ();
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public int addr_gen_mode { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public string dhcp_duid { owned get; set; }
 		[NoAccessorMethod]
 		public NM.SettingIP6ConfigPrivacy ip6_privacy { get; set construct; }
 		[NoAccessorMethod]

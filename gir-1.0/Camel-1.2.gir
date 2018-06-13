@@ -13,7 +13,7 @@ and/or use gtk-doc annotations.  -->
   <c:include name="camel/camel.h"/>
   <namespace name="Camel"
              version="1.2"
-             shared-library="libcamel-1.2.so.61"
+             shared-library="libcamel-1.2.so.62"
              c:identifier-prefixes="Camel,camel"
              c:symbol-prefixes="camel,camel">
     <alias name="_block_t" c:type="camel_block_t">
@@ -2825,6 +2825,21 @@ functions cannot be %NULL.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="is_attachment"
+              c:identifier="camel_content_disposition_is_attachment">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="disposition" transfer-ownership="none">
+            <type name="ContentDisposition"
+                  c:type="const CamelContentDisposition*"/>
+          </instance-parameter>
+          <parameter name="content_type" transfer-ownership="none">
+            <type name="ContentType" c:type="const CamelContentType*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="ref" c:identifier="camel_content_disposition_ref">
         <return-value transfer-ownership="full">
           <type name="ContentDisposition" c:type="CamelContentDisposition*"/>
@@ -2916,12 +2931,12 @@ it will match the type "text/plain".</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the content type @ct is of type @type/@subtype or
 %FALSE otherwise</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="content_type" transfer-ownership="none">
             <doc xml:space="preserve">A content type specifier, or %NULL.</doc>
-            <type name="ContentType" c:type="CamelContentType*"/>
+            <type name="ContentType" c:type="const CamelContentType*"/>
           </instance-parameter>
           <parameter name="type" transfer-ownership="none">
             <doc xml:space="preserve">A type to check against.</doc>
@@ -11576,6 +11591,47 @@ implement a search for any sort of backend.</doc>
           </parameter>
         </parameters>
       </function>
+      <function name="util_compare_date"
+                c:identifier="camel_folder_search_util_compare_date"
+                version="3.30">
+        <doc xml:space="preserve">Compares date portion of the two date-time values, first converted
+into the local time zone. The returned value is like with strcmp().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">0 when the dates are equal, &lt; 0 when first is before second and
+   &gt; 0 when the first is after the second date</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <parameter name="datetime1" transfer-ownership="none">
+            <doc xml:space="preserve">a time_t-like value of the first date-time</doc>
+            <type name="gint64" c:type="gint64"/>
+          </parameter>
+          <parameter name="datetime2" transfer-ownership="none">
+            <doc xml:space="preserve">a time_t-like value of the second date-time</doc>
+            <type name="gint64" c:type="gint64"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="util_make_time"
+                c:identifier="camel_folder_search_util_make_time"
+                version="3.30">
+        <doc xml:space="preserve">Implementation of 'make-time' function, which expects one argument,
+a string or an integer, to be converted into time_t.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">time_t equivalent of the passed in argument, or (time_t) -1 on error.</doc>
+          <type name="glong" c:type="time_t"/>
+        </return-value>
+        <parameters>
+          <parameter name="argc" transfer-ownership="none">
+            <doc xml:space="preserve">number of arguments in @argv</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="argv" transfer-ownership="none">
+            <doc xml:space="preserve">array or arguments</doc>
+            <type name="SExpResult" c:type="CamelSExpResult**"/>
+          </parameter>
+        </parameters>
+      </function>
       <method name="count"
               c:identifier="camel_folder_search_count"
               version="2.26"
@@ -12483,8 +12539,50 @@ assumes ownership of the @info, if not %NULL.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="make_time" introspectable="0">
+        <callback name="make_time" introspectable="0">
+          <return-value>
+            <type name="SExpResult" c:type="CamelSExpResult*"/>
+          </return-value>
+          <parameters>
+            <parameter name="sexp" transfer-ownership="none">
+              <type name="SExp" c:type="CamelSExp*"/>
+            </parameter>
+            <parameter name="argc" transfer-ownership="none">
+              <type name="gint" c:type="gint"/>
+            </parameter>
+            <parameter name="argv" transfer-ownership="none">
+              <type name="SExpResult" c:type="CamelSExpResult**"/>
+            </parameter>
+            <parameter name="search" transfer-ownership="none">
+              <type name="FolderSearch" c:type="CamelFolderSearch*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="compare_date" introspectable="0">
+        <callback name="compare_date" introspectable="0">
+          <return-value>
+            <type name="SExpResult" c:type="CamelSExpResult*"/>
+          </return-value>
+          <parameters>
+            <parameter name="sexp" transfer-ownership="none">
+              <type name="SExp" c:type="CamelSExp*"/>
+            </parameter>
+            <parameter name="argc" transfer-ownership="none">
+              <type name="gint" c:type="gint"/>
+            </parameter>
+            <parameter name="argv" transfer-ownership="none">
+              <type name="SExpResult" c:type="CamelSExpResult**"/>
+            </parameter>
+            <parameter name="search" transfer-ownership="none">
+              <type name="FolderSearch" c:type="CamelFolderSearch*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="reserved">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="20">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="18">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -16893,6 +16991,9 @@ the header also.</doc>
       <field name="type" writable="1">
         <type name="ContentType" c:type="CamelContentType*"/>
       </field>
+      <field name="disposition" writable="1">
+        <type name="ContentDisposition" c:type="CamelContentDisposition*"/>
+      </field>
       <field name="id" writable="1">
         <type name="utf8" c:type="gchar*"/>
       </field>
@@ -16986,6 +17087,29 @@ the header also.</doc>
             <doc xml:space="preserve">a #CamelMessageContentInfo</doc>
             <type name="MessageContentInfo" c:type="CamelMessageContentInfo*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="traverse"
+              c:identifier="camel_message_content_info_traverse">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="ci" transfer-ownership="none">
+            <type name="MessageContentInfo" c:type="CamelMessageContentInfo*"/>
+          </instance-parameter>
+          <parameter name="func"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer*"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
         </parameters>
       </method>
     </record>

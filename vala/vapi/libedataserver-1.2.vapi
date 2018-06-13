@@ -987,6 +987,10 @@ namespace E {
 		public E.Source ref_default_memo_list ();
 		public E.Source ref_default_task_list ();
 		public E.Source ref_source (string uid);
+		[Version (since = "3.30")]
+		public async bool refresh_backend (string source_uid, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.30")]
+		public bool refresh_backend_sync (string source_uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void set_default_address_book (E.Source? default_source);
 		public void set_default_calendar (E.Source? default_source);
 		public void set_default_for_extension_name (string extension_name, E.Source? default_source);
@@ -1141,6 +1145,8 @@ namespace E {
 	public class SourceWebdav : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceWebdav ();
+		[Version (since = "3.30")]
+		public string dup_color ();
 		public string dup_display_name ();
 		public string dup_email_address ();
 		public string dup_resource_path ();
@@ -1150,6 +1156,8 @@ namespace E {
 		public string dup_ssl_trust ();
 		public bool get_avoid_ifmatch ();
 		public bool get_calendar_auto_schedule ();
+		[Version (since = "3.30")]
+		public unowned string get_color ();
 		public unowned string get_display_name ();
 		public unowned string get_email_address ();
 		public unowned string get_resource_path ();
@@ -1158,6 +1166,8 @@ namespace E {
 		public unowned string get_ssl_trust ();
 		public void set_avoid_ifmatch (bool avoid_ifmatch);
 		public void set_calendar_auto_schedule (bool calendar_auto_schedule);
+		[Version (since = "3.30")]
+		public void set_color (string color);
 		public void set_display_name (string? display_name);
 		public void set_email_address (string? email_address);
 		public void set_resource_path (string? resource_path);
@@ -1172,6 +1182,7 @@ namespace E {
 		public E.TrustPromptResponse verify_ssl_trust (string host, GLib.TlsCertificate cert, GLib.TlsCertificateFlags cert_errors);
 		public bool avoid_ifmatch { get; set construct; }
 		public bool calendar_auto_schedule { get; set construct; }
+		public string color { get; set construct; }
 		public string display_name { get; set construct; }
 		public string email_address { get; set construct; }
 		public string resource_path { get; set construct; }

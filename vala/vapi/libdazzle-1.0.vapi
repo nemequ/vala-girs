@@ -826,7 +826,10 @@ namespace Dazzle {
 	public class PreferencesView : Gtk.Bin, Atk.Implementor, Dazzle.Preferences, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public PreferencesView ();
+		public bool get_use_sidebar ();
 		public void reapply_filter ();
+		public void set_use_sidebar (bool use_sidebar);
+		public bool use_sidebar { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_priority_box_get_type ()")]
 	public class PriorityBox : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
