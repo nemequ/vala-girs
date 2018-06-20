@@ -22,7 +22,7 @@ and/or use gtk-doc annotations.  -->
            glib:type-name="DhAssistantView"
            glib:get-type="dh_assistant_view_get_type"
            glib:type-struct="AssistantViewClass">
-      <implements name="Atk.ImplementorIface"/>
+      <implements name="Atk.Implementor"/>
       <implements name="Gtk.Buildable"/>
       <constructor name="new" c:identifier="dh_assistant_view_new">
         <return-value transfer-ownership="none">
@@ -800,7 +800,7 @@ keep the object alive if wanted, to avoid destroying and re-creating the same
            glib:type-name="DhBookTree"
            glib:get-type="dh_book_tree_get_type"
            glib:type-struct="BookTreeClass">
-      <implements name="Atk.ImplementorIface"/>
+      <implements name="Atk.Implementor"/>
       <implements name="Gtk.Buildable"/>
       <implements name="Gtk.Scrollable"/>
       <constructor name="new" c:identifier="dh_book_tree_new">
@@ -1451,7 +1451,7 @@ current language.</doc>
            glib:type-name="DhNotebook"
            glib:get-type="dh_notebook_get_type"
            glib:type-struct="NotebookClass">
-      <implements name="Atk.ImplementorIface"/>
+      <implements name="Atk.Implementor"/>
       <implements name="Gtk.Buildable"/>
       <constructor name="new" c:identifier="dh_notebook_new" version="3.30">
         <return-value transfer-ownership="none">
@@ -1757,7 +1757,7 @@ by dh_settings_get_default() will be used.</doc>
            glib:type-name="DhSearchBar"
            glib:get-type="dh_search_bar_get_type"
            glib:type-struct="SearchBarClass">
-      <implements name="Atk.ImplementorIface"/>
+      <implements name="Atk.Implementor"/>
       <implements name="Gtk.Buildable"/>
       <constructor name="new" c:identifier="dh_search_bar_new" version="3.30">
         <return-value transfer-ownership="none">
@@ -2340,7 +2340,7 @@ used.</doc>
            glib:type-name="DhSidebar"
            glib:get-type="dh_sidebar_get_type"
            glib:type-struct="SidebarClass">
-      <implements name="Atk.ImplementorIface"/>
+      <implements name="Atk.Implementor"/>
       <implements name="Gtk.Buildable"/>
       <implements name="Gtk.Orientable"/>
       <constructor name="new"
@@ -2538,7 +2538,7 @@ dh_sidebar_get_selected_link().</doc>
            glib:type-name="DhTab"
            glib:get-type="dh_tab_get_type"
            glib:type-struct="TabClass">
-      <implements name="Atk.ImplementorIface"/>
+      <implements name="Atk.Implementor"/>
       <implements name="Gtk.Buildable"/>
       <implements name="Gtk.Orientable"/>
       <constructor name="new" c:identifier="dh_tab_new" version="3.30">
@@ -2604,7 +2604,7 @@ with the default #DhProfile.</doc>
            glib:type-name="DhTabLabel"
            glib:get-type="dh_tab_label_get_type"
            glib:type-struct="TabLabelClass">
-      <implements name="Atk.ImplementorIface"/>
+      <implements name="Atk.Implementor"/>
       <implements name="Gtk.Buildable"/>
       <implements name="Gtk.Orientable"/>
       <constructor name="new" c:identifier="dh_tab_label_new" version="3.30">
@@ -2672,7 +2672,7 @@ with the default #DhProfile.</doc>
            glib:type-name="DhWebView"
            glib:get-type="dh_web_view_get_type"
            glib:type-struct="WebViewClass">
-      <implements name="Atk.ImplementorIface"/>
+      <implements name="Atk.Implementor"/>
       <implements name="Gtk.Buildable"/>
       <constructor name="new" c:identifier="dh_web_view_new" version="3.30">
         <return-value transfer-ownership="none">
@@ -2747,8 +2747,11 @@ with the default #DhProfile.</doc>
       <method name="get_devhelp_title"
               c:identifier="dh_web_view_get_devhelp_title"
               version="3.30">
+        <doc xml:space="preserve">An enhanced getter function for the #WebKitWebView:title property: when that
+property is the empty string or %NULL, this function returns “Empty Page”
+(translated).</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the @view title suitable for a tab label or window title.</doc>
+          <doc xml:space="preserve">the title of @view, suitable for a tab label or window title.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -2925,6 +2928,35 @@ on a link.</doc>
     </record>
     <record name="WebViewPrivate" c:type="DhWebViewPrivate" disguised="1">
     </record>
+    <function name="application_window_bind_sidebar_and_notebook"
+              c:identifier="dh_application_window_bind_sidebar_and_notebook"
+              version="3.30">
+      <doc xml:space="preserve">Binds @sidebar and @notebook:
+- When the #DhSidebar::link-selected signal is emitted, open the URI in the
+  active #DhWebView.
+- On #GtkNotebook::switch-page or when the user clicks on a link, calls
+  dh_sidebar_select_uri() with the new active URI.
+
+You need to call this function when the #DhNotebook is empty, i.e. before
+adding the first #DhTab.
+
+Note that this function doesn't take a “self” window parameter, to be more
+flexible: it is possible to have several pairs of #DhSidebar/#DhNotebook per
+window, to show different #DhProfile's.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="sidebar" transfer-ownership="none">
+          <doc xml:space="preserve">a #DhSidebar.</doc>
+          <type name="Sidebar" c:type="DhSidebar*"/>
+        </parameter>
+        <parameter name="notebook" transfer-ownership="none">
+          <doc xml:space="preserve">an empty #DhNotebook.</doc>
+          <type name="Notebook" c:type="DhNotebook*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="finalize" c:identifier="dh_finalize" version="3.26">
       <doc xml:space="preserve">Free the resources allocated by Devhelp. For example it unrefs the singleton
 objects.
@@ -2957,35 +2989,6 @@ current language.</doc>
         <parameter name="link_type" transfer-ownership="none">
           <doc xml:space="preserve">a #DhLinkType.</doc>
           <type name="LinkType" c:type="DhLinkType"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="window_bind_sidebar_and_notebook"
-              c:identifier="dh_window_bind_sidebar_and_notebook"
-              version="3.30">
-      <doc xml:space="preserve">Binds @sidebar and @notebook:
-- When the #DhSidebar::link-selected signal is emitted, open the URI in the
-  active #DhWebView.
-- On #GtkNotebook::switch-page or when the user clicks on a link, calls
-  dh_sidebar_select_uri() with the new active URI.
-
-You need to call this function when the #DhNotebook is empty, i.e. before
-adding the first #DhTab.
-
-Note that this function doesn't take a “self” window parameter, to be more
-flexible: it is possible to have several pairs of #DhSidebar/#DhNotebook per
-window, to show different #DhProfile's.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="sidebar" transfer-ownership="none">
-          <doc xml:space="preserve">a #DhSidebar.</doc>
-          <type name="Sidebar" c:type="DhSidebar*"/>
-        </parameter>
-        <parameter name="notebook" transfer-ownership="none">
-          <doc xml:space="preserve">an empty #DhNotebook.</doc>
-          <type name="Notebook" c:type="DhNotebook*"/>
         </parameter>
       </parameters>
     </function>

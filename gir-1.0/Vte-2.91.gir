@@ -718,7 +718,7 @@ a cell has to be selected or not.</doc>
            glib:type-name="VteTerminal"
            glib:get-type="vte_terminal_get_type"
            glib:type-struct="TerminalClass">
-      <implements name="Atk.ImplementorIface"/>
+      <implements name="Atk.Implementor"/>
       <implements name="Gtk.Buildable"/>
       <implements name="Gtk.Scrollable"/>
       <constructor name="new" c:identifier="vte_terminal_new">
@@ -929,8 +929,7 @@ selection.</doc>
       </virtual-method>
       <virtual-method name="paste_clipboard" invoker="paste_clipboard">
         <doc xml:space="preserve">Sends the contents of the #GDK_SELECTION_CLIPBOARD selection to the
-terminal's child.  If necessary, the data is converted from UTF-8 to the
-terminal's current encoding. It's called on paste menu item, or when
+terminal's child. It's called on paste menu item, or when
 user presses Shift+Insert.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1406,8 +1405,10 @@ because the return value takes cell-width-scale into account.</doc>
       </method>
       <method name="get_cjk_ambiguous_width"
               c:identifier="vte_terminal_get_cjk_ambiguous_width">
-        <doc xml:space="preserve">Returns whether ambiguous-width characters are narrow or wide when using
-the UTF-8 encoding (vte_terminal_set_encoding()).</doc>
+        <doc xml:space="preserve">Returns whether ambiguous-width characters are narrow or wide.
+(Note that when using a non-UTF-8 encoding set via vte_terminal_set_encoding(),
+the width of ambiguous-width characters is fixed and determined by the encoding
+itself.)</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">1 if ambiguous-width characters are narrow, or 2 if they are wide</doc>
           <type name="gint" c:type="int"/>
@@ -1521,9 +1522,13 @@ coordinate is absolute.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_encoding" c:identifier="vte_terminal_get_encoding">
+      <method name="get_encoding"
+              c:identifier="vte_terminal_get_encoding"
+              deprecated="1"
+              deprecated-version="0.54">
         <doc xml:space="preserve">Determines the name of the encoding in which the terminal expects data to be
 encoded.</doc>
+        <doc-deprecated xml:space="preserve">Support for non-UTF-8 is deprecated.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the current encoding for the terminal</doc>
           <type name="utf8" c:type="const char*"/>
@@ -2206,8 +2211,7 @@ specified by @tag.</doc>
       <method name="paste_clipboard"
               c:identifier="vte_terminal_paste_clipboard">
         <doc xml:space="preserve">Sends the contents of the #GDK_SELECTION_CLIPBOARD selection to the
-terminal's child.  If necessary, the data is converted from UTF-8 to the
-terminal's current encoding. It's called on paste menu item, or when
+terminal's child. It's called on paste menu item, or when
 user presses Shift+Insert.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -2221,8 +2225,7 @@ user presses Shift+Insert.</doc>
       </method>
       <method name="paste_primary" c:identifier="vte_terminal_paste_primary">
         <doc xml:space="preserve">Sends the contents of the #GDK_SELECTION_PRIMARY selection to the terminal's
-child.  If necessary, the data is converted from UTF-8 to the terminal's
-current encoding.  The terminal will call also paste the
+child. The terminal will call also paste the
 #GDK_SELECTION_PRIMARY selection when the user clicks with the the second
 mouse button.</doc>
         <return-value transfer-ownership="none">
@@ -2579,9 +2582,10 @@ Valid values go from 1.0 (default) to 2.0.</doc>
       </method>
       <method name="set_cjk_ambiguous_width"
               c:identifier="vte_terminal_set_cjk_ambiguous_width">
-        <doc xml:space="preserve">This setting controls whether ambiguous-width characters are narrow or wide
-when using the UTF-8 encoding (vte_terminal_set_encoding()). In all other encodings,
-the width of ambiguous-width characters is fixed.</doc>
+        <doc xml:space="preserve">This setting controls whether ambiguous-width characters are narrow or wide.
+(Note that when using a non-UTF-8 encoding set via vte_terminal_set_encoding(),
+the width of ambiguous-width characters is fixed and determined by the encoding
+itself.)</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2880,10 +2884,17 @@ presses the delete key.</doc>
       </method>
       <method name="set_encoding"
               c:identifier="vte_terminal_set_encoding"
+              deprecated="1"
+              deprecated-version="0.54"
               throws="1">
         <doc xml:space="preserve">Changes the encoding the terminal will expect data from the child to
 be encoded with.  For certain terminal types, applications executing in the
-terminal can change the encoding. If @codeset is %NULL, it uses "UTF-8".</doc>
+terminal can change the encoding. If @codeset is %NULL, it uses "UTF-8".
+
+Note: Support for non-UTF-8 is deprecated and may get removed altogether.
+Instead of this function, you should use a wrapper like luit(1) when
+spawning the child process.</doc>
+        <doc-deprecated xml:space="preserve">Support for non-UTF-8 is deprecated.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the encoding could be changed to the specified one,
  or %FALSE with @error set to %G_CONVERT_ERROR_NO_CONVERSION.</doc>
@@ -3517,9 +3528,10 @@ or if SGR 1 only enables bold and leaves the color intact.</doc>
       <property name="cjk-ambiguous-width"
                 writable="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">This setting controls whether ambiguous-width characters are narrow or wide
-when using the UTF-8 encoding (vte_terminal_set_encoding()). In all other encodings,
-the width of ambiguous-width characters is fixed.
+        <doc xml:space="preserve">This setting controls whether ambiguous-width characters are narrow or wide.
+(Note that when using a non-UTF-8 encoding set via vte_terminal_set_encoding(),
+the width of ambiguous-width characters is fixed and determined by the encoding
+itself.)
 
 This setting only takes effect the next time the terminal is reset, either
 via escape sequence or with vte_terminal_reset().</doc>
@@ -3549,11 +3561,17 @@ will use the #GtkSettings::gtk-cursor-blink setting.</doc>
 when the user presses the delete key.</doc>
         <type name="EraseBinding"/>
       </property>
-      <property name="encoding" writable="1" transfer-ownership="none">
+      <property name="encoding"
+                deprecated="1"
+                deprecated-version="0.54"
+                writable="1"
+                transfer-ownership="none">
         <doc xml:space="preserve">Controls the encoding the terminal will expect data from the child to
 be encoded with.  For certain terminal types, applications executing in the
 terminal can change the encoding.  The default is defined by the
 application's locale settings.</doc>
+        <doc-deprecated xml:space="preserve">Instead of using this, you should use a tool like
+  luit(1) when support for non-UTF-8 is required</doc-deprecated>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="font-desc" writable="1" transfer-ownership="none">
@@ -3755,9 +3773,9 @@ primarily by #VteTerminalAccessible.</doc>
         </return-value>
       </glib:signal>
       <glib:signal name="encoding-changed" when="last">
-        <doc xml:space="preserve">Emitted whenever the terminal's current encoding has changed, either
-as a result of receiving a control sequence which toggled between the
-local and UTF-8 encodings, or at the parent application's request.</doc>
+        <doc xml:space="preserve">Emitted whenever the terminal's current encoding has changed.
+
+Note: support for non-UTF-8 is deprecated.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>

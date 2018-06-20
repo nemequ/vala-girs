@@ -1454,8 +1454,10 @@ extensions.</doc>
       <method name="get_created"
               c:identifier="nm_checkpoint_get_created"
               version="1.12">
-        <doc xml:space="preserve">Gets the timestamp (in CLOCK_BOOTTIME milliseconds)
-of checkpoint creation.</doc>
+        <doc xml:space="preserve">Gets the timestamp (in CLOCK_BOOTTIME milliseconds) of checkpoint creation.
+
+Use nm_utils_get_timestamp_msec() to obtain current time value suitable for
+comparing to this value.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the timestamp of checkpoint creation.</doc>
           <type name="gint64" c:type="gint64"/>
@@ -6251,6 +6253,11 @@ and some #NMSetting8021x operations.</doc>
               c:type="NM_DEVICE_WIFI_HW_ADDRESS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="DEVICE_WIFI_LAST_SCAN"
+              value="last-scan"
+              c:type="NM_DEVICE_WIFI_LAST_SCAN">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="DEVICE_WIFI_MODE"
               value="mode"
               c:type="NM_DEVICE_WIFI_MODE">
@@ -10804,6 +10811,25 @@ device, and must not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_last_scan"
+              c:identifier="nm_device_wifi_get_last_scan"
+              version="1.12">
+        <doc xml:space="preserve">Returns the timestamp (in CLOCK_BOOTTIME milliseconds) for the last finished
+network scan. A value of -1 means the device never scanned for access points.
+
+Use nm_utils_get_timestamp_msec() to obtain current time value suitable for
+comparing to this value.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the last scan time in seconds</doc>
+          <type name="gint64" c:type="gint64"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceWifi</doc>
+            <type name="DeviceWifi" c:type="NMDeviceWifi*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_mode" c:identifier="nm_device_wifi_get_mode">
         <doc xml:space="preserve">Gets the #NMDeviceWifi mode.</doc>
         <return-value transfer-ownership="none">
@@ -11013,6 +11039,12 @@ D-Bus call. Valid otions inside the dictionary are:
       <property name="hw-address" transfer-ownership="none">
         <doc xml:space="preserve">The hardware (MAC) address of the device.</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="last-scan" version="1.12" transfer-ownership="none">
+        <doc xml:space="preserve">The timestamp (in CLOCK_BOOTTIME seconds) for the last finished
+network scan. A value of -1 means the device never scanned for
+access points.</doc>
+        <type name="gint64" c:type="gint64"/>
       </property>
       <property name="mode" transfer-ownership="none">
         <doc xml:space="preserve">The mode of the device.</doc>
@@ -13151,12 +13183,12 @@ reaches zero, the object will be destroyed.</doc>
 is compiled against.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="4" c:type="NM_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="0" c:type="NM_MICRO_VERSION">
       <doc xml:space="preserve">Evaluates to the micro version number of NetworkManager which this source
 compiled against.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="11" c:type="NM_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="13" c:type="NM_MINOR_VERSION">
       <doc xml:space="preserve">Evaluates to the minor version number of NetworkManager which this source
 is compiled against.</doc>
       <type name="gint" c:type="gint"/>
@@ -15338,6 +15370,11 @@ supported for IPv6)</doc>
               c:type="NM_SETTING_MACSEC_PORT">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_MACSEC_SEND_SCI"
+              value="send-sci"
+              c:type="NM_SETTING_MACSEC_SEND_SCI">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_MACSEC_SETTING_NAME"
               value="macsec"
               c:type="NM_SETTING_MACSEC_SETTING_NAME">
@@ -16394,6 +16431,11 @@ for this connection.</doc>
     <constant name="SETTING_WIRELESS_TX_POWER"
               value="tx-power"
               c:type="NM_SETTING_WIRELESS_TX_POWER">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_WIRELESS_WAKE_ON_WLAN"
+              value="wake-on-wlan"
+              c:type="NM_SETTING_WIRELESS_WAKE_ON_WLAN">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <bitfield name="SecretAgentCapabilities"
@@ -24932,6 +24974,20 @@ overridden by user-controlled defaults configuration, is "never".</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_send_sci"
+              c:identifier="nm_setting_macsec_get_send_sci"
+              version="1.12">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingMacsec:send-sci property of the setting</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingMacsec</doc>
+            <type name="SettingMacsec" c:type="NMSettingMacsec*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_validation"
               c:identifier="nm_setting_macsec_get_validation"
               version="1.6">
@@ -25008,6 +25064,15 @@ with a #NMSettingWired:mac-address property.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve">The port component of the SCI (Secure Channel Identifier), between 1 and 65534.</doc>
         <type name="gint" c:type="gint"/>
+      </property>
+      <property name="send-sci"
+                version="1.12"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Specifies whether the SCI (Secure Channel Identifier) is included
+in every packet.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="validation"
                 version="1.6"
@@ -27256,7 +27321,7 @@ arp_ping: all the ones in nsna_ping and 'source-host', 'validate-active',
                 transfer-ownership="none">
         <doc xml:space="preserve">Corresponds to the teamd runner.name.
 Permitted values are: "roundrobin", "broadcast", "activebackup",
-"loadbalance", "lacp".
+"loadbalance", "lacp", "random".
 When setting the runner, all the properties specific to the runner
 will be reset to the default value; all the properties specific to
 other runners will be set to an empty value (or if not possible to
@@ -29625,9 +29690,14 @@ list, %FALSE if it was not.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">If %TRUE, enforce auto-negotiation of port speed and duplex mode.  If
-%FALSE, "speed" and "duplex" properties should be both set or link configuration
-will be skipped.</doc>
+        <doc xml:space="preserve">When %TRUE, enforce auto-negotiation of speed and duplex mode.
+If "speed" and "duplex" properties are both specified, only that
+single mode will be advertised and accepted during the link
+auto-negotiation process: this works only for BASE-T 802.3 specifications
+and is useful for enforcing gigabits modes, as in these cases link
+negotiation is mandatory.
+When %FALSE, "speed" and "duplex" properties should be both set or
+link configuration will be skipped.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="cloned-mac-address"
@@ -29654,8 +29724,16 @@ On D-Bus, this field is expressed as "assigned-mac-address" or the deprecated
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="duplex" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Can be specified only when "auto-negotiate" is "off". In that case, statically
-configures the device to use that specified duplex mode, either "half" or "full".
+        <doc xml:space="preserve">When a value is set, either "half" or "full", configures the device
+to use the specified duplex mode. If "auto-negotiate" is "yes" the
+specified duplex mode will be the only one advertised during link
+negotiation: this works only for BASE-T 802.3 specifications and is
+useful for enforcing gigabits modes, as in these cases link negotiation
+is mandatory.
+If the value is unset (the default), the link configuration will be
+either skipped (if "auto-negotiate" is "no", the default) or will
+be auto-negotiated (if "auto-negotiate" is "yes") and the local device
+will advertise all the supported duplex modes.
 Must be set together with the "speed" property if specified.
 Before specifying a duplex mode be sure your device supports it.</doc>
         <type name="utf8" c:type="gchar*"/>
@@ -29756,8 +29834,16 @@ period (.) character.</doc>
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
-        <doc xml:space="preserve">Can be set to a value greater than zero only when "auto-negotiate" is "off".
-In that case, statically configures the device to use that specified speed.
+        <doc xml:space="preserve">When a value grater than 0 is set, configures the device to use
+the specified speed. If "auto-negotiate" is "yes" the specified
+speed will be the only one advertised during link negotiation:
+this works only for BASE-T 802.3 specifications and is useful for
+enforcing gigabit speeds, as in this case link negotiation is
+mandatory.
+If the value is unset (0, the default), the link configuration will be
+either skipped (if "auto-negotiate" is "no", the default) or will
+be auto-negotiated (if "auto-negotiate" is "yes") and the local device
+will advertise all the supported speeds.
 In Mbit/s, ie 100 == 100Mbit/s.
 Must be set together with the "duplex" property when non-zero.
 Before specifying a speed value be sure your device supports it.</doc>
@@ -30226,6 +30312,22 @@ at index @idx</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_wake_on_wlan"
+              c:identifier="nm_setting_wireless_get_wake_on_wlan"
+              version="1.12">
+        <doc xml:space="preserve">Returns the Wake-on-WLAN options enabled for the connection</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the Wake-on-WLAN options</doc>
+          <type name="SettingWirelessWakeOnWLan"
+                c:type="NMSettingWirelessWakeOnWLan"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingWireless</doc>
+            <type name="SettingWireless" c:type="NMSettingWireless*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="remove_mac_blacklist_item"
               c:identifier="nm_setting_wireless_remove_mac_blacklist_item">
         <doc xml:space="preserve">Removes the MAC address at index @idx from the blacklist.</doc>
@@ -30441,6 +30543,25 @@ preserved.</doc>
         <doc xml:space="preserve">If non-zero, directs the device to use the specified transmit power.
 Units are dBm.  This property is highly driver dependent and not all
 devices support setting a static transmit power.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="wake-on-wlan"
+                version="1.12"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #NMSettingWirelessWakeOnWLan options to enable. Not all devices support all options.
+May be any combination of %NM_SETTING_WIRELESS_WAKE_ON_WLAN_ANY,
+%NM_SETTING_WIRELESS_WAKE_ON_WLAN_DISCONNECT,
+%NM_SETTING_WIRELESS_WAKE_ON_WLAN_MAGIC,
+%NM_SETTING_WIRELESS_WAKE_ON_WLAN_GTK_REKEY_FAILURE,
+%NM_SETTING_WIRELESS_WAKE_ON_WLAN_EAP_IDENTITY_REQUEST,
+%NM_SETTING_WIRELESS_WAKE_ON_WLAN_4WAY_HANDSHAKE,
+%NM_SETTING_WIRELESS_WAKE_ON_WLAN_RFKILL_RELEASE,
+%NM_SETTING_WIRELESS_WAKE_ON_WLAN_TCP or the special values
+%NM_SETTING_WIRELESS_WAKE_ON_WLAN_DEFAULT (to use global settings) and
+%NM_SETTING_WIRELESS_WAKE_ON_WLAN_IGNORE (to disable management of Wake-on-LAN in
+NetworkManager).</doc>
         <type name="guint" c:type="guint"/>
       </property>
       <field name="parent">
@@ -31342,6 +31463,73 @@ WPS can be disabled by setting this property to a value of 1.</doc>
         <doc xml:space="preserve">use PIN method</doc>
       </member>
     </enumeration>
+    <bitfield name="SettingWirelessWakeOnWLan"
+              version="1.12"
+              glib:type-name="NMSettingWirelessWakeOnWLan"
+              glib:get-type="nm_setting_wireless_wake_on_wlan_get_type"
+              c:type="NMSettingWirelessWakeOnWLan">
+      <doc xml:space="preserve">Options for #NMSettingWireless:wake-on-wlan. Note that not all options
+are supported by all devices.</doc>
+      <member name="any"
+              value="2"
+              c:identifier="NM_SETTING_WIRELESS_WAKE_ON_WLAN_ANY"
+              glib:nick="any">
+        <doc xml:space="preserve">Wake on any activity</doc>
+      </member>
+      <member name="disconnect"
+              value="4"
+              c:identifier="NM_SETTING_WIRELESS_WAKE_ON_WLAN_DISCONNECT"
+              glib:nick="disconnect">
+        <doc xml:space="preserve">Wake on disconnect</doc>
+      </member>
+      <member name="magic"
+              value="8"
+              c:identifier="NM_SETTING_WIRELESS_WAKE_ON_WLAN_MAGIC"
+              glib:nick="magic">
+        <doc xml:space="preserve">Wake on magic packet</doc>
+      </member>
+      <member name="gtk_rekey_failure"
+              value="16"
+              c:identifier="NM_SETTING_WIRELESS_WAKE_ON_WLAN_GTK_REKEY_FAILURE"
+              glib:nick="gtk-rekey-failure">
+        <doc xml:space="preserve">Wake on GTK rekey failure</doc>
+      </member>
+      <member name="eap_identity_request"
+              value="32"
+              c:identifier="NM_SETTING_WIRELESS_WAKE_ON_WLAN_EAP_IDENTITY_REQUEST"
+              glib:nick="eap-identity-request">
+        <doc xml:space="preserve">Wake on EAP identity request</doc>
+      </member>
+      <member name="4way_handshake"
+              value="64"
+              c:identifier="NM_SETTING_WIRELESS_WAKE_ON_WLAN_4WAY_HANDSHAKE"
+              glib:nick="4way-handshake">
+        <doc xml:space="preserve">Wake on 4way hanshake</doc>
+      </member>
+      <member name="rfkill_release"
+              value="128"
+              c:identifier="NM_SETTING_WIRELESS_WAKE_ON_WLAN_RFKILL_RELEASE"
+              glib:nick="rfkill-release">
+        <doc xml:space="preserve">Wake on rfkill release</doc>
+      </member>
+      <member name="tcp"
+              value="256"
+              c:identifier="NM_SETTING_WIRELESS_WAKE_ON_WLAN_TCP"
+              glib:nick="tcp">
+      </member>
+      <member name="default"
+              value="1"
+              c:identifier="NM_SETTING_WIRELESS_WAKE_ON_WLAN_DEFAULT"
+              glib:nick="default">
+        <doc xml:space="preserve">Use the default value</doc>
+      </member>
+      <member name="ignore"
+              value="32768"
+              c:identifier="NM_SETTING_WIRELESS_WAKE_ON_WLAN_IGNORE"
+              glib:nick="ignore">
+        <doc xml:space="preserve">Don't change configured settings</doc>
+      </member>
+    </bitfield>
     <bitfield name="SettingsConnectionFlags"
               version="1.12"
               glib:type-name="NMSettingsConnectionFlags"
@@ -36514,6 +36702,12 @@ recognized by NetworkManager.</doc>
           <type name="gchar" c:type="char"/>
         </parameter>
       </parameters>
+    </function>
+    <function name="utils_get_timestamp_msec"
+              c:identifier="nm_utils_get_timestamp_msec">
+      <return-value transfer-ownership="none">
+        <type name="gint64" c:type="gint64"/>
+      </return-value>
     </function>
     <function name="utils_hexstr2bin" c:identifier="nm_utils_hexstr2bin">
       <doc xml:space="preserve">Converts a hexadecimal string @hex into an array of bytes.  The optional

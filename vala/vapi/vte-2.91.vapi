@@ -67,6 +67,7 @@ namespace Vte {
 		public Vte.CursorBlinkMode get_cursor_blink_mode ();
 		public void get_cursor_position (out long column, out long row);
 		public Vte.CursorShape get_cursor_shape ();
+		[Version (deprecated = true, deprecated_since = "0.54")]
 		public unowned string get_encoding ();
 		public unowned Pango.FontDescription get_font ();
 		public double get_font_scale ();
@@ -153,6 +154,7 @@ namespace Vte {
 		public void set_cursor_shape (Vte.CursorShape shape);
 		public void set_default_colors ();
 		public void set_delete_binding (Vte.EraseBinding binding);
+		[Version (deprecated = true, deprecated_since = "0.54")]
 		public bool set_encoding (string? codeset) throws GLib.Error;
 		public void set_font (Pango.FontDescription? font_desc);
 		public void set_font_scale (double scale);
@@ -197,6 +199,7 @@ namespace Vte {
 		[NoAccessorMethod]
 		public Vte.EraseBinding delete_binding { get; set; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "0.54")]
 		public string encoding { owned get; set; }
 		[NoAccessorMethod]
 		public Pango.FontDescription font_desc { owned get; set; }

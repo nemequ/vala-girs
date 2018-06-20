@@ -52,6 +52,8 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static string format_variant_attributes (GLib.HashTable<void*,void*> attributes, char attr_separator, char key_value_separator);
 		[CCode (cheader_filename = "NetworkManager.h")]
+		public static int64 get_timestamp_msec ();
+		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Bytes hexstr2bin (string hex);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.ByteArray hwaddr_atoba (string asc, size_t length);
@@ -1353,6 +1355,8 @@ namespace NM {
 		public const string CAPABILITIES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_HW_ADDRESS")]
 		public const string HW_ADDRESS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_LAST_SCAN")]
+		public const string LAST_SCAN;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_MODE")]
 		public const string MODE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_PERMANENT_HW_ADDRESS")]
@@ -1365,6 +1369,8 @@ namespace NM {
 		public uint32 get_bitrate ();
 		public NM.DeviceWifiCapabilities get_capabilities ();
 		public unowned string get_hw_address ();
+		[Version (since = "1.12")]
+		public int64 get_last_scan ();
 		public NM.80211Mode get_mode ();
 		public unowned string get_permanent_hw_address ();
 		public bool request_scan (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -1377,6 +1383,8 @@ namespace NM {
 		public NM.AccessPoint active_access_point { get; }
 		public uint bitrate { get; }
 		public string hw_address { get; }
+		[Version (since = "1.12")]
+		public int64 last_scan { get; }
 		public NM.80211Mode mode { get; }
 		[NoAccessorMethod]
 		public string perm_hw_address { owned get; }
@@ -2963,6 +2971,8 @@ namespace NM {
 		public unowned string get_parent ();
 		[Version (since = "1.6")]
 		public int get_port ();
+		[Version (since = "1.12")]
+		public bool get_send_sci ();
 		[Version (since = "1.6")]
 		public NM.SettingMacsecValidation get_validation ();
 		[NoAccessorMethod]
@@ -2986,6 +2996,9 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.6")]
 		public int port { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public bool send_sci { get; set construct; }
 		[NoAccessorMethod]
 		[Version (since = "1.6")]
 		public int validation { get; set construct; }
@@ -4078,6 +4091,8 @@ namespace NM {
 		public const string SSID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_TX_POWER")]
 		public const string TX_POWER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_WAKE_ON_WLAN")]
+		public const string WAKE_ON_WLAN;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingWireless ();
 		public bool add_mac_blacklist_item (string mac);
@@ -4107,6 +4122,8 @@ namespace NM {
 		public unowned string get_seen_bssid (uint32 i);
 		public unowned GLib.Bytes get_ssid ();
 		public uint32 get_tx_power ();
+		[Version (since = "1.12")]
+		public NM.SettingWirelessWakeOnWLan get_wake_on_wlan ();
 		public void remove_mac_blacklist_item (uint32 idx);
 		public bool remove_mac_blacklist_item_by_value (string mac);
 		[NoAccessorMethod]
@@ -4145,6 +4162,9 @@ namespace NM {
 		public GLib.Bytes ssid { owned get; set; }
 		[NoAccessorMethod]
 		public uint tx_power { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.12")]
+		public uint wake_on_wlan { get; set construct; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_wireless_security_get_type ()")]
 	public class SettingWirelessSecurity : NM.Setting {
@@ -5200,6 +5220,21 @@ namespace NM {
 		PBC,
 		PIN
 	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_WIRELESS_WAKE_ON_WLAN_", type_id = "nm_setting_wireless_wake_on_wlan_get_type ()")]
+	[Flags]
+	[Version (since = "1.12")]
+	public enum SettingWirelessWakeOnWLan {
+		ANY,
+		DISCONNECT,
+		MAGIC,
+		GTK_REKEY_FAILURE,
+		EAP_IDENTITY_REQUEST,
+		@4WAY_HANDSHAKE,
+		RFKILL_RELEASE,
+		TCP,
+		DEFAULT,
+		IGNORE
+	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTINGS_CONNECTION_FLAG_", type_id = "nm_settings_connection_flags_get_type ()")]
 	[Flags]
 	[Version (since = "1.12")]
@@ -5716,6 +5751,8 @@ namespace NM {
 	public const string SETTING_MACSEC_PARENT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_PORT")]
 	public const string SETTING_MACSEC_PORT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_SEND_SCI")]
+	public const string SETTING_MACSEC_SEND_SCI;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_SETTING_NAME")]
 	public const string SETTING_MACSEC_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_VALIDATION")]

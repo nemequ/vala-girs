@@ -22,6 +22,12 @@ and/or use gtk-doc annotations.  -->
 of strings on the X server.</doc>
       <type name="utf8" c:type="const char*"/>
     </alias>
+    <constant name="ACTION_ALL" value="7" c:type="GDK_ACTION_ALL">
+      <doc xml:space="preserve">Defines all possible DND actions. This can be used in gdk_drop_status()
+messages when any drop can be accepted or a more specific drop method
+is not yet known.</doc>
+      <type name="gint" c:type="gint"/>
+    </constant>
     <bitfield name="AnchorHints"
               version="3.22"
               stability="Unstable"
@@ -4859,45 +4865,49 @@ to limit what backends can be used.</doc>
               c:type="GdkDragAction">
       <doc xml:space="preserve">Used in #GdkDragContext to indicate what the destination
 should do with the dropped data.</doc>
-      <member name="default"
-              value="1"
-              c:identifier="GDK_ACTION_DEFAULT"
-              glib:nick="default">
-        <doc xml:space="preserve">Means nothing, and should not be used.</doc>
-      </member>
       <member name="copy"
-              value="2"
+              value="1"
               c:identifier="GDK_ACTION_COPY"
               glib:nick="copy">
         <doc xml:space="preserve">Copy the data.</doc>
       </member>
       <member name="move"
-              value="4"
+              value="2"
               c:identifier="GDK_ACTION_MOVE"
               glib:nick="move">
         <doc xml:space="preserve">Move the data, i.e. first copy it, then delete
  it from the source using the DELETE target of the X selection protocol.</doc>
       </member>
       <member name="link"
-              value="8"
+              value="4"
               c:identifier="GDK_ACTION_LINK"
               glib:nick="link">
         <doc xml:space="preserve">Add a link to the data. Note that this is only
  useful if source and destination agree on what it means.</doc>
       </member>
-      <member name="private"
-              value="16"
-              c:identifier="GDK_ACTION_PRIVATE"
-              glib:nick="private">
-        <doc xml:space="preserve">Special action which tells the source that the
- destination will do something that the source doesn’t understand.</doc>
-      </member>
       <member name="ask"
-              value="32"
+              value="8"
               c:identifier="GDK_ACTION_ASK"
               glib:nick="ask">
         <doc xml:space="preserve">Ask the user what to do with the data.</doc>
       </member>
+      <function name="is_unique" c:identifier="gdk_drag_action_is_unique">
+        <doc xml:space="preserve">Checks if @action represents a single action or if it
+includes multiple flags that can be selected from.
+
+When @action is 0 - ie no action was given, %TRUE
+is returned.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if exactly one action was given</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="action" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDragAction</doc>
+            <type name="DragAction" c:type="GdkDragAction"/>
+          </parameter>
+        </parameters>
+      </function>
     </bitfield>
     <enumeration name="DragCancelReason"
                  version="3.20"
@@ -4928,6 +4938,7 @@ should do with the dropped data.</doc>
            c:symbol-prefix="drag_context"
            c:type="GdkDragContext"
            parent="GObject.Object"
+           abstract="1"
            glib:type-name="GdkDragContext"
            glib:get-type="gdk_drag_context_get_type">
       <doc xml:space="preserve">The GdkDragContext struct contains only private fields and
@@ -4938,20 +4949,6 @@ gdk_drag_context_get_suggested_action() returns %GDK_ACTION_ASK.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #GdkDragAction flags</doc>
           <type name="DragAction" c:type="GdkDragAction"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="context" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkDragContext</doc>
-            <type name="DragContext" c:type="GdkDragContext*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_dest_surface"
-              c:identifier="gdk_drag_context_get_dest_surface">
-        <doc xml:space="preserve">Returns the destination surface for the DND operation.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkSurface</doc>
-          <type name="Surface" c:type="GdkSurface*"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
@@ -5024,20 +5021,6 @@ the drag operation is over.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a #GdkDragAction value</doc>
           <type name="DragAction" c:type="GdkDragAction"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="context" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkDragContext</doc>
-            <type name="DragContext" c:type="GdkDragContext*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_source_surface"
-              c:identifier="gdk_drag_context_get_source_surface">
-        <doc xml:space="preserve">Returns the #GdkSurface where the DND operation started.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkSurface</doc>
-          <type name="Surface" c:type="GdkSurface*"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
@@ -5145,12 +5128,6 @@ miscellaneous data.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
-        <parameters>
-          <parameter name="time" transfer-ownership="none">
-            <doc xml:space="preserve">the time at which the drop happened.</doc>
-            <type name="gint" c:type="gint"/>
-          </parameter>
-        </parameters>
       </glib:signal>
     </class>
     <class name="DrawContext"
@@ -5302,6 +5279,396 @@ In this situation, drawing commands may be effecting the contents of a
     </class>
     <record name="DrawingContext" c:type="GdkDrawingContext" disguised="1">
     </record>
+    <class name="Drop"
+           c:symbol-prefix="drop"
+           c:type="GdkDrop"
+           parent="GObject.Object"
+           abstract="1"
+           glib:type-name="GdkDrop"
+           glib:get-type="gdk_drop_get_type">
+      <doc xml:space="preserve">The GdkDrop struct contains only private fields and
+should not be accessed directly.</doc>
+      <method name="finish" c:identifier="gdk_drop_finish">
+        <doc xml:space="preserve">Ends the drag operation after a drop.
+
+The @action must be a single action selected from the actions
+available via gdk_drop_get_actions().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrop</doc>
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+          <parameter name="action" transfer-ownership="none">
+            <doc xml:space="preserve">the action performed by the destination or 0 if the drop
+    failed</doc>
+            <type name="DragAction" c:type="GdkDragAction"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_actions" c:identifier="gdk_drop_get_actions">
+        <doc xml:space="preserve">Returns the possible actions for this #GdkDrop. If this value
+contains multiple actions - ie gdk_drag_action_is_unique()
+returns %FALSE for the result - gdk_drag_finish() must choose
+the action to use when accepting the drop.
+
+This value may change over the lifetime of the #GdkDrop both
+as a response to source side actions as well as to calls to
+gdk_drop_status() or gdk_drag_finish(). The source side will
+not change this value anymore once a drop has started.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The possible #GdkDragActions</doc>
+          <type name="DragAction" c:type="GdkDragAction"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrop</doc>
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_device" c:identifier="gdk_drop_get_device">
+        <doc xml:space="preserve">Returns the #GdkDevice performing the drop.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The #GdkDevice performing the drop.</doc>
+          <type name="Device" c:type="GdkDevice*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrop</doc>
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_display" c:identifier="gdk_drop_get_display">
+        <doc xml:space="preserve">Gets the #GdkDisplay that @self was created for.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkDisplay</doc>
+          <type name="Display" c:type="GdkDisplay*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrop</doc>
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_drag" c:identifier="gdk_drop_get_drag">
+        <doc xml:space="preserve">If this is an in-app drag-and-drop operation, returns the #GdkDrag
+that corresponds to this drop.
+
+If it is not, %NULL is returned.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the corresponding #GdkDrag</doc>
+          <type name="DragContext" c:type="GdkDragContext*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrop</doc>
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_formats" c:identifier="gdk_drop_get_formats">
+        <doc xml:space="preserve">Returns the #GdkContentFormats that the drop offers the data
+to be read in.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The possible #GdkContentFormats</doc>
+          <type name="ContentFormats" c:type="GdkContentFormats*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrop</doc>
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_surface" c:identifier="gdk_drop_get_surface">
+        <doc xml:space="preserve">Returns the #GdkSurface performing the drop.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The #GdkSurface performing the drop.</doc>
+          <type name="Surface" c:type="GdkSurface*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrop</doc>
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="read_async" c:identifier="gdk_drop_read_async">
+        <doc xml:space="preserve">Asynchronously read the dropped data from a #GdkDrop
+in a format that complies with one of the mime types.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrop</doc>
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+          <parameter name="mime_types" transfer-ownership="none">
+            <doc xml:space="preserve">
+    pointer to an array of mime types</doc>
+            <array c:type="char**">
+              <type name="utf8"/>
+            </array>
+          </parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the io priority for the read operation</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object,
+    %NULL to ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when
+    the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_finish"
+              c:identifier="gdk_drop_read_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an async drop read operation, see gdk_drop_read_async().</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">the #GInputStream, or %NULL</doc>
+          <type name="Gio.InputStream" c:type="GInputStream*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrop</doc>
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+          <parameter name="out_mime_type"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for the used mime type</doc>
+            <type name="utf8" c:type="const char**"/>
+          </parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_text_async" c:identifier="gdk_drop_read_text_async">
+        <doc xml:space="preserve">Asynchronously request the drag operation's contents converted to a string.
+When the operation is finished @callback will be called. You can then
+call gdk_drop_read_text_finish() to get the result.
+
+This is a simple wrapper around gdk_drop_read_value_async(). Use
+that function or gdk_drop_read_async() directly if you need more
+control over the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="drop" transfer-ownership="none">
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:space="preserve">callback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_text_finish"
+              c:identifier="gdk_drop_read_text_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an asynchronous read started with
+gdk_drop_read_text_async().</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new string or %NULL on error.</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="drop" transfer-ownership="none">
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_value_async" c:identifier="gdk_drop_read_value_async">
+        <doc xml:space="preserve">Asynchronously request the drag operation's contents converted to the given
+@type. When the operation is finished @callback will be called.
+You can then call gdk_drop_read_value_finish() to get the resulting
+#GValue.
+
+For local drag'n'drop operations that are available in the given #GType, the
+value will be copied directly. Otherwise, GDK will try to use
+gdk_content_deserialize_async() to convert the data.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrop</doc>
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">a #GType to read</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+          <parameter name="io_priority" transfer-ownership="none">
+            <doc xml:space="preserve">the [I/O priority][io-priority]
+    of the request.</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore.</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">callback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="read_value_finish"
+              c:identifier="gdk_drop_read_value_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes an async drop read started with
+gdk_drop_read_value_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #GValue containing the result.</doc>
+          <type name="GObject.Value" c:type="const GValue*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrop</doc>
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="status" c:identifier="gdk_drop_status">
+        <doc xml:space="preserve">Selects all actions that are potentially supported by the destination.
+
+When calling this function, do not restrict the passed in actions to
+the ones provided by gdk_drop_get_actions(). Those actions may
+change in the future, even depending on the actions you provide here.
+
+This function should be called by drag destinations in response to
+%GDK_DRAG_ENTER or %GDK_DRAG_MOTION events. If the destination does
+not yet know the exact actions it supports, it should set any possible
+actions first and then later call this function again.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdkDrop</doc>
+            <type name="Drop" c:type="GdkDrop*"/>
+          </instance-parameter>
+          <parameter name="actions" transfer-ownership="none">
+            <doc xml:space="preserve">Supported actions of the destination, or 0 to indicate
+   that a drop will not be accepted</doc>
+            <type name="DragAction" c:type="GdkDragAction"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="actions"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The possible actions for this drop</doc>
+        <type name="DragAction"/>
+      </property>
+      <property name="device"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkDevice performing the drop</doc>
+        <type name="Device"/>
+      </property>
+      <property name="display" transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkDisplay that the drop belongs to.</doc>
+        <type name="Display"/>
+      </property>
+      <property name="drag"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkDrag that initiated this drop</doc>
+        <type name="DragContext"/>
+      </property>
+      <property name="formats"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The possible formats that the drop can provide its data in.</doc>
+        <type name="ContentFormats"/>
+      </property>
+      <property name="surface"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The #GdkSurface the drop happens on</doc>
+        <type name="Surface"/>
+      </property>
+    </class>
     <constant name="EVENT_PROPAGATE"
               value="false"
               c:type="GDK_EVENT_PROPAGATE"
@@ -5689,25 +6056,17 @@ persistently across runs, see gdk_device_tool_get_serial()</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="get_drag_context"
-              c:identifier="gdk_event_get_drag_context">
-        <doc xml:space="preserve">Gets the drag context from a DND event.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE on success, otherwise %FALSE</doc>
-          <type name="gboolean" c:type="gboolean"/>
+      <method name="get_drop" c:identifier="gdk_event_get_drop">
+        <doc xml:space="preserve">Gets the #GdkDrop from a DND event.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">the drop</doc>
+          <type name="Drop" c:type="GdkDrop*"/>
         </return-value>
         <parameters>
           <instance-parameter name="event" transfer-ownership="none">
             <doc xml:space="preserve">a #GdkEvent</doc>
             <type name="Event" c:type="const GdkEvent*"/>
           </instance-parameter>
-          <parameter name="context"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="none">
-            <doc xml:space="preserve">return location for the drag context</doc>
-            <type name="DragContext" c:type="GdkDragContext**"/>
-          </parameter>
         </parameters>
       </method>
       <method name="get_event_sequence"
@@ -20600,24 +20959,6 @@ using the cursor for its parent surface.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_device_events"
-              c:identifier="gdk_surface_get_device_events">
-        <doc xml:space="preserve">Returns the event mask for @surface corresponding to an specific device.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">device event mask for @surface</doc>
-          <type name="EventMask" c:type="GdkEventMask"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="surface" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkSurface.</doc>
-            <type name="Surface" c:type="GdkSurface*"/>
-          </instance-parameter>
-          <parameter name="device" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkDevice.</doc>
-            <type name="Device" c:type="GdkDevice*"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="get_device_position"
               c:identifier="gdk_surface_get_device_position">
         <doc xml:space="preserve">Obtains the current device position and modifier state.
@@ -20723,20 +21064,6 @@ surface is not known to GDK.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #GdkDisplay associated with @surface</doc>
           <type name="Display" c:type="GdkDisplay*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="surface" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkSurface</doc>
-            <type name="Surface" c:type="GdkSurface*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_events" c:identifier="gdk_surface_get_events">
-        <doc xml:space="preserve">Gets the event mask for @surface for all master input devices. See
-gdk_surface_set_events().</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">event mask for @surface</doc>
-          <type name="EventMask" c:type="GdkEventMask"/>
         </return-value>
         <parameters>
           <instance-parameter name="surface" transfer-ownership="none">
@@ -21834,55 +22161,6 @@ use this default.</doc>
           <parameter name="cursor" transfer-ownership="none">
             <doc xml:space="preserve">a #GdkCursor</doc>
             <type name="Cursor" c:type="GdkCursor*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_device_events"
-              c:identifier="gdk_surface_set_device_events">
-        <doc xml:space="preserve">Sets the event mask for a given device (Normally a floating device, not
-attached to any visible pointer) to @surface. For example, an event mask
-including #GDK_BUTTON_PRESS_MASK means the surface should report button
-press events. The event mask is the bitwise OR of values from the
-#GdkEventMask enumeration.
-
-See the [input handling overview][event-masks] for details.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="surface" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkSurface</doc>
-            <type name="Surface" c:type="GdkSurface*"/>
-          </instance-parameter>
-          <parameter name="device" transfer-ownership="none">
-            <doc xml:space="preserve">#GdkDevice to enable events for.</doc>
-            <type name="Device" c:type="GdkDevice*"/>
-          </parameter>
-          <parameter name="event_mask" transfer-ownership="none">
-            <doc xml:space="preserve">event mask for @surface</doc>
-            <type name="EventMask" c:type="GdkEventMask"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_events" c:identifier="gdk_surface_set_events">
-        <doc xml:space="preserve">The event mask for a surface determines which events will be reported
-for that surface from all master input devices. For example, an event mask
-including #GDK_BUTTON_PRESS_MASK means the surface should report button
-press events. The event mask is the bitwise OR of values from the
-#GdkEventMask enumeration.
-
-See the [input handling overview][event-masks] for details.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="surface" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdkSurface</doc>
-            <type name="Surface" c:type="GdkSurface*"/>
-          </instance-parameter>
-          <parameter name="event_mask" transfer-ownership="none">
-            <doc xml:space="preserve">event mask for @surface</doc>
-            <type name="EventMask" c:type="GdkEventMask"/>
           </parameter>
         </parameters>
       </method>
@@ -23972,6 +24250,25 @@ call gdk_content_serialize_finish() to get the result of the operation.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="drag_action_is_unique"
+              c:identifier="gdk_drag_action_is_unique"
+              moved-to="DragAction.is_unique">
+      <doc xml:space="preserve">Checks if @action represents a single action or if it
+includes multiple flags that can be selected from.
+
+When @action is 0 - ie no action was given, %TRUE
+is returned.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if exactly one action was given</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="action" transfer-ownership="none">
+          <doc xml:space="preserve">a #GdkDragAction</doc>
+          <type name="DragAction" c:type="GdkDragAction"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="drag_begin" c:identifier="gdk_drag_begin">
       <doc xml:space="preserve">Starts a drag and creates a new drag context for it.
 
@@ -24030,124 +24327,6 @@ all subsequent calls will be ignored.</doc>
         <parameter name="success" transfer-ownership="none">
           <doc xml:space="preserve">whether the drag was ultimatively successful</doc>
           <type name="gboolean" c:type="gboolean"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="drag_status" c:identifier="gdk_drag_status">
-      <doc xml:space="preserve">Selects one of the actions offered by the drag source.
-
-This function is called by the drag destination in response to
-gdk_drag_motion() called by the drag source.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="context" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkDragContext</doc>
-          <type name="DragContext" c:type="GdkDragContext*"/>
-        </parameter>
-        <parameter name="action" transfer-ownership="none">
-          <doc xml:space="preserve">the selected action which will be taken when a drop happens,
-   or 0 to indicate that a drop will not be accepted</doc>
-          <type name="DragAction" c:type="GdkDragAction"/>
-        </parameter>
-        <parameter name="time_" transfer-ownership="none">
-          <doc xml:space="preserve">the timestamp for this operation</doc>
-          <type name="guint32" c:type="guint32"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="drop_finish" c:identifier="gdk_drop_finish">
-      <doc xml:space="preserve">Ends the drag operation after a drop.
-
-This function is called by the drag destination.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="context" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkDragContext</doc>
-          <type name="DragContext" c:type="GdkDragContext*"/>
-        </parameter>
-        <parameter name="success" transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if the data was successfully received</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </parameter>
-        <parameter name="time_" transfer-ownership="none">
-          <doc xml:space="preserve">the timestamp for this operation</doc>
-          <type name="guint32" c:type="guint32"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="drop_read_async" c:identifier="gdk_drop_read_async">
-      <doc xml:space="preserve">Asynchronously read the dropped data from a DND context
-in a format that complies with one of the mime types.</doc>
-      <return-value transfer-ownership="none">
-        <type name="none" c:type="void"/>
-      </return-value>
-      <parameters>
-        <parameter name="context" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkDragContext</doc>
-          <type name="DragContext" c:type="GdkDragContext*"/>
-        </parameter>
-        <parameter name="mime_types" transfer-ownership="none">
-          <doc xml:space="preserve">pointer to an array of mime types</doc>
-          <array c:type="char**">
-            <type name="utf8"/>
-          </array>
-        </parameter>
-        <parameter name="io_priority" transfer-ownership="none">
-          <doc xml:space="preserve">the io priority for the read operation</doc>
-          <type name="gint" c:type="int"/>
-        </parameter>
-        <parameter name="cancellable"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore</doc>
-          <type name="Gio.Cancellable" c:type="GCancellable*"/>
-        </parameter>
-        <parameter name="callback"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1"
-                   scope="async"
-                   closure="5">
-          <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
-          <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
-        </parameter>
-        <parameter name="user_data"
-                   transfer-ownership="none"
-                   nullable="1"
-                   allow-none="1">
-          <doc xml:space="preserve">the data to pass to @callback</doc>
-          <type name="gpointer" c:type="gpointer"/>
-        </parameter>
-      </parameters>
-    </function>
-    <function name="drop_read_finish"
-              c:identifier="gdk_drop_read_finish"
-              throws="1">
-      <doc xml:space="preserve">Finishes an async drop read operation, see gdk_drop_read_async().</doc>
-      <return-value transfer-ownership="full" nullable="1">
-        <doc xml:space="preserve">the #GInputStream, or %NULL</doc>
-        <type name="Gio.InputStream" c:type="GInputStream*"/>
-      </return-value>
-      <parameters>
-        <parameter name="context" transfer-ownership="none">
-          <doc xml:space="preserve">a #GdkDragContext</doc>
-          <type name="DragContext" c:type="GdkDragContext*"/>
-        </parameter>
-        <parameter name="out_mime_type"
-                   direction="out"
-                   caller-allocates="0"
-                   transfer-ownership="full">
-          <doc xml:space="preserve">return location for the used mime type</doc>
-          <type name="utf8" c:type="const char**"/>
-        </parameter>
-        <parameter name="result" transfer-ownership="none">
-          <doc xml:space="preserve">a #GAsyncResult</doc>
-          <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
         </parameter>
       </parameters>
     </function>

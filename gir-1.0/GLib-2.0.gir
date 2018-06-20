@@ -11559,7 +11559,7 @@ If @group_name is %NULL, the start_group is used.</doc>
           </parameter>
           <parameter name="list" transfer-ownership="none">
             <doc xml:space="preserve">an array of boolean values</doc>
-            <array length="3" zero-terminated="0" c:type="gboolean">
+            <array length="3" zero-terminated="0" c:type="gboolean*">
               <type name="gboolean" c:type="gboolean"/>
             </array>
           </parameter>
@@ -11660,7 +11660,7 @@ If @key cannot be found then it is created.</doc>
           </parameter>
           <parameter name="list" transfer-ownership="none">
             <doc xml:space="preserve">an array of double values</doc>
-            <array length="3" zero-terminated="0" c:type="gdouble">
+            <array length="3" zero-terminated="0" c:type="gdouble*">
               <type name="gdouble" c:type="gdouble"/>
             </array>
           </parameter>
@@ -11747,7 +11747,7 @@ If @key cannot be found then it is created.</doc>
           </parameter>
           <parameter name="list" transfer-ownership="none">
             <doc xml:space="preserve">an array of integer values</doc>
-            <array length="3" zero-terminated="0" c:type="gint">
+            <array length="3" zero-terminated="0" c:type="gint*">
               <type name="gint" c:type="gint"/>
             </array>
           </parameter>
@@ -11836,8 +11836,8 @@ it is created.</doc>
           </parameter>
           <parameter name="list" transfer-ownership="none">
             <doc xml:space="preserve">a %NULL-terminated array of locale string values</doc>
-            <array length="4" zero-terminated="1" c:type="gchar*">
-              <type name="utf8" c:type="gchar"/>
+            <array length="4" zero-terminated="1" c:type="gchar**">
+              <type name="utf8" c:type="gchar*"/>
             </array>
           </parameter>
           <parameter name="length" transfer-ownership="none">
@@ -11900,7 +11900,7 @@ If @group_name cannot be found then it is created.</doc>
           </parameter>
           <parameter name="list" transfer-ownership="none">
             <doc xml:space="preserve">an array of string values</doc>
-            <array length="3" zero-terminated="1" c:type="gchar*">
+            <array length="3" zero-terminated="1" c:type="gchar**">
               <type name="utf8"/>
             </array>
           </parameter>
@@ -24593,7 +24593,8 @@ called from the source's dispatch function.
 
 The exact type of @func depends on the type of source; ie. you
 should not count on @func being called with @data as its first
-parameter.
+parameter. Cast @func with G_SOURCE_FUNC() to avoid warnings about
+incompatible function types.
 
 See [memory management of sources][mainloop-memory-management] for details
 on how to handle memory management of @data.
@@ -24977,7 +24978,11 @@ which cannot be used here for dependency reasons.</doc>
     </callback>
     <callback name="SourceFunc" c:type="GSourceFunc">
       <doc xml:space="preserve">Specifies the type of function passed to g_timeout_add(),
-g_timeout_add_full(), g_idle_add(), and g_idle_add_full().</doc>
+g_timeout_add_full(), g_idle_add(), and g_idle_add_full().
+
+When calling g_source_set_callback(), you may need to cast a function of a
+different type to this type. Use G_SOURCE_FUNC() to avoid warnings about
+incompatible function types.</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%FALSE if the source should be removed. #G_SOURCE_CONTINUE and
 #G_SOURCE_REMOVE are more memorable names for the return value.</doc>
@@ -29915,7 +29920,7 @@ new instance takes ownership of them as if via g_variant_ref_sink().</doc>
         <parameters>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve">a #guint8 value</doc>
-            <type name="guint8" c:type="guchar"/>
+            <type name="guint8" c:type="guint8"/>
           </parameter>
         </parameters>
       </constructor>
@@ -30984,8 +30989,8 @@ other than %G_VARIANT_TYPE_BOOLEAN.</doc>
 It is an error to call this function with a @value of any type
 other than %G_VARIANT_TYPE_BYTE.</doc>
         <return-value transfer-ownership="none">
-          <doc xml:space="preserve">a #guchar</doc>
-          <type name="guint8" c:type="guchar"/>
+          <doc xml:space="preserve">a #guint8</doc>
+          <type name="guint8" c:type="guint8"/>
         </return-value>
         <parameters>
           <instance-parameter name="value" transfer-ownership="none">
@@ -31221,7 +31226,7 @@ as an array of the given C type, with @element_size set to the size
 the appropriate type:
 - %G_VARIANT_TYPE_INT16 (etc.): #gint16 (etc.)
 - %G_VARIANT_TYPE_BOOLEAN: #guchar (not #gboolean!)
-- %G_VARIANT_TYPE_BYTE: #guchar
+- %G_VARIANT_TYPE_BYTE: #guint8
 - %G_VARIANT_TYPE_HANDLE: #guint32
 - %G_VARIANT_TYPE_DOUBLE: #gdouble
 
@@ -38293,6 +38298,17 @@ file which is then renamed to the final name. Notes:
   lists, metadata etc. may be lost. If @filename is a symbolic link,
   the link itself will be replaced, not the linked file.
 
+- On UNIX, if @filename already exists and is non-empty, and if the system
+  supports it (via a journalling filesystem or equivalent), the fsync()
+  call (or equivalent) will be used to ensure atomic replacement: @filename
+  will contain either its old contents or @contents, even in the face of
+  system power loss, the disk being unsafely removed, etc.
+
+- On UNIX, if @filename does not already exist or is empty, there is a
+  possibility that system power loss etc. after calling this function will
+  leave @filename empty or full of NUL bytes, depending on the underlying
+  filesystem.
+
 - On Windows renaming a file will not remove an existing file with the
   new name, so on Windows there is a race condition between the existing
   file being removed and the temporary file being renamed.
@@ -44831,9 +44847,9 @@ if they are equal. It can be passed to g_hash_table_new() as the
 @key_equal_func parameter, when using non-%NULL strings as keys in a
 #GHashTable.
 
-Note that this function is primarily meant as a hash table comparison
-function. For a general-purpose, %NULL-safe string comparison function,
-see g_strcmp0().</doc>
+This function is typically used for hash table comparisons, but can be used
+for general purpose comparisons of non-%NULL strings. For a %NULL-safe string
+comparison function, see g_strcmp0().</doc>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if the two keys match</doc>
         <type name="gboolean" c:type="gboolean"/>

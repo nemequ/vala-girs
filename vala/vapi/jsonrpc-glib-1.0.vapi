@@ -21,7 +21,7 @@ namespace Jsonrpc {
 		[Version (since = "3.26")]
 		public bool get_use_gvariant ();
 		[Version (since = "3.26")]
-		public bool reply (GLib.Variant id, GLib.Variant result, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool reply (GLib.Variant id, GLib.Variant? result, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool reply_async (GLib.Variant id, GLib.Variant result, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.28")]
 		public async bool reply_error_async (GLib.Variant id, int code, string? message, GLib.Cancellable? cancellable) throws GLib.Error;

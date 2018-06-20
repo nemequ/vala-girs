@@ -78,11 +78,6 @@ for calling soup_auth_domain_add_path().)</doc>
 (The data to pass to the #SoupAuthDomainBasicAuthCallback.)</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="AUTH_DOMAIN_BASIC_H"
-              value="1"
-              c:type="SOUP_AUTH_DOMAIN_BASIC_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="AUTH_DOMAIN_DIGEST_AUTH_CALLBACK"
               value="auth-callback"
               c:type="SOUP_AUTH_DOMAIN_DIGEST_AUTH_CALLBACK">
@@ -96,11 +91,6 @@ for calling soup_auth_domain_add_path().)</doc>
       <doc xml:space="preserve">Alias for the #SoupAuthDomainDigest:auth-callback property.
 (The #SoupAuthDomainDigestAuthCallback.)</doc>
       <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="AUTH_DOMAIN_DIGEST_H"
-              value="1"
-              c:type="SOUP_AUTH_DOMAIN_DIGEST_H">
-      <type name="gint" c:type="gint"/>
     </constant>
     <constant name="AUTH_DOMAIN_FILTER"
               value="filter"
@@ -130,9 +120,6 @@ to pass to the #SoupAuthDomainFilter.)</doc>
 (The data to pass to the #SoupAuthDomainGenericAuthCallback.)</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="AUTH_DOMAIN_H" value="1" c:type="SOUP_AUTH_DOMAIN_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="AUTH_DOMAIN_PROXY"
               value="proxy"
               c:type="SOUP_AUTH_DOMAIN_PROXY">
@@ -154,9 +141,6 @@ this auth domain.)</doc>
 (Shortcut for calling soup_auth_domain_remove_path().)</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="AUTH_H" value="1" c:type="SOUP_AUTH_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="AUTH_HOST" value="host" c:type="SOUP_AUTH_HOST">
       <doc xml:space="preserve">An alias for the #SoupAuth:host property. (The
 host being authenticated to.)</doc>
@@ -175,9 +159,6 @@ host being authenticated to.)</doc>
       <doc xml:space="preserve">An alias for the #SoupAuth:is-for-proxy property. (Whether
 or not the auth is for a proxy server.)</doc>
       <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="AUTH_MANAGER_H" value="1" c:type="SOUP_AUTH_MANAGER_H">
-      <type name="gint" c:type="gint"/>
     </constant>
     <constant name="AUTH_REALM" value="realm" c:type="SOUP_AUTH_REALM">
       <doc xml:space="preserve">An alias for the #SoupAuth:realm property. (The
@@ -1366,15 +1347,23 @@ response to.</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="challenge">
+      <virtual-method name="challenge" invoker="challenge">
+        <doc xml:space="preserve">Adds a "WWW-Authenticate" or "Proxy-Authenticate" header to @msg,
+requesting that the client authenticate, and sets @msg's status
+accordingly.
+
+This is used by #SoupServer internally and is probably of no use to
+anyone else.</doc>
         <return-value transfer-ownership="full">
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="domain" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupAuthDomain</doc>
             <type name="AuthDomain" c:type="SoupAuthDomain*"/>
           </instance-parameter>
           <parameter name="msg" transfer-ownership="none">
+            <doc xml:space="preserve">a #SoupMessage</doc>
             <type name="Message" c:type="SoupMessage*"/>
           </parameter>
         </parameters>
@@ -1452,48 +1441,6 @@ construct time.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="basic_set_auth_callback"
-              c:identifier="soup_auth_domain_basic_set_auth_callback">
-        <doc xml:space="preserve">Sets the callback that @domain will use to authenticate incoming
-requests. For each request containing authorization, @domain will
-invoke the callback, and then either accept or reject the request
-based on @callback's return value.
-
-You can also set the auth callback by setting the
-%SOUP_AUTH_DOMAIN_BASIC_AUTH_CALLBACK and
-%SOUP_AUTH_DOMAIN_BASIC_AUTH_DATA properties, which can also be
-used to set the callback at construct time.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="domain" transfer-ownership="none">
-            <doc xml:space="preserve">the domain</doc>
-            <type name="AuthDomain" c:type="SoupAuthDomain*"/>
-          </instance-parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     scope="notified"
-                     closure="1"
-                     destroy="2">
-            <doc xml:space="preserve">the callback</doc>
-            <type name="AuthDomainBasicAuthCallback"
-                  c:type="SoupAuthDomainBasicAuthCallback"/>
-          </parameter>
-          <parameter name="user_data"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">data to pass to @auth_callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-          <parameter name="dnotify" transfer-ownership="none" scope="async">
-            <doc xml:space="preserve">destroy notifier to free @user_data when @domain
-is destroyed</doc>
-            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="challenge" c:identifier="soup_auth_domain_challenge">
         <doc xml:space="preserve">Adds a "WWW-Authenticate" or "Proxy-Authenticate" header to @msg,
 requesting that the client authenticate, and sets @msg's status
@@ -1563,48 +1510,6 @@ anyone else.</doc>
           <parameter name="msg" transfer-ownership="none">
             <doc xml:space="preserve">a #SoupMessage</doc>
             <type name="Message" c:type="SoupMessage*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="digest_set_auth_callback"
-              c:identifier="soup_auth_domain_digest_set_auth_callback">
-        <doc xml:space="preserve">Sets the callback that @domain will use to authenticate incoming
-requests. For each request containing authorization, @domain will
-invoke the callback, and then either accept or reject the request
-based on @callback's return value.
-
-You can also set the auth callback by setting the
-%SOUP_AUTH_DOMAIN_DIGEST_AUTH_CALLBACK and
-%SOUP_AUTH_DOMAIN_DIGEST_AUTH_DATA properties, which can also be
-used to set the callback at construct time.</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="domain" transfer-ownership="none">
-            <doc xml:space="preserve">the domain</doc>
-            <type name="AuthDomain" c:type="SoupAuthDomain*"/>
-          </instance-parameter>
-          <parameter name="callback"
-                     transfer-ownership="none"
-                     scope="notified"
-                     closure="1"
-                     destroy="2">
-            <doc xml:space="preserve">the callback</doc>
-            <type name="AuthDomainDigestAuthCallback"
-                  c:type="SoupAuthDomainDigestAuthCallback"/>
-          </parameter>
-          <parameter name="user_data"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">data to pass to @auth_callback</doc>
-            <type name="gpointer" c:type="gpointer"/>
-          </parameter>
-          <parameter name="dnotify" transfer-ownership="none" scope="async">
-            <doc xml:space="preserve">destroy notifier to free @user_data when @domain
-is destroyed</doc>
-            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
           </parameter>
         </parameters>
       </method>
@@ -1768,7 +1673,8 @@ is destroyed</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="filter" writable="1" transfer-ownership="none">
-        <type name="gpointer" c:type="gpointer"/>
+        <doc xml:space="preserve">The #SoupAuthDomainFilter for the domain</doc>
+        <type name="AuthDomainFilter" c:type="gpointer"/>
       </property>
       <property name="filter-data" writable="1" transfer-ownership="none">
         <type name="gpointer" c:type="gpointer"/>
@@ -1776,7 +1682,8 @@ is destroyed</doc>
       <property name="generic-auth-callback"
                 writable="1"
                 transfer-ownership="none">
-        <type name="gpointer" c:type="gpointer"/>
+        <doc xml:space="preserve">The #SoupAuthDomainGenericAuthCallback for the domain</doc>
+        <type name="AuthDomainGenericAuthCallback" c:type="gpointer"/>
       </property>
       <property name="generic-auth-data"
                 writable="1"
@@ -1834,10 +1741,54 @@ parameters are optional.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <method name="set_auth_callback"
+              c:identifier="soup_auth_domain_basic_set_auth_callback">
+        <doc xml:space="preserve">Sets the callback that @domain will use to authenticate incoming
+requests. For each request containing authorization, @domain will
+invoke the callback, and then either accept or reject the request
+based on @callback's return value.
+
+You can also set the auth callback by setting the
+%SOUP_AUTH_DOMAIN_BASIC_AUTH_CALLBACK and
+%SOUP_AUTH_DOMAIN_BASIC_AUTH_DATA properties, which can also be
+used to set the callback at construct time.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="domain" transfer-ownership="none">
+            <doc xml:space="preserve">the domain</doc>
+            <type name="AuthDomainBasic" c:type="SoupAuthDomain*"/>
+          </instance-parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="1"
+                     destroy="2">
+            <doc xml:space="preserve">the callback</doc>
+            <type name="AuthDomainBasicAuthCallback"
+                  c:type="SoupAuthDomainBasicAuthCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">data to pass to @auth_callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="dnotify" transfer-ownership="none" scope="async">
+            <doc xml:space="preserve">destroy notifier to free @user_data when @domain
+is destroyed</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="auth-callback" writable="1" transfer-ownership="none">
-        <type name="gpointer" c:type="gpointer"/>
+        <doc xml:space="preserve">The #SoupAuthDomainBasicAuthCallback</doc>
+        <type name="AuthDomainBasicAuthCallback" c:type="gpointer"/>
       </property>
       <property name="auth-data" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The data to pass to the #SoupAuthDomainBasicAuthCallback</doc>
         <type name="gpointer" c:type="gpointer"/>
       </property>
       <field name="parent">
@@ -1867,7 +1818,7 @@ as well.</doc>
       <parameters>
         <parameter name="domain" transfer-ownership="none">
           <doc xml:space="preserve">the domain</doc>
-          <type name="AuthDomain" c:type="SoupAuthDomain*"/>
+          <type name="AuthDomainBasic" c:type="SoupAuthDomain*"/>
         </parameter>
         <parameter name="msg" transfer-ownership="none">
           <doc xml:space="preserve">the message being authenticated</doc>
@@ -1957,9 +1908,11 @@ as well.</doc>
           </return-value>
           <parameters>
             <parameter name="domain" transfer-ownership="none">
+              <doc xml:space="preserve">a #SoupAuthDomain</doc>
               <type name="AuthDomain" c:type="SoupAuthDomain*"/>
             </parameter>
             <parameter name="msg" transfer-ownership="none">
+              <doc xml:space="preserve">a #SoupMessage</doc>
               <type name="Message" c:type="SoupMessage*"/>
             </parameter>
           </parameters>
@@ -2076,10 +2029,54 @@ the encoded password stored in an Apache .htdigest file.)</doc>
           </parameter>
         </parameters>
       </function>
+      <method name="set_auth_callback"
+              c:identifier="soup_auth_domain_digest_set_auth_callback">
+        <doc xml:space="preserve">Sets the callback that @domain will use to authenticate incoming
+requests. For each request containing authorization, @domain will
+invoke the callback, and then either accept or reject the request
+based on @callback's return value.
+
+You can also set the auth callback by setting the
+%SOUP_AUTH_DOMAIN_DIGEST_AUTH_CALLBACK and
+%SOUP_AUTH_DOMAIN_DIGEST_AUTH_DATA properties, which can also be
+used to set the callback at construct time.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="domain" transfer-ownership="none">
+            <doc xml:space="preserve">the domain</doc>
+            <type name="AuthDomainDigest" c:type="SoupAuthDomain*"/>
+          </instance-parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="1"
+                     destroy="2">
+            <doc xml:space="preserve">the callback</doc>
+            <type name="AuthDomainDigestAuthCallback"
+                  c:type="SoupAuthDomainDigestAuthCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">data to pass to @auth_callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="dnotify" transfer-ownership="none" scope="async">
+            <doc xml:space="preserve">destroy notifier to free @user_data when @domain
+is destroyed</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="auth-callback" writable="1" transfer-ownership="none">
-        <type name="gpointer" c:type="gpointer"/>
+        <doc xml:space="preserve">The #SoupAuthDomainDigestAuthCallback</doc>
+        <type name="AuthDomainDigestAuthCallback" c:type="gpointer"/>
       </property>
       <property name="auth-data" writable="1" transfer-ownership="none">
+        <doc xml:space="preserve">The data to pass to the #SoupAuthDomainDigestAuthCallback</doc>
         <type name="gpointer" c:type="gpointer"/>
       </property>
       <field name="parent">
@@ -2101,7 +2098,7 @@ it is done with it.</doc>
       <parameters>
         <parameter name="domain" transfer-ownership="none">
           <doc xml:space="preserve">the domain</doc>
-          <type name="AuthDomain" c:type="SoupAuthDomain*"/>
+          <type name="AuthDomainDigest" c:type="SoupAuthDomain*"/>
         </parameter>
         <parameter name="msg" transfer-ownership="none">
           <doc xml:space="preserve">the message being authenticated</doc>
@@ -2634,9 +2631,6 @@ any data, but will instead simply reference the same data as
                 glib:type-name="SoupByteArray"
                 glib:get-type="soup_byte_array_get_type">
     </glib:boxed>
-    <constant name="CACHE_H" value="1" c:type="SOUP_CACHE_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="CHAR_HTTP_CTL" value="16" c:type="SOUP_CHAR_HTTP_CTL">
       <type name="gint" c:type="gint"/>
     </constant>
@@ -2660,19 +2654,6 @@ any data, but will instead simply reference the same data as
               c:type="SOUP_CHAR_URI_SUB_DELIMS">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="CONTENT_DECODER_H"
-              value="1"
-              c:type="SOUP_CONTENT_DECODER_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="CONTENT_SNIFFER_H"
-              value="1"
-              c:type="SOUP_CONTENT_SNIFFER_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="COOKIE_H" value="1" c:type="SOUP_COOKIE_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="COOKIE_JAR_ACCEPT_POLICY"
               value="accept-policy"
               c:type="SOUP_COOKIE_JAR_ACCEPT_POLICY"
@@ -2687,12 +2668,6 @@ any data, but will instead simply reference the same data as
 cookie-storage filename.)</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="COOKIE_JAR_DB_H" value="1" c:type="SOUP_COOKIE_JAR_DB_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="COOKIE_JAR_H" value="1" c:type="SOUP_COOKIE_JAR_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="COOKIE_JAR_READ_ONLY"
               value="read-only"
               c:type="SOUP_COOKIE_JAR_READ_ONLY">
@@ -2706,11 +2681,6 @@ or not the cookie jar is read-only.)</doc>
       <doc xml:space="preserve">Alias for the #SoupCookieJarText:filename property. (The
 cookie-storage filename.)</doc>
       <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="COOKIE_JAR_TEXT_H"
-              value="1"
-              c:type="SOUP_COOKIE_JAR_TEXT_H">
-      <type name="gint" c:type="gint"/>
     </constant>
     <constant name="COOKIE_MAX_AGE_ONE_DAY"
               value="0"
@@ -4743,9 +4713,6 @@ jar is destroyed.)</doc>
         </callback>
       </field>
     </record>
-    <constant name="DATE_H" value="1" c:type="SOUP_DATE_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <record name="Date"
             c:type="SoupDate"
             glib:type-name="SoupDate"
@@ -5205,9 +5172,6 @@ use: NOT CURRENTLY IMPLEMENTED)</doc>
         <doc xml:space="preserve">"100-continue"</doc>
       </member>
     </bitfield>
-    <constant name="FORM_H" value="1" c:type="SOUP_FORM_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="FORM_MIME_TYPE_MULTIPART"
               value="multipart/form-data"
               c:type="SOUP_FORM_MIME_TYPE_MULTIPART"
@@ -5225,9 +5189,6 @@ posting form data that contains files to be uploaded.</doc>
 &lt;literal&gt;"application/x-www-form-urlencoded"&lt;/literal&gt;; the default
 MIME type for POSTing HTML form data.</doc>
       <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="HEADERS_H" value="1" c:type="SOUP_HEADERS_H">
-      <type name="gint" c:type="gint"/>
     </constant>
     <enumeration name="HTTPVersion"
                  glib:type-name="SoupHTTPVersion"
@@ -5567,9 +5528,6 @@ MIME type for POSTing HTML form data.</doc>
               glib:nick="not-extended">
       </member>
     </enumeration>
-    <constant name="LOGGER_H" value="1" c:type="SOUP_LOGGER_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="LOGGER_LEVEL"
               value="level"
               c:type="SOUP_LOGGER_LEVEL"
@@ -5929,9 +5887,6 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MESSAGE_BODY_H" value="1" c:type="SOUP_MESSAGE_BODY_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="MESSAGE_FIRST_PARTY"
               value="first-party"
               c:type="SOUP_MESSAGE_FIRST_PARTY"
@@ -5945,14 +5900,6 @@ queued.)</doc>
       <doc xml:space="preserve">Alias for the #SoupMessage:flags property. (The message's
 #SoupMessageFlags.)</doc>
       <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="MESSAGE_H" value="1" c:type="SOUP_MESSAGE_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="MESSAGE_HEADERS_H"
-              value="1"
-              c:type="SOUP_MESSAGE_HEADERS_H">
-      <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MESSAGE_HTTP_VERSION"
               value="http-version"
@@ -6062,9 +6009,6 @@ verification errors on #SoupMessage:tls-certificate.)</doc>
 #SoupURI.)</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="METHOD_H" value="1" c:type="SOUP_METHOD_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="MICRO_VERSION"
               value="2"
               c:type="SOUP_MICRO_VERSION"
@@ -6081,17 +6025,6 @@ against at application run time.</doc>
       <doc xml:space="preserve">Like soup_get_minor_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="MISC_H" value="1" c:type="SOUP_MISC_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="MULTIPART_H" value="1" c:type="SOUP_MULTIPART_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="MULTIPART_INPUT_STREAM_H"
-              value="1"
-              c:type="SOUP_MULTIPART_INPUT_STREAM_H">
       <type name="gint" c:type="gint"/>
     </constant>
     <enumeration name="MemoryUse"
@@ -9313,21 +9246,6 @@ more parts.</doc>
             c:type="SoupMultipartInputStreamPrivate"
             disguised="1">
     </record>
-    <constant name="PASSWORD_MANAGER_H"
-              value="1"
-              c:type="SOUP_PASSWORD_MANAGER_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="PROXY_RESOLVER_DEFAULT_H"
-              value="1"
-              c:type="SOUP_PROXY_RESOLVER_DEFAULT_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="PROXY_URI_RESOLVER_H"
-              value="1"
-              c:type="SOUP_PROXY_URI_RESOLVER_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <interface name="PasswordManager"
                c:symbol-prefix="password_manager"
                c:type="SoupPasswordManager"
@@ -9571,6 +9489,181 @@ more parts.</doc>
         </callback>
       </field>
     </record>
+    <interface name="ProxyResolver"
+               c:symbol-prefix="proxy_resolver"
+               c:type="SoupProxyResolver"
+               glib:type-name="SoupProxyResolver"
+               glib:get-type="soup_proxy_resolver_get_type"
+               glib:type-struct="ProxyResolverInterface">
+      <prerequisite name="SessionFeature"/>
+      <virtual-method name="get_proxy_async"
+                      invoker="get_proxy_async"
+                      deprecated="1"
+                      deprecated-version="2.28">
+        <doc-deprecated xml:space="preserve">Use SoupProxyURIResolver.get_proxy_uri_async instead</doc-deprecated>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy_resolver" transfer-ownership="none">
+            <type name="ProxyResolver" c:type="SoupProxyResolver*"/>
+          </instance-parameter>
+          <parameter name="msg" transfer-ownership="none">
+            <type name="Message" c:type="SoupMessage*"/>
+          </parameter>
+          <parameter name="async_context" transfer-ownership="none">
+            <type name="GLib.MainContext" c:type="GMainContext*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="async"
+                     closure="4">
+            <type name="ProxyResolverCallback"
+                  c:type="SoupProxyResolverCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     closure="4">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_proxy_sync"
+                      invoker="get_proxy_sync"
+                      deprecated="1"
+                      deprecated-version="2.28">
+        <doc-deprecated xml:space="preserve">Use SoupProxyURIResolver.get_proxy_uri_sync() instead</doc-deprecated>
+        <return-value transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy_resolver" transfer-ownership="none">
+            <type name="ProxyResolver" c:type="SoupProxyResolver*"/>
+          </instance-parameter>
+          <parameter name="msg" transfer-ownership="none">
+            <type name="Message" c:type="SoupMessage*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="addr"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none">
+            <type name="Address" c:type="SoupAddress**"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <method name="get_proxy_async"
+              c:identifier="soup_proxy_resolver_get_proxy_async"
+              deprecated="1"
+              deprecated-version="2.28">
+        <doc-deprecated xml:space="preserve">Use SoupProxyURIResolver.get_proxy_uri_async instead</doc-deprecated>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy_resolver" transfer-ownership="none">
+            <type name="ProxyResolver" c:type="SoupProxyResolver*"/>
+          </instance-parameter>
+          <parameter name="msg" transfer-ownership="none">
+            <type name="Message" c:type="SoupMessage*"/>
+          </parameter>
+          <parameter name="async_context" transfer-ownership="none">
+            <type name="GLib.MainContext" c:type="GMainContext*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="async"
+                     closure="4">
+            <type name="ProxyResolverCallback"
+                  c:type="SoupProxyResolverCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_proxy_sync"
+              c:identifier="soup_proxy_resolver_get_proxy_sync"
+              deprecated="1"
+              deprecated-version="2.28">
+        <doc-deprecated xml:space="preserve">Use SoupProxyURIResolver.get_proxy_uri_sync() instead</doc-deprecated>
+        <return-value transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="proxy_resolver" transfer-ownership="none">
+            <type name="ProxyResolver" c:type="SoupProxyResolver*"/>
+          </instance-parameter>
+          <parameter name="msg" transfer-ownership="none">
+            <type name="Message" c:type="SoupMessage*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="addr"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="none">
+            <type name="Address" c:type="SoupAddress**"/>
+          </parameter>
+        </parameters>
+      </method>
+    </interface>
+    <callback name="ProxyResolverCallback"
+              c:type="SoupProxyResolverCallback"
+              deprecated="1"
+              deprecated-version="2.28">
+      <doc-deprecated xml:space="preserve">Use SoupProxyURIResolver instead</doc-deprecated>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="proxy_resolver" transfer-ownership="none">
+          <type name="ProxyResolver" c:type="SoupProxyResolver*"/>
+        </parameter>
+        <parameter name="msg" transfer-ownership="none">
+          <type name="Message" c:type="SoupMessage*"/>
+        </parameter>
+        <parameter name="arg" transfer-ownership="none">
+          <type name="guint" c:type="guint"/>
+        </parameter>
+        <parameter name="addr" transfer-ownership="none">
+          <type name="Address" c:type="SoupAddress*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <class name="ProxyResolverDefault"
            c:symbol-prefix="proxy_resolver_default"
            c:type="SoupProxyResolverDefault"
@@ -9595,6 +9688,78 @@ more parts.</doc>
             glib:is-gtype-struct-for="ProxyResolverDefault">
       <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <record name="ProxyResolverInterface"
+            c:type="SoupProxyResolverInterface"
+            glib:is-gtype-struct-for="ProxyResolver">
+      <field name="base">
+        <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
+      </field>
+      <field name="get_proxy_async">
+        <callback name="get_proxy_async">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="proxy_resolver" transfer-ownership="none">
+              <type name="ProxyResolver" c:type="SoupProxyResolver*"/>
+            </parameter>
+            <parameter name="msg" transfer-ownership="none">
+              <type name="Message" c:type="SoupMessage*"/>
+            </parameter>
+            <parameter name="async_context" transfer-ownership="none">
+              <type name="GLib.MainContext" c:type="GMainContext*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="callback"
+                       transfer-ownership="none"
+                       scope="async"
+                       closure="5">
+              <type name="ProxyResolverCallback"
+                    c:type="SoupProxyResolverCallback"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="5">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_proxy_sync">
+        <callback name="get_proxy_sync">
+          <return-value transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </return-value>
+          <parameters>
+            <parameter name="proxy_resolver" transfer-ownership="none">
+              <type name="ProxyResolver" c:type="SoupProxyResolver*"/>
+            </parameter>
+            <parameter name="msg" transfer-ownership="none">
+              <type name="Message" c:type="SoupMessage*"/>
+            </parameter>
+            <parameter name="cancellable"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <type name="Gio.Cancellable" c:type="GCancellable*"/>
+            </parameter>
+            <parameter name="addr"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="none">
+              <type name="Address" c:type="SoupAddress**"/>
+            </parameter>
+          </parameters>
+        </callback>
       </field>
     </record>
     <interface name="ProxyURIResolver"
@@ -9934,21 +10099,6 @@ error.</doc>
         </callback>
       </field>
     </record>
-    <constant name="REQUESTER_H" value="1" c:type="SOUP_REQUESTER_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="REQUEST_DATA_H" value="1" c:type="SOUP_REQUEST_DATA_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="REQUEST_FILE_H" value="1" c:type="SOUP_REQUEST_FILE_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="REQUEST_H" value="1" c:type="SOUP_REQUEST_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="REQUEST_HTTP_H" value="1" c:type="SOUP_REQUEST_HTTP_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="REQUEST_SESSION"
               value="session"
               c:type="SOUP_REQUEST_SESSION"
@@ -10691,9 +10841,6 @@ property, qv.</doc>
 rather than having an explicitly-specified one.</doc-deprecated>
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="SERVER_H" value="1" c:type="SOUP_SERVER_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="SERVER_HTTPS_ALIASES"
               value="https-aliases"
               c:type="SOUP_SERVER_HTTPS_ALIASES"
@@ -10805,17 +10952,6 @@ soup_server_set_ssl_certificate().</doc-deprecated>
       <doc xml:space="preserve">Alias for the #SoupSession:async-context property, qv.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="SESSION_ASYNC_H" value="1" c:type="SOUP_SESSION_ASYNC_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="SESSION_FEATURE_H"
-              value="1"
-              c:type="SOUP_SESSION_FEATURE_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="SESSION_H" value="1" c:type="SOUP_SESSION_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="SESSION_HTTPS_ALIASES"
               value="https-aliases"
               c:type="SOUP_SESSION_HTTPS_ALIASES"
@@ -10898,9 +11034,6 @@ qv.</doc>
 qv.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="SESSION_SYNC_H" value="1" c:type="SOUP_SESSION_SYNC_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="SESSION_TIMEOUT"
               value="timeout"
               c:type="SOUP_SESSION_TIMEOUT">
@@ -10953,9 +11086,6 @@ socket's #GMainContext.)</doc>
       <doc xml:space="preserve">Alias for the #SoupSocket:non-blocking property. (Whether
 or not the socket uses non-blocking I/O.)</doc>
       <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="SOCKET_H" value="1" c:type="SOUP_SOCKET_H">
-      <type name="gint" c:type="gint"/>
     </constant>
     <constant name="SOCKET_IS_SERVER"
               value="is-server"
@@ -11037,9 +11167,6 @@ property.</doc>
       <doc xml:space="preserve">Alias for the #SoupSocket:use-thread-context property. (Use
 g_main_context_get_thread_default())</doc>
       <type name="utf8" c:type="gchar*"/>
-    </constant>
-    <constant name="STATUS_H" value="1" c:type="SOUP_STATUS_H">
-      <type name="gint" c:type="gint"/>
     </constant>
     <class name="Server"
            c:symbol-prefix="server"
@@ -16185,9 +16312,6 @@ through unchanged.</doc>
         </return-value>
       </function>
     </enumeration>
-    <constant name="TYPES_H" value="1" c:type="SOUP_TYPES_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <record name="URI"
             c:type="SoupURI"
             glib:type-name="SoupURI"
@@ -16284,6 +16408,23 @@ those fields are required.)</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">a URI</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_with_base" c:identifier="soup_uri_new_with_base">
+        <doc xml:space="preserve">Parses @uri_string relative to @base.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a parsed #SoupURI.</doc>
+          <type name="URI" c:type="SoupURI*"/>
+        </return-value>
+        <parameters>
+          <parameter name="base" transfer-ownership="none">
+            <doc xml:space="preserve">a base URI</doc>
+            <type name="URI" c:type="SoupURI*"/>
+          </parameter>
+          <parameter name="uri_string" transfer-ownership="none">
+            <doc xml:space="preserve">the URI</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -16490,23 +16631,6 @@ and port.</doc>
             <doc xml:space="preserve">a #SoupURI with a non-%NULL @host member</doc>
             <type name="URI" c:type="gconstpointer"/>
           </instance-parameter>
-        </parameters>
-      </method>
-      <method name="new_with_base" c:identifier="soup_uri_new_with_base">
-        <doc xml:space="preserve">Parses @uri_string relative to @base.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a parsed #SoupURI.</doc>
-          <type name="URI" c:type="SoupURI*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="base" transfer-ownership="none">
-            <doc xml:space="preserve">a base URI</doc>
-            <type name="URI" c:type="SoupURI*"/>
-          </instance-parameter>
-          <parameter name="uri_string" transfer-ownership="none">
-            <doc xml:space="preserve">the URI</doc>
-            <type name="utf8" c:type="const char*"/>
-          </parameter>
         </parameters>
       </method>
       <method name="set_fragment" c:identifier="soup_uri_set_fragment">
@@ -16824,12 +16948,6 @@ soup_uri_new() already did).</doc>
         </parameters>
       </function>
     </record>
-    <constant name="URI_H" value="1" c:type="SOUP_URI_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="VALUE_UTILS_H" value="1" c:type="SOUP_VALUE_UTILS_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <constant name="VERSION_MIN_REQUIRED"
               value="2"
               c:type="SOUP_VERSION_MIN_REQUIRED"
@@ -17866,12 +17984,6 @@ Deserialization details:
         </parameters>
       </method>
     </record>
-    <constant name="XMLRPC_H" value="1" c:type="SOUP_XMLRPC_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="XMLRPC_OLD_H" value="1" c:type="SOUP_XMLRPC_OLD_H">
-      <type name="gint" c:type="gint"/>
-    </constant>
     <function name="add_completion"
               c:identifier="soup_add_completion"
               version="2.24"
