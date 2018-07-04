@@ -614,6 +614,10 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_get_type ()")]
 	public abstract class Device : NM.Object, GLib.AsyncInitable, GLib.Initable {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_6LOWPAN_HW_ADDRESS")]
+		public const string @6LOWPAN_HW_ADDRESS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_6LOWPAN_PARENT")]
+		public const string @6LOWPAN_PARENT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_ACTIVE_CONNECTION")]
 		public const string ACTIVE_CONNECTION;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_AUTOCONNECT")]
@@ -782,6 +786,8 @@ namespace NM {
 		public const string VXLAN_TOS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_TTL")]
 		public const string VXLAN_TTL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WPAN_HW_ADDRESS")]
+		public const string WPAN_HW_ADDRESS;
 		[CCode (has_construct_function = false)]
 		protected Device ();
 		public virtual bool connection_compatible (NM.Connection connection) throws GLib.Error;
@@ -874,6 +880,19 @@ namespace NM {
 		public string udi { get; }
 		public string vendor { get; }
 		public virtual signal void state_changed (uint new_state, uint old_state, uint reason);
+	}
+	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_6lowpan", type_id = "nm_device_6lowpan_get_type ()")]
+	public class Device6Lowpan : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected Device6Lowpan ();
+		[Version (since = "1.14")]
+		public unowned string get_hw_address ();
+		[Version (since = "1.14")]
+		public unowned NM.Device get_parent ();
+		[Version (since = "1.14")]
+		public string hw_address { get; }
+		[Version (since = "1.14")]
+		public NM.Device parent { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_adsl_get_type ()")]
 	public class DeviceAdsl : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -1451,6 +1470,13 @@ namespace NM {
 		[Version (deprecated = true, deprecated_since = "1.2")]
 		public virtual signal void nsp_removed (GLib.Object nsp);
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_wpan_get_type ()")]
+	public class DeviceWpan : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected DeviceWpan ();
+		public unowned string get_hw_address ();
+		public string hw_address { get; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_dhcp_config_get_type ()")]
 	public abstract class DhcpConfig : NM.Object, GLib.AsyncInitable, GLib.Initable {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DHCP_CONFIG_OPTIONS")]
@@ -1707,6 +1733,17 @@ namespace NM {
 		[Version (since = "1.2")]
 		public virtual bool verify_secrets (NM.Connection? connection) throws GLib.Error;
 		public string name { get; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_6lowpan", type_id = "nm_setting_6lowpan_get_type ()")]
+	public class Setting6Lowpan : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.14")]
+		public Setting6Lowpan ();
+		[Version (since = "1.14")]
+		public unowned string get_parent ();
+		[NoAccessorMethod]
+		[Version (since = "1.14")]
+		public string parent { owned get; set construct; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_802_1x", type_id = "nm_setting_802_1x_get_type ()")]
 	public class Setting8021x : NM.Setting {
@@ -4251,6 +4288,24 @@ namespace NM {
 		[Version (since = "1.10")]
 		public uint wps_method { get; set construct; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_wpan_get_type ()")]
+	public class SettingWpan : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.14")]
+		public SettingWpan ();
+		[Version (since = "1.14")]
+		public unowned string get_mac_address ();
+		[Version (since = "1.14")]
+		public uint16 get_pan_id ();
+		[Version (since = "1.14")]
+		public uint16 get_short_address ();
+		[NoAccessorMethod]
+		public string mac_address { owned get; set; }
+		[NoAccessorMethod]
+		public uint pan_id { get; set; }
+		[NoAccessorMethod]
+		public uint short_address { get; set; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_simple_connection_get_type ()")]
 	public class SimpleConnection : GLib.Object, NM.Connection {
 		[CCode (has_construct_function = false)]
@@ -4587,6 +4642,8 @@ namespace NM {
 		public unowned string get_interface_name ();
 		public unowned string get_path ();
 		public unowned NM.Setting get_setting (GLib.Type setting_type);
+		[Version (since = "1.14")]
+		public unowned NM.Setting6Lowpan get_setting_6lowpan ();
 		public unowned NM.Setting8021x get_setting_802_1x ();
 		public unowned NM.SettingAdsl get_setting_adsl ();
 		public unowned NM.SettingBluetooth get_setting_bluetooth ();
@@ -4638,6 +4695,8 @@ namespace NM {
 		public unowned NM.SettingWired get_setting_wired ();
 		public unowned NM.SettingWireless get_setting_wireless ();
 		public unowned NM.SettingWirelessSecurity get_setting_wireless_security ();
+		[Version (since = "1.14")]
+		public unowned NM.SettingWpan get_setting_wpan ();
 		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
 		[Version (since = "1.10")]
 		public (unowned NM.Setting)[] get_settings ();
@@ -4959,7 +5018,9 @@ namespace NM {
 		PPP,
 		OVS_INTERFACE,
 		OVS_PORT,
-		OVS_BRIDGE
+		OVS_BRIDGE,
+		WPAN,
+		@6LOWPAN
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_WIFI_DEVICE_CAP_", type_id = "nm_device_wifi_capabilities_get_type ()")]
 	[Flags]
@@ -5000,7 +5061,9 @@ namespace NM {
 		IP6IP6,
 		IPIP6,
 		IP6GRE,
-		VTI6
+		VTI6,
+		GRETAP,
+		IP6GRETAP
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_METERED_", type_id = "nm_metered_get_type ()")]
 	[Version (since = "1.2")]
@@ -5701,6 +5764,10 @@ namespace NM {
 	public const string SECRET_AGENT_OLD_IDENTIFIER;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_REGISTERED")]
 	public const string SECRET_AGENT_OLD_REGISTERED;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_6LOWPAN_PARENT")]
+	public const string SETTING_6LOWPAN_PARENT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_6LOWPAN_SETTING_NAME")]
+	public const string SETTING_6LOWPAN_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_ATTEMPTS")]
 	public const string SETTING_DNS_OPTION_ATTEMPTS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_DEBUG")]
@@ -5801,6 +5868,14 @@ namespace NM {
 	public const string SETTING_USER_DATA;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_SETTING_NAME")]
 	public const string SETTING_USER_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_MAC_ADDRESS")]
+	public const string SETTING_WPAN_MAC_ADDRESS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_PAN_ID")]
+	public const string SETTING_WPAN_PAN_ID;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_SETTING_NAME")]
+	public const string SETTING_WPAN_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_SHORT_ADDRESS")]
+	public const string SETTING_WPAN_SHORT_ADDRESS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_TEAM_LINK_WATCHER_ARP_PING")]
 	public const string TEAM_LINK_WATCHER_ARP_PING;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_TEAM_LINK_WATCHER_ETHTOOL")]

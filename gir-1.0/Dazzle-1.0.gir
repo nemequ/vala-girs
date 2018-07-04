@@ -2244,6 +2244,16 @@ of the right panel and therefore may set @position to %GTK_POS_RIGHT.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="presented">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="DockItem" c:type="DzlDockItem*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="release" invoker="release">
         <doc xml:space="preserve">This virtual method should remove @child from @self if the
 dock item knows how to do so. For example, the #DzlDockStack
@@ -2328,6 +2338,27 @@ need to implement themselves.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the dock item was closed</doc>
           <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #DzlDockItem</doc>
+            <type name="DockItem" c:type="DzlDockItem*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="emit_presented"
+              c:identifier="dzl_dock_item_emit_presented"
+              version="3.30">
+        <doc xml:space="preserve">Emits the #DzlDockItem::presented signal.
+
+Containers should emit this when their descendant has been presented as the
+current visible child. This allows dock items to do lazy initialization of
+content once the widgetry is visible to the user.
+
+Currently, this is best effort, as there are a number of situations that
+make covering all cases problematic.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -2579,6 +2610,11 @@ need to implement themselves.</doc>
           </parameter>
         </parameters>
       </glib:signal>
+      <glib:signal name="presented" when="last">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
     </interface>
     <record name="DockItemInterface"
             c:type="DzlDockItemInterface"
@@ -2810,6 +2846,18 @@ need to implement themselves.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="presented">
+        <callback name="presented">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="DockItem" c:type="DzlDockItem*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
     </record>
     <class name="DockManager"
            c:symbol-prefix="dock_manager"
@@ -2883,6 +2931,17 @@ grab monitoring will continue.</doc>
           <parameter name="dock" transfer-ownership="none">
             <type name="Dock" c:type="DzlDock*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="release_transient_grab"
+              c:identifier="dzl_dock_manager_release_transient_grab">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="DockManager" c:type="DzlDockManager*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="unpause_grabs"
@@ -3666,6 +3725,16 @@ notify::reveal-child instead.</doc>
           <parameter name="item" transfer-ownership="none">
             <type name="DockItem" c:type="DzlDockItem*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="cancel" c:identifier="dzl_dock_transient_grab_cancel">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="DockTransientGrab" c:type="DzlDockTransientGrab*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="contains" c:identifier="dzl_dock_transient_grab_contains">
@@ -6060,7 +6129,7 @@ when the reference count reaches zero.</doc>
       <implements name="Gtk.Buildable"/>
       <constructor name="new" c:identifier="dzl_list_box_new">
         <return-value transfer-ownership="none">
-          <type name="ListBox" c:type="DzlListBox*"/>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
         </return-value>
         <parameters>
           <parameter name="row_type" transfer-ownership="none">
@@ -11649,7 +11718,9 @@ so that they may be overriden by themes or the end user.</doc>
           </instance-parameter>
           <parameter name="shortcuts" transfer-ownership="none">
             <doc xml:space="preserve">shortcuts to add</doc>
-            <array length="1" zero-terminated="0" c:type="DzlShortcutEntry*">
+            <array length="1"
+                   zero-terminated="0"
+                   c:type="const DzlShortcutEntry*">
               <type name="ShortcutEntry" c:type="DzlShortcutEntry"/>
             </array>
           </parameter>

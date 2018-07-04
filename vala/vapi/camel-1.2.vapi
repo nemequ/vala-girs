@@ -1388,6 +1388,8 @@ namespace Camel {
 		public NullOutputStream ();
 		[Version (since = "3.12")]
 		public size_t get_bytes_written ();
+		[Version (since = "3.30")]
+		public bool get_ends_with_crlf ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_object_get_type ()")]
 	public abstract class Object : GLib.Object {
@@ -1749,6 +1751,8 @@ namespace Camel {
 		public virtual bool get_oauth2_access_token_sync (Camel.Service service, out string? out_access_token, out int out_expires_in, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_online ();
 		public virtual string get_password (Camel.Service service, string prompt, string item, uint32 flags) throws GLib.Error;
+		[Version (since = "3.30")]
+		public virtual bool get_recipient_certificates_sync (uint32 flags, GLib.GenericArray<string> recipients, out GLib.SList<string> out_certificates, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.4")]
 		public unowned string get_user_cache_dir ();
 		[Version (since = "3.2")]
@@ -1995,6 +1999,8 @@ namespace Camel {
 		public StreamNull ();
 		[Version (since = "3.24")]
 		public size_t get_bytes_written ();
+		[Version (since = "3.30")]
+		public bool get_ends_with_crlf ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_stream_process_get_type ()")]
 	public class StreamProcess : Camel.Stream, GLib.Seekable {
@@ -3016,6 +3022,13 @@ namespace Camel {
 		HIDDEN_PATH,
 		FRAGMENT_IS_PATH,
 		PATH_IS_ABSOLUTE
+	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_RECIPIENT_CERTIFICATE_", type_id = "camel_recipient_certificate_flags_get_type ()")]
+	[Flags]
+	[Version (since = "3.30")]
+	public enum RecipientCertificateFlags {
+		SMIME,
+		PGP
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SEXP_RES_", has_type_id = false)]
 	[Version (since = "3.4")]

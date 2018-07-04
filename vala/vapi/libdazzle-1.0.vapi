@@ -233,6 +233,7 @@ namespace Dazzle {
 		public DockManager ();
 		[Version (since = "3.26")]
 		public void pause_grabs ();
+		public void release_transient_grab ();
 		[Version (since = "3.26")]
 		public void unpause_grabs ();
 		[HasEmitter]
@@ -308,6 +309,7 @@ namespace Dazzle {
 		public DockTransientGrab ();
 		public void acquire ();
 		public void add_item (Dazzle.DockItem item);
+		public void cancel ();
 		public bool contains (Dazzle.DockItem item);
 		public uint get_timeout ();
 		public bool is_descendant (Gtk.Widget widget);
@@ -564,7 +566,7 @@ namespace Dazzle {
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_list_box_get_type ()")]
 	public class ListBox : Gtk.ListBox, Atk.Implementor, Gtk.Buildable {
-		[CCode (has_construct_function = false)]
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ListBox (GLib.Type row_type, string property_name);
 		public unowned GLib.ListModel? get_model ();
 		public unowned string get_property_name ();
@@ -1679,6 +1681,8 @@ namespace Dazzle {
 	public interface DockItem : Gtk.Widget {
 		public bool adopt (Dazzle.DockItem child);
 		public abstract bool close ();
+		[Version (since = "3.30")]
+		public void emit_presented ();
 		public abstract bool get_can_close ();
 		[CCode (vfunc_name = "can_minimize")]
 		public abstract bool get_can_minimize (Dazzle.DockItem descendant);
@@ -1696,6 +1700,7 @@ namespace Dazzle {
 		public abstract void set_manager (Dazzle.DockManager? manager);
 		public abstract void update_visibility ();
 		public virtual signal void manager_set (Dazzle.DockManager old_manager);
+		public virtual signal void presented ();
 	}
 	[CCode (cheader_filename = "dazzle.h", lower_case_csuffix = "graph_view_renderer", type_cname = "DzlGraphRendererInterface", type_id = "dzl_graph_view_renderer_get_type ()")]
 	public interface GraphRenderer : GLib.Object {

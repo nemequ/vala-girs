@@ -201,4 +201,7 @@ namespace E {
 	public const string BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS;
 	[CCode (cheader_filename = "libebook/libebook.h")]
 	public static GLib.Quark book_error_quark ();
+	[CCode (cheader_filename = "libebook/libebook.h")]
+	[Version (since = "3.30")]
+	public static bool book_utils_get_recipient_certificates_sync (E.SourceRegistry registry, GLib.SList<E.BookClient>? only_clients, uint32 flags, GLib.GenericArray<string> recipients, out GLib.SList<string> out_certificates, GLib.Cancellable? cancellable = null) throws GLib.Error;
 }
