@@ -129,6 +129,12 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool security_valid (NM.Utils.SecurityType type, NM.DeviceWifiCapabilities wifi_caps, bool have_ap, bool adhoc, NM.80211ApFlags ap_flags, NM.80211ApSecurityFlags ap_wpa, NM.80211ApSecurityFlags ap_rsn);
 		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.14")]
+		public static NM.SriovVF sriov_vf_from_str (string str) throws GLib.Error;
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.14")]
+		public static string sriov_vf_to_str (NM.SriovVF vf, bool omit_index) throws GLib.Error;
+		[CCode (cheader_filename = "NetworkManager.h")]
 		public static string ssid_to_utf8 ([CCode (array_length_cname = "len", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] ssid);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.12")]
@@ -722,6 +728,10 @@ namespace NM {
 		public const string MTU;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_NM_PLUGIN_MISSING")]
 		public const string NM_PLUGIN_MISSING;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_OVS_BRIDGE_SLAVES")]
+		public const string OVS_BRIDGE_SLAVES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_OVS_PORT_SLAVES")]
+		public const string OVS_PORT_SLAVES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PHYSICAL_PORT_ID")]
 		public const string PHYSICAL_PORT_ID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PRODUCT")]
@@ -840,9 +850,9 @@ namespace NM {
 		public bool is_real ();
 		public bool is_software ();
 		[Version (since = "1.2")]
-		public bool reapply (NM.Connection connection, uint64 version_id, uint32 flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool reapply (NM.Connection? connection, uint64 version_id, uint32 flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.2")]
-		public async bool reapply_async (NM.Connection connection, uint64 version_id, uint32 flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool reapply_async (NM.Connection? connection, uint64 version_id, uint32 flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void set_autoconnect (bool autoconnect);
 		[Version (since = "1.2")]
 		public void set_managed (bool managed);
@@ -1193,6 +1203,8 @@ namespace NM {
 	public class DeviceOvsBridge : NM.Device, GLib.AsyncInitable, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected DeviceOvsBridge ();
+		[Version (since = "1.14")]
+		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ovs_interface_get_type ()")]
 	public class DeviceOvsInterface : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -1203,6 +1215,8 @@ namespace NM {
 	public class DeviceOvsPort : NM.Device, GLib.AsyncInitable, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected DeviceOvsPort ();
+		[Version (since = "1.14")]
+		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ppp_get_type ()")]
 	public class DevicePpp : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -3381,6 +3395,26 @@ namespace NM {
 		[NoAccessorMethod]
 		public uint stopbits { get; set construct; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_sriov_get_type ()")]
+	[Version (since = "1.14")]
+	public class SettingSriov : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		public SettingSriov ();
+		public void add_vf (NM.SriovVF vf);
+		public void clear_vfs ();
+		public NM.Ternary get_autoprobe_drivers ();
+		public uint get_num_vfs ();
+		public uint get_total_vfs ();
+		public unowned NM.SriovVF get_vf (uint idx);
+		public void remove_vf (uint idx);
+		public bool remove_vf_by_index (uint index);
+		[NoAccessorMethod]
+		public NM.Ternary autoprobe_drivers { get; set construct; }
+		[NoAccessorMethod]
+		public uint total_vfs { get; set construct; }
+		[NoAccessorMethod]
+		public GLib.GenericArray<NM.SriovVF> vfs { owned get; set; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_tc_config_get_type ()")]
 	[Version (since = "1.12")]
 	public class SettingTCConfig : NM.Setting {
@@ -4314,6 +4348,45 @@ namespace NM {
 		public static NM.Connection new_clone (NM.Connection connection);
 		public static NM.Connection new_from_dbus (GLib.Variant dict) throws GLib.Error;
 	}
+	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_sriov_vf_ref", type_id = "nm_sriov_vf_get_type ()", unref_function = "nm_sriov_vf_unref")]
+	[Compact]
+	public class SriovVF {
+		[CCode (has_construct_function = false)]
+		public SriovVF (uint index);
+		[Version (since = "1.14")]
+		public bool add_vlan (uint vlan_id);
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.14")]
+		public static bool attribute_validate (string name, GLib.Variant value, out bool known) throws GLib.Error;
+		[Version (since = "1.14")]
+		public NM.SriovVF dup ();
+		[Version (since = "1.14")]
+		public bool equal (NM.SriovVF other);
+		[Version (since = "1.14")]
+		public unowned GLib.Variant get_attribute (string name);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.14")]
+		public (unowned string)[] get_attribute_names ();
+		[Version (since = "1.14")]
+		public uint get_index ();
+		[Version (since = "1.14")]
+		public uint get_vlan_ids (out uint length);
+		public NM.SriovVFVlanProtocol get_vlan_protocol (uint vlan_id);
+		[Version (since = "1.14")]
+		public uint32 get_vlan_qos (uint vlan_id);
+		[Version (since = "1.14")]
+		public void @ref ();
+		[Version (since = "1.14")]
+		public bool remove_vlan (uint vlan_id);
+		[Version (since = "1.14")]
+		public void set_attribute (string name, GLib.Variant? value);
+		[Version (since = "1.14")]
+		public void set_vlan_protocol (uint vlan_id, NM.SriovVFVlanProtocol protocol);
+		[Version (since = "1.14")]
+		public void set_vlan_qos (uint vlan_id, uint32 qos);
+		[Version (since = "1.14")]
+		public void unref ();
+	}
 	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_tc_action_ref", type_id = "nm_tc_action_get_type ()", unref_function = "nm_tc_action_unref")]
 	[Compact]
 	public class TCAction {
@@ -4681,6 +4754,8 @@ namespace NM {
 		[Version (since = "1.6")]
 		public unowned NM.SettingProxy get_setting_proxy ();
 		public unowned NM.SettingSerial get_setting_serial ();
+		[Version (since = "1.14")]
+		public unowned NM.SettingSriov get_setting_sriov ();
 		[Version (since = "1.12")]
 		public unowned NM.SettingTCConfig get_setting_tc_config ();
 		public unowned NM.SettingTeam get_setting_team ();
@@ -4988,7 +5063,8 @@ namespace NM {
 		PARENT_MANAGED_CHANGED,
 		OVSDB_FAILED,
 		IP_ADDRESS_DUPLICATE,
-		IP_METHOD_UNSUPPORTED
+		IP_METHOD_UNSUPPORTED,
+		SRIOV_CONFIGURATION_FAILED
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_TYPE_", type_id = "nm_device_type_get_type ()")]
 	public enum DeviceType {
@@ -5319,6 +5395,12 @@ namespace NM {
 		VOLATILE,
 		BLOCK_AUTOCONNECT
 	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SRIOV_VF_VLAN_PROTOCOL_802_", type_id = "nm_sriov_vf_vlan_protocol_get_type ()")]
+	[Version (since = "1.14")]
+	public enum SriovVFVlanProtocol {
+		@1Q,
+		@1AD
+	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_STATE_", type_id = "nm_state_get_type ()")]
 	public enum State {
 		UNKNOWN,
@@ -5336,6 +5418,13 @@ namespace NM {
 		VALIDATE_ACTIVE,
 		VALIDATE_INACTIVE,
 		SEND_ALWAYS
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_TERNARY_", type_id = "nm_ternary_get_type ()")]
+	[Version (since = "1.14")]
+	public enum Ternary {
+		DEFAULT,
+		FALSE,
+		TRUE
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_VLAN_FLAG_", type_id = "nm_vlan_flags_get_type ()")]
 	[Flags]
@@ -5858,6 +5947,14 @@ namespace NM {
 	public const string SETTING_OVS_PORT_TAG;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_VLAN_MODE")]
 	public const string SETTING_OVS_PORT_VLAN_MODE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SRIOV_AUTOPROBE_DRIVERS")]
+	public const string SETTING_SRIOV_AUTOPROBE_DRIVERS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SRIOV_SETTING_NAME")]
+	public const string SETTING_SRIOV_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SRIOV_TOTAL_VFS")]
+	public const string SETTING_SRIOV_TOTAL_VFS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SRIOV_VFS")]
+	public const string SETTING_SRIOV_VFS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TC_CONFIG_QDISCS")]
 	public const string SETTING_TC_CONFIG_QDISCS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TC_CONFIG_SETTING_NAME")]
@@ -5876,6 +5973,16 @@ namespace NM {
 	public const string SETTING_WPAN_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_SHORT_ADDRESS")]
 	public const string SETTING_WPAN_SHORT_ADDRESS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_MAC")]
+	public const string SRIOV_VF_ATTRIBUTE_MAC;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_MAX_TX_RATE")]
+	public const string SRIOV_VF_ATTRIBUTE_MAX_TX_RATE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_MIN_TX_RATE")]
+	public const string SRIOV_VF_ATTRIBUTE_MIN_TX_RATE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_SPOOF_CHECK")]
+	public const string SRIOV_VF_ATTRIBUTE_SPOOF_CHECK;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_TRUST")]
+	public const string SRIOV_VF_ATTRIBUTE_TRUST;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_TEAM_LINK_WATCHER_ARP_PING")]
 	public const string TEAM_LINK_WATCHER_ARP_PING;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_TEAM_LINK_WATCHER_ETHTOOL")]

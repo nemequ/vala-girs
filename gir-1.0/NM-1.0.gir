@@ -415,7 +415,7 @@ access point was found in scan results.  A value of -1 means the access
 point has not been found in a scan.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the last seen time in seconds</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="ap" transfer-ownership="none">
@@ -4740,6 +4740,21 @@ connection contains one, otherwise %NULL</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_setting_sriov"
+              c:identifier="nm_connection_get_setting_sriov"
+              version="1.14">
+        <doc xml:space="preserve">A shortcut to return any #NMSettingSriov the connection might contain.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an #NMSettingSriov if the connection contains one, otherwise %NULL</doc>
+          <type name="SettingSriov" c:type="NMSettingSriov*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMConnection</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_setting_tc_config"
               c:identifier="nm_connection_get_setting_tc_config"
               version="1.12">
@@ -6088,6 +6103,16 @@ and some #NMSetting8021x operations.</doc>
               c:type="NM_DEVICE_OLPC_MESH_HW_ADDRESS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="DEVICE_OVS_BRIDGE_SLAVES"
+              value="slaves"
+              c:type="NM_DEVICE_OVS_BRIDGE_SLAVES">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_OVS_PORT_SLAVES"
+              value="slaves"
+              c:type="NM_DEVICE_OVS_PORT_SLAVES">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="DEVICE_PHYSICAL_PORT_ID"
               value="physical-port-id"
               c:type="NM_DEVICE_PHYSICAL_PORT_ID">
@@ -7348,14 +7373,18 @@ made since it was last applied.</doc>
             <doc xml:space="preserve">a #NMDevice</doc>
             <type name="Device" c:type="NMDevice*"/>
           </instance-parameter>
-          <parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMConnection to replace the applied settings with or %NULL to reuse existing</doc>
+          <parameter name="connection"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the #NMConnection to replace the applied
+  settings with or %NULL to reuse existing</doc>
             <type name="Connection" c:type="NMConnection*"/>
           </parameter>
           <parameter name="version_id" transfer-ownership="none">
-            <doc xml:space="preserve">zero or the expected version id of the applied connection. If specified
-  and the version id mismatches, the call fails without modification. This allows to
-  catch concurrent accesses.</doc>
+            <doc xml:space="preserve">zero or the expected version id of the applied connection.
+  If specified and the version id mismatches, the call fails without
+  modification. This allows to catch concurrent accesses.</doc>
             <type name="guint64" c:type="guint64"/>
           </parameter>
           <parameter name="flags" transfer-ownership="none">
@@ -7384,14 +7413,19 @@ currently active connection made since it was last applied.</doc>
             <doc xml:space="preserve">a #NMDevice</doc>
             <type name="Device" c:type="NMDevice*"/>
           </instance-parameter>
-          <parameter name="connection" transfer-ownership="none">
-            <doc xml:space="preserve">the #NMConnection to replace the applied settings with or %NULL to reuse existing</doc>
+          <parameter name="connection"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the #NMConnection to replace the applied
+  settings with or %NULL to reuse existing</doc>
             <type name="Connection" c:type="NMConnection*"/>
           </parameter>
           <parameter name="version_id" transfer-ownership="none">
-            <doc xml:space="preserve">zero or the expected version id of the applied connection. If specified
-  and the version id mismatches, the call fails without modification. This allows to
-  catch concurrent accesses.</doc>
+            <doc xml:space="preserve">zero or the expected version id of the applied
+  connection. If specified and the version id mismatches, the call
+  fails without modification. This allows to catch concurrent
+  accesses.</doc>
             <type name="guint64" c:type="guint64"/>
           </parameter>
           <parameter name="flags" transfer-ownership="none">
@@ -7754,7 +7788,7 @@ device, and must not be modified.</doc>
         </parameters>
       </method>
       <method name="get_slaves" c:identifier="nm_device_bond_get_slaves">
-        <doc xml:space="preserve">Gets the devices currently slaved to @device.</doc>
+        <doc xml:space="preserve">Gets the devices currently enslaved to @device.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #GPtrArray containing
 #NMDevices that are slaves of @device. This is the internal
@@ -7779,7 +7813,7 @@ copy used by the device, and must not be modified.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="slaves" transfer-ownership="none">
-        <doc xml:space="preserve">The devices slaved to the bond device.</doc>
+        <doc xml:space="preserve">The devices enslaved to the bond device.</doc>
         <array name="GLib.PtrArray">
           <type name="Device"/>
         </array>
@@ -7838,7 +7872,7 @@ device, and must not be modified.</doc>
         </parameters>
       </method>
       <method name="get_slaves" c:identifier="nm_device_bridge_get_slaves">
-        <doc xml:space="preserve">Gets the devices currently slaved to @device.</doc>
+        <doc xml:space="preserve">Gets the devices currently enslaved to @device.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #GPtrArray containing
 #NMDevices that are slaves of @device. This is the internal
@@ -7863,7 +7897,7 @@ copy used by the device, and must not be modified.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="slaves" transfer-ownership="none">
-        <doc xml:space="preserve">The devices slaved to the bridge device.</doc>
+        <doc xml:space="preserve">The devices enslaved to the bridge device.</doc>
         <array name="GLib.PtrArray">
           <type name="Device"/>
         </array>
@@ -9332,6 +9366,25 @@ device, and must not be modified.</doc>
            glib:type-struct="DeviceOvsBridgeClass">
       <implements name="Gio.AsyncInitable"/>
       <implements name="Gio.Initable"/>
+      <method name="get_slaves"
+              c:identifier="nm_device_ovs_bridge_get_slaves"
+              version="1.14">
+        <doc xml:space="preserve">Gets the ports currently enslaved to @device.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GPtrArray containing
+#NMDevices that are slaves of @device. This is the internal
+copy used by the device, and must not be modified.</doc>
+          <array name="GLib.PtrArray" c:type="const GPtrArray*">
+            <type name="Device"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceOvsBridge</doc>
+            <type name="DeviceOvsBridge" c:type="NMDeviceOvsBridge*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
     </class>
     <record name="DeviceOvsBridgeClass"
             c:type="NMDeviceOvsBridgeClass"
@@ -9362,6 +9415,25 @@ device, and must not be modified.</doc>
            glib:type-struct="DeviceOvsPortClass">
       <implements name="Gio.AsyncInitable"/>
       <implements name="Gio.Initable"/>
+      <method name="get_slaves"
+              c:identifier="nm_device_ovs_port_get_slaves"
+              version="1.14">
+        <doc xml:space="preserve">Gets the interfaces currently enslaved to @device.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GPtrArray containing
+#NMDevices that are slaves of @device. This is the internal
+copy used by the device, and must not be modified.</doc>
+          <array name="GLib.PtrArray" c:type="const GPtrArray*">
+            <type name="Device"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceOvsPort</doc>
+            <type name="DeviceOvsPort" c:type="NMDeviceOvsPort*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
     </class>
     <record name="DeviceOvsPortClass"
             c:type="NMDeviceOvsPortClass"
@@ -9888,6 +9960,12 @@ device, and must not be modified.</doc>
               c:identifier="NM_DEVICE_STATE_REASON_IP_METHOD_UNSUPPORTED"
               glib:nick="ip-method-unsupported">
         <doc xml:space="preserve">The selected IP method is not supported</doc>
+      </member>
+      <member name="sriov_configuration_failed"
+              value="66"
+              c:identifier="NM_DEVICE_STATE_REASON_SRIOV_CONFIGURATION_FAILED"
+              glib:nick="sriov-configuration-failed">
+        <doc xml:space="preserve">configuration of SR-IOV parameters failed</doc>
       </member>
     </enumeration>
     <class name="DeviceTeam"
@@ -11408,7 +11486,7 @@ meaning when the device is not connected.</doc>
         <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the CINR in dB, or 0</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -11488,7 +11566,7 @@ device is not connected.</doc>
         <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the RSSI in dBm, or 0</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -11507,7 +11585,7 @@ device is not connected.</doc>
         <doc-deprecated xml:space="preserve">WiMAX is no longer supported.</doc-deprecated>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the TX power in dBm, or 0</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -15858,6 +15936,26 @@ supported for IPv6)</doc>
               c:type="NM_SETTING_SERIAL_STOPBITS">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_SRIOV_AUTOPROBE_DRIVERS"
+              value="autoprobe-drivers"
+              c:type="NM_SETTING_SRIOV_AUTOPROBE_DRIVERS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_SRIOV_SETTING_NAME"
+              value="sriov"
+              c:type="NM_SETTING_SRIOV_SETTING_NAME">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_SRIOV_TOTAL_VFS"
+              value="total-vfs"
+              c:type="NM_SETTING_SRIOV_TOTAL_VFS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_SRIOV_VFS"
+              value="vfs"
+              c:type="NM_SETTING_SRIOV_VFS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_TC_CONFIG_QDISCS"
               value="qdiscs"
               c:type="NM_SETTING_TC_CONFIG_QDISCS">
@@ -16610,6 +16708,31 @@ for this connection.</doc>
     <constant name="SETTING_WPAN_SHORT_ADDRESS"
               value="short-address"
               c:type="NM_SETTING_WPAN_SHORT_ADDRESS">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SRIOV_VF_ATTRIBUTE_MAC"
+              value="mac"
+              c:type="NM_SRIOV_VF_ATTRIBUTE_MAC">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SRIOV_VF_ATTRIBUTE_MAX_TX_RATE"
+              value="max-tx-rate"
+              c:type="NM_SRIOV_VF_ATTRIBUTE_MAX_TX_RATE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SRIOV_VF_ATTRIBUTE_MIN_TX_RATE"
+              value="min-tx-rate"
+              c:type="NM_SRIOV_VF_ATTRIBUTE_MIN_TX_RATE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SRIOV_VF_ATTRIBUTE_SPOOF_CHECK"
+              value="spoof-check"
+              c:type="NM_SRIOV_VF_ATTRIBUTE_SPOOF_CHECK">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SRIOV_VF_ATTRIBUTE_TRUST"
+              value="trust"
+              c:type="NM_SRIOV_VF_ATTRIBUTE_TRUST">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <bitfield name="SecretAgentCapabilities"
@@ -17683,7 +17806,7 @@ It should only be accessed through the functions described below.</doc>
       </virtual-method>
       <virtual-method name="verify" throws="1">
         <return-value transfer-ownership="none">
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -18225,7 +18348,7 @@ a secure form, if applicable for that EAP method.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the configured authentication timeout in seconds. Zero means the
 global default value.</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -21124,7 +21247,7 @@ username is required, it is specified here.</doc>
       <field name="verify">
         <callback name="verify" throws="1">
           <return-value transfer-ownership="none">
-            <type name="gint" c:type="gint"/>
+            <type name="gint" c:type="int"/>
           </return-value>
           <parameters>
             <parameter name="setting" transfer-ownership="none">
@@ -21467,7 +21590,7 @@ was already present</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the configured authentication retries. Zero means
 infinity and -1 means a global default value.</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -21496,7 +21619,7 @@ infinity and -1 means a global default value.</doc>
 The higher number, the higher priority.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the connection's autoconnect priority</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -21512,7 +21635,7 @@ The higher number, the higher priority.</doc>
 Zero means infinite, -1 means the global default value.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the connection's autoconnect retries</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -22331,7 +22454,7 @@ should be activated when master is activated.</doc>
               c:identifier="nm_setting_dcb_get_app_fcoe_priority">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingDcb:app-fcoe-priority property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -22357,7 +22480,7 @@ should be activated when master is activated.</doc>
               c:identifier="nm_setting_dcb_get_app_fip_priority">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingDcb:app-fip-priority property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -22383,7 +22506,7 @@ should be activated when master is activated.</doc>
               c:identifier="nm_setting_dcb_get_app_iscsi_priority">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingDcb:app-iscsi-priority property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -23782,7 +23905,7 @@ parameters.</doc>
               version="1.2">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingIPConfig:dad-timeout property.</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -23831,7 +23954,7 @@ property.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the configured DHCP timeout in seconds. 0 = default for
 the particular kind of device.</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -23879,7 +24002,7 @@ the particular kind of device.</doc>
               version="1.4">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the priority of DNS servers</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -24135,7 +24258,7 @@ a default configuration, while the former explicitly means "no-options".</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the index, greater or equal than @idx, of the first valid
 DNS option, or -1 if no valid option is found</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -26837,6 +26960,220 @@ The 1 in "8n1" for example.</doc>
         <doc xml:space="preserve">Odd parity</doc>
       </member>
     </enumeration>
+    <class name="SettingSriov"
+           c:symbol-prefix="setting_sriov"
+           c:type="NMSettingSriov"
+           version="1.14"
+           parent="Setting"
+           glib:type-name="NMSettingSriov"
+           glib:get-type="nm_setting_sriov_get_type"
+           glib:type-struct="SettingSriovClass">
+      <doc xml:space="preserve">SR-IOV settings.</doc>
+      <constructor name="new"
+                   c:identifier="nm_setting_sriov_new"
+                   version="1.14">
+        <doc xml:space="preserve">Creates a new #NMSettingSriov object with default values.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new empty #NMSettingSriov object</doc>
+          <type name="Setting" c:type="NMSetting*"/>
+        </return-value>
+      </constructor>
+      <method name="add_vf"
+              c:identifier="nm_setting_sriov_add_vf"
+              version="1.14">
+        <doc xml:space="preserve">Appends a new VF and associated information to the setting.  The
+given VF is duplicated internally and is not changed by this function.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingSriov</doc>
+            <type name="SettingSriov" c:type="NMSettingSriov*"/>
+          </instance-parameter>
+          <parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the VF to add</doc>
+            <type name="SriovVF" c:type="NMSriovVF*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clear_vfs"
+              c:identifier="nm_setting_sriov_clear_vfs"
+              version="1.14">
+        <doc xml:space="preserve">Removes all configured VFs.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingSriov</doc>
+            <type name="SettingSriov" c:type="NMSettingSriov*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_autoprobe_drivers"
+              c:identifier="nm_setting_sriov_get_autoprobe_drivers"
+              version="1.14">
+        <doc xml:space="preserve">Returns the value contained in the #NMSettingSriov:autoprobe-drivers
+property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the autoprobe-drivers property value</doc>
+          <type name="Ternary" c:type="NMTernary"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingSriov</doc>
+            <type name="SettingSriov" c:type="NMSettingSriov*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_num_vfs"
+              c:identifier="nm_setting_sriov_get_num_vfs"
+              version="1.14">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the number of configured VFs</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingSriov</doc>
+            <type name="SettingSriov" c:type="NMSettingSriov*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_total_vfs"
+              c:identifier="nm_setting_sriov_get_total_vfs"
+              version="1.14">
+        <doc xml:space="preserve">Returns the value contained in the #NMSettingSriov:total-vfs
+property.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the total number of SR-IOV virtual functions to create</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingSriov</doc>
+            <type name="SettingSriov" c:type="NMSettingSriov*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_vf"
+              c:identifier="nm_setting_sriov_get_vf"
+              version="1.14">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the VF at index @idx</doc>
+          <type name="SriovVF" c:type="NMSriovVF*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingSriov</doc>
+            <type name="SettingSriov" c:type="NMSettingSriov*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">index number of the VF to return</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_vf"
+              c:identifier="nm_setting_sriov_remove_vf"
+              version="1.14">
+        <doc xml:space="preserve">Removes the VF at index @idx.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingSriov</doc>
+            <type name="SettingSriov" c:type="NMSettingSriov*"/>
+          </instance-parameter>
+          <parameter name="idx" transfer-ownership="none">
+            <doc xml:space="preserve">index number of the VF</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_vf_by_index"
+              c:identifier="nm_setting_sriov_remove_vf_by_index"
+              version="1.14">
+        <doc xml:space="preserve">Removes the VF with VF index @index.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the VF was found and removed; %FALSE if it was not</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingSriov</doc>
+            <type name="SettingSriov" c:type="NMSettingSriov*"/>
+          </instance-parameter>
+          <parameter name="index" transfer-ownership="none">
+            <doc xml:space="preserve">the VF index of the VF to remove</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="autoprobe-drivers"
+                version="1.14"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Whether to autoprobe virtual functions by a compatible driver.
+
+If set to %NM_TERNARY_TRUE, the kernel will try to bind VFs to
+a compatible driver and if this succeeds a new network
+interface will be instantiated for each VF.
+
+If set to %NM_TERNARY_FALSE, VFs will not be claimed and no
+network interfaces will be created for them.
+
+When set to %NM_TERNARY_DEFAULT, the global default is used; in
+case the global default is unspecified it is assumed to be
+%NM_TERNARY_TRUE.</doc>
+        <type name="Ternary"/>
+      </property>
+      <property name="total-vfs"
+                version="1.14"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The total number of virtual functions to create.</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="vfs"
+                version="1.14"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Array of virtual function descriptors.
+
+Each VF descriptor is a dictionary mapping attribute names
+to GVariant values. The 'index' entry is mandatory for
+each VF.
+
+When represented as string a VF is in the form:
+
+  "INDEX [ATTR=VALUE[ ATTR=VALUE]...]".
+
+for example:
+
+  "2 mac=00:11:22:33:44:55 spoof-check=true".
+
+The "vlans" attribute is represented as a semicolor-separated
+list of VLAN descriptors, where each descriptor has the form
+
+  "ID[.PRIORITY[.PROTO]]".
+
+PROTO can be either 'q' for 802.1Q (the default) or 'ad' for
+802.1ad.</doc>
+        <array name="GLib.PtrArray">
+          <type name="SriovVF"/>
+        </array>
+      </property>
+    </class>
+    <record name="SettingSriovClass"
+            c:type="NMSettingSriovClass"
+            disguised="1"
+            glib:is-gtype-struct-for="SettingSriov">
+    </record>
     <class name="SettingTCConfig"
            c:symbol-prefix="setting_tc_config"
            c:type="NMSettingTCConfig"
@@ -26845,7 +27182,7 @@ The 1 in "8n1" for example.</doc>
            glib:type-name="NMSettingTCConfig"
            glib:get-type="nm_setting_tc_config_get_type"
            glib:type-struct="SettingTCConfigClass">
-      <doc xml:space="preserve">Linux Traffic Contril Settings.</doc>
+      <doc xml:space="preserve">Linux Traffic Control Settings.</doc>
       <constructor name="new"
                    c:identifier="nm_setting_tc_config_new"
                    version="1.12">
@@ -27066,7 +27403,7 @@ tfilter is not added and the function returns %FALSE.</doc>
         </parameters>
       </method>
       <property name="qdiscs" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">Array of TC queuening disciplines.</doc>
+        <doc xml:space="preserve">Array of TC queueing disciplines.</doc>
         <array name="GLib.PtrArray">
           <type name="TCQdisc"/>
         </array>
@@ -27187,7 +27524,7 @@ was already knnown.</doc>
               version="1.12">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the ##NMSettingTeam:mcast-rejoin-count property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -27201,7 +27538,7 @@ was already knnown.</doc>
               version="1.12">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the ##NMSettingTeam:mcast-rejoin-interval property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -27215,7 +27552,7 @@ was already knnown.</doc>
               version="1.12">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the ##NMSettingTeam:notify-peers-count property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -27229,7 +27566,7 @@ was already knnown.</doc>
               version="1.12">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the ##NMSettingTeam:notify-peers-interval property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -27341,7 +27678,7 @@ was already knnown.</doc>
               version="1.12">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the ##NMSettingTeam:runner-min-ports property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -27355,7 +27692,7 @@ was already knnown.</doc>
               version="1.12">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the ##NMSettingTeam:runner-sys-prio property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -27383,7 +27720,7 @@ was already knnown.</doc>
               version="1.12">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the ##NMSettingTeam:runner-tx-balancer_interval property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -27695,7 +28032,7 @@ watcher was already there.</doc>
               version="1.12">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingTeamPort:lacp-key property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -27709,7 +28046,7 @@ watcher was already there.</doc>
               version="1.12">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingTeamPort:lacp-prio property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -27755,7 +28092,7 @@ watcher was already there.</doc>
               version="1.12">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingTeamPort:prio property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -27769,7 +28106,7 @@ watcher was already there.</doc>
               version="1.12">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingTeamPort:queue_id property of the setting</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -32069,6 +32406,343 @@ connection failed to normalize.</doc>
         </array>
       </field>
     </record>
+    <record name="SriovVF"
+            c:type="NMSriovVF"
+            glib:type-name="NMSriovVF"
+            glib:get-type="nm_sriov_vf_get_type"
+            c:symbol-prefix="sriov_vf">
+      <constructor name="new" c:identifier="nm_sriov_vf_new">
+        <return-value transfer-ownership="full">
+          <type name="SriovVF" c:type="NMSriovVF*"/>
+        </return-value>
+        <parameters>
+          <parameter name="index" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="add_vlan"
+              c:identifier="nm_sriov_vf_add_vlan"
+              version="1.14">
+        <doc xml:space="preserve">Adds a VLAN to the VF.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the VLAN was added; %FALSE if it already existed</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="NMSriovVF*"/>
+          </instance-parameter>
+          <parameter name="vlan_id" transfer-ownership="none">
+            <doc xml:space="preserve">the VLAN id</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="dup" c:identifier="nm_sriov_vf_dup" version="1.14">
+        <doc xml:space="preserve">Creates a copy of @vf.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a copy of @vf</doc>
+          <type name="SriovVF" c:type="NMSriovVF*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="const NMSriovVF*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="equal" c:identifier="nm_sriov_vf_equal" version="1.14">
+        <doc xml:space="preserve">Determines if two #NMSriovVF objects have the same index,
+attributes and VLANs.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the objects contain the same values, %FALSE
+   if they do not.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="const NMSriovVF*"/>
+          </instance-parameter>
+          <parameter name="other" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF to compare @vf to.</doc>
+            <type name="SriovVF" c:type="const NMSriovVF*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_attribute"
+              c:identifier="nm_sriov_vf_get_attribute"
+              version="1.14">
+        <doc xml:space="preserve">Gets the value of the attribute with name @name on @vf</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the value of the attribute with name @name on
+  @vf, or %NULL if @vf has no such attribute.</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="const NMSriovVF*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">the name of a VF attribute</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_attribute_names"
+              c:identifier="nm_sriov_vf_get_attribute_names"
+              version="1.14">
+        <doc xml:space="preserve">Gets an array of attribute names defined on @vf.</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">a %NULL-terminated array of attribute names</doc>
+          <array c:type="const char**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="const NMSriovVF*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_index"
+              c:identifier="nm_sriov_vf_get_index"
+              version="1.14">
+        <doc xml:space="preserve">Gets the index property of this VF object.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the VF index</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="const NMSriovVF*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_vlan_ids"
+              c:identifier="nm_sriov_vf_get_vlan_ids"
+              version="1.14">
+        <doc xml:space="preserve">Returns the VLANs currently configured on the VF.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a list of VLAN ids configured on the VF.</doc>
+          <type name="guint" c:type="const guint*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="const NMSriovVF*"/>
+          </instance-parameter>
+          <parameter name="length"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">on return, the number of VLANs configured</doc>
+            <type name="guint" c:type="guint*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_vlan_protocol"
+              c:identifier="nm_sriov_vf_get_vlan_protocol">
+        <return-value transfer-ownership="none">
+          <type name="SriovVFVlanProtocol" c:type="NMSriovVFVlanProtocol"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <type name="SriovVF" c:type="const NMSriovVF*"/>
+          </instance-parameter>
+          <parameter name="vlan_id" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_vlan_qos"
+              c:identifier="nm_sriov_vf_get_vlan_qos"
+              version="1.14">
+        <doc xml:space="preserve">Returns the QoS value for the given VLAN.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the QoS value</doc>
+          <type name="guint32" c:type="guint32"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="const NMSriovVF*"/>
+          </instance-parameter>
+          <parameter name="vlan_id" transfer-ownership="none">
+            <doc xml:space="preserve">the VLAN id</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="ref" c:identifier="nm_sriov_vf_ref" version="1.14">
+        <doc xml:space="preserve">Increases the reference count of the object.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="NMSriovVF*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove_vlan"
+              c:identifier="nm_sriov_vf_remove_vlan"
+              version="1.14">
+        <doc xml:space="preserve">Removes a VLAN from a VF.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the VLAN was removed, %FALSE if the VLAN @vlan_id
+    did not belong to the VF.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="NMSriovVF*"/>
+          </instance-parameter>
+          <parameter name="vlan_id" transfer-ownership="none">
+            <doc xml:space="preserve">the VLAN id</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_attribute"
+              c:identifier="nm_sriov_vf_set_attribute"
+              version="1.14">
+        <doc xml:space="preserve">Sets the named attribute on @vf to the given value.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="NMSriovVF*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">the name of a route attribute</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="value"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the value</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_vlan_protocol"
+              c:identifier="nm_sriov_vf_set_vlan_protocol"
+              version="1.14">
+        <doc xml:space="preserve">Sets the protocol for the given VLAN.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="NMSriovVF*"/>
+          </instance-parameter>
+          <parameter name="vlan_id" transfer-ownership="none">
+            <doc xml:space="preserve">the VLAN id</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="protocol" transfer-ownership="none">
+            <doc xml:space="preserve">the VLAN protocol</doc>
+            <type name="SriovVFVlanProtocol" c:type="NMSriovVFVlanProtocol"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_vlan_qos"
+              c:identifier="nm_sriov_vf_set_vlan_qos"
+              version="1.14">
+        <doc xml:space="preserve">Sets a QoS value for the given VLAN.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="NMSriovVF*"/>
+          </instance-parameter>
+          <parameter name="vlan_id" transfer-ownership="none">
+            <doc xml:space="preserve">the VLAN id</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="qos" transfer-ownership="none">
+            <doc xml:space="preserve">a QoS (priority) value</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="unref" c:identifier="nm_sriov_vf_unref" version="1.14">
+        <doc xml:space="preserve">Decreases the reference count of the object.  If the reference count
+reaches zero, the object will be destroyed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="vf" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSriovVF</doc>
+            <type name="SriovVF" c:type="NMSriovVF*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <function name="attribute_validate"
+                c:identifier="nm_sriov_vf_attribute_validate"
+                version="1.14"
+                throws="1">
+        <doc xml:space="preserve">Validates a VF attribute, i.e. checks that the attribute is a known one,
+the value is of the correct type and well-formed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the attribute is valid, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">the attribute name</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve">the attribute value</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+          <parameter name="known"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">on return, whether the attribute name is a known one</doc>
+            <type name="gboolean" c:type="gboolean*"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
+    <enumeration name="SriovVFVlanProtocol"
+                 version="1.14"
+                 glib:type-name="NMSriovVFVlanProtocol"
+                 glib:get-type="nm_sriov_vf_vlan_protocol_get_type"
+                 c:type="NMSriovVFVlanProtocol">
+      <doc xml:space="preserve">#NMSriovVFVlanProtocol indicates the VLAN protocol to use.</doc>
+      <member name="1q"
+              value="0"
+              c:identifier="NM_SRIOV_VF_VLAN_PROTOCOL_802_1Q"
+              glib:nick="1q">
+        <doc xml:space="preserve">use 802.1Q</doc>
+      </member>
+      <member name="1ad"
+              value="1"
+              c:identifier="NM_SRIOV_VF_VLAN_PROTOCOL_802_1AD"
+              glib:nick="1ad">
+        <doc xml:space="preserve">use 802.1ad</doc>
+      </member>
+    </enumeration>
     <enumeration name="State"
                  glib:type-name="NMState"
                  glib:get-type="nm_state_get_type"
@@ -32635,15 +33309,15 @@ reaches zero, the object will be destroyed.</doc>
         <parameters>
           <parameter name="init_wait" transfer-ownership="none">
             <doc xml:space="preserve">init_wait value</doc>
-            <type name="gint" c:type="gint"/>
+            <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="interval" transfer-ownership="none">
             <doc xml:space="preserve">interval value</doc>
-            <type name="gint" c:type="gint"/>
+            <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="missed_max" transfer-ownership="none">
             <doc xml:space="preserve">missed_max value</doc>
-            <type name="gint" c:type="gint"/>
+            <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="target_host" transfer-ownership="none">
             <doc xml:space="preserve">the host name or the ip address that will be used as destination
@@ -32674,11 +33348,11 @@ reaches zero, the object will be destroyed.</doc>
         <parameters>
           <parameter name="delay_up" transfer-ownership="none">
             <doc xml:space="preserve">delay_up value</doc>
-            <type name="gint" c:type="gint"/>
+            <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="delay_down" transfer-ownership="none">
             <doc xml:space="preserve">delay_down value</doc>
-            <type name="gint" c:type="gint"/>
+            <type name="gint" c:type="int"/>
           </parameter>
         </parameters>
       </constructor>
@@ -32694,15 +33368,15 @@ reaches zero, the object will be destroyed.</doc>
         <parameters>
           <parameter name="init_wait" transfer-ownership="none">
             <doc xml:space="preserve">init_wait value</doc>
-            <type name="gint" c:type="gint"/>
+            <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="interval" transfer-ownership="none">
             <doc xml:space="preserve">interval value</doc>
-            <type name="gint" c:type="gint"/>
+            <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="missed_max" transfer-ownership="none">
             <doc xml:space="preserve">missed_max value</doc>
-            <type name="gint" c:type="gint"/>
+            <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="target_host" transfer-ownership="none">
             <doc xml:space="preserve">the host name or the ipv6 address that will be used as
@@ -32934,6 +33608,31 @@ reaches zero, the object will be destroyed.</doc>
    'send_always' is enabled (set to true).</doc>
       </member>
     </bitfield>
+    <enumeration name="Ternary"
+                 version="1.14"
+                 glib:type-name="NMTernary"
+                 glib:get-type="nm_ternary_get_type"
+                 c:type="NMTernary">
+      <doc xml:space="preserve">An boolean value that can be overridden by a default.</doc>
+      <member name="default"
+              value="-1"
+              c:identifier="NM_TERNARY_DEFAULT"
+              glib:nick="default">
+        <doc xml:space="preserve">use the globally-configured default value.</doc>
+      </member>
+      <member name="false"
+              value="0"
+              c:identifier="NM_TERNARY_FALSE"
+              glib:nick="false">
+        <doc xml:space="preserve">the option is disabled.</doc>
+      </member>
+      <member name="true"
+              value="1"
+              c:identifier="NM_TERNARY_TRUE"
+              glib:nick="true">
+        <doc xml:space="preserve">the option is enabled.</doc>
+      </member>
+    </enumeration>
     <constant name="UTILS_HWADDR_LEN_MAX"
               value="20"
               c:type="NM_UTILS_HWADDR_LEN_MAX">
@@ -36640,6 +37339,35 @@ and the value is of the correct type and well-formed.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
+    <function name="sriov_vf_attribute_validate"
+              c:identifier="nm_sriov_vf_attribute_validate"
+              moved-to="SriovVF.attribute_validate"
+              version="1.14"
+              throws="1">
+      <doc xml:space="preserve">Validates a VF attribute, i.e. checks that the attribute is a known one,
+the value is of the correct type and well-formed.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the attribute is valid, %FALSE otherwise</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="name" transfer-ownership="none">
+          <doc xml:space="preserve">the attribute name</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="value" transfer-ownership="none">
+          <doc xml:space="preserve">the attribute value</doc>
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </parameter>
+        <parameter name="known"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">on return, whether the attribute name is a known one</doc>
+          <type name="gboolean" c:type="gboolean*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="utils_ap_mode_security_valid"
               c:identifier="nm_utils_ap_mode_security_valid">
       <doc xml:space="preserve">Given a set of device capabilities, and a desired security type to check
@@ -36816,11 +37544,11 @@ or %NULL on error</doc>
         </parameter>
         <parameter name="from" transfer-ownership="none">
           <doc xml:space="preserve">the first element to be returned</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </parameter>
         <parameter name="to" transfer-ownership="none">
           <doc xml:space="preserve">the last element to be returned</doc>
-          <type name="gint" c:type="gint"/>
+          <type name="gint" c:type="int"/>
         </parameter>
       </parameters>
     </function>
@@ -37866,6 +38594,42 @@ e.g. (#NM_802_11_AP_SEC_PAIR_TKIP | #NM_802_11_AP_SEC_KEY_MGMT_PSK)</doc>
           <doc xml:space="preserve">bitfield of AP capabilties derived from the AP's RSN/WPA2 beacon,
 e.g. (#NM_802_11_AP_SEC_PAIR_CCMP | #NM_802_11_AP_SEC_PAIR_TKIP)</doc>
           <type name="80211ApSecurityFlags" c:type="NM80211ApSecurityFlags"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_sriov_vf_from_str"
+              c:identifier="nm_utils_sriov_vf_from_str"
+              version="1.14"
+              throws="1">
+      <doc xml:space="preserve">Converts a string to a SR-IOV virtual function object.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the virtual function object</doc>
+        <type name="SriovVF" c:type="NMSriovVF*"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">the input string</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_sriov_vf_to_str"
+              c:identifier="nm_utils_sriov_vf_to_str"
+              version="1.14"
+              throws="1">
+      <doc xml:space="preserve">Converts a SR-IOV virtual function object to its string representation.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a newly allocated string or %NULL on error</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="vf" transfer-ownership="none">
+          <doc xml:space="preserve">the %NMSriovVF</doc>
+          <type name="SriovVF" c:type="const NMSriovVF*"/>
+        </parameter>
+        <parameter name="omit_index" transfer-ownership="none">
+          <doc xml:space="preserve">if %TRUE, the VF index will be omitted from output string</doc>
+          <type name="gboolean" c:type="gboolean"/>
         </parameter>
       </parameters>
     </function>

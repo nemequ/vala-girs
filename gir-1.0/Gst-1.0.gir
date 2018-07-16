@@ -23511,9 +23511,10 @@ function of the miniobject is called.
 A copy can be made with gst_mini_object_copy().
 
 gst_mini_object_is_writable() will return %TRUE when the refcount of the
-object is exactly 1, meaning the current caller has the only reference to the
-object. gst_mini_object_make_writable() will return a writable version of the
-object, which might be a new copy when the refcount was not 1.
+object is exactly 1 and there is no parent or a single parent exists and is
+writable itself, meaning the current caller has the only reference to the
+object. gst_mini_object_make_writable() will return a writable version of
+the object, which might be a new copy when the refcount was not 1.
 
 Opaque data can be associated with a #GstMiniObject with
 gst_mini_object_set_qdata() and gst_mini_object_get_qdata(). The data is
@@ -23553,12 +23554,37 @@ and gst_mini_object_weak_unref() respectively.</doc>
         <type name="MiniObjectFreeFunction"
               c:type="GstMiniObjectFreeFunction"/>
       </field>
-      <field name="n_qdata" readable="0" private="1">
+      <field name="priv_uint" readable="0" private="1">
         <type name="guint" c:type="guint"/>
       </field>
-      <field name="qdata" readable="0" private="1">
+      <field name="priv_pointer" readable="0" private="1">
         <type name="gpointer" c:type="gpointer"/>
       </field>
+      <method name="add_parent"
+              c:identifier="gst_mini_object_add_parent"
+              version="1.16">
+        <doc xml:space="preserve">This adds @parent as a parent for @object. Having one ore more parents affects the
+writability of @object: if a @parent is not writable, @object is also not
+writable, regardless of its refcount. @object is only writable if all
+the parents are writable and its own refcount is exactly 1.
+
+Note: This function does not take ownership of @parent and also does not
+take an additional reference. It is the responsibility of the caller to
+remove the parent again at a later time.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstMiniObject</doc>
+            <type name="MiniObject" c:type="GstMiniObject*"/>
+          </instance-parameter>
+          <parameter name="parent" transfer-ownership="none">
+            <doc xml:space="preserve">a parent #GstMiniObject</doc>
+            <type name="MiniObject" c:type="GstMiniObject*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="copy"
               c:identifier="gst_mini_object_copy"
               introspectable="0">
@@ -23720,6 +23746,25 @@ is a #GstBuffer.</doc>
             <doc xml:space="preserve">the mini-object</doc>
             <type name="MiniObject" c:type="GstMiniObject*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="remove_parent"
+              c:identifier="gst_mini_object_remove_parent"
+              version="1.16">
+        <doc xml:space="preserve">This removes @parent as a parent for @object. See
+gst_mini_object_add_parent().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="object" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstMiniObject</doc>
+            <type name="MiniObject" c:type="GstMiniObject*"/>
+          </instance-parameter>
+          <parameter name="parent" transfer-ownership="none">
+            <doc xml:space="preserve">a parent #GstMiniObject</doc>
+            <type name="MiniObject" c:type="GstMiniObject*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_qdata" c:identifier="gst_mini_object_set_qdata">
@@ -37695,13 +37740,13 @@ release with either g_free() or the suitable function for the boxed type.</doc>
       </method>
       <method name="get_array" c:identifier="gst_structure_get_array">
         <doc xml:space="preserve">This is useful in language bindings where unknown #GValue types are not
-supported. This function will convert the %GST_TYPE_ARRAY and
-%GST_TYPE_LIST into a newly allocated #GValueArray and return it through
-@array. Be aware that this is slower then getting the #GValue directly.</doc>
+supported. This function will convert the %GST_TYPE_ARRAY into a newly
+allocated #GValueArray and return it through @array. Be aware that this is
+slower then getting the #GValue directly.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the value could be set correctly. If there was no field
-with @fieldname or the existing field did not contain an int, this function
-returns %FALSE.</doc>
+with @fieldname or the existing field did not contain a %GST_TYPE_ARRAY,
+this function returns %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -38060,13 +38105,13 @@ returns %FALSE.</doc>
       </method>
       <method name="get_list" c:identifier="gst_structure_get_list">
         <doc xml:space="preserve">This is useful in language bindings where unknown #GValue types are not
-supported. This function will convert the %GST_TYPE_ARRAY and
-%GST_TYPE_LIST into a newly allocated GValueArray and return it through
-@array. Be aware that this is slower then getting the #GValue directly.</doc>
+supported. This function will convert the %GST_TYPE_LIST into a newly
+allocated GValueArray and return it through @array. Be aware that this is
+slower then getting the #GValue directly.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if the value could be set correctly. If there was no field
-with @fieldname or the existing field did not contain an int, this function
-returns %FALSE.
+with @fieldname or the existing field did not contain a %GST_TYPE_LIST, this
+function returns %FALSE.
 
 Since 1.12</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -38747,9 +38792,9 @@ Since 1.12</doc>
       </method>
       <method name="set_list" c:identifier="gst_structure_set_list">
         <doc xml:space="preserve">This is useful in language bindings where unknown GValue types are not
-supported. This function will convert a @array to %GST_TYPE_ARRAY and set
+supported. This function will convert a @array to %GST_TYPE_LIST and set
 the field specified by @fieldname. Be aware that this is slower then using
-%GST_TYPE_ARRAY in a #GValue directly.
+%GST_TYPE_LIST in a #GValue directly.
 
 Since 1.12</doc>
         <return-value transfer-ownership="none">

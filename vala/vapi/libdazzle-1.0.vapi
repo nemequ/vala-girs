@@ -1360,6 +1360,8 @@ namespace Dazzle {
 	public class Suggestion : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Suggestion ();
+		[Version (since = "3.30")]
+		public virtual GLib.Icon? get_icon ();
 		public unowned string get_icon_name ();
 		public unowned string get_id ();
 		public unowned string get_subtitle ();
@@ -1368,6 +1370,7 @@ namespace Dazzle {
 		public void set_id (string id);
 		public void set_subtitle (string subtitle);
 		public void set_title (string title);
+		public GLib.Icon icon { owned get; }
 		public string icon_name { get; set; }
 		public string id { get; set; }
 		public string subtitle { get; set; }

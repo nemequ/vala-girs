@@ -61,6 +61,8 @@ namespace Vte {
 		public long get_char_height ();
 		public long get_char_width ();
 		public int get_cjk_ambiguous_width ();
+		[Version (since = "0.54")]
+		public Gdk.RGBA get_color_background_for_draw ();
 		public long get_column_count ();
 		public unowned string get_current_directory_uri ();
 		public unowned string get_current_file_uri ();

@@ -2,6 +2,137 @@
 
 [CCode (cprefix = "Jsonrpc", gir_namespace = "Jsonrpc", gir_version = "1.0", lower_case_cprefix = "jsonrpc_")]
 namespace Jsonrpc {
+	namespace Message {
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessageGetBoolean")]
+		public struct GetBoolean {
+			public Jsonrpc.MessageMagic magic;
+			public bool valptr;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_GET_BOOLEAN")]
+			public static void* create (ref bool val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessageGetDict")]
+		public struct GetDict {
+			public Jsonrpc.MessageMagic magic;
+			public weak GLib.VariantDict dictptr;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_GET_DICT")]
+			public static void* create (ref GLib.VariantDict val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessageGetDouble")]
+		public struct GetDouble {
+			public Jsonrpc.MessageMagic magic;
+			public double valptr;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_GET_DOUBLE")]
+			public static void* create (ref double val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessageGetInt32")]
+		public struct GetInt32 {
+			public Jsonrpc.MessageMagic magic;
+			public int32 valptr;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_GET_INT32")]
+			public static void* create (ref int32 val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessageGetInt64")]
+		public struct GetInt64 {
+			public Jsonrpc.MessageMagic magic;
+			public int64 valptr;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_GET_INT64")]
+			public static void* create (ref int64 val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessageGetIter")]
+		public struct GetIter {
+			public Jsonrpc.MessageMagic magic;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_GET_ITER")]
+			public static void* create (ref GLib.VariantIter val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessageGetString")]
+		public struct GetString {
+			public Jsonrpc.MessageMagic magic;
+			public weak string valptr;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_GET_STRING")]
+			public static void* create (ref string val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessageGetStrv")]
+		public struct GetStrv {
+			public Jsonrpc.MessageMagic magic;
+			[CCode (array_length = false)]
+			public weak string[] valptr;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_GET_STRV")]
+			public static void* create ([CCode (array_length = false)] ref string[] val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessageGetVariant")]
+		public struct GetVariant {
+			public Jsonrpc.MessageMagic magic;
+			public weak GLib.Variant variantptr;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_GET_VARIANT")]
+			public static void* create (ref GLib.Variant val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessagePutBoolean")]
+		public struct PutBoolean {
+			public Jsonrpc.MessageMagic magic;
+			public bool val;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_PUT_BOOLEAN")]
+			public static void* create (bool val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessagePutDouble")]
+		public struct PutDouble {
+			public Jsonrpc.MessageMagic magic;
+			public double val;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_PUT_DOUBLE")]
+			public static void* create (double val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessagePutInt32")]
+		public struct PutInt32 {
+			public Jsonrpc.MessageMagic magic;
+			public int32 val;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_PUT_INT32")]
+			public static void* create (int32 val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessagePutInt64")]
+		public struct PutInt64 {
+			public Jsonrpc.MessageMagic magic;
+			public int64 val;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_PUT_INT64")]
+			public static void* create (int64 val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessagePutString")]
+		public struct PutString {
+			public Jsonrpc.MessageMagic magic;
+			public weak string val;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_PUT_STRING")]
+			public static void* create (string val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+		[GIR (name = "MessagePutStrv")]
+		public struct PutStrv {
+			public Jsonrpc.MessageMagic magic;
+			[CCode (array_length = false)]
+			public weak string[] val;
+			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_PUT_STRV")]
+			public static void* create ([CCode (array_length = false)] string[] val);
+		}
+		[CCode (cheader_filename = "jsonrpc-glib.h")]
+		public static GLib.Variant @new (...);
+		[CCode (cheader_filename = "jsonrpc-glib.h")]
+		public static GLib.Variant new_array (...);
+		[CCode (cheader_filename = "jsonrpc-glib.h")]
+		public static bool parse (GLib.Variant message, ...);
+		[CCode (cheader_filename = "jsonrpc-glib.h")]
+		public static bool parse_array (GLib.VariantIter iter, ...);
+	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", type_id = "jsonrpc_client_get_type ()")]
 	public class Client : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -91,83 +222,9 @@ namespace Jsonrpc {
 		public Jsonrpc.MessageMagic magic;
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessageGetBoolean {
-		public Jsonrpc.MessageMagic magic;
-		public bool valptr;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessageGetDict {
-		public Jsonrpc.MessageMagic magic;
-		public weak GLib.VariantDict dictptr;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessageGetDouble {
-		public Jsonrpc.MessageMagic magic;
-		public double valptr;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessageGetInt32 {
-		public Jsonrpc.MessageMagic magic;
-		public int32 valptr;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessageGetInt64 {
-		public Jsonrpc.MessageMagic magic;
-		public int64 valptr;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessageGetIter {
-		public Jsonrpc.MessageMagic magic;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessageGetString {
-		public Jsonrpc.MessageMagic magic;
-		public weak string valptr;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessageGetStrv {
-		public Jsonrpc.MessageMagic magic;
-		public weak string valptr;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessageGetVariant {
-		public Jsonrpc.MessageMagic magic;
-		public weak GLib.Variant variantptr;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
 	public struct MessageMagic {
 		[CCode (array_length = false)]
 		public weak char bytes[8];
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessagePutBoolean {
-		public Jsonrpc.MessageMagic magic;
-		public bool val;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessagePutDouble {
-		public Jsonrpc.MessageMagic magic;
-		public double val;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessagePutInt32 {
-		public Jsonrpc.MessageMagic magic;
-		public int32 val;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessagePutInt64 {
-		public Jsonrpc.MessageMagic magic;
-		public int64 val;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessagePutString {
-		public Jsonrpc.MessageMagic magic;
-		public weak string val;
-	}
-	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
-	public struct MessagePutStrv {
-		public Jsonrpc.MessageMagic magic;
-		public weak string val;
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", cprefix = "JSONRPC_CLIENT_ERROR_", has_type_id = false)]
 	public enum ClientError {

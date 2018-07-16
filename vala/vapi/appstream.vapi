@@ -2,6 +2,49 @@
 
 [CCode (cprefix = "As", gir_namespace = "AppStream", gir_version = "1.0", lower_case_cprefix = "as_")]
 namespace AppStream {
+	[CCode (cheader_filename = "appstream.h", type_id = "as_agreement_get_type ()")]
+	public class Agreement : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.12.1")]
+		public Agreement ();
+		public void add_section (AppStream.AgreementSection agreement_section);
+		[Version (since = "0.12.1")]
+		public AppStream.AgreementKind get_kind ();
+		[Version (since = "0.12.1")]
+		public unowned AppStream.AgreementSection get_section_default ();
+		[Version (since = "0.12.1")]
+		public GLib.GenericArray<weak AppStream.AgreementSection> get_sections ();
+		[Version (since = "0.12.1")]
+		public unowned string get_version_id ();
+		[Version (since = "0.12.1")]
+		public static AppStream.AgreementKind kind_from_string (string value);
+		[Version (since = "0.12.1")]
+		public static unowned string kind_to_string (AppStream.AgreementKind value);
+		[Version (since = "0.12.1")]
+		public void set_kind (AppStream.AgreementKind kind);
+		[Version (since = "0.12.1")]
+		public void set_version_id (string version_id);
+	}
+	[CCode (cheader_filename = "appstream.h", type_id = "as_agreement_section_get_type ()")]
+	public class AgreementSection : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.12.1")]
+		public AgreementSection ();
+		public unowned string get_active_locale ();
+		[Version (since = "0.12.1")]
+		public unowned string get_description ();
+		[Version (since = "0.12.1")]
+		public unowned string get_kind ();
+		[Version (since = "0.12.1")]
+		public unowned string get_name ();
+		public void set_active_locale (string locale);
+		[Version (since = "0.12.1")]
+		public void set_description (string desc, string? locale);
+		[Version (since = "0.12.1")]
+		public void set_kind (string kind);
+		[Version (since = "0.12.1")]
+		public void set_name (string name, string? locale);
+	}
 	[CCode (cheader_filename = "appstream.h", type_id = "as_bundle_get_type ()")]
 	public class Bundle : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -63,6 +106,8 @@ namespace AppStream {
 		public Component ();
 		[Version (since = "0.9.2")]
 		public void add_addon (AppStream.Component addon);
+		[Version (since = "0.12.1")]
+		public void add_agreement (AppStream.Agreement agreement);
 		[Version (since = "0.8.0")]
 		public void add_bundle (AppStream.Bundle bundle);
 		public void add_category (string category);
@@ -89,6 +134,8 @@ namespace AppStream {
 		public unowned string get_active_locale ();
 		[Version (since = "0.9.2")]
 		public unowned GLib.GenericArray<AppStream.Component> get_addons ();
+		[Version (since = "0.12.1")]
+		public unowned AppStream.Agreement get_agreement_by_kind (AppStream.AgreementKind kind);
 		[Version (since = "0.8.0")]
 		public unowned AppStream.Bundle get_bundle (AppStream.BundleKind bundle_kind);
 		[Version (since = "0.10")]
@@ -317,6 +364,7 @@ namespace AppStream {
 		public AppStream.FormatVersion get_format_version ();
 		public unowned string get_locale ();
 		public unowned string get_origin ();
+		public AppStream.ParseFlags get_parse_flags ();
 		public bool get_update_existing ();
 		public bool get_write_header ();
 		public void parse (string data, AppStream.FormatKind format) throws GLib.Error;
@@ -329,6 +377,7 @@ namespace AppStream {
 		public void set_format_version (AppStream.FormatVersion version);
 		public void set_locale (string locale);
 		public void set_origin (string origin);
+		public void set_parse_flags (AppStream.ParseFlags flags);
 		public void set_update_existing (bool update);
 		public void set_write_header (bool wheader);
 	}
@@ -529,6 +578,13 @@ namespace AppStream {
 		public void set_line (int line);
 		public void set_message (string message);
 	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_AGREEMENT_KIND_", has_type_id = false)]
+	public enum AgreementKind {
+		UNKNOWN,
+		GENERIC,
+		EULA,
+		PRIVACY
+	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_BUNDLE_KIND_", has_type_id = false)]
 	public enum BundleKind {
 		UNKNOWN,
@@ -565,7 +621,8 @@ namespace AppStream {
 		FIRMWARE,
 		DRIVER,
 		LOCALIZATION,
-		SERVICE;
+		SERVICE,
+		REPOSITORY;
 		public static AppStream.ComponentKind from_string (string kind_str);
 		public unowned string to_string ();
 	}
@@ -679,6 +736,12 @@ namespace AppStream {
 		FORMAT_UNEXPECTED,
 		NO_COMPONENT,
 		VALUE_MISSING
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_PARSE_FLAG_", has_type_id = false)]
+	[Flags]
+	public enum ParseFlags {
+		NONE,
+		IGNORE_MEDIABASEURL
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_POOL_ERROR_", has_type_id = false)]
 	public enum PoolError {

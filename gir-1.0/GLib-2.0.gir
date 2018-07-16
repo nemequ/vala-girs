@@ -43,6 +43,9 @@ the g_spawn functions.</doc>
 particular string. A GQuark value of zero is associated to %NULL.</doc>
       <type name="guint32" c:type="guint32"/>
     </alias>
+    <alias name="RefString" c:type="GRefString">
+      <type name="gchar" c:type="char"/>
+    </alias>
     <alias name="Strv" c:type="GStrv">
       <doc xml:space="preserve">A typedef alias for gchar**. This is mostly useful when used together with
 g_auto().</doc>
@@ -4450,7 +4453,10 @@ the user's current timezone.
 
 To set the value of a date to the current day, you could write:
 |[&lt;!-- language="C" --&gt;
- g_date_set_time_t (date, time (NULL));
+ time_t now = time (NULL);
+ if (now == (time_t) -1)
+   // handle the error
+ g_date_set_time_t (date, now);
 ]|</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -6975,11 +6981,6 @@ for scanning and printing values of type #guintptr.</doc>
               value="1"
               c:type="G_HAVE_GNUC_VISIBILITY">
       <doc xml:space="preserve">Defined to 1 if gcc-style visibility handling is supported.</doc>
-      <type name="gint" c:type="gint"/>
-    </constant>
-    <constant name="HAVE_GROWING_STACK"
-              value="0"
-              c:type="G_HAVE_GROWING_STACK">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="HAVE_ISO_VARARGS" value="1" c:type="G_HAVE_ISO_VARARGS">
@@ -35485,6 +35486,138 @@ This call acts as a full compiler and hardware memory barrier.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="atomic_rc_box_acquire"
+              c:identifier="g_atomic_rc_box_acquire"
+              version="2.58">
+      <doc xml:space="preserve">Atomically acquires a reference on the data pointed by @mem_block.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a pointer to the data,
+  with its reference count increased</doc>
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="mem_block" transfer-ownership="none">
+          <doc xml:space="preserve">a pointer to reference counted data</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="atomic_rc_box_alloc"
+              c:identifier="g_atomic_rc_box_alloc"
+              version="2.58">
+      <doc xml:space="preserve">Allocates @block_size bytes of memory, and adds atomic
+reference counting semantics to it.
+
+The data will be freed when its reference count drops to
+zero.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a pointer to the allocated memory</doc>
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="block_size" transfer-ownership="none">
+          <doc xml:space="preserve">the size of the allocation, must be greater than 0</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="atomic_rc_box_alloc0"
+              c:identifier="g_atomic_rc_box_alloc0"
+              version="2.58">
+      <doc xml:space="preserve">Allocates @block_size bytes of memory, and adds atomic
+referenc counting semantics to it.
+
+The contents of the returned data is set to zero.
+
+The data will be freed when its reference count drops to
+zero.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a pointer to the allocated memory</doc>
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="block_size" transfer-ownership="none">
+          <doc xml:space="preserve">the size of the allocation, must be greater than 0</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="atomic_rc_box_dup"
+              c:identifier="g_atomic_rc_box_dup"
+              version="2.58">
+      <doc xml:space="preserve">Allocates a new block of data with atomit reference counting
+semantics, and copies @block_size bytes of @mem_block
+into it.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a pointer to the allocated
+  memory</doc>
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="block_size" transfer-ownership="none">
+          <doc xml:space="preserve">the number of bytes to copy, must be greater than 0</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="mem_block" transfer-ownership="none">
+          <doc xml:space="preserve">the memory to copy</doc>
+          <type name="gpointer" c:type="gconstpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="atomic_rc_box_get_size"
+              c:identifier="g_atomic_rc_box_get_size"
+              version="2.58">
+      <doc xml:space="preserve">Retrieves the size of the reference counted data pointed by @mem_block.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the size of the data, in bytes</doc>
+        <type name="gsize" c:type="gsize"/>
+      </return-value>
+      <parameters>
+        <parameter name="mem_block" transfer-ownership="none">
+          <doc xml:space="preserve">a pointer to reference counted data</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="atomic_rc_box_release"
+              c:identifier="g_atomic_rc_box_release"
+              version="2.58">
+      <doc xml:space="preserve">Atomically releases a reference on the data pointed by @mem_block.
+
+If the reference was the last one, it will free the
+resources allocated for @mem_block.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="mem_block" transfer-ownership="full">
+          <doc xml:space="preserve">a pointer to reference counted data</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="atomic_rc_box_release_full"
+              c:identifier="g_atomic_rc_box_release_full"
+              version="2.58">
+      <doc xml:space="preserve">Atomically releases a reference on the data pointed by @mem_block.
+
+If the reference was the last one, it will call @clear_func
+to clear the contents of @mem_block, and then will free the
+resources allocated for @mem_block.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="mem_block" transfer-ownership="full">
+          <doc xml:space="preserve">a pointer to reference counted data</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="clear_func" transfer-ownership="none" scope="async">
+          <doc xml:space="preserve">a function to call when clearing the data</doc>
+          <type name="DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="atomic_ref_count_compare"
               c:identifier="g_atomic_ref_count_compare"
               version="2.58"
@@ -43007,6 +43140,134 @@ by the g_random_* functions, to @seed.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="rc_box_acquire"
+              c:identifier="g_rc_box_acquire"
+              version="2.58">
+      <doc xml:space="preserve">Acquires a reference on the data pointed by @mem_block.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a pointer to the data,
+  with its reference count increased</doc>
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="mem_block" transfer-ownership="none">
+          <doc xml:space="preserve">a pointer to reference counted data</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="rc_box_alloc" c:identifier="g_rc_box_alloc" version="2.58">
+      <doc xml:space="preserve">Allocates @block_size bytes of memory, and adds reference
+counting semantics to it.
+
+The data will be freed when its reference count drops to
+zero.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a pointer to the allocated memory</doc>
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="block_size" transfer-ownership="none">
+          <doc xml:space="preserve">the size of the allocation, must be greater than 0</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="rc_box_alloc0"
+              c:identifier="g_rc_box_alloc0"
+              version="2.58">
+      <doc xml:space="preserve">Allocates @block_size bytes of memory, and adds reference
+counting semantics to it.
+
+The contents of the returned data is set to zero.
+
+The data will be freed when its reference count drops to
+zero.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a pointer to the allocated memory</doc>
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="block_size" transfer-ownership="none">
+          <doc xml:space="preserve">the size of the allocation, must be greater than 0</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="rc_box_dup" c:identifier="g_rc_box_dup" version="2.58">
+      <doc xml:space="preserve">Allocates a new block of data with reference counting
+semantics, and copies @block_size bytes of @mem_block
+into it.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a pointer to the allocated
+  memory</doc>
+        <type name="gpointer" c:type="gpointer"/>
+      </return-value>
+      <parameters>
+        <parameter name="block_size" transfer-ownership="none">
+          <doc xml:space="preserve">the number of bytes to copy, must be greater than 0</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="mem_block" transfer-ownership="none">
+          <doc xml:space="preserve">the memory to copy</doc>
+          <type name="gpointer" c:type="gconstpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="rc_box_get_size"
+              c:identifier="g_rc_box_get_size"
+              version="2.58">
+      <doc xml:space="preserve">Retrieves the size of the reference counted data pointed by @mem_block.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the size of the data, in bytes</doc>
+        <type name="gsize" c:type="gsize"/>
+      </return-value>
+      <parameters>
+        <parameter name="mem_block" transfer-ownership="none">
+          <doc xml:space="preserve">a pointer to reference counted data</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="rc_box_release"
+              c:identifier="g_rc_box_release"
+              version="2.58">
+      <doc xml:space="preserve">Releases a reference on the data pointed by @mem_block.
+
+If the reference was the last one, it will free the
+resources allocated for @mem_block.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="mem_block" transfer-ownership="full">
+          <doc xml:space="preserve">a pointer to reference counted data</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="rc_box_release_full"
+              c:identifier="g_rc_box_release_full"
+              version="2.58">
+      <doc xml:space="preserve">Releases a reference on the data pointed by @mem_block.
+
+If the reference was the last one, it will call @clear_func
+to clear the contents of @mem_block, and then will free the
+resources allocated for @mem_block.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="mem_block" transfer-ownership="full">
+          <doc xml:space="preserve">a pointer to reference counted data</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="clear_func" transfer-ownership="none" scope="async">
+          <doc xml:space="preserve">a function to call when clearing the data</doc>
+          <type name="DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="realloc" c:identifier="g_realloc">
       <doc xml:space="preserve">Reallocates the memory pointed to by @mem, so that it now has space for
 @n_bytes bytes of memory. It returns the new address of the memory, which may
@@ -43120,6 +43381,111 @@ but care is taken to detect possible overflow during multiplication.</doc>
         <parameter name="rc" transfer-ownership="none">
           <doc xml:space="preserve">the address of a reference count variable</doc>
           <type c:type="grefcount*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ref_string_acquire"
+              c:identifier="g_ref_string_acquire"
+              version="2.58">
+      <doc xml:space="preserve">Acquires a reference on a string.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the given string, with its reference count increased</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">a reference counted string</doc>
+          <type name="utf8" c:type="char*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ref_string_length"
+              c:identifier="g_ref_string_length"
+              version="2.58">
+      <doc xml:space="preserve">Retrieves the length of @str.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the length of the given string, in bytes</doc>
+        <type name="gsize" c:type="gsize"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">a reference counted string</doc>
+          <type name="utf8" c:type="char*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ref_string_new"
+              c:identifier="g_ref_string_new"
+              version="2.58">
+      <doc xml:space="preserve">Creates a new reference counted string and copies the contents of @str
+into it.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the newly created reference counted string</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">a NUL-terminated string</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ref_string_new_intern"
+              c:identifier="g_ref_string_new_intern"
+              version="2.58">
+      <doc xml:space="preserve">Creates a new reference counted string and copies the content of @str
+into it.
+
+If you call this function multiple times with the same @str, or with
+the same contents of @str, it will return a new reference, instead of
+creating a new string.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the newly created reference
+  counted string, or a new reference to an existing string</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">a NUL-terminated string</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ref_string_new_len"
+              c:identifier="g_ref_string_new_len"
+              version="2.58">
+      <doc xml:space="preserve">Creates a new reference counted string and copies the contents of @str
+into it, up to @len bytes.
+
+Since this function does not stop at nul bytes, it is the caller's
+responsibility to ensure that @str has at least @len addressable bytes.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the newly created reference counted string</doc>
+        <type name="utf8" c:type="char*"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">a string</doc>
+          <type name="utf8" c:type="const char*"/>
+        </parameter>
+        <parameter name="len" transfer-ownership="none">
+          <doc xml:space="preserve">length of @str to use, or -1 if @str is nul-terminated</doc>
+          <type name="gssize" c:type="gssize"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="ref_string_release"
+              c:identifier="g_ref_string_release"
+              version="2.58">
+      <doc xml:space="preserve">Releases a reference on a string; if it was the last reference, the
+resources allocated by the string are freed as well.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">a reference counted string</doc>
+          <type name="utf8" c:type="char*"/>
         </parameter>
       </parameters>
     </function>
