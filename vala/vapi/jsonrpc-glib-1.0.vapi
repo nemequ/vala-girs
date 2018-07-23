@@ -56,7 +56,7 @@ namespace Jsonrpc {
 			public Jsonrpc.MessageMagic magic;
 			public weak string valptr;
 			[CCode (cheader_filename = "jsonrpc-glib.h", cname = "JSONRPC_MESSAGE_GET_STRING")]
-			public static void* create (ref string val);
+			public static void* create (ref unowned string val);
 		}
 		[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
 		[GIR (name = "MessageGetStrv")]
@@ -142,8 +142,9 @@ namespace Jsonrpc {
 		public bool call (string method, GLib.Variant? @params, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
 		[Version (since = "3.26")]
 		public async bool call_async (string method, GLib.Variant? @params, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
+		[CCode (finish_name = "jsonrpc_client_call_finish")]
 		[Version (since = "3.30")]
-		public async void call_with_id_async (string method, GLib.Variant? @params, out GLib.Variant id, GLib.Cancellable? cancellable);
+		public async bool call_with_id_async (string method, GLib.Variant? @params, out GLib.Variant id, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
 		[Version (since = "3.26")]
 		public bool close (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.26")]

@@ -161,8 +161,10 @@ namespace Dazzle {
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_cpu_graph_get_type ()")]
 	public class CpuGraph : Dazzle.GraphView, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		protected CpuGraph ();
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		public CpuGraph ();
+		public CpuGraph.full (int64 timespan, uint max_samples);
 		[NoAccessorMethod]
 		public uint max_samples { get; construct; }
 		[NoAccessorMethod]
@@ -1363,6 +1365,8 @@ namespace Dazzle {
 		[Version (since = "3.30")]
 		public virtual GLib.Icon? get_icon ();
 		public unowned string get_icon_name ();
+		[Version (since = "3.30")]
+		public virtual Cairo.Surface? get_icon_surface (Gtk.Widget widget);
 		public unowned string get_id ();
 		public unowned string get_subtitle ();
 		public unowned string get_title ();

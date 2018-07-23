@@ -14,6 +14,52 @@ and/or use gtk-doc annotations.  -->
              shared-library="libjavascriptcoregtk-4.0.so.18"
              c:identifier-prefixes="JSC"
              c:symbol-prefixes="jsc">
+    <enumeration name="CheckSyntaxMode" c:type="JSCCheckSyntaxMode">
+      <doc xml:space="preserve">Enum values to specify a mode to check for syntax errors in jsc_context_check_syntax().</doc>
+      <member name="script"
+              value="0"
+              c:identifier="JSC_CHECK_SYNTAX_MODE_SCRIPT">
+        <doc xml:space="preserve">mode to check syntax of a script</doc>
+      </member>
+      <member name="module"
+              value="1"
+              c:identifier="JSC_CHECK_SYNTAX_MODE_MODULE">
+        <doc xml:space="preserve">mode to check syntax of a module</doc>
+      </member>
+    </enumeration>
+    <enumeration name="CheckSyntaxResult" c:type="JSCCheckSyntaxResult">
+      <doc xml:space="preserve">Enum values to specify the result of jsc_context_check_syntax().</doc>
+      <member name="success"
+              value="0"
+              c:identifier="JSC_CHECK_SYNTAX_RESULT_SUCCESS">
+        <doc xml:space="preserve">no errors</doc>
+      </member>
+      <member name="recoverable_error"
+              value="1"
+              c:identifier="JSC_CHECK_SYNTAX_RESULT_RECOVERABLE_ERROR">
+        <doc xml:space="preserve">recoverable syntax error</doc>
+      </member>
+      <member name="irrecoverable_error"
+              value="2"
+              c:identifier="JSC_CHECK_SYNTAX_RESULT_IRRECOVERABLE_ERROR">
+        <doc xml:space="preserve">irrecoverable syntax error</doc>
+      </member>
+      <member name="unterminated_literal_error"
+              value="3"
+              c:identifier="JSC_CHECK_SYNTAX_RESULT_UNTERMINATED_LITERAL_ERROR">
+        <doc xml:space="preserve">unterminated literal error</doc>
+      </member>
+      <member name="out_of_memory_error"
+              value="4"
+              c:identifier="JSC_CHECK_SYNTAX_RESULT_OUT_OF_MEMORY_ERROR">
+        <doc xml:space="preserve">out of memory error</doc>
+      </member>
+      <member name="stack_overflow_error"
+              value="5"
+              c:identifier="JSC_CHECK_SYNTAX_RESULT_STACK_OVERFLOW_ERROR">
+        <doc xml:space="preserve">stack overflow error</doc>
+      </member>
+    </enumeration>
     <class name="Class"
            c:symbol-prefix="class"
            c:type="JSCClass"
@@ -30,7 +76,7 @@ is used with the constructor or jsc_value_constructor_call() is called, @callbac
 parameters and @user_data as the last parameter. When the constructor object is cleared in the #JSCClass context,
 @destroy_notify is called with @user_data as parameter.
 
-This function creates the constructor, that needs to be added to an object as a property to be able to use it. Use
+This function creates the constructor, which needs to be added to an object as a property to be able to use it. Use
 jsc_context_set_value() to make the constructor available in the global object.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #JSCValue representing the class constructor.</doc>
@@ -85,6 +131,60 @@ jsc_context_set_value() to make the constructor available in the global object.<
           </parameter>
         </parameters>
       </method>
+      <method name="add_constructor_variadic"
+              c:identifier="jsc_class_add_constructor_variadic">
+        <doc xml:space="preserve">Add a constructor to @jsc_class. If @name is %NULL, the class name will be used. When &lt;function&gt;new&lt;/function&gt;
+is used with the constructor or jsc_value_constructor_call() is called, @callback is invoked receiving
+a #GPtrArray of #JSCValue&lt;!-- --&gt;s as arguments and @user_data as the last parameter. When the constructor object
+is cleared in the #JSCClass context, @destroy_notify is called with @user_data as parameter.
+
+This function creates the constructor, which needs to be added to an object as a property to be able to use it. Use
+jsc_context_set_value() to make the constructor available in the global object.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #JSCValue representing the class constructor.</doc>
+          <type name="Value" c:type="JSCValue*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="jsc_class" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCClass</doc>
+            <type name="Class" c:type="JSCClass*"/>
+          </instance-parameter>
+          <parameter name="name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the constructor name or %NULL</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="2"
+                     destroy="3">
+            <doc xml:space="preserve">a #GCallback to be called to create an instance of @jsc_class</doc>
+            <type name="GObject.Callback" c:type="GCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data to pass to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy_notify"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:space="preserve">destroy notifier for @user_data</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="return_type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GType of the constructor return value</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="add_constructorv"
               c:identifier="jsc_class_add_constructorv"
               shadows="add_constructor">
@@ -93,7 +193,7 @@ is used with the constructor or jsc_value_constructor_call() is called, @callbac
 parameters and @user_data as the last parameter. When the constructor object is cleared in the #JSCClass context,
 @destroy_notify is called with @user_data as parameter.
 
-This function creates the constructor, that needs to be added to an object as a property to be able to use it. Use
+This function creates the constructor, which needs to be added to an object as a property to be able to use it. Use
 jsc_context_set_value() to make the constructor available in the global object.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #JSCValue representing the class constructor.</doc>
@@ -207,6 +307,53 @@ jsc_context_set_value() to make the constructor available in the global object.<
           <parameter name="..." transfer-ownership="none">
             <doc xml:space="preserve">a list of #GType&lt;!-- --&gt;s, one for each parameter.</doc>
             <varargs/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_method_variadic"
+              c:identifier="jsc_class_add_method_variadic">
+        <doc xml:space="preserve">Add method with @name to @jsc_class. When the method is called by JavaScript or jsc_value_object_invoke_method(),
+@callback is called receiving the class instance as first parameter, followed by a #GPtrArray of #JSCValue&lt;!-- --&gt;s
+with the method arguments and then @user_data as last parameter. When the method is cleared in the #JSCClass context,
+@destroy_notify is called with @user_data as parameter.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="jsc_class" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCClass</doc>
+            <type name="Class" c:type="JSCClass*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve">the method name</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="2"
+                     destroy="3">
+            <doc xml:space="preserve">a #GCallback to be called to invoke method @name of @jsc_class</doc>
+            <type name="GObject.Callback" c:type="GCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data to pass to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy_notify"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:space="preserve">destroy notifier for @user_data</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="return_type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GType of the method return value, or %G_TYPE_NONE if the method is void.</doc>
+            <type name="GType" c:type="GType"/>
           </parameter>
         </parameters>
       </method>
@@ -632,6 +779,51 @@ called within a function or method callback, otherwise %NULL will be returned.</
           <type name="Context" c:type="JSCContext*"/>
         </return-value>
       </function>
+      <method name="check_syntax" c:identifier="jsc_context_check_syntax">
+        <doc xml:space="preserve">Check the given @code in @context for syntax errors. The @line_number is the starting line number in @uri;
+the value is one-based so the first line is 1. @uri and @line_number are only used to fill the @exception.
+In case of errors @exception will be set to a new #JSCException with the details. You can pass %NULL to
+@exception to ignore the error details.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #JSCCheckSyntaxResult</doc>
+          <type name="CheckSyntaxResult" c:type="JSCCheckSyntaxResult"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCContext</doc>
+            <type name="Context" c:type="JSCContext*"/>
+          </instance-parameter>
+          <parameter name="code" transfer-ownership="none">
+            <doc xml:space="preserve">a JavaScript script to check</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="length" transfer-ownership="none">
+            <doc xml:space="preserve">length of @code, or -1 if @code is a nul-terminated string</doc>
+            <type name="gssize" c:type="gssize"/>
+          </parameter>
+          <parameter name="mode" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCCheckSyntaxMode</doc>
+            <type name="CheckSyntaxMode" c:type="JSCCheckSyntaxMode"/>
+          </parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">the source URI</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="line_number" transfer-ownership="none">
+            <doc xml:space="preserve">the starting line number</doc>
+            <type name="guint" c:type="unsigned"/>
+          </parameter>
+          <parameter name="exception"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">return location for a #JSCException, or %NULL to ignore</doc>
+            <type name="Exception" c:type="JSCException**"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="clear_exception"
               c:identifier="jsc_context_clear_exception">
         <doc xml:space="preserve">Clear the uncaught exception in @context if any.</doc>
@@ -666,11 +858,66 @@ called within a function or method callback, otherwise %NULL will be returned.</
           </parameter>
         </parameters>
       </method>
+      <method name="evaluate_in_object"
+              c:identifier="jsc_context_evaluate_in_object">
+        <doc xml:space="preserve">Evaluate @code and create an new object where symbols defined in @code will be added as properties,
+instead of being added to @context global object. The new object is returned as @object parameter.
+Similar to how jsc_value_new_object() works, if @object_instance is not %NULL @object_class must be provided too.
+The @line_number is the starting line number in @uri; the value is one-based so the first line is 1.
+@uri and @line_number will be shown in exceptions and they don't affect the behavior of the script.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #JSCValue representing the last value generated by the script.</doc>
+          <type name="Value" c:type="JSCValue*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCContext</doc>
+            <type name="Context" c:type="JSCContext*"/>
+          </instance-parameter>
+          <parameter name="code" transfer-ownership="none">
+            <doc xml:space="preserve">a JavaScript script to evaluate</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="length" transfer-ownership="none">
+            <doc xml:space="preserve">length of @code, or -1 if @code is a nul-terminated string</doc>
+            <type name="gssize" c:type="gssize"/>
+          </parameter>
+          <parameter name="object_instance"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an object instance</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="object_class"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #JSCClass or %NULL to use the default</doc>
+            <type name="Class" c:type="JSCClass*"/>
+          </parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve">the source URI</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="line_number" transfer-ownership="none">
+            <doc xml:space="preserve">the starting line number</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="object"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve">return location for a #JSCValue.</doc>
+            <type name="Value" c:type="JSCValue**"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="evaluate_with_source_uri"
               c:identifier="jsc_context_evaluate_with_source_uri">
-        <doc xml:space="preserve">Evaluate @code in @context using @uri as the source URI. This is exactly the same as
-jsc_context_evaluate() but @uri will be shown in exceptions. The source @uri doesn't
-affect the behavior of the script.</doc>
+        <doc xml:space="preserve">Evaluate @code in @context using @uri as the source URI. The @line_number is the starting line number
+in @uri; the value is one-based so the first line is 1. @uri and @line_number will be shown in exceptions and
+they don't affect the behavior of the script.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #JSCValue representing the last value generated by the script.</doc>
           <type name="Value" c:type="JSCValue*"/>
@@ -692,6 +939,10 @@ affect the behavior of the script.</doc>
             <doc xml:space="preserve">the source URI</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
+          <parameter name="line_number" transfer-ownership="none">
+            <doc xml:space="preserve">the starting line number</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_exception" c:identifier="jsc_context_get_exception">
@@ -700,6 +951,20 @@ affect the behavior of the script.</doc>
           <doc xml:space="preserve">a #JSCException or %NULL if there isn't any
    unhandled exception in the #JSCContext.</doc>
           <type name="Exception" c:type="JSCException*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCContext</doc>
+            <type name="Context" c:type="JSCContext*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_global_object"
+              c:identifier="jsc_context_get_global_object">
+        <doc xml:space="preserve">Get a #JSCValue referencing the @context global object</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #JSCValue</doc>
+          <type name="Value" c:type="JSCValue*"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
@@ -1084,7 +1349,7 @@ application compile time, rather than from the library linked
 against at application run time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="3" c:type="JSC_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="5" c:type="JSC_MICRO_VERSION">
       <doc xml:space="preserve">Like jsc_get_micro_version(), but from the headers used at
 application compile time, rather than from the library linked
 against at application run time.</doc>
@@ -1148,6 +1413,27 @@ pointers to a #JSCValue.</doc>
             <doc xml:space="preserve">a #GPtrArray</doc>
             <array name="GLib.PtrArray" c:type="GPtrArray*">
               <type name="Value"/>
+            </array>
+          </parameter>
+        </parameters>
+      </constructor>
+      <constructor name="new_array_from_strv"
+                   c:identifier="jsc_value_new_array_from_strv">
+        <doc xml:space="preserve">Create a new #JSCValue referencing an array of strings with the items from @strv. If @array
+is %NULL or empty a new empty array will be created.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #JSCValue.</doc>
+          <type name="Value" c:type="JSCValue*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCContext</doc>
+            <type name="Context" c:type="JSCContext*"/>
+          </parameter>
+          <parameter name="strv" transfer-ownership="none">
+            <doc xml:space="preserve">a %NULL-terminated array of strings</doc>
+            <array c:type="const char* const*">
+              <type name="utf8"/>
             </array>
           </parameter>
         </parameters>
@@ -1230,6 +1516,57 @@ cleared in @context, @destroy_notify is called with @user_data as parameter.</do
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_function_variadic"
+                   c:identifier="jsc_value_new_function_variadic">
+        <doc xml:space="preserve">Create a function in @context. If @name is %NULL an anonymous function will be created.
+When the function is called by JavaScript or jsc_value_function_call(), @callback is called
+receiving an #GPtrArray of #JSCValue&lt;!-- --&gt;s with the arguments and then @user_data as last parameter.
+When the function is cleared in @context, @destroy_notify is called with @user_data as parameter.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #JSCValue.</doc>
+          <type name="Value" c:type="JSCValue*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #JSCContext</doc>
+            <type name="Context" c:type="JSCContext*"/>
+          </parameter>
+          <parameter name="name"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the function name or %NULL</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     scope="notified"
+                     closure="3"
+                     destroy="4">
+            <doc xml:space="preserve">a #GCallback.</doc>
+            <type name="GObject.Callback" c:type="GCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data to pass to @callback.</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="destroy_notify"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async">
+            <doc xml:space="preserve">destroy notifier for @user_data</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+          </parameter>
+          <parameter name="return_type" transfer-ownership="none">
+            <doc xml:space="preserve">the #GType of the function return value, or %G_TYPE_NONE if the function is void.</doc>
+            <type name="GType" c:type="GType"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_functionv"
                    c:identifier="jsc_value_new_functionv"
                    shadows="new_function">
@@ -1243,7 +1580,7 @@ cleared in @context, @destroy_notify is called with @user_data as parameter.</do
         </return-value>
         <parameters>
           <parameter name="context" transfer-ownership="none">
-            <doc xml:space="preserve">a #JSCContext:</doc>
+            <doc xml:space="preserve">a #JSCContext</doc>
             <type name="Context" c:type="JSCContext*"/>
           </parameter>
           <parameter name="name"

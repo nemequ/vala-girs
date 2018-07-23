@@ -3510,10 +3510,16 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static bool debug (string mode);
 	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.30")]
+	public static void debug_demangle_backtrace (ref GLib.StringBuilder? bt);
+	[CCode (cheader_filename = "camel/camel.h")]
 	public static void debug_end ();
 	[CCode (cheader_filename = "camel/camel.h")]
 	[Version (since = "3.12")]
 	public static GLib.StringBuilder debug_get_backtrace ();
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.30")]
+	public static GLib.StringBuilder debug_get_raw_backtrace ();
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static void debug_init ();
 	[CCode (cheader_filename = "camel/camel.h")]

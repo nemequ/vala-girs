@@ -1678,6 +1678,9 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 1.9)]
 	[Version (since = "3.4")]
 	public delegate void TypeFunc (GLib.Type type);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 0.9)]
+	[Version (since = "3.30")]
+	public delegate E.Source? WebDAVDiscoverRefSourceFunc (string uid);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 2.9)]
 	public delegate void XmlHashFunc (string key, string value);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 2.9)]
