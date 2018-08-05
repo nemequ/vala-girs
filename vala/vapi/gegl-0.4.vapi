@@ -400,7 +400,15 @@ namespace Gegl {
 		[NoAccessorMethod]
 		public uint64 swap_file_size { get; }
 		[NoAccessorMethod]
+		public uint64 swap_read_total { get; }
+		[NoAccessorMethod]
+		public bool swap_reading { get; }
+		[NoAccessorMethod]
 		public uint64 swap_total { get; }
+		[NoAccessorMethod]
+		public uint64 swap_write_total { get; }
+		[NoAccessorMethod]
+		public bool swap_writing { get; }
 		[NoAccessorMethod]
 		public int tile_cache_hits { get; }
 		[NoAccessorMethod]

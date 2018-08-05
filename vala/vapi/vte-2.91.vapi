@@ -339,6 +339,10 @@ namespace Vte {
 	public const int REGEX_FLAGS_DEFAULT;
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_SPAWN_NO_PARENT_ENVV")]
 	public const int SPAWN_NO_PARENT_ENVV;
+	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_TEST_FLAGS_ALL")]
+	public const uint64 TEST_FLAGS_ALL;
+	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_TEST_FLAGS_NONE")]
+	public const uint64 TEST_FLAGS_NONE;
 	[CCode (cheader_filename = "vte/vte.h")]
 	[Version (since = "0.40")]
 	public static unowned string get_features ();

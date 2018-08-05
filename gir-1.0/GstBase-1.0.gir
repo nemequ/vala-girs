@@ -1228,7 +1228,12 @@ sent before pushing the buffer.</doc>
           <parameter name="caps" transfer-ownership="none">
             <type name="Gst.Caps" c:type="GstCaps*"/>
           </parameter>
-          <parameter name="ret" transfer-ownership="none">
+          <parameter name="ret"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
             <type name="Gst.Caps" c:type="GstCaps**"/>
           </parameter>
         </parameters>
@@ -1633,7 +1638,12 @@ _finish_buffer from inside that function.</doc>
             <parameter name="caps" transfer-ownership="none">
               <type name="Gst.Caps" c:type="GstCaps*"/>
             </parameter>
-            <parameter name="ret" transfer-ownership="none">
+            <parameter name="ret"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full"
+                       optional="1"
+                       allow-none="1">
               <type name="Gst.Caps" c:type="GstCaps**"/>
             </parameter>
           </parameters>
@@ -12651,6 +12661,63 @@ Free-function: gst_caps_unref</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="type_find_helper_for_buffer_with_extension"
+              c:identifier="gst_type_find_helper_for_buffer_with_extension"
+              version="1.16">
+      <doc xml:space="preserve">Tries to find what type of data is contained in the given #GstBuffer, the
+assumption being that the buffer represents the beginning of the stream or
+file.
+
+All available typefinders will be called on the data in order of rank. If
+a typefinding function returns a probability of %GST_TYPE_FIND_MAXIMUM,
+typefinding is stopped immediately and the found caps will be returned
+right away. Otherwise, all available typefind functions will the tried,
+and the caps with the highest probability will be returned, or %NULL if
+the content of the buffer could not be identified.
+
+When @extension is not %NULL, this function will first try the typefind
+functions for the given extension, which might speed up the typefinding
+in many cases.
+
+Free-function: gst_caps_unref</doc>
+      <return-value transfer-ownership="full" nullable="1">
+        <doc xml:space="preserve">the #GstCaps corresponding to the data,
+    or %NULL if no type could be found. The caller should free the caps
+    returned with gst_caps_unref().</doc>
+        <type name="Gst.Caps" c:type="GstCaps*"/>
+      </return-value>
+      <parameters>
+        <parameter name="obj"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">object doing the typefinding, or %NULL (used for logging)</doc>
+          <type name="Gst.Object" c:type="GstObject*"/>
+        </parameter>
+        <parameter name="buf" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstBuffer with data to typefind</doc>
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </parameter>
+        <parameter name="extension"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">extension of the media, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="prob"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">location to store the probability of the found
+    caps, or %NULL</doc>
+          <type name="Gst.TypeFindProbability"
+                c:type="GstTypeFindProbability*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="type_find_helper_for_data"
               c:identifier="gst_type_find_helper_for_data">
       <doc xml:space="preserve">Tries to find what type of data is contained in the given @data, the
@@ -12688,6 +12755,69 @@ Free-function: gst_caps_unref</doc>
         <parameter name="size" transfer-ownership="none">
           <doc xml:space="preserve">the size of @data</doc>
           <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="prob"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">location to store the probability of the found
+    caps, or %NULL</doc>
+          <type name="Gst.TypeFindProbability"
+                c:type="GstTypeFindProbability*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="type_find_helper_for_data_with_extension"
+              c:identifier="gst_type_find_helper_for_data_with_extension"
+              version="1.16">
+      <doc xml:space="preserve">Tries to find what type of data is contained in the given @data, the
+assumption being that the data represents the beginning of the stream or
+file.
+
+All available typefinders will be called on the data in order of rank. If
+a typefinding function returns a probability of %GST_TYPE_FIND_MAXIMUM,
+typefinding is stopped immediately and the found caps will be returned
+right away. Otherwise, all available typefind functions will the tried,
+and the caps with the highest probability will be returned, or %NULL if
+the content of @data could not be identified.
+
+When @extension is not %NULL, this function will first try the typefind
+functions for the given extension, which might speed up the typefinding
+in many cases.
+
+Free-function: gst_caps_unref</doc>
+      <return-value transfer-ownership="full" nullable="1">
+        <doc xml:space="preserve">the #GstCaps corresponding to the data,
+    or %NULL if no type could be found. The caller should free the caps
+    returned with gst_caps_unref().</doc>
+        <type name="Gst.Caps" c:type="GstCaps*"/>
+      </return-value>
+      <parameters>
+        <parameter name="obj"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">object doing the typefinding, or %NULL (used for logging)</doc>
+          <type name="Gst.Object" c:type="GstObject*"/>
+        </parameter>
+        <parameter name="data" transfer-ownership="none">
+          <doc xml:space="preserve">* a pointer with data to typefind</doc>
+          <array length="2" zero-terminated="0" c:type="const guint8*">
+            <type name="guint8" c:type="guint8"/>
+          </array>
+        </parameter>
+        <parameter name="size" transfer-ownership="none">
+          <doc xml:space="preserve">the size of @data</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="extension"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">extension of the media, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
         <parameter name="prob"
                    direction="out"
@@ -12774,9 +12904,81 @@ Free-function: gst_caps_unref</doc>
           <doc xml:space="preserve">The length in bytes</doc>
           <type name="guint64" c:type="guint64"/>
         </parameter>
-        <parameter name="extension" transfer-ownership="none">
-          <doc xml:space="preserve">extension of the media</doc>
+        <parameter name="extension"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">extension of the media, or %NULL</doc>
           <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="prob"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">location to store the probability of the found
+    caps, or %NULL</doc>
+          <type name="Gst.TypeFindProbability"
+                c:type="GstTypeFindProbability*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="type_find_helper_get_range_full"
+              c:identifier="gst_type_find_helper_get_range_full"
+              version="1.14.3">
+      <doc xml:space="preserve">Utility function to do pull-based typefinding. Unlike gst_type_find_helper()
+however, this function will use the specified function @func to obtain the
+data needed by the typefind functions, rather than operating on a given
+source pad. This is useful mostly for elements like tag demuxers which
+strip off data at the beginning and/or end of a file and want to typefind
+the stripped data stream before adding their own source pad (the specified
+callback can then call the upstream peer pad with offsets adjusted for the
+tag size, for example).
+
+When @extension is not %NULL, this function will first try the typefind
+functions for the given extension, which might speed up the typefinding
+in many cases.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the last %GstFlowReturn from pulling a buffer or %GST_FLOW_OK if
+         typefinding was successful.</doc>
+        <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
+      </return-value>
+      <parameters>
+        <parameter name="obj" transfer-ownership="none">
+          <doc xml:space="preserve">A #GstObject that will be passed as first argument to @func</doc>
+          <type name="Gst.Object" c:type="GstObject*"/>
+        </parameter>
+        <parameter name="parent"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">the parent of @obj or %NULL</doc>
+          <type name="Gst.Object" c:type="GstObject*"/>
+        </parameter>
+        <parameter name="func" transfer-ownership="none" scope="call">
+          <doc xml:space="preserve">A generic #GstTypeFindHelperGetRangeFunction that will
+       be used to access data at random offsets when doing the typefinding</doc>
+          <type name="TypeFindHelperGetRangeFunction"
+                c:type="GstTypeFindHelperGetRangeFunction"/>
+        </parameter>
+        <parameter name="size" transfer-ownership="none">
+          <doc xml:space="preserve">The length in bytes</doc>
+          <type name="guint64" c:type="guint64"/>
+        </parameter>
+        <parameter name="extension"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">extension of the media, or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="caps"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="full">
+          <doc xml:space="preserve">returned caps</doc>
+          <type name="Gst.Caps" c:type="GstCaps**"/>
         </parameter>
         <parameter name="prob"
                    direction="out"

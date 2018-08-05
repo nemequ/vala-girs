@@ -106,6 +106,8 @@ namespace Grl {
 		public void add_boxed (Grl.KeyID key, void* boxed);
 		[Version (since = "0.1.10")]
 		public void add_float (Grl.KeyID key, float floatvalue);
+		[Version (since = "0.3.6")]
+		public bool add_for_id (string key_name, GLib.Value value);
 		[Version (since = "0.1.10")]
 		public void add_int (Grl.KeyID key, int intvalue);
 		[Version (since = "0.2.12")]
@@ -158,6 +160,8 @@ namespace Grl {
 		public void set_boxed (Grl.KeyID key, void* boxed);
 		[Version (since = "0.1.5")]
 		public void set_float (Grl.KeyID key, float floatvalue);
+		[Version (since = "0.3.6")]
+		public bool set_for_id (string key_name, GLib.Value value);
 		[Version (since = "0.1.4")]
 		public void set_int (Grl.KeyID key, int intvalue);
 		[Version (since = "0.2.12")]

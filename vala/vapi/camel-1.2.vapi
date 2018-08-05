@@ -151,6 +151,7 @@ namespace Camel {
 		public static Camel.ContentDisposition decode (string @in);
 		public string format ();
 		public bool is_attachment (Camel.ContentType content_type);
+		public bool is_attachment_ex (Camel.ContentType content_type, Camel.ContentType parent_content_type);
 		public Camel.ContentDisposition @ref ();
 		public void unref ();
 	}

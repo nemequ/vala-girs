@@ -616,7 +616,7 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public void append_table (Gda.DdlTable table);
 		[Version (since = "6.0")]
-		public void append_view (Gda.DdlTable view);
+		public void append_view (Gda.DdlView view);
 		public static GLib.Quark error_quark ();
 		[Version (since = "6.0")]
 		public void free ();
@@ -1089,6 +1089,7 @@ namespace Gda {
 		public bool is_valid (string? xml_file) throws GLib.Error;
 		public bool is_valid_from_resource (string? resource) throws GLib.Error;
 		public bool load_data_from_xml ([CCode (type = "xmlNodePtr")] Xml.Node* node) throws GLib.Error;
+		public bool perform () throws GLib.Error;
 		[Version (since = "4.2.3")]
 		public bool perform_create_database (string? provider) throws GLib.Error;
 		[Version (since = "4.2.3")]
@@ -1107,6 +1108,7 @@ namespace Gda {
 		public static Gda.ServerOperation? prepare_drop_database (string provider, string? db_name) throws GLib.Error;
 		[Version (since = "4.2.3")]
 		public static Gda.ServerOperation? prepare_drop_table (Gda.Connection cnc, string table_name) throws GLib.Error;
+		public string? render () throws GLib.Error;
 		public string save_data_to_xml_string () throws GLib.Error;
 		[NoWrapper]
 		public virtual void seq_item_added (string seq_path, int item_index);
@@ -2399,8 +2401,8 @@ namespace Gda {
 	public enum DdlCreatorError {
 		CONTEXT_NULL,
 		DOC_NULL,
-		UNVALID_XML,
-		UNVALID_SCHEMA,
+		INVALID_XML,
+		INVALID_SCHEMA,
 		SERVER_OPERATION,
 		FILE_READ,
 		PARSE_CONTEXT,
@@ -3071,6 +3073,9 @@ namespace Gda {
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static GLib.Value? value_new_blob_from_file (string filename);
 	[CCode (cheader_filename = "libgda/libgda.h")]
+	[Version (deprecated = true, deprecated_since = "6.0")]
+	public static GLib.Value? value_new_date_time_from_timet (long val);
+	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "4.2.9")]
 	public static GLib.Value? value_new_default (string? default_val);
 	[CCode (cheader_filename = "libgda/libgda.h")]
@@ -3082,8 +3087,6 @@ namespace Gda {
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "6.0")]
 	public static GLib.Value? value_new_time_from_timet (long val);
-	[CCode (cheader_filename = "libgda/libgda.h")]
-	public static GLib.Value? value_new_timestamp_from_timet (long val);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static void value_reset_with_type (GLib.Value value, GLib.Type type);
 	[CCode (cheader_filename = "libgda/libgda.h")]
