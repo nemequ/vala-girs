@@ -628,6 +628,8 @@ namespace Gda {
 		public bool parse_file_from_path (string xmlfile) throws GLib.Error;
 		public bool perform_operation (Gda.Connection cnc) throws GLib.Error;
 		[Version (since = "6.0")]
+		public static bool validate_file_from_path (string xmlfile) throws GLib.Error;
+		[Version (since = "6.0")]
 		public bool write_to_path (string path) throws GLib.Error;
 		[NoAccessorMethod]
 		public string schema_name { owned get; set; }
@@ -963,7 +965,7 @@ namespace Gda {
 		public bool complement_schema (GLib.Value? catalog, GLib.Value? schema) throws GLib.Error;
 		public string dump_as_graph (Gda.MetaGraphInfo info) throws GLib.Error;
 		public static GLib.Quark error_quark ();
-		public GLib.SList<weak Gda.MetaDbObject> get_all_db_objects ();
+		public GLib.SList<weak Gda.MetaDbObject?> get_all_db_objects ();
 		public unowned Gda.MetaDbObject? get_db_object (GLib.Value? catalog, GLib.Value? schema, GLib.Value name);
 		public unowned Gda.MetaTableColumn? get_table_column (Gda.MetaTable table, GLib.Value col_name);
 		public bool load_from_xml_file (string? catalog, string? schema, string xml_spec_file) throws GLib.Error;
@@ -2096,7 +2098,7 @@ namespace Gda {
 		public weak string obj_short_name;
 		public weak string obj_full_name;
 		public weak string obj_owner;
-		public weak GLib.SList<Gda.MetaDbObject> depend_list;
+		public weak GLib.SList<Gda.MetaDbObject?> depend_list;
 		[CCode (cname = "extra.meta_table")]
 		public Gda.MetaTable extra_meta_table;
 		[CCode (cname = "extra.meta_view")]
@@ -2104,11 +2106,11 @@ namespace Gda {
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
 	public struct MetaTable {
-		public weak GLib.SList<Gda.MetaTableColumn> columns;
+		public weak GLib.SList<Gda.MetaTableColumn?> columns;
 		public int pk_cols_array;
 		public int pk_cols_nb;
-		public weak GLib.SList<Gda.MetaTableForeignKey> reverse_fk_list;
-		public weak GLib.SList<Gda.MetaTableForeignKey> fk_list;
+		public weak GLib.SList<Gda.MetaTableForeignKey?> reverse_fk_list;
+		public weak GLib.SList<Gda.MetaTableForeignKey?> fk_list;
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
 	public struct MetaTableColumn {

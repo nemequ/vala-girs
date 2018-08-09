@@ -476,7 +476,7 @@ namespace Dazzle {
 		public bool contains (string key);
 		public void end_bulk_insert ();
 		public void insert (string key, void* value);
-		public GLib.Array<Dazzle.FuzzyMutableIndexMatch> match (string needle, size_t max_matches);
+		public GLib.Array<Dazzle.FuzzyMutableIndexMatch?> match (string needle, size_t max_matches);
 		public Dazzle.FuzzyMutableIndex @ref ();
 		public void remove (string key);
 		public void set_free_func (GLib.DestroyNotify free_func);

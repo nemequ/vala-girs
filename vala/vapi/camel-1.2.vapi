@@ -1902,8 +1902,8 @@ namespace Camel {
 		[CCode (has_construct_function = false)]
 		public StoreSummary ();
 		public void add (Camel.StoreInfo info);
-		public GLib.GenericArray<Camel.StoreInfo> array ();
-		public void array_free (GLib.GenericArray<Camel.StoreInfo> array);
+		public GLib.GenericArray<Camel.StoreInfo?> array ();
+		public void array_free (GLib.GenericArray<Camel.StoreInfo?> array);
 		[Version (since = "3.4")]
 		public bool connect_folder_summary (string path, Camel.FolderSummary folder_summary);
 		public int count ();

@@ -245,9 +245,9 @@ namespace GUPnP {
 		public unowned GUPnP.ServiceActionInfo? get_action (string action_name);
 		public unowned GUPnP.ServiceStateVariableInfo? get_state_variable (string variable_name);
 		public unowned GLib.List<string> list_action_names ();
-		public unowned GLib.List<GUPnP.ServiceActionInfo> list_actions ();
+		public unowned GLib.List<GUPnP.ServiceActionInfo?> list_actions ();
 		public unowned GLib.List<string> list_state_variable_names ();
-		public unowned GLib.List<GUPnP.ServiceStateVariableInfo> list_state_variables ();
+		public unowned GLib.List<GUPnP.ServiceStateVariableInfo?> list_state_variables ();
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_service_proxy_get_type ()")]
 	public class ServiceProxy : GUPnP.ServiceInfo {
@@ -348,7 +348,7 @@ namespace GUPnP {
 	[CCode (cheader_filename = "libgupnp/gupnp.h", has_type_id = false)]
 	public struct ServiceActionInfo {
 		public weak string name;
-		public weak GLib.List<GUPnP.ServiceActionArgInfo> arguments;
+		public weak GLib.List<GUPnP.ServiceActionArgInfo?> arguments;
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", has_type_id = false)]
 	public struct ServiceStateVariableInfo {

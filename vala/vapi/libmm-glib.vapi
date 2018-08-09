@@ -498,10 +498,12 @@ namespace MM {
 		public uint get_mobile_country_code ();
 		public uint get_mobile_network_code ();
 		public GLib.Variant get_string_variant ();
+		public ulong get_tracking_area_code ();
 		public bool set_cell_id (ulong cell_id);
 		public bool set_location_area_code (ulong location_area_code);
 		public bool set_mobile_country_code (uint mobile_country_code);
 		public bool set_mobile_network_code (uint mobile_network_code);
+		public bool set_tracking_area_code (ulong tracking_area_code);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_location_cdma_bs_get_type ()")]
 	public class LocationCdmaBs : GLib.Object {

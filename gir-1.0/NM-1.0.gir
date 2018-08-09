@@ -5427,6 +5427,44 @@ methods, or may be returned from D-Bus operations (eg on #NMClient or
         </callback>
       </field>
     </record>
+    <enumeration name="ConnectionMultiConnect"
+                 version="1.14"
+                 glib:type-name="NMConnectionMultiConnect"
+                 glib:get-type="nm_connection_multi_connect_get_type"
+                 c:type="NMConnectionMultiConnect">
+      <member name="default"
+              value="0"
+              c:identifier="NM_CONNECTION_MULTI_CONNECT_DEFAULT"
+              glib:nick="default">
+        <doc xml:space="preserve">indicates that the per-connection
+  setting is unspecified. In this case, it will fallback to the default
+  value, which is @NM_CONNECTION_MULTI_CONNECT_SINGLE.</doc>
+      </member>
+      <member name="single"
+              value="1"
+              c:identifier="NM_CONNECTION_MULTI_CONNECT_SINGLE"
+              glib:nick="single">
+        <doc xml:space="preserve">the connection profile can only
+  be active once at each moment. Activating a profile that is already active,
+  will first deactivate it.</doc>
+      </member>
+      <member name="manual_multiple"
+              value="2"
+              c:identifier="NM_CONNECTION_MULTI_CONNECT_MANUAL_MULTIPLE"
+              glib:nick="manual-multiple">
+        <doc xml:space="preserve">the profile can
+  be manually activated multiple times on different devices. However,
+  regarding autoconnect, the profile will autoconnect only if it is
+  currently not connected otherwise.</doc>
+      </member>
+      <member name="multiple"
+              value="3"
+              c:identifier="NM_CONNECTION_MULTI_CONNECT_MULTIPLE"
+              glib:nick="multiple">
+        <doc xml:space="preserve">the profile can autoactivate
+  and be manually activated multiple times together.</doc>
+      </member>
+    </enumeration>
     <bitfield name="ConnectionSerializationFlags"
               glib:type-name="NMConnectionSerializationFlags"
               glib:get-type="nm_connection_serialization_flags_get_type"
@@ -6372,6 +6410,21 @@ and some #NMSetting8021x operations.</doc>
     <constant name="DEVICE_WIMAX_TX_POWER"
               value="tx-power"
               c:type="NM_DEVICE_WIMAX_TX_POWER">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_WIREGUARD_FWMARK"
+              value="fwmark"
+              c:type="NM_DEVICE_WIREGUARD_FWMARK">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_WIREGUARD_LISTEN_PORT"
+              value="listen-port"
+              c:type="NM_DEVICE_WIREGUARD_LISTEN_PORT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_WIREGUARD_PUBLIC_KEY"
+              value="public-key"
+              c:type="NM_DEVICE_WIREGUARD_PUBLIC_KEY">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="DEVICE_WPAN_HW_ADDRESS"
@@ -10412,6 +10465,12 @@ GSM/UMTS, or LTE network access protocols</doc>
               glib:nick="6lowpan">
         <doc xml:space="preserve">6LoWPAN interface</doc>
       </member>
+      <member name="wireguard"
+              value="29"
+              c:identifier="NM_DEVICE_TYPE_WIREGUARD"
+              glib:nick="wireguard">
+        <doc xml:space="preserve">a WireGuard interface</doc>
+      </member>
     </enumeration>
     <class name="DeviceVlan"
            c:symbol-prefix="device_vlan"
@@ -11744,6 +11803,83 @@ device is not connected.</doc>
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
+    </record>
+    <class name="DeviceWireGuard"
+           c:symbol-prefix="device_wireguard"
+           c:type="NMDeviceWireGuard"
+           parent="Device"
+           glib:type-name="NMDeviceWireGuard"
+           glib:get-type="nm_device_wireguard_get_type"
+           glib:type-struct="DeviceWireGuardClass">
+      <implements name="Gio.AsyncInitable"/>
+      <implements name="Gio.Initable"/>
+      <method name="get_fwmark"
+              c:identifier="nm_device_wireguard_get_fwmark"
+              version="1.14">
+        <doc xml:space="preserve">Gets the fwmark (firewall mark) for this interface.
+It can be used to set routing policy for outgoing encrypted packets.
+See: ip-rule(8)</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">0 if fwmark not in use, 32-bit fwmark value otherwise</doc>
+          <type name="guint32" c:type="guint32"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceWireGuard</doc>
+            <type name="DeviceWireGuard" c:type="NMDeviceWireGuard*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_listen_port"
+              c:identifier="nm_device_wireguard_get_listen_port"
+              version="1.14">
+        <doc xml:space="preserve">Gets the local UDP port this interface listens on</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">UDP listen port</doc>
+          <type name="guint16" c:type="guint16"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceWireGuard</doc>
+            <type name="DeviceWireGuard" c:type="NMDeviceWireGuard*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_public_key"
+              c:identifier="nm_device_wireguard_get_public_key"
+              version="1.14">
+        <doc xml:space="preserve">Gets the public key for this interface</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GBytes containing the 32-byte public key</doc>
+          <type name="GLib.Bytes" c:type="GBytes*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDeviceWireGuard</doc>
+            <type name="DeviceWireGuard" c:type="NMDeviceWireGuard*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <property name="fwmark" version="1.14" transfer-ownership="none">
+        <doc xml:space="preserve">Optional firewall mark - see ip-rule(8).
+Used when setting routing policy for outgoing encrypted packets.
+Set to 0 to disable the mark (default).</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="listen-port" version="1.14" transfer-ownership="none">
+        <doc xml:space="preserve">Local UDP listen port.
+Set to 0 to allow a random port to be chosen (default).</doc>
+        <type name="guint" c:type="guint"/>
+      </property>
+      <property name="public-key" version="1.14" transfer-ownership="none">
+        <doc xml:space="preserve">32-byte public key, derived from the current private key.</doc>
+        <type name="GLib.Bytes"/>
+      </property>
+    </class>
+    <record name="DeviceWireGuardClass"
+            c:type="NMDeviceWireGuardClass"
+            disguised="1"
+            glib:is-gtype-struct-for="DeviceWireGuard">
     </record>
     <class name="DeviceWpan"
            c:symbol-prefix="device_wpan"
@@ -14945,6 +15081,11 @@ Access Point).</doc>
               c:type="NM_SETTING_CONNECTION_METERED">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_CONNECTION_MULTI_CONNECT"
+              value="multi-connect"
+              c:type="NM_SETTING_CONNECTION_MULTI_CONNECT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="SETTING_CONNECTION_PERMISSIONS"
               value="permissions"
               c:type="NM_SETTING_CONNECTION_PERMISSIONS">
@@ -18111,7 +18252,7 @@ in some cases connection failure is not desired just for the secrets.</doc>
       <property name="name" transfer-ownership="none">
         <doc xml:space="preserve">The setting's name, which uniquely identifies the setting within the
 connection.  Each setting type has a name unique to that type, for
-example "ppp" or "wireless" or "wired".</doc>
+example "ppp" or "802-11-wireless" or "802-3-ethernet".</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent">
@@ -21777,6 +21918,21 @@ connection.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_multi_connect"
+              c:identifier="nm_setting_connection_get_multi_connect"
+              version="1.14">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingConnection:multi-connect property of the connection.</doc>
+          <type name="ConnectionMultiConnect"
+                c:type="NMConnectionMultiConnect"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingConnection</doc>
+            <type name="SettingConnection" c:type="NMSettingConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_num_permissions"
               c:identifier="nm_setting_connection_get_num_permissions">
         <doc xml:space="preserve">Returns the number of entries in the #NMSettingConnection:permissions
@@ -22183,6 +22339,14 @@ plugin is dns-systemd-resolved.</doc>
 When updating this property on a currently activated connection,
 the change takes effect immediately.</doc>
         <type name="Metered"/>
+      </property>
+      <property name="multi-connect"
+                version="1.14"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Specifies whether the profile can be active multiple times at a particular
+moment. The value is of type #NMConnectionMultiConnect.</doc>
+        <type name="gint" c:type="gint"/>
       </property>
       <property name="permissions" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">An array of strings defining what access a given user has to this

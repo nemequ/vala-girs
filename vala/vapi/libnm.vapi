@@ -796,6 +796,12 @@ namespace NM {
 		public const string VXLAN_TOS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_TTL")]
 		public const string VXLAN_TTL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIREGUARD_FWMARK")]
+		public const string WIREGUARD_FWMARK;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIREGUARD_LISTEN_PORT")]
+		public const string WIREGUARD_LISTEN_PORT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIREGUARD_PUBLIC_KEY")]
+		public const string WIREGUARD_PUBLIC_KEY;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WPAN_HW_ADDRESS")]
 		public const string WPAN_HW_ADDRESS;
 		[CCode (has_construct_function = false)]
@@ -1483,6 +1489,23 @@ namespace NM {
 		public virtual signal void nsp_added (GLib.Object nsp);
 		[Version (deprecated = true, deprecated_since = "1.2")]
 		public virtual signal void nsp_removed (GLib.Object nsp);
+	}
+	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_wireguard", type_id = "nm_device_wireguard_get_type ()")]
+	public class DeviceWireGuard : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected DeviceWireGuard ();
+		[Version (since = "1.14")]
+		public uint32 get_fwmark ();
+		[Version (since = "1.14")]
+		public uint16 get_listen_port ();
+		[Version (since = "1.14")]
+		public unowned GLib.Bytes get_public_key ();
+		[Version (since = "1.14")]
+		public uint fwmark { get; }
+		[Version (since = "1.14")]
+		public uint listen_port { get; }
+		[Version (since = "1.14")]
+		public GLib.Bytes public_key { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_wpan_get_type ()")]
 	public class DeviceWpan : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -2360,6 +2383,8 @@ namespace NM {
 		public const string MDNS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_METERED")]
 		public const string METERED;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_MULTI_CONNECT")]
+		public const string MULTI_CONNECT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_PERMISSIONS")]
 		public const string PERMISSIONS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_READ_ONLY")]
@@ -2403,6 +2428,8 @@ namespace NM {
 		public NM.SettingConnectionMdns get_mdns ();
 		[Version (since = "1.2")]
 		public NM.Metered get_metered ();
+		[Version (since = "1.14")]
+		public NM.ConnectionMultiConnect get_multi_connect ();
 		public uint32 get_num_permissions ();
 		public uint32 get_num_secondaries ();
 		public bool get_permission (uint32 idx, string out_ptype, string out_pitem, string out_detail);
@@ -2449,6 +2476,9 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public NM.Metered metered { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.14")]
+		public int multi_connect { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] permissions { owned get; set; }
@@ -2549,7 +2579,7 @@ namespace NM {
 		[NoAccessorMethod]
 		public GLib.Array<uint> priority_bandwidth { owned get; set; }
 		[NoAccessorMethod]
-		public GLib.Array<bool?> priority_flow_control { owned get; set; }
+		public GLib.Array<bool> priority_flow_control { owned get; set; }
 		[NoAccessorMethod]
 		public NM.SettingDcbFlags priority_flow_control_flags { get; set; }
 		[NoAccessorMethod]
@@ -2559,7 +2589,7 @@ namespace NM {
 		[NoAccessorMethod]
 		public GLib.Array<uint> priority_group_id { owned get; set; }
 		[NoAccessorMethod]
-		public GLib.Array<bool?> priority_strict_bandwidth { owned get; set; }
+		public GLib.Array<bool> priority_strict_bandwidth { owned get; set; }
 		[NoAccessorMethod]
 		public GLib.Array<uint> priority_traffic_class { owned get; set; }
 	}
@@ -4947,6 +4977,14 @@ namespace NM {
 		AUTH,
 		NO
 	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CONNECTION_MULTI_CONNECT_", type_id = "nm_connection_multi_connect_get_type ()")]
+	[Version (since = "1.14")]
+	public enum ConnectionMultiConnect {
+		DEFAULT,
+		SINGLE,
+		MANUAL_MULTIPLE,
+		MULTIPLE
+	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CONNECTION_SERIALIZE_", type_id = "nm_connection_serialization_flags_get_type ()")]
 	[Flags]
 	public enum ConnectionSerializationFlags {
@@ -5096,7 +5134,8 @@ namespace NM {
 		OVS_PORT,
 		OVS_BRIDGE,
 		WPAN,
-		@6LOWPAN
+		@6LOWPAN,
+		WIREGUARD
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_WIFI_DEVICE_CAP_", type_id = "nm_device_wifi_capabilities_get_type ()")]
 	[Flags]
