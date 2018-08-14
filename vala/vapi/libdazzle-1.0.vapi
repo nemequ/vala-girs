@@ -1389,26 +1389,36 @@ namespace Dazzle {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public SuggestionEntry ();
 		public void default_position_func (Gdk.Rectangle area, bool is_absolute, void* user_data);
+		public bool get_activate_on_single_click ();
 		public unowned GLib.ListModel? get_model ();
 		public unowned Dazzle.Suggestion? get_suggestion ();
 		public unowned string get_typed_text ();
+		public void set_activate_on_single_click (bool activate_on_single_click);
 		public void set_model (GLib.ListModel model);
 		[Version (since = "3.26")]
 		public void set_position_func (owned Dazzle.SuggestionPositionFunc? func);
 		public void set_suggestion (Dazzle.Suggestion suggestion);
 		public void window_position_func (Gdk.Rectangle area, bool is_absolute, void* user_data);
+		[Version (since = "3.30")]
+		public bool activate_on_single_click { get; set; }
 		public GLib.ListModel model { get; set; }
+		[Version (since = "3.30")]
+		public Dazzle.Suggestion suggestion { get; set; }
 		public string typed_text { get; }
 		public signal void activate_suggestion ();
+		[HasEmitter]
 		public virtual signal void hide_suggestions ();
 		public virtual signal void move_suggestion (int amount);
 		public virtual signal void show_suggestions ();
 		public virtual signal void suggestion_activated (Dazzle.Suggestion suggestion);
+		[Version (since = "3.30")]
+		public virtual signal void suggestion_selected (Dazzle.Suggestion suggestion);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_suggestion_entry_buffer_get_type ()")]
 	public class SuggestionEntryBuffer : Gtk.EntryBuffer {
 		[CCode (has_construct_function = false)]
 		public SuggestionEntryBuffer ();
+		public void clear ();
 		public void commit ();
 		public unowned Dazzle.Suggestion? get_suggestion ();
 		public uint get_typed_length ();

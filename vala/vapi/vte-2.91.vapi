@@ -64,8 +64,8 @@ namespace Vte {
 		[Version (since = "0.54")]
 		public Gdk.RGBA get_color_background_for_draw ();
 		public long get_column_count ();
-		public unowned string get_current_directory_uri ();
-		public unowned string get_current_file_uri ();
+		public unowned string? get_current_directory_uri ();
+		public unowned string? get_current_file_uri ();
 		public Vte.CursorBlinkMode get_cursor_blink_mode ();
 		public void get_cursor_position (out long column, out long row);
 		public Vte.CursorShape get_cursor_shape ();

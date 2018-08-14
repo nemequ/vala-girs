@@ -149,7 +149,7 @@ namespace AppStream {
 		[Version (since = "0.10.5")]
 		public unowned GLib.HashTable<void*,void*> get_custom ();
 		[Version (since = "0.10.5")]
-		public string get_custom_value (string key);
+		public unowned string get_custom_value (string key);
 		public unowned string get_data_id ();
 		public unowned string get_description ();
 		[Version (deprecated = true, deprecated_since = "0.11.0", since = "0.9.8")]

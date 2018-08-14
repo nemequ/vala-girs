@@ -15024,7 +15024,7 @@ suffix might be "me.org" to create "gnome.org".</doc>
           <type name="Gtk.Widget" c:type="GtkWidget*"/>
         </return-value>
       </constructor>
-      <virtual-method name="hide_suggestions">
+      <virtual-method name="hide_suggestions" invoker="hide_suggestions">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -15070,6 +15070,19 @@ suffix might be "me.org" to create "gnome.org".</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="suggestion_selected">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SuggestionEntry" c:type="DzlSuggestionEntry*"/>
+          </instance-parameter>
+          <parameter name="suggestion" transfer-ownership="none">
+            <type name="Suggestion" c:type="DzlSuggestion*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <method name="default_position_func"
               c:identifier="dzl_suggestion_entry_default_position_func">
         <return-value transfer-ownership="none">
@@ -15091,6 +15104,17 @@ suffix might be "me.org" to create "gnome.org".</doc>
                      allow-none="1">
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="get_activate_on_single_click"
+              c:identifier="dzl_suggestion_entry_get_activate_on_single_click">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SuggestionEntry" c:type="DzlSuggestionEntry*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="get_model" c:identifier="dzl_suggestion_entry_get_model">
@@ -15129,6 +15153,31 @@ suffix might be "me.org" to create "gnome.org".</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <type name="SuggestionEntry" c:type="DzlSuggestionEntry*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="hide_suggestions"
+              c:identifier="dzl_suggestion_entry_hide_suggestions">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SuggestionEntry" c:type="DzlSuggestionEntry*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_activate_on_single_click"
+              c:identifier="dzl_suggestion_entry_set_activate_on_single_click">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SuggestionEntry" c:type="DzlSuggestionEntry*"/>
+          </instance-parameter>
+          <parameter name="activate_on_single_click" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
         </parameters>
       </method>
       <method name="set_model" c:identifier="dzl_suggestion_entry_set_model">
@@ -15228,8 +15277,24 @@ in a web browser.</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="activate-on-single-click"
+                version="3.30"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The "activate-on-single-click" property denotes if results should be
+activated simply by clicking on them. You may want to set this to
+%FALSE if you want the behavior to only select the item.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <property name="model" writable="1" transfer-ownership="none">
         <type name="Gio.ListModel"/>
+      </property>
+      <property name="suggestion"
+                version="3.30"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The "suggestion" property is the currently selected suggestion, if any.</doc>
+        <type name="Suggestion"/>
       </property>
       <property name="typed-text" transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
@@ -15275,6 +15340,20 @@ provided. -1 moves up one row, 1, moves down a row.</doc>
           </parameter>
         </parameters>
       </glib:signal>
+      <glib:signal name="suggestion-selected" when="last" version="3.30">
+        <doc xml:space="preserve">This signal is emitted when a selection has been specifically selected
+by the user, such as by clicking on the row or moving to the row with
+keyboard, such as with #DzlSuggestionEntry::move-suggestion</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="suggestion" transfer-ownership="none">
+            <doc xml:space="preserve">a #DzlSuggestion</doc>
+            <type name="Suggestion"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
     </class>
     <class name="SuggestionEntryBuffer"
            c:symbol-prefix="suggestion_entry_buffer"
@@ -15289,6 +15368,17 @@ provided. -1 moves up one row, 1, moves down a row.</doc>
                 c:type="DzlSuggestionEntryBuffer*"/>
         </return-value>
       </constructor>
+      <method name="clear" c:identifier="dzl_suggestion_entry_buffer_clear">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="SuggestionEntryBuffer"
+                  c:type="DzlSuggestionEntryBuffer*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="commit" c:identifier="dzl_suggestion_entry_buffer_commit">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -15451,8 +15541,23 @@ text for what might be inserted should they activate the current item.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="suggestion_selected">
+        <callback name="suggestion_selected">
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="SuggestionEntry" c:type="DzlSuggestionEntry*"/>
+            </parameter>
+            <parameter name="suggestion" transfer-ownership="none">
+              <type name="Suggestion" c:type="DzlSuggestion*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="8">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="7">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>

@@ -2599,6 +2599,15 @@ namespace NM {
 		[Version (since = "1.8")]
 		public SettingDummy ();
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ethtool_get_type ()")]
+	[Version (since = "1.14")]
+	public class SettingEthtool : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		public SettingEthtool ();
+		public void clear_features ();
+		public NM.Ternary get_feature (string optname);
+		public void set_feature (string optname, NM.Ternary value);
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_generic_get_type ()")]
 	public class SettingGeneric : NM.Setting {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GENERIC_SETTING_NAME")]
@@ -3119,6 +3128,23 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public bool tap { get; set construct; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_match_get_type ()")]
+	[Version (since = "1.14")]
+	public class SettingMatch : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		public SettingMatch ();
+		public void add_interface_name (string interface_name);
+		public void clear_interface_names ();
+		public unowned string get_interface_name (int idx);
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_interface_names (uint length);
+		public uint get_num_interface_names ();
+		public void remove_interface_name (int idx);
+		public bool remove_interface_name_by_value (string interface_name);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		public string[] interface_name { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_olpc_mesh_get_type ()")]
 	public class SettingOlpcMesh : NM.Setting {
@@ -5812,6 +5838,110 @@ namespace NM {
 	public const string DBUS_VPN_WRONG_STATE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DHCP_CONFIG_FAMILY")]
 	public const string DHCP_CONFIG_FAMILY;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_ESP_HW_OFFLOAD")]
+	public const string ETHTOOL_OPTNAME_FEATURE_ESP_HW_OFFLOAD;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_ESP_TX_CSUM_HW_OFFLOAD")]
+	public const string ETHTOOL_OPTNAME_FEATURE_ESP_TX_CSUM_HW_OFFLOAD;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_FCOE_MTU")]
+	public const string ETHTOOL_OPTNAME_FEATURE_FCOE_MTU;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_GRO")]
+	public const string ETHTOOL_OPTNAME_FEATURE_GRO;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_GSO")]
+	public const string ETHTOOL_OPTNAME_FEATURE_GSO;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_HIGHDMA")]
+	public const string ETHTOOL_OPTNAME_FEATURE_HIGHDMA;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_HW_TC_OFFLOAD")]
+	public const string ETHTOOL_OPTNAME_FEATURE_HW_TC_OFFLOAD;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_L2_FWD_OFFLOAD")]
+	public const string ETHTOOL_OPTNAME_FEATURE_L2_FWD_OFFLOAD;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_LOOPBACK")]
+	public const string ETHTOOL_OPTNAME_FEATURE_LOOPBACK;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_LRO")]
+	public const string ETHTOOL_OPTNAME_FEATURE_LRO;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_NTUPLE")]
+	public const string ETHTOOL_OPTNAME_FEATURE_NTUPLE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX")]
+	public const string ETHTOOL_OPTNAME_FEATURE_RX;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RXHASH")]
+	public const string ETHTOOL_OPTNAME_FEATURE_RXHASH;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RXVLAN")]
+	public const string ETHTOOL_OPTNAME_FEATURE_RXVLAN;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_ALL")]
+	public const string ETHTOOL_OPTNAME_FEATURE_RX_ALL;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_FCS")]
+	public const string ETHTOOL_OPTNAME_FEATURE_RX_FCS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_GRO_HW")]
+	public const string ETHTOOL_OPTNAME_FEATURE_RX_GRO_HW;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_UDP_TUNNEL_PORT_OFFLOAD")]
+	public const string ETHTOOL_OPTNAME_FEATURE_RX_UDP_TUNNEL_PORT_OFFLOAD;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_VLAN_FILTER")]
+	public const string ETHTOOL_OPTNAME_FEATURE_RX_VLAN_FILTER;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_VLAN_STAG_FILTER")]
+	public const string ETHTOOL_OPTNAME_FEATURE_RX_VLAN_STAG_FILTER;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_VLAN_STAG_HW_PARSE")]
+	public const string ETHTOOL_OPTNAME_FEATURE_RX_VLAN_STAG_HW_PARSE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_SG")]
+	public const string ETHTOOL_OPTNAME_FEATURE_SG;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TLS_HW_RECORD")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TLS_HW_RECORD;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TLS_HW_TX_OFFLOAD")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TLS_HW_TX_OFFLOAD;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TSO")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TSO;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TXVLAN")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TXVLAN;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_FCOE_CRC")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_FCOE_CRC;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IPV4")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IPV4;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IPV6")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IPV6;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IP_GENERIC")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IP_GENERIC;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_SCTP")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_SCTP;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_ESP_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_ESP_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_FCOE_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_FCOE_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GRE_CSUM_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_GRE_CSUM_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GRE_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_GRE_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GSO_PARTIAL")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_GSO_PARTIAL;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GSO_ROBUST")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_GSO_ROBUST;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_IPXIP4_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_IPXIP4_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_IPXIP6_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_IPXIP6_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_NOCACHE_COPY")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_NOCACHE_COPY;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_SCATTER_GATHER")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_SCATTER_GATHER;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_SCATTER_GATHER_FRAGLIST")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_SCATTER_GATHER_FRAGLIST;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_SCTP_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_SCTP_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP6_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_TCP6_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP_ECN_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_TCP_ECN_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP_MANGLEID_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_TCP_MANGLEID_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_TCP_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_UDP_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_UDP_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_CSUM_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_CSUM_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_VLAN_STAG_HW_INSERT")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_VLAN_STAG_HW_INSERT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ADDRESS_ATTRIBUTE_LABEL")]
 	public const string IP_ADDRESS_ATTRIBUTE_LABEL;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_CWND")]
@@ -5928,6 +6058,8 @@ namespace NM {
 	public const string SETTING_DNS_OPTION_USE_VC;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DUMMY_SETTING_NAME")]
 	public const string SETTING_DUMMY_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ETHTOOL_SETTING_NAME")]
+	public const string SETTING_ETHTOOL_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_ENCRYPT")]
 	public const string SETTING_MACSEC_ENCRYPT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CAK")]
@@ -5952,6 +6084,10 @@ namespace NM {
 	public const string SETTING_MACSEC_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_VALIDATION")]
 	public const string SETTING_MACSEC_VALIDATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_INTERFACE_NAME")]
+	public const string SETTING_MATCH_INTERFACE_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_SETTING_NAME")]
+	public const string SETTING_MATCH_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_NAME")]
 	public const string SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_FAIL_MODE")]
@@ -6030,6 +6166,9 @@ namespace NM {
 	public const string TEAM_LINK_WATCHER_NSNA_PING;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VLAN_FLAGS_ALL")]
 	public const int VLAN_FLAGS_ALL;
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (since = "1.14")]
+	public static bool ethtool_optname_is_feature (string optname);
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (since = "1.4")]
 	public static NM.VpnEditorPlugin vpn_editor_plugin_load (string plugin_name, string check_service) throws GLib.Error;
