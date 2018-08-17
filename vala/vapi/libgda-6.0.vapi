@@ -619,8 +619,6 @@ namespace Gda {
 		public void append_view (Gda.DdlView view);
 		public static GLib.Quark error_quark ();
 		[Version (since = "6.0")]
-		public void free ();
-		[Version (since = "6.0")]
 		public unowned GLib.List<Gda.DdlTable> get_tables ();
 		[Version (since = "6.0")]
 		public unowned GLib.List<Gda.DdlView> get_views ();
@@ -639,8 +637,6 @@ namespace Gda {
 		[CCode (has_construct_function = false)]
 		[Version (since = "6.0")]
 		public DdlFkey ();
-		[Version (since = "6.0")]
-		public void free ();
 		[CCode (has_construct_function = false)]
 		public DdlFkey.from_meta (Gda.MetaTableForeignKey metafkey);
 		[Version (since = "6.0")]
@@ -679,8 +675,6 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public bool create (Gda.Connection cnc) throws GLib.Error;
 		public static GLib.Quark error_quark ();
-		[Version (since = "6.0")]
-		public void free ();
 		[CCode (has_construct_function = false)]
 		[Version (since = "6.0")]
 		public DdlTable.from_meta (Gda.MetaDbObject obj);
@@ -708,8 +702,6 @@ namespace Gda {
 		public DdlView ();
 		[Version (since = "6.0")]
 		public bool create (Gda.Connection cnc) throws GLib.Error;
-		[Version (since = "6.0")]
-		public void free ();
 		[CCode (has_construct_function = false)]
 		public DdlView.from_meta (Gda.MetaView view);
 		public unowned string get_defstring ();

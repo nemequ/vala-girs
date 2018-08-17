@@ -523,6 +523,8 @@ namespace Dazzle {
 		public static int64 iter_get_timestamp (Dazzle.GraphModelIter iter);
 		public static void iter_get_value (Dazzle.GraphModelIter iter, uint column, GLib.Value value);
 		public static bool iter_next (Dazzle.GraphModelIter iter);
+		[Version (since = "3.30")]
+		public static void iter_set_value (Dazzle.GraphModelIter iter, uint column, GLib.Value value);
 		public void push (out Dazzle.GraphModelIter iter, int64 timestamp);
 		public void set_max_samples (uint n_rows);
 		public void set_timespan (GLib.TimeSpan timespan);
