@@ -220,6 +220,7 @@ namespace Vnc {
 		VENCRYPT,
 		SASL,
 		ARD,
+		MSLOGONII,
 		MSLOGON
 	}
 	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_AUTH_VENCRYPT_", type_id = "vnc_connection_auth_vencrypt_get_type ()")]

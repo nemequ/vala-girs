@@ -911,6 +911,16 @@ namespace Dazzle {
 		public bool show_more { get; set; }
 		public signal void changed ();
 	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_read_only_list_model_get_type ()")]
+	public class ReadOnlyListModel : GLib.Object, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		protected ReadOnlyListModel ();
+		[Version (since = "3.30")]
+		public static GLib.ListModel @new (GLib.ListModel base_model);
+		[NoAccessorMethod]
+		[Version (since = "3.30")]
+		public GLib.ListModel base_model { construct; }
+	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_recursive_file_monitor_get_type ()")]
 	public class RecursiveFileMonitor : GLib.Object {
 		[CCode (has_construct_function = false)]

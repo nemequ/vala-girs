@@ -400,11 +400,19 @@ namespace Gegl {
 		[NoAccessorMethod]
 		public uint64 swap_file_size { get; }
 		[NoAccessorMethod]
+		public bool swap_queue_full { get; }
+		[NoAccessorMethod]
+		public int swap_queue_stalls { get; }
+		[NoAccessorMethod]
+		public uint64 swap_queued_total { get; }
+		[NoAccessorMethod]
 		public uint64 swap_read_total { get; }
 		[NoAccessorMethod]
 		public bool swap_reading { get; }
 		[NoAccessorMethod]
 		public uint64 swap_total { get; }
+		[NoAccessorMethod]
+		public uint64 swap_total_uncloned { get; }
 		[NoAccessorMethod]
 		public uint64 swap_write_total { get; }
 		[NoAccessorMethod]
@@ -430,6 +438,7 @@ namespace Gegl {
 	public class TileBackend : Gegl.TileSource {
 		[CCode (has_construct_function = false)]
 		protected TileBackend ();
+		public void* command (Gegl.TileCommand command, int x, int y, int z, void* data);
 		public Gegl.Rectangle get_extent ();
 		public bool get_flush_on_destroy ();
 		public int get_tile_height ();
@@ -579,6 +588,13 @@ namespace Gegl {
 		public float x;
 		public float y;
 	}
+	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
+	public struct TileCopyParams {
+		public weak Gegl.Buffer dst_buffer;
+		public int dst_x;
+		public int dst_y;
+		public int dst_z;
+	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_abyss_policy_get_type ()")]
 	public enum AbyssPolicy {
 		[CCode (cname = "None")]
@@ -678,18 +694,32 @@ namespace Gegl {
 		HORIZONTAL,
 		VERTICAL
 	}
-	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_TILE_", has_type_id = false)]
+	[CCode (cheader_filename = "gegl.h", cprefix = "", has_type_id = false)]
 	public enum TileCommand {
-		IDLE,
-		SET,
-		GET,
-		IS_CACHED,
-		EXIST,
-		VOID,
-		FLUSH,
-		REFETCH,
-		REINIT,
-		LAST_COMMAND
+		[CCode (cname = "GEGL_TILE_IDLE")]
+		EGL_TILE_IDLE,
+		[CCode (cname = "GEGL_TILE_SET")]
+		EGL_TILE_SET,
+		[CCode (cname = "GEGL_TILE_GET")]
+		EGL_TILE_GET,
+		[CCode (cname = "GEGL_TILE_IS_CACHED")]
+		EGL_TILE_IS_CACHED,
+		[CCode (cname = "GEGL_TILE_EXIST")]
+		EGL_TILE_EXIST,
+		[CCode (cname = "GEGL_TILE_VOID")]
+		EGL_TILE_VOID,
+		[CCode (cname = "GEGL_TILE_FLUSH")]
+		EGL_TILE_FLUSH,
+		[CCode (cname = "GEGL_TILE_REFETCH")]
+		EGL_TILE_REFETCH,
+		[CCode (cname = "GEGL_TILE_REINIT")]
+		EGL_TILE_REINIT,
+		[CCode (cname = "_GEGL_TILE_LAST_0_4_8_COMMAND")]
+		GEGL_TILE_LAST_0_4_8_COMMAND,
+		[CCode (cname = "GEGL_TILE_COPY")]
+		EGL_TILE_COPY,
+		[CCode (cname = "GEGL_TILE_LAST_COMMAND")]
+		EGL_TILE_LAST_COMMAND
 	}
 	[CCode (cheader_filename = "gegl.h", has_target = false)]
 	public delegate float LookupFunction (float value, void* data);

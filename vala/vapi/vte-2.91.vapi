@@ -70,14 +70,14 @@ namespace Vte {
 		public void get_cursor_position (out long column, out long row);
 		public Vte.CursorShape get_cursor_shape ();
 		[Version (deprecated = true, deprecated_since = "0.54")]
-		public unowned string get_encoding ();
+		public unowned string? get_encoding ();
 		public unowned Pango.FontDescription get_font ();
 		public double get_font_scale ();
 		[Version (deprecated = true, deprecated_since = "0.52")]
 		public void get_geometry_hints (out Gdk.Geometry hints, int min_rows, int min_columns);
 		public bool get_has_selection ();
 		[Version (deprecated = true, deprecated_since = "0.54")]
-		public unowned string get_icon_title ();
+		public unowned string? get_icon_title ();
 		public bool get_input_enabled ();
 		public bool get_mouse_autohide ();
 		public unowned Vte.Pty get_pty ();
@@ -94,9 +94,9 @@ namespace Vte {
 		public Vte.TextBlinkMode get_text_blink_mode ();
 		public string get_text_include_trailing_spaces ([CCode (delegate_target_pos = 1.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes?> attributes);
 		public string get_text_range (long start_row, long start_col, long end_row, long end_col, [CCode (delegate_target_pos = 5.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes?> attributes);
-		public unowned string get_window_title ();
+		public unowned string? get_window_title ();
 		[Version (since = "0.40")]
-		public unowned string get_word_char_exceptions ();
+		public unowned string? get_word_char_exceptions ();
 		[Version (since = "0.50")]
 		public string hyperlink_check_event (Gdk.Event event);
 		[Version (deprecated = true, deprecated_since = "0.46")]

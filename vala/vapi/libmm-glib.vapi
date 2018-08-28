@@ -657,6 +657,7 @@ namespace MM {
 		public unowned string get_operator_code ();
 		public unowned string get_operator_name ();
 		public unowned string get_path ();
+		public GLib.List<MM.Pco> get_pco ();
 		public MM.Modem3gppRegistrationState get_registration_state ();
 		public MM.Modem3gppSubscriptionState get_subscription_state ();
 		public static unowned string network_availability_get_string (MM.Modem3gppNetworkAvailability val);
@@ -733,10 +734,14 @@ namespace MM {
 	public class ModemLocation : MM.GdbusModemLocationProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModemLocation {
 		[CCode (has_construct_function = false)]
 		protected ModemLocation ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] dup_assistance_data_servers ();
 		public string dup_path ();
 		public string dup_supl_server ();
 		public async MM.Location3gpp get_3gpp (GLib.Cancellable? cancellable) throws GLib.Error;
 		public MM.Location3gpp get_3gpp_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_assistance_data_servers ();
 		public MM.ModemLocationSource get_capabilities ();
 		public async MM.LocationCdmaBs get_cdma_bs (GLib.Cancellable? cancellable) throws GLib.Error;
 		public MM.LocationCdmaBs get_cdma_bs_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -750,6 +755,9 @@ namespace MM {
 		public uint get_gps_refresh_rate ();
 		public unowned string get_path ();
 		public unowned string get_supl_server ();
+		public MM.ModemLocationAssistanceDataType get_supported_assistance_data ();
+		public async bool inject_assistance_data ([CCode (array_length_cname = "data_size", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] data, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool inject_assistance_data_sync ([CCode (array_length_cname = "data_size", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] data, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool set_gps_refresh_rate (uint rate, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool set_gps_refresh_rate_sync (uint rate, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool set_supl_server (string supl, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -880,6 +888,21 @@ namespace MM {
 		public MM.ModemSimple get_modem_simple ();
 		public MM.ModemTime get_modem_time ();
 		public MM.ModemVoice get_modem_voice ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_pco_get_type ()")]
+	public class Pco : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public Pco ();
+		public static MM.Pco from_variant (GLib.Variant variant) throws GLib.Error;
+		public uint8 get_data (out size_t data_size);
+		public uint32 get_session_id ();
+		public bool is_complete ();
+		public static GLib.List<MM.Pco> list_add (owned GLib.List<MM.Pco> pco_list, MM.Pco pco);
+		public static void list_free (owned GLib.List<MM.Pco> pco_list);
+		public void set_complete (bool is_complete);
+		public void set_data (uint8 data, size_t data_size);
+		public void set_session_id (uint32 session_id);
+		public GLib.Variant to_variant ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_signal_get_type ()")]
 	public class Signal : GLib.Object {
@@ -1253,6 +1276,8 @@ namespace MM {
 		[NoAccessorMethod]
 		public abstract string operator_name { owned get; set; }
 		[NoAccessorMethod]
+		public abstract GLib.Variant pco { owned get; set; }
+		[NoAccessorMethod]
 		public abstract uint registration_state { get; set; }
 		[NoAccessorMethod]
 		public abstract uint subscription_state { get; set; }
@@ -1329,6 +1354,8 @@ namespace MM {
 	public interface GdbusModemLocation : GLib.Object {
 		public async bool call_get_location (GLib.Cancellable? cancellable, out GLib.Variant out_Location) throws GLib.Error;
 		public bool call_get_location_sync (out GLib.Variant out_Location, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_inject_assistance_data (GLib.Variant arg_data, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_inject_assistance_data_sync (GLib.Variant arg_data, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_set_gps_refresh_rate (uint arg_rate, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_set_gps_refresh_rate_sync (uint arg_rate, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_set_supl_server (string arg_supl, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -1336,11 +1363,15 @@ namespace MM {
 		public async bool call_setup (uint arg_sources, bool arg_signal_location, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_setup_sync (uint arg_sources, bool arg_signal_location, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_get_location (owned GLib.DBusMethodInvocation invocation, GLib.Variant Location);
+		public void complete_inject_assistance_data (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_gps_refresh_rate (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_supl_server (owned GLib.DBusMethodInvocation invocation);
 		public void complete_setup (owned GLib.DBusMethodInvocation invocation);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		public abstract string[] assistance_data_servers { owned get; set; }
 		[NoAccessorMethod]
 		public abstract uint capabilities { get; set; }
 		[NoAccessorMethod]
@@ -1353,7 +1384,10 @@ namespace MM {
 		public abstract bool signals_location { get; set; }
 		[NoAccessorMethod]
 		public abstract string supl_server { owned get; set; }
+		[NoAccessorMethod]
+		public abstract uint supported_assistance_data { get; set; }
 		public virtual signal bool handle_get_location (GLib.DBusMethodInvocation invocation);
+		public virtual signal bool handle_inject_assistance_data (GLib.DBusMethodInvocation invocation, GLib.Variant arg_data);
 		public virtual signal bool handle_set_gps_refresh_rate (GLib.DBusMethodInvocation invocation, uint arg_rate);
 		public virtual signal bool handle_set_supl_server (GLib.DBusMethodInvocation invocation, string arg_supl);
 		public virtual signal bool handle_setup (GLib.DBusMethodInvocation invocation, uint arg_sources, bool arg_signal_location);
@@ -1852,6 +1886,22 @@ namespace MM {
 		EUTRAN_46,
 		EUTRAN_47,
 		EUTRAN_48,
+		EUTRAN_49,
+		EUTRAN_50,
+		EUTRAN_51,
+		EUTRAN_52,
+		EUTRAN_53,
+		EUTRAN_54,
+		EUTRAN_55,
+		EUTRAN_56,
+		EUTRAN_57,
+		EUTRAN_58,
+		EUTRAN_59,
+		EUTRAN_60,
+		EUTRAN_61,
+		EUTRAN_62,
+		EUTRAN_63,
+		EUTRAN_64,
 		EUTRAN_65,
 		EUTRAN_66,
 		EUTRAN_67,
@@ -1941,6 +1991,13 @@ namespace MM {
 		SM,
 		MT;
 		public unowned string get_string ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_LOCATION_ASSISTANCE_DATA_TYPE_", type_id = "mm_modem_location_assistance_data_type_get_type ()")]
+	[Flags]
+	public enum ModemLocationAssistanceDataType {
+		NONE,
+		XTRA;
+		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_LOCATION_SOURCE_", type_id = "mm_modem_location_source_get_type ()")]
 	[Flags]
@@ -2664,12 +2721,16 @@ namespace MM {
 	public const string MODEM_FIRMWARE_METHOD_SELECT;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_METHOD_GETLOCATION")]
 	public const string MODEM_LOCATION_METHOD_GETLOCATION;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_METHOD_INJECTASSISTANCEDATA")]
+	public const string MODEM_LOCATION_METHOD_INJECTASSISTANCEDATA;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_METHOD_SETGPSREFRESHRATE")]
 	public const string MODEM_LOCATION_METHOD_SETGPSREFRESHRATE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_METHOD_SETSUPLSERVER")]
 	public const string MODEM_LOCATION_METHOD_SETSUPLSERVER;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_METHOD_SETUP")]
 	public const string MODEM_LOCATION_METHOD_SETUP;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_PROPERTY_ASSISTANCEDATASERVERS")]
+	public const string MODEM_LOCATION_PROPERTY_ASSISTANCEDATASERVERS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_PROPERTY_CAPABILITIES")]
 	public const string MODEM_LOCATION_PROPERTY_CAPABILITIES;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_PROPERTY_ENABLED")]
@@ -2682,6 +2743,8 @@ namespace MM {
 	public const string MODEM_LOCATION_PROPERTY_SIGNALSLOCATION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_PROPERTY_SUPLSERVER")]
 	public const string MODEM_LOCATION_PROPERTY_SUPLSERVER;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_PROPERTY_SUPPORTEDASSISTANCEDATA")]
+	public const string MODEM_LOCATION_PROPERTY_SUPPORTEDASSISTANCEDATA;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MESSAGING_METHOD_CREATE")]
 	public const string MODEM_MESSAGING_METHOD_CREATE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MESSAGING_METHOD_DELETE")]
@@ -2736,6 +2799,8 @@ namespace MM {
 	public const string MODEM_MODEM3GPP_PROPERTY_OPERATORCODE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_OPERATORNAME")]
 	public const string MODEM_MODEM3GPP_PROPERTY_OPERATORNAME;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_PCO")]
+	public const string MODEM_MODEM3GPP_PROPERTY_PCO;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_REGISTRATIONSTATE")]
 	public const string MODEM_MODEM3GPP_PROPERTY_REGISTRATIONSTATE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_SUBSCRIPTIONSTATE")]

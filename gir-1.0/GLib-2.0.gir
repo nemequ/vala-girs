@@ -12280,8 +12280,10 @@ a copy of each list element, in addition to copying the list
 container itself.
 
 @func, as a #GCopyFunc, takes two arguments, the data to be copied
-and a @user_data pointer. It's safe to pass %NULL as user_data,
-if the copy function takes only one argument.
+and a @user_data pointer. On common processor architectures, it's safe to
+pass %NULL as @user_data if the copy function takes only one argument. You
+may get compiler warnings from this though if compiling with GCC’s
+`-Wcast-function-type` warning.
 
 For instance, if @list holds a list of GObjects, you can do:
 |[&lt;!-- language="C" --&gt;
@@ -13257,7 +13259,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The maximum value which can be held in a #guint8.</doc>
       <type name="guint8" c:type="guint8"/>
     </constant>
-    <constant name="MICRO_VERSION" value="2" c:type="GLIB_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="3" c:type="GLIB_MICRO_VERSION">
       <doc xml:space="preserve">The micro version number of the GLib library.
 
 Like #gtk_micro_version, but from the headers used at
@@ -21561,9 +21563,11 @@ to copy the data as well.</doc>
 In contrast with g_slist_copy(), this function uses @func to make a copy of
 each list element, in addition to copying the list container itself.
 
-@func, as a #GCopyFunc, takes two arguments, the data to be copied and a user
-pointer. It's safe to pass #NULL as user_data, if the copy function takes only
-one argument.
+@func, as a #GCopyFunc, takes two arguments, the data to be copied
+and a @user_data pointer. On common processor architectures, it's safe to
+pass %NULL as @user_data if the copy function takes only one argument. You
+may get compiler warnings from this though if compiling with GCC’s
+`-Wcast-function-type` warning.
 
 For instance, if @list holds a list of GObjects, you can do:
 |[&lt;!-- language="C" --&gt;
@@ -21575,7 +21579,7 @@ And, to entirely free the new list, you could do:
 g_slist_free_full (another_list, g_object_unref);
 ]|</doc>
         <return-value>
-          <doc xml:space="preserve">a full copy of @list, use #g_slist_free_full to free it</doc>
+          <doc xml:space="preserve">a full copy of @list, use g_slist_free_full() to free it</doc>
           <type name="GLib.SList" c:type="GSList*">
             <type name="gpointer" c:type="gpointer"/>
           </type>
@@ -36713,7 +36717,11 @@ Otherwise, the variable is destroyed using @destroy and the
 pointer is set to %NULL.
 
 A macro is also included that allows this function to be used without
-pointer casts.</doc>
+pointer casts. This will mask any warnings about incompatible function types
+or calling conventions, so you must ensure that your @destroy function is
+compatible with being called as `GDestroyNotify` using the standard calling
+convention for the platform that GLib was compiled for; otherwise the program
+will experience undefined behaviour.</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -40805,8 +40813,9 @@ may contain embedded nul characters.</doc>
     <function name="log" c:identifier="g_log" introspectable="0">
       <doc xml:space="preserve">Logs an error or debugging message.
 
-If the log level has been set as fatal, the abort()
-function is called to terminate the program.
+If the log level has been set as fatal, G_BREAKPOINT() is called
+to terminate the program. See the documentation for G_BREAKPOINT() for
+details of the debugging options this provides.
 
 If g_log_default_handler() is used as the log handler function, a new-line
 character will automatically be appended to @..., and need not be entered
@@ -40846,7 +40855,7 @@ for the default</doc>
 allows to install an alternate default log handler.
 This is used if no log handler has been set for the particular log
 domain and log level combination. It outputs the message to stderr
-or stdout and if the log level is fatal it calls abort(). It automatically
+or stdout and if the log level is fatal it calls G_BREAKPOINT(). It automatically
 prints a new-line character after the message, so one does not need to be
 manually included in @message.
 
@@ -41174,7 +41183,7 @@ There can only be one writer function. It is an error to set more than one.</doc
       <doc xml:space="preserve">Log a message with structured data. The message will be passed through to
 the log writer set by the application using g_log_set_writer_func(). If the
 message is fatal (i.e. its log level is %G_LOG_LEVEL_ERROR), the program will
-be aborted at the end of this function. If the log writer returns
+be aborted by calling G_BREAKPOINT() at the end of this function. If the log writer returns
 %G_LOG_WRITER_UNHANDLED (failure), no other fallback writers will be tried.
 See the documentation for #GLogWriterFunc for information on chaining
 writers.
@@ -41591,8 +41600,9 @@ messages.</doc>
     <function name="logv" c:identifier="g_logv" introspectable="0">
       <doc xml:space="preserve">Logs an error or debugging message.
 
-If the log level has been set as fatal, the abort()
-function is called to terminate the program.
+If the log level has been set as fatal, G_BREAKPOINT() is called
+to terminate the program. See the documentation for G_BREAKPOINT() for
+details of the debugging options this provides.
 
 If g_log_default_handler() is used as the log handler function, a new-line
 character will automatically be appended to @..., and need not be entered

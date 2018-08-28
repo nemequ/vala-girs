@@ -1167,7 +1167,7 @@ namespace E {
 		public void set_avoid_ifmatch (bool avoid_ifmatch);
 		public void set_calendar_auto_schedule (bool calendar_auto_schedule);
 		[Version (since = "3.30")]
-		public void set_color (string color);
+		public void set_color (string? color);
 		public void set_display_name (string? display_name);
 		public void set_email_address (string? email_address);
 		public void set_resource_path (string? resource_path);
@@ -2144,6 +2144,12 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.18")]
 	public static async bool webdav_discover_sources (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, GLib.Cancellable? cancellable, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource?> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses) throws GLib.Error;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.30")]
+	public static async void webdav_discover_sources_full (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, [CCode (delegate_target_pos = 5.5, scope = "async")] E.WebDAVDiscoverRefSourceFunc? ref_source_func, GLib.Cancellable? cancellable);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.30")]
+	public static bool webdav_discover_sources_full_sync (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, [CCode (delegate_target_pos = 5.5)] E.WebDAVDiscoverRefSourceFunc? ref_source_func, out string? out_certificate_pem, out GLib.TlsCertificateFlags? out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource?> out_discovered_sources, out GLib.SList<string>? out_calendar_user_addresses, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.18")]
 	public static bool webdav_discover_sources_sync (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource?> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses, GLib.Cancellable? cancellable = null) throws GLib.Error;

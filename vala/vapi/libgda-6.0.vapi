@@ -339,6 +339,11 @@ namespace Gda {
 		[NoAccessorMethod]
 		public void* xml_node { get; construct; }
 	}
+	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_data_model_import_iter_get_type ()")]
+	public class DataModelImportIter : Gda.DataModelIter {
+		[CCode (has_construct_function = false)]
+		protected DataModelImportIter ();
+	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_data_model_iter_get_type ()")]
 	public class DataModelIter : Gda.Set {
 		[CCode (has_construct_function = false)]
@@ -352,10 +357,10 @@ namespace Gda {
 		public unowned GLib.Value? get_value_for_field (string field_name);
 		public void invalidate_contents ();
 		public bool is_valid ();
-		public bool move_next ();
-		public bool move_prev ();
-		public bool move_to_row (int row);
-		public bool set_value_at (int col, GLib.Value value) throws GLib.Error;
+		public virtual bool move_next ();
+		public virtual bool move_prev ();
+		public virtual bool move_to_row (int row);
+		public virtual bool set_value_at (int col, GLib.Value value) throws GLib.Error;
 		[NoAccessorMethod]
 		public int current_row { get; set; }
 		[NoAccessorMethod]
@@ -512,6 +517,11 @@ namespace Gda {
 		public bool store_all_rows { get; set; }
 		[NoAccessorMethod]
 		public Gda.Statement update_stmt { owned get; set; }
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_data_select_iter_get_type ()")]
+	public class DataSelectIter : Gda.DataModelIter {
+		[CCode (has_construct_function = false)]
+		protected DataSelectIter ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_ddl_base_get_type ()")]
 	public class DdlBase : GLib.Object {
@@ -1044,6 +1054,8 @@ namespace Gda {
 	public class Row : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Row (int count);
+		[CCode (has_construct_function = false)]
+		public Row.from_data_model (Gda.DataModel model, uint row);
 		public int get_length ();
 		public unowned GLib.Value? get_value (int num);
 		public void invalidate_value (GLib.Value value);
@@ -1053,7 +1065,11 @@ namespace Gda {
 		[Version (since = "4.2.10")]
 		public bool value_is_valid_e (GLib.Value value) throws GLib.Error;
 		[NoAccessorMethod]
-		public int nb_values { set; }
+		public Gda.DataModel model { owned get; construct; }
+		[NoAccessorMethod]
+		public int model_row { get; construct; }
+		[NoAccessorMethod]
+		public int nb_values { get; construct; }
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_server_operation_get_type ()")]
 	public class ServerOperation : GLib.Object {
@@ -1977,73 +1993,48 @@ namespace Gda {
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_data_model_get_type ()")]
 	public interface DataModel : GLib.Object {
 		public bool add_data_from_xml_node ([CCode (type = "xmlNodePtr")] Xml.Node* node) throws GLib.Error;
-		[CCode (vfunc_name = "i_append_row")]
 		public abstract int append_row () throws GLib.Error;
-		[CCode (vfunc_name = "i_append_values")]
 		public abstract int append_values (GLib.List<GLib.Value?>? values) throws GLib.Error;
 		public Gda.DataModelArray? array_copy_model () throws GLib.Error;
 		[Version (since = "5.2.0")]
 		public Gda.DataModelArray? array_copy_model_ext ([CCode (array_length_cname = "ncols", array_length_pos = 0.5)] int[] cols) throws GLib.Error;
-		[CCode (vfunc_name = "i_create_iter")]
 		public abstract Gda.DataModelIter create_iter ();
-		[CCode (vfunc_name = "i_describe_column")]
 		public abstract unowned Gda.Column? describe_column (int col);
 		public void dump (void* to_stream);
 		public string dump_as_string ();
 		public static GLib.Quark error_quark ();
 		public bool export_to_file (Gda.DataModelIOFormat format, string file, [CCode (array_length_cname = "nb_cols", array_length_pos = 3.5)] int[]? cols, [CCode (array_length_cname = "nb_rows", array_length_pos = 4.5)] int[]? rows, Gda.Set options) throws GLib.Error;
 		public string export_to_string (Gda.DataModelIOFormat format, [CCode (array_length_cname = "nb_cols", array_length_pos = 2.5)] int[]? cols, [CCode (array_length_cname = "nb_rows", array_length_pos = 3.5)] int[]? rows, Gda.Set options);
-		public void freeze ();
-		[CCode (vfunc_name = "i_get_access_flags")]
+		public abstract void freeze ();
 		public abstract Gda.DataModelAccessFlags get_access_flags ();
-		[CCode (vfunc_name = "i_get_attributes_at")]
 		public abstract Gda.ValueAttribute get_attributes_at (int col, int row);
 		public int get_column_index (string name);
 		[Version (since = "3.2")]
 		public unowned string get_column_name (int col);
 		public unowned string get_column_title (int col);
-		[CCode (array_length = false, array_null_terminated = true, vfunc_name = "i_get_exceptions")]
+		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "4.2.6")]
 		public abstract unowned GLib.Error[] get_exceptions ();
-		[CCode (vfunc_name = "i_get_n_columns")]
 		public abstract int get_n_columns ();
-		[CCode (vfunc_name = "i_get_n_rows")]
 		public abstract int get_n_rows ();
-		[CCode (vfunc_name = "i_get_notify")]
 		public abstract bool get_notify ();
-		[CCode (vfunc_name = "i_find_row")]
-		public abstract int get_row_from_values (GLib.SList<GLib.Value?> values, [CCode (array_length = false)] int[] cols_index);
+		public int get_row_from_values (GLib.SList<GLib.Value?> values, [CCode (array_length = false)] int[] cols_index);
 		public unowned GLib.Value? get_typed_value_at (int col, int row, GLib.Type expected_type, bool nullok) throws GLib.Error;
-		[CCode (vfunc_name = "i_get_value_at")]
 		public abstract unowned GLib.Value? get_value_at (int col, int row) throws GLib.Error;
-		[NoWrapper]
-		public abstract bool i_iter_at_row (Gda.DataModelIter iter, int row);
-		[NoWrapper]
-		public abstract bool i_iter_next (Gda.DataModelIter iter);
-		[NoWrapper]
-		public abstract bool i_iter_prev (Gda.DataModelIter iter);
-		[NoWrapper]
-		public abstract bool i_iter_set_value (Gda.DataModelIter iter, int col, GLib.Value value) throws GLib.Error;
-		[NoWrapper]
-		public abstract void i_set_notify (bool do_notify_changes);
 		public bool import_from_file (string file, GLib.HashTable<int,int>? cols_trans, Gda.Set options) throws GLib.Error;
 		public bool import_from_model (Gda.DataModel from, bool overwrite, GLib.HashTable<int,int>? cols_trans) throws GLib.Error;
 		public bool import_from_string (string string, GLib.HashTable<int,int>? cols_trans, Gda.Set options) throws GLib.Error;
 		public bool iter_move_next_default (Gda.DataModelIter iter);
 		public bool iter_move_prev_default (Gda.DataModelIter iter);
 		public bool iter_move_to_row_default (Gda.DataModelIter iter, int row);
-		[CCode (vfunc_name = "i_remove_row")]
 		public abstract bool remove_row (int row) throws GLib.Error;
-		[CCode (vfunc_name = "i_send_hint")]
 		public abstract void send_hint (Gda.DataModelHint hint, GLib.Value? hint_value);
 		[Version (since = "3.2")]
 		public void set_column_name (int col, string name);
 		public void set_column_title (int col, string title);
-		[CCode (vfunc_name = "i_set_value_at")]
 		public abstract bool set_value_at (int col, int row, GLib.Value value) throws GLib.Error;
-		[CCode (vfunc_name = "i_set_values")]
 		public abstract bool set_values (int row, GLib.List<GLib.Value?>? values) throws GLib.Error;
-		public void thaw ();
+		public abstract void thaw ();
 		public virtual signal void access_changed ();
 		public virtual signal void changed ();
 		[HasEmitter]
@@ -2057,8 +2048,9 @@ namespace Gda {
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_cname = "GdaDdlBuildableInterface", type_id = "gda_ddl_buildable_get_type ()")]
 	public interface DdlBuildable : GLib.Object {
-		public static GLib.Quark error_quark ();
+		[Version (since = "6.0")]
 		public abstract bool parse_node ([CCode (type = "xmlNodePtr")] Xml.Node* node) throws GLib.Error;
+		[Version (since = "6.0")]
 		public abstract bool write_node ([CCode (type = "xmlNodePtr")] Xml.Node* node) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_lockable_get_type ()")]
@@ -2072,6 +2064,175 @@ namespace Gda {
 		public void @lock ();
 		public bool trylock ();
 		public void @unlock ();
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", type_cname = "GdaProviderInterface", type_id = "gda_provider_get_type ()")]
+	public interface Provider : GLib.Object {
+		[Version (since = "6.0")]
+		public abstract bool add_savepoint (Gda.Connection cnc, string name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract bool begin_transaction (Gda.Connection cnc, string name, Gda.TransactionIsolation level) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract bool close_connection (Gda.Connection cnc);
+		[Version (since = "6.0")]
+		public abstract bool commit_transaction (Gda.Connection cnc, string name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Connection create_connection ();
+		[Version (since = "6.0")]
+		public abstract Gda.ServerOperation create_operation (Gda.Connection cnc, Gda.ServerOperationType type, Gda.Set options) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.SqlParser create_parser (Gda.Connection cnc);
+		[Version (since = "6.0")]
+		public abstract bool delete_savepoint (Gda.Connection cnc, string name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract string escape_string (Gda.Connection cnc, string str);
+		[Version (since = "6.0")]
+		public abstract Gda.DataHandler get_data_handler (Gda.Connection cnc, GLib.Type g_type, string dbms_type);
+		[Version (since = "6.0")]
+		public abstract string get_def_dbms_type (Gda.Connection cnc, GLib.Type g_type);
+		[Version (since = "6.0")]
+		public abstract unowned string get_name ();
+		[Version (since = "6.0")]
+		public abstract unowned string get_server_version (Gda.Connection cnc);
+		[Version (since = "6.0")]
+		public abstract unowned string get_version ();
+		[Version (since = "6.0")]
+		public abstract string identifier_quote (Gda.Connection? cnc, string id, bool for_meta_store, bool force_quotes);
+		[Version (since = "6.0")]
+		public abstract bool open_connection (Gda.Connection cnc, Gda.QuarkList @params, Gda.QuarkList auth);
+		[Version (since = "6.0")]
+		public abstract bool perform_operation (Gda.Connection cnc, Gda.ServerOperation op) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract bool prepare_connection (Gda.Connection cnc, Gda.QuarkList @params, Gda.QuarkList auth);
+		[Version (since = "6.0")]
+		public abstract string render_operation (Gda.Connection cnc, Gda.ServerOperation op) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract bool rollback_savepoint (Gda.Connection cnc, string name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract bool rollback_transaction (Gda.Connection cnc, string name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract GLib.Object statement_execute (Gda.Connection cnc, Gda.Statement stmt, Gda.Set @params, Gda.StatementModelUsage model_usage, GLib.Type col_types, Gda.Set last_inserted_row) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract bool statement_prepare (Gda.Connection cnc, Gda.Statement stmt) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract string statement_to_sql (Gda.Connection cnc, Gda.Statement stmt, Gda.Set? @params, Gda.StatementSqlFlag flags, out GLib.SList<weak Gda.Holder> params_used) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract bool supports_feature (Gda.Connection cnc, Gda.ConnectionFeature feature);
+		[Version (since = "6.0")]
+		public abstract bool supports_operation (Gda.Connection cnc, Gda.ServerOperationType type, Gda.Set options);
+		[Version (since = "6.0")]
+		public abstract string unescape_string (Gda.Connection cnc, string str);
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", type_cname = "GdaProviderMetaInterface", type_id = "gda_provider_meta_get_type ()")]
+	public interface ProviderMeta : GLib.Object {
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel btypes () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row character_set (string chset_catalog, string chset_schema, string chset_name_n) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel character_sets () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row check_column (string table_catalog, string table_schema, string table_name, string constraint_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel check_columns () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row collation (string collation_catalog, string collation_schema, string collation_name_n) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel collations () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel columns () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row constraint_ref (string table_catalog, string table_schema, string table_name, string constraint_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row constraint_table (string table_catalog, string table_schema, string table_name, string constraint_name_n) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel constraints_ref () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel constraints_ref_table (string table_catalog, string table_schema, string table_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel constraints_table (string table_catalog, string table_schema, string table_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel constraints_tables () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row domain (string domain_catalog, string domain_schema) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row domain_constraint (string domain_catalog, string domain_schema, string domain_name, string constraint_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel domain_constraints (string domain_catalog, string domain_schema, string domain_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel domains () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel domains_constraints () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row element_type (string specific_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel element_types () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row enum_type (string udt_catalog, string udt_schema, string udt_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel enums_type () throws GLib.Error;
+		public static GLib.Quark error_quark ();
+		[Version (since = "6.0")]
+		public Gda.DataModel? execute_query (string sql, Gda.Set @params) throws GLib.Error;
+		[Version (since = "6.0")]
+		public Gda.Connection get_connection ();
+		[Version (since = "6.0")]
+		public abstract Gda.Row index_col (string table_catalog, string table_schema, string table_name, string index_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel index_cols () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row index_table (string table_catalog, string table_schema, string table_name, string index_name_n) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel indexes_table (string table_catalog, string table_schema, string table_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel indexes_tables () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row key_column (string table_catalog, string table_schema, string table_name, string constraint_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel key_columns () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row routine (string routine_catalog, string routine_schema, string routine_name_n) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row routine_col (string rout_catalog, string rout_schema, string rout_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row routine_pars (string rout_catalog, string rout_schema, string rout_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel routines () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel routines_col () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel routines_pars () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row schemata (string catalog_name, string schema_name_n) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel schematas () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row table_column (string table_catalog, string table_schema, string table_name, string column_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel table_columns (string table_catalog, string table_schema, string table_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row table_view (string table_catalog, string table_schema, string table_name_n) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel tables_views () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row trigger (string table_catalog, string table_schema, string table_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel triggers () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row udt (string udt_catalog, string udt_schema) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row udt_col (string udt_catalog, string udt_schema, string udt_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel udt_cols () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel udts () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.Row view_col (string view_catalog, string view_schema, string view_name, string column_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel view_cols (string view_catalog, string view_schema, string view_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel views_cols () throws GLib.Error;
+		[ConcreteAccessor]
+		public abstract Gda.Connection connection { owned get; construct; }
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
 	public struct Diff {
@@ -2875,11 +3036,10 @@ namespace Gda {
 		OTHER_ERROR;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DDL_BUILDABLE_ERROR_")]
-	public errordomain DdlBuildableError {
-		START_ELEMENT,
-		ATTRIBUTE,
-		END_ELEMENT;
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_PROVIDER_META_")]
+	public errordomain ProviderMetaError {
+		NO_CONNECTION_ERROR,
+		QUERY_ERROR;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_SQL_")]

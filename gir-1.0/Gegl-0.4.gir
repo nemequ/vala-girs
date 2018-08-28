@@ -2438,7 +2438,7 @@ Returns the number of points for the coordinates in the curve.</doc>
               c:type="GEGL_MAX_AUDIO_CHANNELS">
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="7" c:type="GEGL_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="9" c:type="GEGL_MICRO_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MINOR_VERSION" value="4" c:type="GEGL_MINOR_VERSION">
@@ -5609,6 +5609,15 @@ additional NaN / inifinity checks on passed in coordinates.</doc>
       <property name="swap-file-size" transfer-ownership="none">
         <type name="guint64" c:type="guint64"/>
       </property>
+      <property name="swap-queue-full" transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="swap-queue-stalls" transfer-ownership="none">
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="swap-queued-total" transfer-ownership="none">
+        <type name="guint64" c:type="guint64"/>
+      </property>
       <property name="swap-read-total" transfer-ownership="none">
         <type name="guint64" c:type="guint64"/>
       </property>
@@ -5616,6 +5625,9 @@ additional NaN / inifinity checks on passed in coordinates.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="swap-total" transfer-ownership="none">
+        <type name="guint64" c:type="guint64"/>
+      </property>
+      <property name="swap-total-uncloned" transfer-ownership="none">
         <type name="guint64" c:type="guint64"/>
       </property>
       <property name="swap-write-total" transfer-ownership="none">
@@ -5669,6 +5681,43 @@ directory before deletion but it won't perform any other check.</doc>
           </parameter>
         </parameters>
       </function>
+      <method name="command" c:identifier="gegl_tile_backend_command">
+        <doc xml:space="preserve">The default tile-backend command handler.  Tile backends should forward
+commands they don't handle themselves to this function.</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">Command result.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeglTileBackend</doc>
+            <type name="TileBackend" c:type="GeglTileBackend*"/>
+          </instance-parameter>
+          <parameter name="command" transfer-ownership="none">
+            <doc xml:space="preserve">the tile command</doc>
+            <type name="TileCommand" c:type="GeglTileCommand"/>
+          </parameter>
+          <parameter name="x" transfer-ownership="none">
+            <doc xml:space="preserve">x coordinate</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="y" transfer-ownership="none">
+            <doc xml:space="preserve">y coordinate</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="z" transfer-ownership="none">
+            <doc xml:space="preserve">tile zoom level</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_extent" c:identifier="gegl_tile_backend_get_extent">
         <return-value transfer-ownership="full">
           <type name="Rectangle" c:type="GeglRectangle"/>
@@ -5862,29 +5911,53 @@ is destroyed. If false unwritten data will be discarded.</doc>
       </parameters>
     </callback>
     <enumeration name="TileCommand" c:type="GeglTileCommand">
-      <member name="idle" value="0" c:identifier="GEGL_TILE_IDLE">
+      <member name="egl_tile_idle" value="0" c:identifier="GEGL_TILE_IDLE">
       </member>
-      <member name="set" value="1" c:identifier="GEGL_TILE_SET">
+      <member name="egl_tile_set" value="1" c:identifier="GEGL_TILE_SET">
       </member>
-      <member name="get" value="2" c:identifier="GEGL_TILE_GET">
+      <member name="egl_tile_get" value="2" c:identifier="GEGL_TILE_GET">
       </member>
-      <member name="is_cached" value="3" c:identifier="GEGL_TILE_IS_CACHED">
+      <member name="egl_tile_is_cached"
+              value="3"
+              c:identifier="GEGL_TILE_IS_CACHED">
       </member>
-      <member name="exist" value="4" c:identifier="GEGL_TILE_EXIST">
+      <member name="egl_tile_exist" value="4" c:identifier="GEGL_TILE_EXIST">
       </member>
-      <member name="void" value="5" c:identifier="GEGL_TILE_VOID">
+      <member name="egl_tile_void" value="5" c:identifier="GEGL_TILE_VOID">
       </member>
-      <member name="flush" value="6" c:identifier="GEGL_TILE_FLUSH">
+      <member name="egl_tile_flush" value="6" c:identifier="GEGL_TILE_FLUSH">
       </member>
-      <member name="refetch" value="7" c:identifier="GEGL_TILE_REFETCH">
+      <member name="egl_tile_refetch"
+              value="7"
+              c:identifier="GEGL_TILE_REFETCH">
       </member>
-      <member name="reinit" value="8" c:identifier="GEGL_TILE_REINIT">
+      <member name="egl_tile_reinit" value="8" c:identifier="GEGL_TILE_REINIT">
       </member>
-      <member name="last_command"
+      <member name="gegl_tile_last_0_4_8_command"
               value="9"
+              c:identifier="_GEGL_TILE_LAST_0_4_8_COMMAND">
+      </member>
+      <member name="egl_tile_copy" value="9" c:identifier="GEGL_TILE_COPY">
+      </member>
+      <member name="egl_tile_last_command"
+              value="10"
               c:identifier="GEGL_TILE_LAST_COMMAND">
       </member>
     </enumeration>
+    <record name="TileCopyParams" c:type="GeglTileCopyParams">
+      <field name="dst_buffer" writable="1">
+        <type name="Buffer" c:type="GeglBuffer*"/>
+      </field>
+      <field name="dst_x" writable="1">
+        <type name="gint" c:type="gint"/>
+      </field>
+      <field name="dst_y" writable="1">
+        <type name="gint" c:type="gint"/>
+      </field>
+      <field name="dst_z" writable="1">
+        <type name="gint" c:type="gint"/>
+      </field>
+    </record>
     <class name="TileHandler"
            c:symbol-prefix="tile_handler"
            c:type="GeglTileHandler"

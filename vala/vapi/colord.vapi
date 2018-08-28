@@ -890,7 +890,7 @@ namespace Cd {
 		public static unowned string state_to_string (Cd.SensorState sensor_state);
 		public string to_string ();
 		[Version (since = "0.1.8")]
-		public async bool unlock (GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool @unlock (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "0.1.6")]
 		public bool unlock_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
