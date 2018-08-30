@@ -48,6 +48,14 @@ When this option is enabled on the bufferpool,
 on buffers from the pool.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="CAPS_FEATURE_FORMAT_INTERLACED"
+              value="format:Interlaced"
+              c:type="GST_CAPS_FEATURE_FORMAT_INTERLACED"
+              version="1.16.">
+      <doc xml:space="preserve">Name of the caps feature indicating that the stream is interlaced. Currently
+it is only used for video.</doc>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="CAPS_FEATURE_META_GST_VIDEO_AFFINE_TRANSFORMATION_META"
               value="meta:GstVideoAffineTransformation"
               c:type="GST_CAPS_FEATURE_META_GST_VIDEO_AFFINE_TRANSFORMATION_META">
@@ -2115,7 +2123,7 @@ They can conflict with other extended buffer flags.</doc>
               glib:nick="onefield">
         <doc xml:space="preserve">If the #GstBuffer is interlaced, then only the
                                     first field (as defined by the %GST_VIDEO_BUFFER_FLAG_TFF
-                                    flag setting) is to be displayed.</doc>
+                                    flag setting) is to be displayed (Since: 1.16).</doc>
       </member>
       <member name="multiple_view"
               value="16777216"
@@ -2135,6 +2143,22 @@ They can conflict with other extended buffer flags.</doc>
         <doc xml:space="preserve">When conveying stereo/multiview content with
                                     frame-by-frame methods, this flag marks the first buffer
                                      in a bundle of frames that belong together.</doc>
+      </member>
+      <member name="top_field"
+              value="10485760"
+              c:identifier="GST_VIDEO_BUFFER_FLAG_TOP_FIELD"
+              glib:nick="top-field">
+        <doc xml:space="preserve">The video frame has the top field only. This is the
+                                    same as GST_VIDEO_BUFFER_FLAG_TFF |
+                                    GST_VIDEO_BUFFER_FLAG_ONEFIELD (Since: 1.16).</doc>
+      </member>
+      <member name="bottom_field"
+              value="8388608"
+              c:identifier="GST_VIDEO_BUFFER_FLAG_BOTTOM_FIELD"
+              glib:nick="bottom-field">
+        <doc xml:space="preserve">The video frame has the bottom field only. This is
+                                    the same as GST_VIDEO_BUFFER_FLAG_ONEFIELD
+                                    (GST_VIDEO_BUFFER_FLAG_TFF flag unset) (Since: 1.16).</doc>
       </member>
       <member name="last"
               value="268435456"
@@ -4131,6 +4155,45 @@ after which it is considered finished and released.</doc>
           <parameter name="enabled" transfer-ownership="none">
             <doc xml:space="preserve">whether to enable byte to time conversion</doc>
             <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_interlaced_output_state"
+              c:identifier="gst_video_decoder_set_interlaced_output_state"
+              version="1.16.">
+        <doc xml:space="preserve">Same as #gst_video_decoder_set_output_state() but also allows you to also set
+the interlacing mode.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the newly configured output state.</doc>
+          <type name="VideoCodecState" c:type="GstVideoCodecState*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="decoder" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstVideoDecoder</doc>
+            <type name="VideoDecoder" c:type="GstVideoDecoder*"/>
+          </instance-parameter>
+          <parameter name="fmt" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstVideoFormat</doc>
+            <type name="VideoFormat" c:type="GstVideoFormat"/>
+          </parameter>
+          <parameter name="mode" transfer-ownership="none">
+            <doc xml:space="preserve">A #GstVideoInterlaceMode</doc>
+            <type name="VideoInterlaceMode" c:type="GstVideoInterlaceMode"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <doc xml:space="preserve">The width in pixels</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <doc xml:space="preserve">The height in pixels</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="reference"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">An optional reference #GstVideoCodecState</doc>
+            <type name="VideoCodecState" c:type="GstVideoCodecState*"/>
           </parameter>
         </parameters>
       </method>
@@ -7280,6 +7343,22 @@ All video planes of @buffer will be mapped and the pointers will be set in
         <doc xml:space="preserve">The video frame is the first
     in a set of corresponding views provided as sequential frames.</doc>
       </member>
+      <member name="top_field"
+              value="10"
+              c:identifier="GST_VIDEO_FRAME_FLAG_TOP_FIELD"
+              glib:nick="top-field">
+        <doc xml:space="preserve">The video frame has the top field only. This
+    is the same as GST_VIDEO_FRAME_FLAG_TFF | GST_VIDEO_FRAME_FLAG_ONEFIELD
+    (Since: 1.16).</doc>
+      </member>
+      <member name="bottom_field"
+              value="8"
+              c:identifier="GST_VIDEO_FRAME_FLAG_BOTTOM_FIELD"
+              glib:nick="bottom-field">
+        <doc xml:space="preserve">The video frame has the bottom field
+    only. This is the same as GST_VIDEO_FRAME_FLAG_ONEFIELD
+    (GST_VIDEO_FRAME_FLAG_TFF flag unset) (Since: 1.16).</doc>
+      </member>
     </bitfield>
     <bitfield name="VideoFrameMapFlags"
               version="1.6"
@@ -7722,6 +7801,39 @@ subsampled formats.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_interlaced_format"
+              c:identifier="gst_video_info_set_interlaced_format"
+              version="1.16">
+        <doc xml:space="preserve">Same as #gst_video_info_set_format but also allowing to set the interlaced
+mode.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%FALSE if the returned video info is invalid, e.g. because the
+  size of a frame can't be represented as a 32 bit integer.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="info" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstVideoInfo</doc>
+            <type name="VideoInfo" c:type="GstVideoInfo*"/>
+          </instance-parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">the format</doc>
+            <type name="VideoFormat" c:type="GstVideoFormat"/>
+          </parameter>
+          <parameter name="mode" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstVideoInterlaceMode</doc>
+            <type name="VideoInterlaceMode" c:type="GstVideoInterlaceMode"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <doc xml:space="preserve">a width</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <doc xml:space="preserve">a height</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="to_caps" c:identifier="gst_video_info_to_caps">
         <doc xml:space="preserve">Convert the values of @info into a #GstCaps.</doc>
         <return-value transfer-ownership="full">
@@ -7773,6 +7885,16 @@ mode of the stream.</doc>
     Each field has only half the amount of lines as noted in the
     height property. This mode requires multiple GstVideoMeta metadata
     to describe the fields.</doc>
+      </member>
+      <member name="alternate"
+              value="4"
+              c:identifier="GST_VIDEO_INTERLACE_MODE_ALTERNATE"
+              glib:nick="alternate">
+        <doc xml:space="preserve">1 field is stored in one buffer,
+    @GST_VIDEO_BUFFER_FLAG_TF or @GST_VIDEO_BUFFER_FLAG_BF indicates if
+    the buffer is carrying the top or bottom field, respectively. The top and
+    bottom buffers are expected to alternate in the pipeline, with this mode
+    (Since: 1.16).</doc>
       </member>
       <function name="from_string"
                 c:identifier="gst_video_interlace_mode_from_string"

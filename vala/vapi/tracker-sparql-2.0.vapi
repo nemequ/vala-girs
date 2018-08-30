@@ -186,7 +186,6 @@ namespace Tracker {
 			public Connection ();
 			public new static Tracker.Sparql.Connection @get (GLib.Cancellable? cancellable = null) throws Tracker.Sparql.Error, GLib.IOError, GLib.DBusError, GLib.SpawnError;
 			public new static async Tracker.Sparql.Connection get_async (GLib.Cancellable? cancellable = null) throws Tracker.Sparql.Error, GLib.IOError, GLib.DBusError, GLib.SpawnError;
-			public static GLib.DBusConnection? get_dbus_connection ();
 			public static string? get_domain ();
 			public virtual Tracker.NamespaceManager? get_namespace_manager ();
 			public virtual void load (GLib.File file, GLib.Cancellable? cancellable = null) throws Tracker.Sparql.Error, GLib.IOError, GLib.DBusError;
@@ -196,7 +195,6 @@ namespace Tracker {
 			public abstract Tracker.Sparql.Cursor query (string sparql, GLib.Cancellable? cancellable = null) throws Tracker.Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
 			public abstract async Tracker.Sparql.Cursor query_async (string sparql, GLib.Cancellable? cancellable = null) throws Tracker.Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
 			public new static Tracker.Sparql.Connection remote_new (string uri_base);
-			public static void set_dbus_connection (GLib.DBusConnection dbus_connection);
 			public static void set_domain (string? domain);
 			public virtual Tracker.Sparql.Cursor? statistics (GLib.Cancellable? cancellable = null) throws Tracker.Sparql.Error, GLib.IOError, GLib.DBusError;
 			public virtual async Tracker.Sparql.Cursor? statistics_async (GLib.Cancellable? cancellable = null) throws Tracker.Sparql.Error, GLib.IOError, GLib.DBusError;
