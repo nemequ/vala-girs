@@ -588,6 +588,15 @@ namespace Dazzle {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ListBoxRow ();
 	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_list_model_filter_get_type ()")]
+	public class ListModelFilter : GLib.Object, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		public ListModelFilter (GLib.ListModel child_model);
+		public unowned GLib.ListModel get_child_model ();
+		public void invalidate ();
+		public void set_filter_func (owned Dazzle.ListModelFilterFunc filter_func);
+		public GLib.ListModel child_model { get; }
+	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_list_store_adapter_get_type ()")]
 	public class ListStoreAdapter : GLib.Object, Gtk.TreeModel {
 		[CCode (has_construct_function = false)]
@@ -1887,6 +1896,8 @@ namespace Dazzle {
 	public delegate void CounterForeachFunc (Dazzle.Counter counter);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 3.9)]
 	public delegate bool DirectoryModelVisibleFunc (Dazzle.DirectoryModel self, GLib.File directory, GLib.FileInfo file_info);
+	[CCode (cheader_filename = "dazzle.h", instance_pos = 1.9)]
+	public delegate bool ListModelFilterFunc (GLib.Object object);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 1.9)]
 	public delegate bool RecursiveIgnoreFunc (GLib.File file);
 	[CCode (cheader_filename = "dazzle.h", instance_pos = 2.9)]

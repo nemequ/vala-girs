@@ -195,11 +195,17 @@ namespace Gda {
 		public static Gda.Connection open_from_dsn (string dsn, string? auth_string, Gda.ConnectionOptions options) throws GLib.Error;
 		public static Gda.Connection open_from_string (string? provider_name, string cnc_string, string? auth_string, Gda.ConnectionOptions options) throws GLib.Error;
 		public static Gda.Connection open_sqlite (string? directory, string filename, bool auto_unlink);
+		[Version (since = "6.0")]
+		public string? operation_get_sql_identifier_at_path (Gda.ServerOperation op, string path) throws GLib.Error;
 		[Version (since = "4.2.3")]
 		public Gda.Statement parse_sql_string (string sql, out Gda.Set? @params = null) throws GLib.Error;
 		public bool perform_operation (Gda.ServerOperation op) throws GLib.Error;
 		[Version (since = "4.2")]
 		public Gda.ConnectionEvent point_available_event (Gda.ConnectionEventType type);
+		[Version (since = "6.0")]
+		public Gda.ServerOperation? prepare_operation_create_table (string table_name, GLib.List<Gda.ServerOperationCreateTableArg> arguments) throws GLib.Error;
+		[Version (since = "6.0")]
+		public Gda.ServerOperation? prepare_operation_drop_table (string table_name) throws GLib.Error;
 		[Version (since = "4.0.3")]
 		public string quote_sql_identifier (string id);
 		[Version (since = "4.2")]
@@ -1090,8 +1096,7 @@ namespace Gda {
 		public uint get_sequence_min_size (string path);
 		public unowned string get_sequence_name (string path);
 		public uint get_sequence_size (string path);
-		[Version (since = "4.2.6")]
-		public string get_sql_identifier_at_path (Gda.Connection? cnc, Gda.ServerProvider? prov, string path) throws GLib.Error;
+		public string get_sql_identifier_at_path (string path) throws GLib.Error;
 		[CCode (cname = "gda_server_operation_get_value_at_path")]
 		[Version (since = "4.2.6")]
 		public unowned GLib.Value? get_value_at (string path);
@@ -1099,25 +1104,14 @@ namespace Gda {
 		public bool is_valid (string? xml_file) throws GLib.Error;
 		public bool is_valid_from_resource (string? resource) throws GLib.Error;
 		public bool load_data_from_xml ([CCode (type = "xmlNodePtr")] Xml.Node* node) throws GLib.Error;
-		public bool perform () throws GLib.Error;
 		[Version (since = "4.2.3")]
 		public bool perform_create_database (string? provider) throws GLib.Error;
 		[Version (since = "4.2.3")]
-		public bool perform_create_table () throws GLib.Error;
-		[Version (since = "4.2.3")]
 		public bool perform_drop_database (string? provider) throws GLib.Error;
 		[Version (since = "4.2.3")]
-		public bool perform_drop_table () throws GLib.Error;
-		[Version (since = "4.2.3")]
 		public static Gda.ServerOperation? prepare_create_database (string provider, string? db_name) throws GLib.Error;
-		[Version (since = "6.0.0")]
-		public static Gda.ServerOperation? prepare_create_table (Gda.Connection cnc, string table_name, GLib.List<Gda.ServerOperationCreateTableArg> arguments) throws GLib.Error;
-		[Version (since = "4.2.3")]
-		public static Gda.ServerOperation? prepare_create_table_v (Gda.Connection cnc, string table_name, GLib.Error error, ...);
 		[Version (since = "4.2.3")]
 		public static Gda.ServerOperation? prepare_drop_database (string provider, string? db_name) throws GLib.Error;
-		[Version (since = "4.2.3")]
-		public static Gda.ServerOperation? prepare_drop_table (Gda.Connection cnc, string table_name) throws GLib.Error;
 		public string? render () throws GLib.Error;
 		public string save_data_to_xml_string () throws GLib.Error;
 		[NoWrapper]

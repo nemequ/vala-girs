@@ -413,11 +413,8 @@ times in @batch's statements' list, then only the first one is removed.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="BatchPrivate" c:type="GdaBatchPrivate*"/>
       </field>
       <glib:signal name="changed" when="first">
         <doc xml:space="preserve">Gets emitted whenever a #GdaStatement in the @batch object changes</doc>
@@ -488,8 +485,6 @@ times in @batch's statements' list, then only the first one is removed.</doc>
               c:identifier="GDA_BATCH_CONFLICTING_PARAMETER_ERROR">
       </member>
     </enumeration>
-    <record name="BatchPrivate" c:type="GdaBatchPrivate" disguised="1">
-    </record>
     <record name="Binary"
             c:type="GdaBinary"
             glib:type-name="GdaBinary"
@@ -3336,6 +3331,76 @@ gda_connection_set_main_context(), for example when there is a main loop for tha
           </parameter>
         </parameters>
       </method>
+      <method name="operation_get_sql_identifier_at"
+              c:identifier="gda_connection_operation_get_sql_identifier_at"
+              version="6.0"
+              introspectable="0">
+        <doc xml:space="preserve">This method is similar to gda_server_operation_get_value_at(), but for SQL identifiers: a new string
+is returned instead of a #GValue. Also the returned string is assumed to represents an SQL identifier
+and will correctly be quoted to be used with @cnc.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new string, or %NULL if the value is undefined or
+if the @path is not defined or @path does not hold any value, or if the value held is not a string
+(in that last case a warning is shown).</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cnc" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdaConnection</doc>
+            <type name="Connection" c:type="GdaConnection*"/>
+          </instance-parameter>
+          <parameter name="op" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdaServerOperation object</doc>
+            <type name="ServerOperation" c:type="GdaServerOperation*"/>
+          </parameter>
+          <parameter name="path_format" transfer-ownership="none">
+            <doc xml:space="preserve">a complete path to a node (starting with "/")</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="error"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a place to store errors, or %NULL</doc>
+            <type name="GLib.Error" c:type="GError**"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">arguments to use with @path_format to make a complete path</doc>
+            <varargs/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="operation_get_sql_identifier_at_path"
+              c:identifier="gda_connection_operation_get_sql_identifier_at_path"
+              version="6.0"
+              throws="1">
+        <doc xml:space="preserve">This method is similar to gda_server_operation_get_value_at(), but for SQL identifiers: a new string
+is returned instead of a #GValue. Also the returned string is assumed to represents an SQL identifier
+and will correctly be quoted to be used with @cnc.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new string, or %NULL if the value is undefined or
+if the @path is not defined or @path does not hold any value, or if the value held is not a string or
+a valid SQL identifier.</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cnc"
+                              transfer-ownership="none"
+                              nullable="1"
+                              allow-none="1">
+            <doc xml:space="preserve">a #GdaConnection, or %NULL</doc>
+            <type name="Connection" c:type="GdaConnection*"/>
+          </instance-parameter>
+          <parameter name="op" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdaServerOperation object</doc>
+            <type name="ServerOperation" c:type="GdaServerOperation*"/>
+          </parameter>
+          <parameter name="path" transfer-ownership="none">
+            <doc xml:space="preserve">a complete path to a node (starting with "/")</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="parse_sql_string"
               c:identifier="gda_connection_parse_sql_string"
               version="4.2.3"
@@ -3406,6 +3471,106 @@ be ignored</doc>
           <parameter name="type" transfer-ownership="none">
             <doc xml:space="preserve">a #GdaConnectionEventType</doc>
             <type name="ConnectionEventType" c:type="GdaConnectionEventType"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prepare_operation_create_table"
+              c:identifier="gda_connection_prepare_operation_create_table"
+              version="6.0"
+              throws="1">
+        <doc xml:space="preserve">Add more arguments if the flag needs them:
+
+GDA_SERVER_OPERATION_CREATE_TABLE_FKEY_FLAG:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;string with the table's name referenced&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;an integer with the number pairs "local_field", "referenced_field"
+  used in the reference&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Pairs of "local_field", "referenced_field" to use, must match
+   the number specified above.&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;a string with the action for ON DELETE; can be: "RESTRICT", "CASCADE",
+   "NO ACTION", "SET NULL" and "SET DEFAULT". Example: "ON UPDATE CASCADE".&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;a string with the action for ON UPDATE (see above).&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+Create a #GdaServerOperation object using an opened connection, taking three
+arguments, a column's name the column's GType and #GdaServerOperationCreateTableFlag
+flag, you need to finish the list using %NULL.
+
+You'll be able to modify the #GdaServerOperation object to add custom options
+to the operation. When finished call #gda_server_operation_perform_create_table
+or #gda_server_provider_perform_operation
+in order to execute the operation.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a #GdaServerOperation if no errors; NULL and set @error otherwise</doc>
+          <type name="ServerOperation" c:type="GdaServerOperation*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cnc" transfer-ownership="none">
+            <doc xml:space="preserve">an opened connection</doc>
+            <type name="Connection" c:type="GdaConnection*"/>
+          </instance-parameter>
+          <parameter name="table_name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the table to create</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="arguments" transfer-ownership="none">
+            <doc xml:space="preserve">list of arguments as #GdaServerOperationPrepareCreateTableArg containing column's name,
+column's #GType and a #GdaServerOperationCreateTableFlag flag</doc>
+            <type name="GLib.List" c:type="GList*">
+              <type name="ServerOperationCreateTableArg"/>
+            </type>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prepare_operation_create_table_v"
+              c:identifier="gda_connection_prepare_operation_create_table_v"
+              version="6.0"
+              introspectable="0">
+        <doc xml:space="preserve">Convenient funtion for table creation.
+
+For details about arguments see #gda_server_operation_prepare_create_table_v().</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a #GdaServerOperation if no errors; NULL and set @error otherwise</doc>
+          <type name="ServerOperation" c:type="GdaServerOperation*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cnc" transfer-ownership="none">
+            <doc xml:space="preserve">an opened connection</doc>
+            <type name="Connection" c:type="GdaConnection*"/>
+          </instance-parameter>
+          <parameter name="table_name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the table to create</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="error" transfer-ownership="none">
+            <doc xml:space="preserve">a place to store errors, or %NULL</doc>
+            <type name="GLib.Error" c:type="GError**"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve">group of three arguments for column's name, column's #GType
+and a #GdaServerOperationCreateTableFlag flag, finished with %NULL</doc>
+            <varargs/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="prepare_operation_drop_table"
+              c:identifier="gda_connection_prepare_operation_drop_table"
+              version="6.0"
+              throws="1">
+        <doc xml:space="preserve">This is just a convenient function to create a #GdaServerOperation to drop a
+table in an opened connection.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new #GdaServerOperation or %NULL if couldn't create the opereration.</doc>
+          <type name="ServerOperation" c:type="GdaServerOperation*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cnc" transfer-ownership="none">
+            <doc xml:space="preserve">an opened connection</doc>
+            <type name="Connection" c:type="GdaConnection*"/>
+          </instance-parameter>
+          <parameter name="table_name" transfer-ownership="none">
+            <doc xml:space="preserve">name of the table to drop</doc>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -5215,11 +5380,8 @@ will speed things up as less data will be processed.</doc>
       <property name="old-model" writable="1" transfer-ownership="none">
         <type name="DataModel"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="DataComparatorPrivate" c:type="GdaDataComparatorPrivate*"/>
       </field>
       <glib:signal name="diff-computed" when="last">
         <return-value transfer-ownership="none">
@@ -5303,10 +5465,6 @@ will speed things up as less data will be processed.</doc>
               c:identifier="GDA_DATA_COMPARATOR_USER_CANCELLED_ERROR">
       </member>
     </enumeration>
-    <record name="DataComparatorPrivate"
-            c:type="GdaDataComparatorPrivate"
-            disguised="1">
-    </record>
     <interface name="DataHandler"
                c:symbol-prefix="data_handler"
                c:type="GdaDataHandler"
@@ -7577,11 +7735,8 @@ Also clears @model's contents.</doc>
       <property name="read-only" writable="1" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="DataModelArrayPrivate" c:type="GdaDataModelArrayPrivate*"/>
       </field>
     </class>
     <record name="DataModelArrayClass"
@@ -7618,10 +7773,6 @@ Also clears @model's contents.</doc>
           </return-value>
         </callback>
       </field>
-    </record>
-    <record name="DataModelArrayPrivate"
-            c:type="GdaDataModelArrayPrivate"
-            disguised="1">
     </record>
     <class name="DataModelDir"
            c:symbol-prefix="data_model_dir"
@@ -9279,11 +9430,8 @@ still forming a valid SQL syntax).</doc>
       <property name="model" writable="1" transfer-ownership="none">
         <type name="DataModel"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="DataPivotPrivate" c:type="GdaDataPivotPrivate*"/>
       </field>
     </class>
     <enumeration name="DataPivotAggregate" c:type="GdaDataPivotAggregate">
@@ -9366,8 +9514,6 @@ still forming a valid SQL syntax).</doc>
               c:identifier="GDA_DATA_PIVOT_FIELD_COLUMN">
       </member>
     </enumeration>
-    <record name="DataPivotPrivate" c:type="GdaDataPivotPrivate" disguised="1">
-    </record>
     <class name="DataProxy"
            c:symbol-prefix="data_proxy"
            c:type="GdaDataProxy"
@@ -10060,11 +10206,8 @@ the change's number of columns match the proxied data model's number of columns 
                 transfer-ownership="none">
         <type name="gint" c:type="gint"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="DataProxyPrivate" c:type="GdaDataProxyPrivate*"/>
       </field>
       <glib:signal name="filter-changed" when="first">
         <doc xml:space="preserve">Gets emitted when @proxy's filter has been changed</doc>
@@ -10308,8 +10451,6 @@ callback returns a non %NULL value, then the change commit fails with the return
               c:identifier="GDA_DATA_PROXY_FILTER_ERROR">
       </member>
     </enumeration>
-    <record name="DataProxyPrivate" c:type="GdaDataProxyPrivate" disguised="1">
-    </record>
     <class name="DataSelect"
            c:symbol-prefix="data_select"
            c:type="GdaDataSelect"
@@ -15546,11 +15687,8 @@ See gda_meta_store_declare_foreign_key() for more information anout the @catalog
                 transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="MetaStorePrivate" c:type="GdaMetaStorePrivate*"/>
       </field>
       <glib:signal name="meta-changed" when="first">
         <doc xml:space="preserve">This signal is emitted when the @store's contents have changed (the changes are in the @changes list)</doc>
@@ -15838,8 +15976,6 @@ signal, or %NULL if signal propagation should continue</doc>
               c:identifier="GDA_META_STORE_TRANSACTION_ALREADY_STARTED_ERROR">
       </member>
     </enumeration>
-    <record name="MetaStorePrivate" c:type="GdaMetaStorePrivate" disguised="1">
-    </record>
     <class name="MetaStruct"
            c:symbol-prefix="meta_struct"
            c:type="GdaMetaStruct"
@@ -22146,85 +22282,6 @@ creation</doc>
           </parameter>
         </parameters>
       </function>
-      <function name="prepare_create_table"
-                c:identifier="gda_server_operation_prepare_create_table"
-                version="6.0.0"
-                throws="1">
-        <doc xml:space="preserve">Add more arguments if the flag needs them:
-
-GDA_SERVER_OPERATION_CREATE_TABLE_FKEY_FLAG:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;string with the table's name referenced&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;an integer with the number pairs "local_field", "referenced_field"
-  used in the reference&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Pairs of "local_field", "referenced_field" to use, must match
-   the number specified above.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;a string with the action for ON DELETE; can be: "RESTRICT", "CASCADE",
-   "NO ACTION", "SET NULL" and "SET DEFAULT". Example: "ON UPDATE CASCADE".&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;a string with the action for ON UPDATE (see above).&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-Create a #GdaServerOperation object using an opened connection, taking three
-arguments, a column's name the column's GType and #GdaServerOperationCreateTableFlag
-flag, you need to finish the list using %NULL.
-
-You'll be able to modify the #GdaServerOperation object to add custom options
-to the operation. When finished call #gda_server_operation_perform_create_table
-or #gda_server_provider_perform_operation
-in order to execute the operation.</doc>
-        <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">a #GdaServerOperation if no errors; NULL and set @error otherwise</doc>
-          <type name="ServerOperation" c:type="GdaServerOperation*"/>
-        </return-value>
-        <parameters>
-          <parameter name="cnc" transfer-ownership="none">
-            <doc xml:space="preserve">an opened connection</doc>
-            <type name="Connection" c:type="GdaConnection*"/>
-          </parameter>
-          <parameter name="table_name" transfer-ownership="none">
-            <doc xml:space="preserve">name of the table to create</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="arguments" transfer-ownership="none">
-            <doc xml:space="preserve">list of arguments as #GdaServerOperationPrepareCreateTableArg containing column's name,
-column's #GType and a #GdaServerOperationCreateTableFlag flag</doc>
-            <type name="GLib.List" c:type="GList*">
-              <type name="ServerOperationCreateTableArg"/>
-            </type>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="prepare_create_table_v"
-                c:identifier="gda_server_operation_prepare_create_table_v"
-                version="4.2.3"
-                introspectable="0">
-        <doc xml:space="preserve">Convenient funtion for table creation.
-
-For details about arguments see #gda_server_operation_prepare_create_table_v().</doc>
-        <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">a #GdaServerOperation if no errors; NULL and set @error otherwise</doc>
-          <type name="ServerOperation" c:type="GdaServerOperation*"/>
-        </return-value>
-        <parameters>
-          <parameter name="cnc" transfer-ownership="none">
-            <doc xml:space="preserve">an opened connection</doc>
-            <type name="Connection" c:type="GdaConnection*"/>
-          </parameter>
-          <parameter name="table_name" transfer-ownership="none">
-            <doc xml:space="preserve">name of the table to create</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="error" transfer-ownership="none">
-            <doc xml:space="preserve">a place to store errors, or %NULL</doc>
-            <type name="GLib.Error" c:type="GError**"/>
-          </parameter>
-          <parameter name="..." transfer-ownership="none">
-            <doc xml:space="preserve">group of three arguments for column's name, column's #GType
-and a #GdaServerOperationCreateTableFlag flag, finished with %NULL</doc>
-            <varargs/>
-          </parameter>
-        </parameters>
-      </function>
       <function name="prepare_drop_database"
                 c:identifier="gda_server_operation_prepare_drop_database"
                 version="4.2.3"
@@ -22250,27 +22307,6 @@ destruction</doc>
                      nullable="1"
                      allow-none="1">
             <doc xml:space="preserve">the name of the database to drop, or %NULL</doc>
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-        </parameters>
-      </function>
-      <function name="prepare_drop_table"
-                c:identifier="gda_server_operation_prepare_drop_table"
-                version="4.2.3"
-                throws="1">
-        <doc xml:space="preserve">This is just a convenient function to create a #GdaServerOperation to drop a
-table in an opened connection.</doc>
-        <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve">a new #GdaServerOperation or %NULL if couldn't create the opereration.</doc>
-          <type name="ServerOperation" c:type="GdaServerOperation*"/>
-        </return-value>
-        <parameters>
-          <parameter name="cnc" transfer-ownership="none">
-            <doc xml:space="preserve">an opened connection</doc>
-            <type name="Connection" c:type="GdaConnection*"/>
-          </parameter>
-          <parameter name="table_name" transfer-ownership="none">
-            <doc xml:space="preserve">name of the table to drop</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -22566,91 +22602,36 @@ copied but not modified; it may change or cease to exist if @op changes</doc>
       </method>
       <method name="get_sql_identifier_at"
               c:identifier="gda_server_operation_get_sql_identifier_at"
-              shadowed-by="get_sql_identifier_at_path"
-              version="4.0.3"
               introspectable="0">
-        <doc xml:space="preserve">This method is similar to gda_server_operation_get_value_at(), but for SQL identifiers: a new string
-is returned instead of a #GValue. Also the returned string is assumed to represents an SQL identifier
-and will correctly be quoted to be used with @cnc, or @prov if @cnc is %NULL (a generic quoting rule
-will be applied if both are %NULL).</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new string, or %NULL if the value is undefined or
-if the @path is not defined or @path does not hold any value, or if the value held is not a string
-(in that last case a warning is shown).</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="op" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdaServerOperation object</doc>
             <type name="ServerOperation" c:type="GdaServerOperation*"/>
           </instance-parameter>
-          <parameter name="cnc"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">a #GdaConnection, or %NULL</doc>
-            <type name="Connection" c:type="GdaConnection*"/>
-          </parameter>
-          <parameter name="prov"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">a #GdaServerProvider, or %NULL</doc>
-            <type name="ServerProvider" c:type="GdaServerProvider*"/>
-          </parameter>
           <parameter name="path_format" transfer-ownership="none">
-            <doc xml:space="preserve">a complete path to a node (starting with "/")</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="error"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">a place to store errors, or %NULL</doc>
+          <parameter name="error" transfer-ownership="none">
             <type name="GLib.Error" c:type="GError**"/>
           </parameter>
           <parameter name="..." transfer-ownership="none">
-            <doc xml:space="preserve">arguments to use with @path_format to make a complete path</doc>
             <varargs/>
           </parameter>
         </parameters>
       </method>
       <method name="get_sql_identifier_at_path"
               c:identifier="gda_server_operation_get_sql_identifier_at_path"
-              shadows="get_sql_identifier_at"
-              version="4.2.6"
               throws="1">
-        <doc xml:space="preserve">This method is similar to gda_server_operation_get_value_at(), but for SQL identifiers: a new string
-is returned instead of a #GValue. Also the returned string is assumed to represents an SQL identifier
-and will correctly be quoted to be used with @cnc, or @prov if @cnc is %NULL (a generic quoting rule
-will be applied if both are %NULL).</doc>
         <return-value transfer-ownership="full">
-          <doc xml:space="preserve">a new string, or %NULL if the value is undefined or
-if the @path is not defined or @path does not hold any value, or if the value held is not a string or
-a valid SQL identifier.</doc>
           <type name="utf8" c:type="gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="op" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdaServerOperation object</doc>
             <type name="ServerOperation" c:type="GdaServerOperation*"/>
           </instance-parameter>
-          <parameter name="cnc"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">a #GdaConnection, or %NULL</doc>
-            <type name="Connection" c:type="GdaConnection*"/>
-          </parameter>
-          <parameter name="prov"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve">a #GdaServerProvider, or %NULL</doc>
-            <type name="ServerProvider" c:type="GdaServerProvider*"/>
-          </parameter>
           <parameter name="path" transfer-ownership="none">
-            <doc xml:space="preserve">a complete path to a node (starting with "/")</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -22772,22 +22753,6 @@ argument must correspond to an XML tree saved using gda_server_operation_save_da
           </parameter>
         </parameters>
       </method>
-      <method name="perform"
-              c:identifier="gda_server_operation_perform"
-              throws="1">
-        <doc xml:space="preserve">Performs the operation described by @op. Note that @op is not destroyed by this method
-and can be reused.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">%TRUE if no error occurred</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="op" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdaServerOperation object</doc>
-            <type name="ServerOperation" c:type="GdaServerOperation*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="perform_create_database"
               c:identifier="gda_server_operation_perform_create_database"
               version="4.2.3"
@@ -22812,24 +22777,6 @@ gda_server_provider_create_operation(), or gda_server_operation_prepare_create_d
           </parameter>
         </parameters>
       </method>
-      <method name="perform_create_table"
-              c:identifier="gda_server_operation_perform_create_table"
-              version="4.2.3"
-              throws="1">
-        <doc xml:space="preserve">Performs a prepared #GdaServerOperation to create a table. This could perform
-an operation created by #gda_server_operation_prepare_create_table or any other using the
-the #GdaServerOperation API.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if the table was created; FALSE and set @error otherwise</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="op" transfer-ownership="none">
-            <doc xml:space="preserve">a valid #GdaServerOperation</doc>
-            <type name="ServerOperation" c:type="GdaServerOperation*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="perform_drop_database"
               c:identifier="gda_server_operation_perform_drop_database"
               version="4.2.3"
@@ -22852,22 +22799,6 @@ gda_server_provider_create_operation(), or gda_server_operation_prepare_drop_dat
             <doc xml:space="preserve">the database provider to use, or %NULL if @op has been created using gda_server_operation_prepare_drop_database()</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-        </parameters>
-      </method>
-      <method name="perform_drop_table"
-              c:identifier="gda_server_operation_perform_drop_table"
-              version="4.2.3"
-              throws="1">
-        <doc xml:space="preserve">This is just a convenient function to perform a drop a table operation.</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">TRUE if the table was dropped</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="op" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdaServerOperation object</doc>
-            <type name="ServerOperation" c:type="GdaServerOperation*"/>
-          </instance-parameter>
         </parameters>
       </method>
       <method name="render"
@@ -23679,10 +23610,6 @@ This list is owned by @arg, then you should not free it.</doc>
               c:identifier="GDA_SERVER_OPERATION_NODE_UNKNOWN">
       </member>
     </enumeration>
-    <record name="ServerOperationPrivate"
-            c:type="GdaServerOperationPrivate"
-            disguised="1">
-    </record>
     <enumeration name="ServerOperationType" c:type="GdaServerOperationType">
       <member name="create_db"
               value="0"
@@ -32730,11 +32657,8 @@ gda_tree_update_part()). If @node is %NULL then the top level nodes are updated.
         <doc xml:space="preserve">Tells if the GdaTree is a list or a tree.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="TreePrivate" c:type="GdaTreePrivate*"/>
       </field>
       <glib:signal name="node-changed" when="last" version="4.2">
         <doc xml:space="preserve">Gets emitted when a @node has changed in @tree</doc>
@@ -34094,8 +34018,6 @@ does not have a ny children anymore when it had some</doc>
     </enumeration>
     <record name="TreeNodePrivate" c:type="GdaTreeNodePrivate" disguised="1">
     </record>
-    <record name="TreePrivate" c:type="GdaTreePrivate" disguised="1">
-    </record>
     <class name="UShort"
            c:symbol-prefix="ushort"
            glib:type-name="GdaUShort"
@@ -34872,11 +34794,8 @@ the opposite of gda_xa_transaction_register_connection().</doc>
                 transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="XaTransactionPrivate" c:type="GdaXaTransactionPrivate*"/>
       </field>
     </class>
     <record name="XaTransactionClass"
@@ -34965,10 +34884,6 @@ are converted to "%ab" where ab is the hexadecimal representation of the charact
           </instance-parameter>
         </parameters>
       </method>
-    </record>
-    <record name="XaTransactionPrivate"
-            c:type="GdaXaTransactionPrivate"
-            disguised="1">
     </record>
     <enumeration name="XaType" c:type="GdaXaType">
       <member name="start" value="0" c:identifier="GDA_XA_START">
