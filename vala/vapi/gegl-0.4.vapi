@@ -33,6 +33,7 @@ namespace Gegl {
 		public Gegl.Buffer create_sub_buffer (Gegl.Rectangle extent);
 		public Gegl.Buffer dup ();
 		public void flush ();
+		public void flush_ext (Gegl.Rectangle rect);
 		[CCode (has_construct_function = false)]
 		public Buffer.for_backend (Gegl.Rectangle extent, Gegl.TileBackend backend);
 		public unowned Gegl.Rectangle get_abyss ();
@@ -89,6 +90,10 @@ namespace Gegl {
 		[NoAccessorMethod]
 		public int y { get; set construct; }
 		public signal void changed (Gegl.Rectangle object);
+	}
+	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
+	[Compact]
+	public class BufferIterator2Priv {
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	[Compact]
@@ -481,6 +486,18 @@ namespace Gegl {
 		public weak void* data[6];
 		[CCode (array_length = false)]
 		public weak Gegl.Rectangle roi[6];
+	}
+	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
+	public struct BufferIterator2 {
+		public int length;
+		[CCode (array_length = false)]
+		public weak Gegl.BufferIterator2Item[] items;
+		public bool next ();
+	}
+	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
+	public struct BufferIterator2Item {
+		public void* data;
+		public weak Gegl.Rectangle roi;
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	public struct Lookup {

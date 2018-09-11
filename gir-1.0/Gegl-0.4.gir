@@ -551,6 +551,26 @@ geglbuffers opened with gegl_buffer_open since they auto-sync on writes.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="flush_ext" c:identifier="gegl_buffer_flush_ext">
+        <doc xml:space="preserve">Invokes the external flush function, if any is set on the provided buffer -
+this ensures that data pending - in the current implementation only OpenCL -
+externally to be synchronized with the buffer. Multi threaded code should
+call such a synchronization before branching out to avoid each of the
+threads having an implicit synchronization of its own.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a GeglBuffer</doc>
+            <type name="Buffer" c:type="GeglBuffer*"/>
+          </instance-parameter>
+          <parameter name="rect" transfer-ownership="none">
+            <doc xml:space="preserve">rectangle</doc>
+            <type name="Rectangle" c:type="const GeglRectangle*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get"
               c:identifier="gegl_buffer_get"
               shadowed-by="introspectable_get"
@@ -749,6 +769,49 @@ GEGL_ABYSS_LOOP (buffer contents are tiled if outside of the abyss rectangle).</
           </parameter>
           <parameter name="src_length" transfer-ownership="none">
             <doc xml:space="preserve">the lenght of src in bytes</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="iterator2_new"
+              c:identifier="gegl_buffer_iterator2_new"
+              introspectable="0">
+        <doc xml:space="preserve">Create a new buffer iterator, this buffer will be iterated through
+in linear chunks, some chunks might be full tiles the coordinates, see
+the documentation of gegl_buffer_iterator_next for how to use it and
+destroy it.</doc>
+        <return-value>
+          <doc xml:space="preserve">a new buffer iterator that can be used to iterate through the
+buffers pixels.</doc>
+          <type name="BufferIterator2" c:type="GeglBufferIterator2*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeglBuffer</doc>
+            <type name="Buffer" c:type="GeglBuffer*"/>
+          </instance-parameter>
+          <parameter name="roi" transfer-ownership="none">
+            <doc xml:space="preserve">the rectangle to iterate over</doc>
+            <type name="Rectangle" c:type="const GeglRectangle*"/>
+          </parameter>
+          <parameter name="level" transfer-ownership="none">
+            <doc xml:space="preserve">the level at which we are iterating, the roi will indicate the
+extent at 1:1, x,y,width and height are/(2^level)</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">the format we want to process this buffers data in, pass 0 to use the buffers format.</doc>
+            <type c:type="const Babl*"/>
+          </parameter>
+          <parameter name="access_mode" transfer-ownership="none">
+            <doc xml:space="preserve">whether we need reading or writing to this buffer one of GEGL_BUFFER_READ, GEGL_BUFFER_WRITE and GEGL_BUFFER_READWRITE.</doc>
+            <type name="AccessMode" c:type="GeglAccessMode"/>
+          </parameter>
+          <parameter name="abyss_policy" transfer-ownership="none">
+            <doc xml:space="preserve">how request outside the buffer extent are handled.</doc>
+            <type name="AbyssPolicy" c:type="GeglAbyssPolicy"/>
+          </parameter>
+          <parameter name="max_slots" transfer-ownership="none">
             <type name="gint" c:type="gint"/>
           </parameter>
         </parameters>
@@ -1476,6 +1539,112 @@ iterator handle is no longer valid after invoking this function.</doc>
           <type name="BufferIterator" c:type="GeglBufferIterator*"/>
         </return-value>
       </function>
+    </record>
+    <record name="BufferIterator2" c:type="GeglBufferIterator2">
+      <field name="length" writable="1">
+        <type name="gint" c:type="gint"/>
+      </field>
+      <field name="priv" writable="1">
+        <type name="BufferIterator2Priv" c:type="GeglBufferIterator2Priv*"/>
+      </field>
+      <field name="items" writable="1">
+        <array zero-terminated="0" c:type="GeglBufferIterator2Item">
+          <type name="BufferIterator2Item" c:type="GeglBufferIterator2Item"/>
+        </array>
+      </field>
+      <method name="add"
+              c:identifier="gegl_buffer_iterator2_add"
+              introspectable="0">
+        <doc xml:space="preserve">Adds an additional buffer iterator that will be processed in sync with
+the original one, if the buffer doesn't align with the other for tile access
+the corresponding scans and regions will be serialized automatically using
+gegl_buffer_get.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">an integer handle refering to the indice in the iterator structure
+of the added buffer.</doc>
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="iterator" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeglBufferIterator</doc>
+            <type name="BufferIterator2" c:type="GeglBufferIterator2*"/>
+          </instance-parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeglBuffer</doc>
+            <type name="Buffer" c:type="GeglBuffer*"/>
+          </parameter>
+          <parameter name="roi" transfer-ownership="none">
+            <doc xml:space="preserve">the rectangle to iterate over</doc>
+            <type name="Rectangle" c:type="const GeglRectangle*"/>
+          </parameter>
+          <parameter name="level" transfer-ownership="none">
+            <doc xml:space="preserve">the level at which we are iterating, the roi will indicate the
+extent at 1:1, x,y,width and height are/(2^level)</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="format" transfer-ownership="none">
+            <doc xml:space="preserve">the format we want to process this buffers data in, pass 0 to use the buffers format.</doc>
+            <type c:type="const Babl*"/>
+          </parameter>
+          <parameter name="access_mode" transfer-ownership="none">
+            <doc xml:space="preserve">whether we need reading or writing to this buffer.</doc>
+            <type name="AccessMode" c:type="GeglAccessMode"/>
+          </parameter>
+          <parameter name="abyss_policy" transfer-ownership="none">
+            <doc xml:space="preserve">how request outside the buffer extent are handled.</doc>
+            <type name="AbyssPolicy" c:type="GeglAbyssPolicy"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="next" c:identifier="gegl_buffer_iterator2_next">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="iterator" transfer-ownership="none">
+            <type name="BufferIterator2" c:type="GeglBufferIterator2*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="stop"
+              c:identifier="gegl_buffer_iterator2_stop"
+              introspectable="0">
+        <doc xml:space="preserve">Cancels the current iteration, freeing up any temporary resources. The
+iterator handle is no longer valid after invoking this function.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="iterator" transfer-ownership="none">
+            <doc xml:space="preserve">a GeglBufferIterator2</doc>
+            <type name="BufferIterator2" c:type="GeglBufferIterator2*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <function name="empty_new"
+                c:identifier="gegl_buffer_iterator2_empty_new"
+                introspectable="0">
+        <return-value>
+          <type name="BufferIterator2" c:type="GeglBufferIterator2*"/>
+        </return-value>
+        <parameters>
+          <parameter name="max_slots" transfer-ownership="none">
+            <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </function>
+    </record>
+    <record name="BufferIterator2Item" c:type="GeglBufferIterator2Item">
+      <field name="data" writable="1">
+        <type name="gpointer" c:type="gpointer"/>
+      </field>
+      <field name="roi" writable="1">
+        <type name="Rectangle" c:type="GeglRectangle"/>
+      </field>
+    </record>
+    <record name="BufferIterator2Priv"
+            c:type="GeglBufferIterator2Priv"
+            disguised="1">
     </record>
     <record name="BufferIteratorPriv"
             c:type="GeglBufferIteratorPriv"

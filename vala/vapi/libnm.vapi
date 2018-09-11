@@ -2377,6 +2377,8 @@ namespace NM {
 		public const string INTERFACE_NAME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_LLDP")]
 		public const string LLDP;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_LLMNR")]
+		public const string LLMNR;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_MASTER")]
 		public const string MASTER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_MDNS")]
@@ -2423,6 +2425,8 @@ namespace NM {
 		public unowned string get_interface_name ();
 		[Version (since = "1.2")]
 		public NM.SettingConnectionLldp get_lldp ();
+		[Version (since = "1.14")]
+		public NM.SettingConnectionLlmnr get_llmnr ();
 		public unowned string get_master ();
 		[Version (since = "1.12")]
 		public NM.SettingConnectionMdns get_mdns ();
@@ -2468,6 +2472,9 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public int lldp { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.14")]
+		public int llmnr { get; set; }
 		[NoAccessorMethod]
 		public string master { owned get; set; }
 		[NoAccessorMethod]
@@ -5288,6 +5295,14 @@ namespace NM {
 		DEFAULT,
 		DISABLE,
 		ENABLE_RX
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_CONNECTION_LLMNR_", type_id = "nm_setting_connection_llmnr_get_type ()")]
+	[Version (since = "1.14")]
+	public enum SettingConnectionLlmnr {
+		DEFAULT,
+		NO,
+		RESOLVE,
+		YES
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_CONNECTION_MDNS_", type_id = "nm_setting_connection_mdns_get_type ()")]
 	[Version (since = "1.12")]

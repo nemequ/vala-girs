@@ -562,11 +562,8 @@ between 0. and 1. will result in the default hard coded values to be used (grayi
                 transfer-ownership="none">
         <type name="gpointer" c:type="gpointer"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="Gtk.Box" c:type="GtkBox"/>
-      </field>
-      <field name="priv">
-        <type name="BasicFormPriv" c:type="GdauiBasicFormPriv*"/>
       </field>
       <glib:signal name="activated" when="first">
         <doc xml:space="preserve">Emitted when the use has activated any of the #GdaDataEntry widget
@@ -665,8 +662,6 @@ in @form.</doc>
       <member name="entries" value="1" c:identifier="GDAUI_BASIC_FORM_ENTRIES">
       </member>
     </enumeration>
-    <record name="BasicFormPriv" c:type="GdauiBasicFormPriv" disguised="1">
-    </record>
     <constant name="COLOR_NORMAL_DEFAULT"
               value="#6495ed"
               c:type="GDAUI_COLOR_NORMAL_DEFAULT">
@@ -878,11 +873,8 @@ in @form.</doc>
       <property name="weight-column" writable="1" transfer-ownership="none">
         <type name="gint" c:type="gint"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="Gtk.Box" c:type="GtkBox"/>
-      </field>
-      <field name="priv">
-        <type name="CloudPriv" c:type="GdauiCloudPriv*"/>
       </field>
       <glib:signal name="activate" when="first">
         <return-value transfer-ownership="none">
@@ -916,8 +908,11 @@ in @form.</doc>
           </parameters>
         </callback>
       </field>
-    </record>
-    <record name="CloudPriv" c:type="GdauiCloudPriv" disguised="1">
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <callback name="CloudWeightFunc" c:type="GdauiCloudWeightFunc">
       <return-value transfer-ownership="none">
@@ -1054,11 +1049,8 @@ if @n_cols is %0, then all the columns of @model will be displayed in @combo.</d
       <property name="model" writable="1" transfer-ownership="none">
         <type name="Gda.DataModel"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="Gtk.ComboBox" c:type="GtkComboBox"/>
-      </field>
-      <field name="priv">
-        <type name="ComboPrivate" c:type="GdauiComboPrivate*"/>
       </field>
     </class>
     <record name="ComboClass"
@@ -1067,8 +1059,11 @@ if @n_cols is %0, then all the columns of @model will be displayed in @combo.</d
       <field name="parent_class">
         <type name="Gtk.ComboBoxClass" c:type="GtkComboBoxClass"/>
       </field>
-    </record>
-    <record name="ComboPrivate" c:type="GdauiComboPrivate" disguised="1">
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <class name="DataCellRendererBin"
            c:symbol-prefix="data_cell_renderer_bin"
@@ -2812,11 +2807,8 @@ for @data_widget's displayed rows</doc>
       <property name="data-widget" writable="1" transfer-ownership="none">
         <type name="DataProxy"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="Gtk.Box" c:type="GtkBox"/>
-      </field>
-      <field name="priv">
-        <type name="DataFilterPriv" c:type="GdauiDataFilterPriv*"/>
       </field>
     </class>
     <record name="DataFilterClass"
@@ -2825,15 +2817,19 @@ for @data_widget's displayed rows</doc>
       <field name="parent_class">
         <type name="Gtk.BoxClass" c:type="GtkBoxClass"/>
       </field>
-    </record>
-    <record name="DataFilterPriv" c:type="GdauiDataFilterPriv" disguised="1">
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <interface name="DataProxy"
                c:symbol-prefix="data_proxy"
                c:type="GdauiDataProxy"
                glib:type-name="GdauiDataProxy"
                glib:get-type="gdaui_data_proxy_get_type"
-               glib:type-struct="DataProxyIface">
+               glib:type-struct="DataProxyInterface">
+      <prerequisite name="Gtk.Widget"/>
       <virtual-method name="get_proxy" invoker="get_proxy" version="4.2">
         <doc xml:space="preserve">Get a pointer to the #GdaDataProxy being used by @iface</doc>
         <return-value transfer-ownership="none">
@@ -3082,8 +3078,106 @@ of columns for example).</doc>
         </parameters>
       </glib:signal>
     </interface>
-    <record name="DataProxyIface"
-            c:type="GdauiDataProxyIface"
+    <class name="DataProxyInfo"
+           c:symbol-prefix="data_proxy_info"
+           c:type="GdauiDataProxyInfo"
+           parent="Gtk.Toolbar"
+           glib:type-name="GdauiDataProxyInfo"
+           glib:get-type="gdaui_data_proxy_info_get_type"
+           glib:type-struct="DataProxyInfoClass">
+      <implements name="Atk.Implementor"/>
+      <implements name="Gtk.Buildable"/>
+      <implements name="Gtk.Orientable"/>
+      <implements name="Gtk.ToolShell"/>
+      <constructor name="new"
+                   c:identifier="gdaui_data_proxy_info_new"
+                   version="4.2">
+        <doc xml:space="preserve">Creates a new #GdauiDataProxyInfo widget suitable to display information about @data_proxy</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new widget</doc>
+          <type name="Gtk.Widget" c:type="GtkWidget*"/>
+        </return-value>
+        <parameters>
+          <parameter name="data_proxy" transfer-ownership="none">
+            <doc xml:space="preserve">a widget implementing the #GdauiDataProxy interface</doc>
+            <type name="DataProxy" c:type="GdauiDataProxy*"/>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">OR'ed values, specifying what to display in the new widget</doc>
+            <type name="DataProxyInfoFlag" c:type="GdauiDataProxyInfoFlag"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="get_item"
+              c:identifier="gdaui_data_proxy_info_get_item"
+              version="6.0">
+        <doc xml:space="preserve">Get the #GtkToolItem corresponding to the @action action</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #GtkToolItem, or %NULL on error</doc>
+          <type name="Gtk.ToolItem" c:type="GtkToolItem*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="info" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdauiDataProxyInfo object</doc>
+            <type name="DataProxyInfo" c:type="GdauiDataProxyInfo*"/>
+          </instance-parameter>
+          <parameter name="action" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdauiAction action</doc>
+            <type name="Action" c:type="GdauiAction"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="data-proxy" writable="1" transfer-ownership="none">
+        <type name="DataProxy"/>
+      </property>
+      <property name="flags"
+                introspectable="0"
+                writable="1"
+                transfer-ownership="none">
+        <type/>
+      </property>
+      <field name="parent_instance">
+        <type name="Gtk.Toolbar" c:type="GtkToolbar"/>
+      </field>
+    </class>
+    <record name="DataProxyInfoClass"
+            c:type="GdauiDataProxyInfoClass"
+            glib:is-gtype-struct-for="DataProxyInfo">
+      <field name="parent_class">
+        <type name="Gtk.ToolbarClass" c:type="GtkToolbarClass"/>
+      </field>
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <bitfield name="DataProxyInfoFlag" c:type="GdauiDataProxyInfoFlag">
+      <member name="none" value="0" c:identifier="GDAUI_DATA_PROXY_INFO_NONE">
+      </member>
+      <member name="current_row"
+              value="1"
+              c:identifier="GDAUI_DATA_PROXY_INFO_CURRENT_ROW">
+      </member>
+      <member name="row_modify_buttons"
+              value="4"
+              c:identifier="GDAUI_DATA_PROXY_INFO_ROW_MODIFY_BUTTONS">
+      </member>
+      <member name="row_move_buttons"
+              value="8"
+              c:identifier="GDAUI_DATA_PROXY_INFO_ROW_MOVE_BUTTONS">
+      </member>
+      <member name="chunk_change_buttons"
+              value="16"
+              c:identifier="GDAUI_DATA_PROXY_INFO_CHUNK_CHANGE_BUTTONS">
+      </member>
+      <member name="no_filter"
+              value="32"
+              c:identifier="GDAUI_DATA_PROXY_INFO_NO_FILTER">
+      </member>
+    </bitfield>
+    <record name="DataProxyInterface"
+            c:type="GdauiDataProxyInterface"
             glib:is-gtype-struct-for="DataProxy">
       <field name="g_iface">
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
@@ -3204,106 +3298,6 @@ of columns for example).</doc>
         </callback>
       </field>
     </record>
-    <class name="DataProxyInfo"
-           c:symbol-prefix="data_proxy_info"
-           c:type="GdauiDataProxyInfo"
-           parent="Gtk.Toolbar"
-           glib:type-name="GdauiDataProxyInfo"
-           glib:get-type="gdaui_data_proxy_info_get_type"
-           glib:type-struct="DataProxyInfoClass">
-      <implements name="Atk.Implementor"/>
-      <implements name="Gtk.Buildable"/>
-      <implements name="Gtk.Orientable"/>
-      <implements name="Gtk.ToolShell"/>
-      <constructor name="new"
-                   c:identifier="gdaui_data_proxy_info_new"
-                   version="4.2">
-        <doc xml:space="preserve">Creates a new #GdauiDataProxyInfo widget suitable to display information about @data_proxy</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the new widget</doc>
-          <type name="Gtk.Widget" c:type="GtkWidget*"/>
-        </return-value>
-        <parameters>
-          <parameter name="data_proxy" transfer-ownership="none">
-            <doc xml:space="preserve">a widget implementing the #GdauiDataProxy interface</doc>
-            <type name="DataProxy" c:type="GdauiDataProxy*"/>
-          </parameter>
-          <parameter name="flags" transfer-ownership="none">
-            <doc xml:space="preserve">OR'ed values, specifying what to display in the new widget</doc>
-            <type name="DataProxyInfoFlag" c:type="GdauiDataProxyInfoFlag"/>
-          </parameter>
-        </parameters>
-      </constructor>
-      <method name="get_item"
-              c:identifier="gdaui_data_proxy_info_get_item"
-              version="6.0">
-        <doc xml:space="preserve">Get the #GtkToolItem corresponding to the @action action</doc>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve">the #GtkToolItem, or %NULL on error</doc>
-          <type name="Gtk.ToolItem" c:type="GtkToolItem*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="info" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdauiDataProxyInfo object</doc>
-            <type name="DataProxyInfo" c:type="GdauiDataProxyInfo*"/>
-          </instance-parameter>
-          <parameter name="action" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdauiAction action</doc>
-            <type name="Action" c:type="GdauiAction"/>
-          </parameter>
-        </parameters>
-      </method>
-      <property name="data-proxy" writable="1" transfer-ownership="none">
-        <type name="DataProxy"/>
-      </property>
-      <property name="flags"
-                introspectable="0"
-                writable="1"
-                transfer-ownership="none">
-        <type/>
-      </property>
-      <field name="object">
-        <type name="Gtk.Toolbar" c:type="GtkToolbar"/>
-      </field>
-      <field name="priv">
-        <type name="DataProxyInfoPriv" c:type="GdauiDataProxyInfoPriv*"/>
-      </field>
-    </class>
-    <record name="DataProxyInfoClass"
-            c:type="GdauiDataProxyInfoClass"
-            glib:is-gtype-struct-for="DataProxyInfo">
-      <field name="parent_class">
-        <type name="Gtk.ToolbarClass" c:type="GtkToolbarClass"/>
-      </field>
-    </record>
-    <bitfield name="DataProxyInfoFlag" c:type="GdauiDataProxyInfoFlag">
-      <member name="none" value="0" c:identifier="GDAUI_DATA_PROXY_INFO_NONE">
-      </member>
-      <member name="current_row"
-              value="1"
-              c:identifier="GDAUI_DATA_PROXY_INFO_CURRENT_ROW">
-      </member>
-      <member name="row_modify_buttons"
-              value="4"
-              c:identifier="GDAUI_DATA_PROXY_INFO_ROW_MODIFY_BUTTONS">
-      </member>
-      <member name="row_move_buttons"
-              value="8"
-              c:identifier="GDAUI_DATA_PROXY_INFO_ROW_MOVE_BUTTONS">
-      </member>
-      <member name="chunk_change_buttons"
-              value="16"
-              c:identifier="GDAUI_DATA_PROXY_INFO_CHUNK_CHANGE_BUTTONS">
-      </member>
-      <member name="no_filter"
-              value="32"
-              c:identifier="GDAUI_DATA_PROXY_INFO_NO_FILTER">
-      </member>
-    </bitfield>
-    <record name="DataProxyInfoPriv"
-            c:type="GdauiDataProxyInfoPriv"
-            disguised="1">
-    </record>
     <enumeration name="DataProxyWriteMode" c:type="GdauiDataProxyWriteMode">
       <doc xml:space="preserve">Defines when the data modifications held in the underlying #GdaDataProxy are written to the
 data model being proxied (using gda_data_proxy_apply_row_changes()).</doc>
@@ -3333,7 +3327,7 @@ data model being proxied (using gda_data_proxy_apply_row_changes()).</doc>
                c:type="GdauiDataSelector"
                glib:type-name="GdauiDataSelector"
                glib:get-type="gdaui_data_selector_get_type"
-               glib:type-struct="DataSelectorIface">
+               glib:type-struct="DataSelectorInterface">
       <virtual-method name="get_data_set" invoker="get_data_set" version="4.2">
         <doc xml:space="preserve">Get the #GdaDataModelIter object represented the current selected row in @iface. This
 function may return either %NULL or an invalid iterator (see gda_data_model_iter_is_valid()) if
@@ -3628,8 +3622,8 @@ and #GdauiGrid).</doc>
         </return-value>
       </glib:signal>
     </interface>
-    <record name="DataSelectorIface"
-            c:type="GdauiDataSelectorIface"
+    <record name="DataSelectorInterface"
+            c:type="GdauiDataSelectorInterface"
             glib:is-gtype-struct-for="DataSelector">
       <field name="g_iface">
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
@@ -3762,6 +3756,11 @@ and #GdauiGrid).</doc>
             </parameter>
           </parameters>
         </callback>
+      </field>
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </field>
     </record>
     <class name="DataStore"
@@ -3949,11 +3948,8 @@ NOTE: the @cols_index array MUST contain a column index for each value in @value
       <property name="proxy" transfer-ownership="none">
         <type name="gpointer" c:type="gpointer"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="DataStorePriv" c:type="GdauiDataStorePriv*"/>
       </field>
     </class>
     <record name="DataStoreClass"
@@ -3962,8 +3958,11 @@ NOTE: the @cols_index array MUST contain a column index for each value in @value
       <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
-    </record>
-    <record name="DataStorePriv" c:type="GdauiDataStorePriv" disguised="1">
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <class name="Entry"
            c:symbol-prefix="entry"
@@ -5576,11 +5575,8 @@ can be displayed at a time. See gdaui_raw_grid_set_sample_size() and gda_data_pr
       <property name="raw-grid" transfer-ownership="none">
         <type name="RawGrid"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="Gtk.Box" c:type="GtkBox"/>
-      </field>
-      <field name="priv">
-        <type name="GridPriv" c:type="GdauiGridPriv*"/>
       </field>
     </class>
     <record name="GridClass"
@@ -5589,8 +5585,11 @@ can be displayed at a time. See gdaui_raw_grid_set_sample_size() and gda_data_pr
       <field name="parent_class">
         <type name="Gtk.BoxClass" c:type="GtkBoxClass"/>
       </field>
-    </record>
-    <record name="GridPriv" c:type="GdauiGridPriv" disguised="1">
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <constant name="HIG_FORM_HBORDER"
               value="18"
@@ -5746,11 +5745,8 @@ In any case @login's mode (set by gdaui_login_set_mode()) is not changed.</doc>
       <property name="valid" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <field name="parent">
+      <field name="parent_instance">
         <type name="Gtk.Box" c:type="GtkBox"/>
-      </field>
-      <field name="priv">
-        <type name="LoginPrivate" c:type="GdauiLoginPrivate*"/>
       </field>
       <glib:signal name="changed" when="first">
         <return-value transfer-ownership="none">
@@ -5784,6 +5780,11 @@ In any case @login's mode (set by gdaui_login_set_mode()) is not changed.</doc>
           </parameters>
         </callback>
       </field>
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <bitfield name="LoginMode" c:type="GdauiLoginMode">
       <doc xml:space="preserve">Defines the aspect of the #GdauiLogin widget</doc>
@@ -5800,8 +5801,6 @@ In any case @login's mode (set by gdaui_login_set_mode()) is not changed.</doc>
               c:identifier="GDA_UI_LOGIN_HIDE_DIRECT_CONNECTION_MODE">
       </member>
     </bitfield>
-    <record name="LoginPrivate" c:type="GdauiLoginPrivate" disguised="1">
-    </record>
     <class name="NumericEntry"
            c:symbol-prefix="numeric_entry"
            c:type="GdauiNumericEntry"
@@ -5990,12 +5989,8 @@ a warning is issued and the operation fails.</doc>
           </parameter>
         </parameters>
       </method>
-      <field name="parent">
+      <field name="parent_instance">
         <type name="Combo" c:type="GdauiCombo"/>
-      </field>
-      <field name="priv">
-        <type name="ProviderSelectorPrivate"
-              c:type="GdauiProviderSelectorPrivate*"/>
       </field>
     </class>
     <record name="ProviderSelectorClass"
@@ -6004,10 +5999,11 @@ a warning is issued and the operation fails.</doc>
       <field name="parent_class">
         <type name="ComboClass" c:type="GdauiComboClass"/>
       </field>
-    </record>
-    <record name="ProviderSelectorPrivate"
-            c:type="GdauiProviderSelectorPrivate"
-            disguised="1">
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <class name="RawForm"
            c:symbol-prefix="raw_form"
@@ -6040,11 +6036,8 @@ a warning is issued and the operation fails.</doc>
       <property name="model" writable="1" transfer-ownership="none">
         <type name="Gda.DataModel"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="BasicForm" c:type="GdauiBasicForm"/>
-      </field>
-      <field name="priv">
-        <type name="RawFormPriv" c:type="GdauiRawFormPriv*"/>
       </field>
     </class>
     <record name="RawFormClass"
@@ -6053,8 +6046,11 @@ a warning is issued and the operation fails.</doc>
       <field name="parent_class">
         <type name="BasicFormClass" c:type="GdauiBasicFormClass"/>
       </field>
-    </record>
-    <record name="RawFormPriv" c:type="GdauiRawFormPriv" disguised="1">
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <class name="RawGrid"
            c:symbol-prefix="raw_grid"
@@ -6440,11 +6436,8 @@ if the widget is not editable (when it's realized).</doc>
         <doc xml:space="preserve">Instead of showing the formatted text, display the raw text (in the txt2tags syntax)</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="Gtk.Box" c:type="GtkBox"/>
-      </field>
-      <field name="priv">
-        <type name="RtEditorPriv" c:type="GdauiRtEditorPriv*"/>
       </field>
       <glib:signal name="changed" when="last">
         <return-value transfer-ownership="none">
@@ -6470,8 +6463,11 @@ if the widget is not editable (when it's realized).</doc>
           </parameters>
         </callback>
       </field>
-    </record>
-    <record name="RtEditorPriv" c:type="GdauiRtEditorPriv" disguised="1">
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <class name="ServerOperation"
            c:symbol-prefix="server_operation"
@@ -6566,11 +6562,8 @@ The #GdauiServerOperation widget is attached to the dialog using the user proper
                 transfer-ownership="none">
         <type name="Gda.ServerOperation"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="Gtk.Box" c:type="GtkBox"/>
-      </field>
-      <field name="priv">
-        <type name="ServerOperationPriv" c:type="GdauiServerOperationPriv*"/>
       </field>
     </class>
     <record name="ServerOperationClass"
@@ -6579,10 +6572,11 @@ The #GdauiServerOperation widget is attached to the dialog using the user proper
       <field name="parent_class">
         <type name="Gtk.BoxClass" c:type="GtkBoxClass"/>
       </field>
-    </record>
-    <record name="ServerOperationPriv"
-            c:type="GdauiServerOperationPriv"
-            disguised="1">
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <class name="Set"
            c:symbol-prefix="set"
@@ -7243,11 +7237,8 @@ For more information and limitations, see gdaui_tree_store_new().</doc>
                 transfer-ownership="none">
         <type name="Gda.Tree"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="TreeStorePriv" c:type="GdauiTreeStorePriv*"/>
       </field>
       <glib:signal name="drag-can-drag" when="last">
         <return-value transfer-ownership="none">
@@ -7408,8 +7399,11 @@ For more information and limitations, see gdaui_tree_store_new().</doc>
           </parameters>
         </callback>
       </field>
-    </record>
-    <record name="TreeStorePriv" c:type="GdauiTreeStorePriv" disguised="1">
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <function name="data_entry_error_quark"
               c:identifier="gdaui_data_entry_error_quark"

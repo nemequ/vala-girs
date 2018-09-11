@@ -739,7 +739,6 @@ is converted to "\\".</doc>
            c:symbol-prefix="blob_op"
            c:type="GdaBlobOp"
            parent="GObject.Object"
-           abstract="1"
            glib:type-name="GdaBlobOp"
            glib:get-type="gda_blob_op_get_type"
            glib:type-struct="BlobOpClass">
@@ -849,14 +848,8 @@ blob is truncated from its previous length.</doc>
                 transfer-ownership="none">
         <type name="Connection"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="BlobOpPrivate" c:type="GdaBlobOpPrivate*"/>
-      </field>
-      <field name="_gda_reserved1">
-        <type name="gpointer" c:type="gpointer"/>
       </field>
     </class>
     <record name="BlobOpClass"
@@ -868,33 +861,10 @@ blob is truncated from its previous length.</doc>
       <field name="functions">
         <type name="gpointer" c:type="gpointer"/>
       </field>
-      <field name="_gda_reserved1" introspectable="0">
-        <callback name="_gda_reserved1">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_gda_reserved2" introspectable="0">
-        <callback name="_gda_reserved2">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_gda_reserved3" introspectable="0">
-        <callback name="_gda_reserved3">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_gda_reserved4" introspectable="0">
-        <callback name="_gda_reserved4">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </field>
     </record>
     <record name="BlobOpFunctions" c:type="GdaBlobOpFunctions">
@@ -964,8 +934,6 @@ blob is truncated from its previous length.</doc>
           </parameters>
         </callback>
       </field>
-    </record>
-    <record name="BlobOpPrivate" c:type="GdaBlobOpPrivate" disguised="1">
     </record>
     <class name="Column"
            c:symbol-prefix="column"
@@ -1332,9 +1300,6 @@ data model.</doc>
       <field name="object">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
-      <field name="priv">
-        <type name="ColumnPrivate" c:type="GdaColumnPrivate*"/>
-      </field>
       <glib:signal name="g-type-changed" when="last">
         <doc xml:space="preserve">Gets emitted whenever @column's type has been changed</doc>
         <return-value transfer-ownership="none">
@@ -1431,8 +1396,6 @@ data model.</doc>
           </return-value>
         </callback>
       </field>
-    </record>
-    <record name="ColumnPrivate" c:type="GdaColumnPrivate" disguised="1">
     </record>
     <class name="Config"
            c:symbol-prefix="config"
@@ -4325,9 +4288,6 @@ and restored to its state after).</doc>
       <field name="object">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
-      <field name="priv">
-        <type name="ConnectionPrivate" c:type="GdaConnectionPrivate*"/>
-      </field>
       <glib:signal name="closed" when="last">
         <doc xml:space="preserve">Gets emitted when the connection to the database has been closed</doc>
         <return-value transfer-ownership="none">
@@ -4757,10 +4717,6 @@ Sets @event's SQL state.</doc>
       <field name="object">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
-      <field name="priv">
-        <type name="ConnectionEventPrivate"
-              c:type="GdaConnectionEventPrivate*"/>
-      </field>
     </class>
     <record name="ConnectionEventClass"
             c:type="GdaConnectionEventClass"
@@ -4875,10 +4831,6 @@ Sets @event's SQL state.</doc>
               c:identifier="GDA_CONNECTION_EVENT_CODE_UNKNOWN">
       </member>
     </enumeration>
-    <record name="ConnectionEventPrivate"
-            c:type="GdaConnectionEventPrivate"
-            disguised="1">
-    </record>
     <enumeration name="ConnectionEventType" c:type="GdaConnectionEventType">
       <member name="notice"
               value="0"
@@ -5104,10 +5056,6 @@ Note about the @GDA_CONNECTION_OPTIONS_AUTO_META_DATA flag:
                                     explained below.</doc>
       </member>
     </bitfield>
-    <record name="ConnectionPrivate"
-            c:type="GdaConnectionPrivate"
-            disguised="1">
-    </record>
     <enumeration name="ConnectionStatus" c:type="GdaConnectionStatus">
       <doc xml:space="preserve">Indicates the current status of a connection. The possible status and the transitions between those status
 are indicated in the diagram below:
@@ -11122,19 +11070,6 @@ to uniquely identify a single row in a table when creating modification statemen
           </parameter>
         </parameters>
       </method>
-      <method name="free" c:identifier="gda_ddl_base_free" version="6.0">
-        <doc xml:space="preserve">A convenient method to free the memory.
-It is a wrapper around g_clear_object().</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdaDdlBase instance to free.</doc>
-            <type name="DdlBase" c:type="GdaDdlBase*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_catalog"
               c:identifier="gda_ddl_base_get_catalog"
               version="6.0">
@@ -11249,11 +11184,17 @@ set. If @catalog is %NULL @schema may not be %NULL but if @schema is
             <doc xml:space="preserve">a #GdaDdlBase object</doc>
             <type name="DdlBase" c:type="GdaDdlBase*"/>
           </instance-parameter>
-          <parameter name="catalog" transfer-ownership="none">
+          <parameter name="catalog"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">a catalog name associated with the table</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="schema" transfer-ownership="none">
+          <parameter name="schema"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve">a schema name associated with the table</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -11461,18 +11402,6 @@ gda_ddl_column_new()</doc>
           <type name="GLib.Quark" c:type="GQuark"/>
         </return-value>
       </function>
-      <method name="free" c:identifier="gda_ddl_column_free" version="6.0">
-        <doc xml:space="preserve">Convenient function to free the object</doc>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="self" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdaDdlColumn instance</doc>
-            <type name="DdlColumn" c:type="GdaDdlColumn*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="get_autoinc"
               c:identifier="gda_ddl_column_get_autoinc"
               version="6.0">
@@ -14257,9 +14186,6 @@ the holder's value changes.</doc>
       <field name="object">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
-      <field name="priv">
-        <type name="HolderPrivate" c:type="GdaHolderPrivate*"/>
-      </field>
       <glib:signal name="attribute-changed" when="first">
         <doc xml:space="preserve">Gets emitted when any @holder's attribute has changed</doc>
         <return-value transfer-ownership="none">
@@ -14410,8 +14336,6 @@ otherwise.</doc>
               c:identifier="GDA_HOLDER_VALUE_NULL_ERROR">
       </member>
     </enumeration>
-    <record name="HolderPrivate" c:type="GdaHolderPrivate" disguised="1">
-    </record>
     <enumeration name="LdapSearchScope" c:type="GdaLdapSearchScope">
       <doc xml:space="preserve">Defines the search scope of an LDAP search command, relative to the base object.</doc>
       <member name="base" value="1" c:identifier="GDA_LDAP_SEARCH_BASE">
@@ -26579,10 +26503,6 @@ for more information.</doc>
               c:identifier="GDA_SERVER_META_INDEX_COLS">
       </member>
     </enumeration>
-    <record name="ServerProviderPrivate"
-            c:type="GdaServerProviderPrivate"
-            disguised="1">
-    </record>
     <record name="ServerProviderXa" c:type="GdaServerProviderXa">
       <doc xml:space="preserve">Functions implementing distributed transactions.</doc>
       <field name="xa_start">
@@ -29137,11 +29057,8 @@ GDA_SQL_STATEMENT_SELECT, GDA_SQL_STATEMENT_INSERT, GDA_SQL_STATEMENT_UPDATE
 or GDA_SQL_STATEMENT_DELETE</doc>
         <type/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="SqlBuilderPrivate" c:type="GdaSqlBuilderPrivate*"/>
       </field>
     </class>
     <record name="SqlBuilderClass"
@@ -29189,10 +29106,6 @@ or GDA_SQL_STATEMENT_DELETE</doc>
               c:identifier="GDA_SQL_BUILDER_MISUSE_ERROR">
       </member>
     </enumeration>
-    <record name="SqlBuilderPrivate"
-            c:type="GdaSqlBuilderPrivate"
-            disguised="1">
-    </record>
     <record name="SqlCase"
             c:type="GdaSqlCase"
             glib:type-name="GdaSqlCase"
@@ -29972,9 +29885,6 @@ To include variables in the @sql string, see the
       <field name="object">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
-      <field name="priv">
-        <type name="SqlParserPrivate" c:type="GdaSqlParserPrivate*"/>
-      </field>
     </class>
     <record name="SqlParserClass"
             c:type="GdaSqlParserClass"
@@ -30201,8 +30111,6 @@ To include variables in the @sql string, see the
               c:identifier="GDA_SQL_PARSER_MODE_DELIMIT">
       </member>
     </enumeration>
-    <record name="SqlParserPrivate" c:type="GdaSqlParserPrivate" disguised="1">
-    </record>
     <record name="SqlRenderingContext" c:type="GdaSqlRenderingContext">
       <doc xml:space="preserve">Specifies the context in which a #GdaSqlStatement is being converted to SQL.</doc>
       <field name="flags" writable="1">
@@ -31626,9 +31534,6 @@ to specialize some aspects of SQL rendering to be adapted to the database,'s own
       <field name="object">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
-      <field name="priv">
-        <type name="StatementPrivate" c:type="GdaStatementPrivate*"/>
-      </field>
       <glib:signal name="checked" when="first">
         <doc xml:space="preserve">Gets emitted whenever the structure and contents
 of @stmt have been verified (emitted after gda_statement_check_validity()).</doc>
@@ -31781,8 +31686,6 @@ of @stmt have been verified (emitted after gda_statement_check_validity()).</doc
         <doc xml:space="preserve">specifies that the data model's contents will be fully loaded into the client side (the memory of the process using Libgda), not requiring the server any more to access the data (the default behaviour is to access the server any time data is to be read, and data is cached in memory). This flag is useful only if used in conjunction with the GDA_STATEMENT_MODEL_RANDOM_ACCESS flag (otherwise an error will be returned).</doc>
       </member>
     </bitfield>
-    <record name="StatementPrivate" c:type="GdaStatementPrivate" disguised="1">
-    </record>
     <bitfield name="StatementSqlFlag" c:type="GdaStatementSqlFlag">
       <doc xml:space="preserve">Specifies rendering options</doc>
       <member name="params_as_values"
@@ -33831,9 +33734,6 @@ copied), except if @value is %NULL, in which case the attribute is removed.</doc
       <field name="object">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
-      <field name="priv">
-        <type name="TreeNodePrivate" c:type="GdaTreeNodePrivate*"/>
-      </field>
       <glib:signal name="node-changed" when="last" version="4.2">
         <doc xml:space="preserve">Gets emitted when a @node has changed</doc>
         <return-value transfer-ownership="none">
@@ -34016,8 +33916,6 @@ does not have a ny children anymore when it had some</doc>
               c:identifier="GDA_TREE_NODE_UNKNOWN_ERROR">
       </member>
     </enumeration>
-    <record name="TreeNodePrivate" c:type="GdaTreeNodePrivate" disguised="1">
-    </record>
     <class name="UShort"
            c:symbol-prefix="ushort"
            glib:type-name="GdaUShort"
@@ -36375,28 +36273,12 @@ Free-function: gda_value_free</doc>
       </parameters>
     </function>
     <function name="value_new_date_time_from_timet"
-              c:identifier="gda_value_new_date_time_from_timet"
-              deprecated="1"
-              deprecated-version="6.0">
-      <doc xml:space="preserve">Makes a new #GValue of type #G_TYPE_DATE_TIME with value @val
-(of type time_t). The returned timestamp's value is relative to the current
-timezone (i.e. is localtime).
-
-For example, to get a time stamp representing the current date and time, use:
-
-&lt;code&gt;
-ts = gda_value_new_date_time_from_timet (time (NULL));
-&lt;/code&gt;</doc>
-      <doc-deprecated xml:space="preserve">Use gda_value_new_date_time_from_timet() instead</doc-deprecated>
+              c:identifier="gda_value_new_date_time_from_timet">
       <return-value transfer-ownership="full">
-        <doc xml:space="preserve">the newly created #GValue, or %NULL in case of error
-
-Free-function: gda_value_free</doc>
         <type name="GObject.Value" c:type="GValue*"/>
       </return-value>
       <parameters>
         <parameter name="val" transfer-ownership="none">
-          <doc xml:space="preserve">value to set for the new #GValue.</doc>
           <type name="glong" c:type="time_t"/>
         </parameter>
       </parameters>

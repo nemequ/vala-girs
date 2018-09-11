@@ -13259,7 +13259,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The maximum value which can be held in a #guint8.</doc>
       <type name="guint8" c:type="guint8"/>
     </constant>
-    <constant name="MICRO_VERSION" value="3" c:type="GLIB_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="0" c:type="GLIB_MICRO_VERSION">
       <doc xml:space="preserve">The micro version number of the GLib library.
 
 Like #gtk_micro_version, but from the headers used at
@@ -13286,7 +13286,7 @@ linked against at application run time.</doc>
       <doc xml:space="preserve">The minimum value which can be held in a #gint8.</doc>
       <type name="gint8" c:type="gint8"/>
     </constant>
-    <constant name="MINOR_VERSION" value="57" c:type="GLIB_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="59" c:type="GLIB_MINOR_VERSION">
       <doc xml:space="preserve">The minor version number of the GLib library.
 
 Like #gtk_minor_version, but from the headers used at
@@ -27149,7 +27149,9 @@ UNIX system call.
 
 GLib is attempting to unify around the use of 64bit integers to
 represent microsecond-precision time. As such, this type will be
-removed from a future version of GLib.</doc>
+removed from a future version of GLib. A consequence of using `glong` for
+`tv_sec` is that on 32-bit systems `GTimeVal` is subject to the year 2038
+problem.</doc>
       <field name="tv_sec" writable="1">
         <doc xml:space="preserve">seconds</doc>
         <type name="glong" c:type="glong"/>
@@ -27200,10 +27202,12 @@ Use g_date_time_format() or g_strdup_printf() if a different
 variation of ISO 8601 format is required.
 
 If @time_ represents a date which is too large to fit into a `struct tm`,
-%NULL will be returned. This is platform dependent, but it is safe to assume
-years up to 3000 are supported. The return value of g_time_val_to_iso8601()
-has been nullable since GLib 2.54; before then, GLib would crash under the
-same conditions.</doc>
+%NULL will be returned. This is platform dependent. Note also that since
+`GTimeVal` stores the number of seconds as a `glong`, on 32-bit systems it
+is subject to the year 2038 problem.
+
+The return value of g_time_val_to_iso8601() has been nullable since GLib
+2.54; before then, GLib would crash under the same conditions.</doc>
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve">a newly allocated string containing an ISO 8601 date,
    or %NULL if @time_ was too large</doc>

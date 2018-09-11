@@ -60,8 +60,7 @@ namespace Gda {
 		public string to_string (uint maxlen);
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_blob_op_get_type ()")]
-	public abstract class BlobOp : GLib.Object {
-		public void* _gda_reserved1;
+	public class BlobOp : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected BlobOp ();
 		public long get_length ();
@@ -536,8 +535,6 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public int compare (Gda.DdlBase b);
 		[Version (since = "6.0")]
-		public void free ();
-		[Version (since = "6.0")]
 		public unowned string get_catalog ();
 		[Version (since = "6.0")]
 		public unowned string get_full_name ();
@@ -550,7 +547,7 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public void set_name (string name);
 		[Version (since = "6.0")]
-		public void set_names (string catalog, string schema, string name);
+		public void set_names (string? catalog, string? schema, string name);
 		[Version (since = "6.0")]
 		public void set_schema (string schema);
 	}
@@ -560,8 +557,6 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public DdlColumn ();
 		public static GLib.Quark error_quark ();
-		[Version (since = "6.0")]
-		public void free ();
 		[CCode (has_construct_function = false)]
 		public DdlColumn.from_meta (Gda.MetaTableColumn column);
 		[Version (since = "6.0")]
@@ -3221,7 +3216,6 @@ namespace Gda {
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static GLib.Value? value_new_blob_from_file (string filename);
 	[CCode (cheader_filename = "libgda/libgda.h")]
-	[Version (deprecated = true, deprecated_since = "6.0")]
 	public static GLib.Value? value_new_date_time_from_timet (long val);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "4.2.9")]
