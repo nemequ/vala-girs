@@ -273,7 +273,8 @@ namespace Soup {
 		[Version (since = "2.32")]
 		public void get_data ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gsize")] out unowned uint8[] data);
 		public void* get_owner ();
-		public Soup.Buffer new_subbuffer (size_t offset, size_t length);
+		[CCode (has_construct_function = false)]
+		public Buffer.subbuffer (Soup.Buffer parent, size_t offset, size_t length);
 		[CCode (has_construct_function = false)]
 		[Version (since = "2.32")]
 		public Buffer.take ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gsize")] owned uint8[] data);
@@ -1892,6 +1893,12 @@ namespace Soup {
 	public static bool headers_parse_status_line (string status_line, out Soup.HTTPVersion ver, out uint status_code, out string reason_phrase);
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static GLib.Quark http_error_quark ();
+	[CCode (cheader_filename = "libsoup/soup.h")]
+	[Version (deprecated_since = "vala-0.22", replacement = "Status.get_phrase")]
+	public static unowned string status_get_phrase (uint status_code);
+	[CCode (cheader_filename = "libsoup/soup.h")]
+	[Version (deprecated_since = "vala-0.22", replacement = "Status.proxify")]
+	public static uint status_proxify (uint status_code);
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static bool str_case_equal (void* v1, void* v2);
 	[CCode (cheader_filename = "libsoup/soup.h")]
