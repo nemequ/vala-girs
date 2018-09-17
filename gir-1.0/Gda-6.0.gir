@@ -4714,7 +4714,7 @@ Sets @event's SQL state.</doc>
       <property name="type" writable="1" transfer-ownership="none">
         <type name="gint" c:type="gint"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
     </class>
@@ -4724,33 +4724,10 @@ Sets @event's SQL state.</doc>
       <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
-      <field name="_gda_reserved1" introspectable="0">
-        <callback name="_gda_reserved1">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_gda_reserved2" introspectable="0">
-        <callback name="_gda_reserved2">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_gda_reserved3" introspectable="0">
-        <callback name="_gda_reserved3">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
-      </field>
-      <field name="_gda_reserved4" introspectable="0">
-        <callback name="_gda_reserved4">
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-        </callback>
+      <field name="padding">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="12">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
       </field>
     </record>
     <enumeration name="ConnectionEventCode" c:type="GdaConnectionEventCode">
@@ -5156,12 +5133,8 @@ and the columns of the wrapped data model</doc>
                 transfer-ownership="none">
         <type name="DataModel"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="DataAccessWrapperPrivate"
-              c:type="GdaDataAccessWrapperPrivate*"/>
       </field>
     </class>
     <record name="DataAccessWrapperClass"
@@ -5198,10 +5171,6 @@ and the columns of the wrapped data model</doc>
           </return-value>
         </callback>
       </field>
-    </record>
-    <record name="DataAccessWrapperPrivate"
-            c:type="GdaDataAccessWrapperPrivate"
-            disguised="1">
     </record>
     <class name="DataComparator"
            c:symbol-prefix="data_comparator"
@@ -7777,11 +7746,8 @@ Also clears @model's contents.</doc>
                 transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="DataModelDirPrivate" c:type="GdaDataModelDirPrivate*"/>
       </field>
     </class>
     <record name="DataModelDirClass"
@@ -7818,10 +7784,6 @@ Also clears @model's contents.</doc>
           </return-value>
         </callback>
       </field>
-    </record>
-    <record name="DataModelDirPrivate"
-            c:type="GdaDataModelDirPrivate"
-            disguised="1">
     </record>
     <enumeration name="DataModelError"
                  c:type="GdaDataModelError"
@@ -8493,12 +8455,8 @@ will stop, and if set to %FALSE, then the error will be reported but the import 
         <doc xml:space="preserve">Data to import, as a pointer to an XML node (a #xmlNodePtr).</doc>
         <type name="gpointer" c:type="gpointer"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="DataModelImportPrivate"
-              c:type="GdaDataModelImportPrivate*"/>
       </field>
     </class>
     <record name="DataModelImportClass"
@@ -8553,10 +8511,6 @@ will stop, and if set to %FALSE, then the error will be reported but the import 
       <field name="parent_class">
         <type name="DataModelIterClass" c:type="GdaDataModelIterClass"/>
       </field>
-    </record>
-    <record name="DataModelImportPrivate"
-            c:type="GdaDataModelImportPrivate"
-            disguised="1">
     </record>
     <class name="DataModelIter"
            c:symbol-prefix="data_model_iter"
@@ -14355,8 +14309,13 @@ otherwise.</doc>
                c:type="GdaLockable"
                glib:type-name="GdaLockable"
                glib:get-type="gda_lockable_get_type"
-               glib:type-struct="LockableIface">
-      <virtual-method name="i_lock">
+               glib:type-struct="LockableInterface">
+      <virtual-method name="lock" invoker="lock">
+        <doc xml:space="preserve">Locks @lockable. If it is already locked by another thread, the current thread will block until it is unlocked
+by the other thread.
+
+Note: unlike g_mutex_lock(), this method recursive, which means a thread can lock @lockable several times
+(and has to unlock it as many times to actually unlock it).</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -14366,8 +14325,14 @@ otherwise.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="i_trylock">
+      <virtual-method name="trylock" invoker="trylock">
+        <doc xml:space="preserve">Tries to lock @lockable. If it is already locked by another thread, then it immediately returns FALSE, otherwise
+it locks @lockable.
+
+Note: unlike g_mutex_lock(), this method recursive, which means a thread can lock @lockable several times
+(and has to unlock it as many times to actually unlock it).</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">TRUE if the object has successfully been locked.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -14376,7 +14341,9 @@ otherwise.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="i_unlock">
+      <virtual-method name="unlock" invoker="unlock">
+        <doc xml:space="preserve">Unlocks @lockable. This method should not be called if the current does not already holds a lock on @lockable (having
+used gda_lockable_lock() or gda_lockable_trylock()).</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -14433,14 +14400,14 @@ used gda_lockable_lock() or gda_lockable_trylock()).</doc>
         </parameters>
       </method>
     </interface>
-    <record name="LockableIface"
-            c:type="GdaLockableIface"
+    <record name="LockableInterface"
+            c:type="GdaLockableInterface"
             glib:is-gtype-struct-for="Lockable">
       <field name="g_iface">
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
       </field>
-      <field name="i_lock">
-        <callback name="i_lock">
+      <field name="lock">
+        <callback name="lock">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -14451,9 +14418,10 @@ used gda_lockable_lock() or gda_lockable_trylock()).</doc>
           </parameters>
         </callback>
       </field>
-      <field name="i_trylock">
-        <callback name="i_trylock">
+      <field name="trylock">
+        <callback name="trylock">
           <return-value transfer-ownership="none">
+            <doc xml:space="preserve">TRUE if the object has successfully been locked.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
@@ -14463,8 +14431,8 @@ used gda_lockable_lock() or gda_lockable_trylock()).</doc>
           </parameters>
         </callback>
       </field>
-      <field name="i_unlock">
-        <callback name="i_unlock">
+      <field name="unlock">
+        <callback name="unlock">
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -20102,23 +20070,32 @@ will return %NULL</doc>
             <doc xml:space="preserve">a string with the SQL to execute on provider</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
-          <parameter name="params" transfer-ownership="none">
+          <parameter name="params"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GdaSet with all paramaters to use in query</doc>
             <type name="Set" c:type="GdaSet*"/>
           </parameter>
         </parameters>
       </method>
       <method name="execute_query_row"
               c:identifier="gda_provider_meta_execute_query_row"
-              introspectable="0"
+              version="6.0"
+              stability="Unstable"
               throws="1">
-        <return-value>
+        <doc xml:space="preserve">SQL is specific for current provider.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a new #GdaDataModel with as a result of the query</doc>
           <type name="Row" c:type="GdaRow*"/>
         </return-value>
         <parameters>
           <instance-parameter name="prov" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdaProviderMeta</doc>
             <type name="ProviderMeta" c:type="GdaProviderMeta*"/>
           </instance-parameter>
           <parameter name="sql" transfer-ownership="none">
+            <doc xml:space="preserve">a string with the SQL to execute on provider</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="params" transfer-ownership="none">
@@ -22072,11 +22049,8 @@ providers' implementations to report any error while reading a value from the da
                 transfer-ownership="none">
         <type name="gint" c:type="gint"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="RowPrivate" c:type="GdaRowPrivate*"/>
       </field>
     </class>
     <record name="RowClass"
@@ -22113,8 +22087,6 @@ providers' implementations to report any error while reading a value from the da
           </return-value>
         </callback>
       </field>
-    </record>
-    <record name="RowPrivate" c:type="GdaRowPrivate" disguised="1">
     </record>
     <constant name="SQLSTATE_GENERAL_ERROR"
               value="HY000"
@@ -36274,11 +36246,24 @@ Free-function: gda_value_free</doc>
     </function>
     <function name="value_new_date_time_from_timet"
               c:identifier="gda_value_new_date_time_from_timet">
+      <doc xml:space="preserve">Makes a new #GValue of type #G_TYPE_DATE_TIME with value @val
+(of type time_t). The returned timestamp's value is relative to the current
+timezone (i.e. is localtime).
+
+For example, to get a time stamp representing the current date and time, use:
+
+&lt;code&gt;
+ts = gda_value_new_date_time_from_timet (time (NULL));
+&lt;/code&gt;</doc>
       <return-value transfer-ownership="full">
+        <doc xml:space="preserve">the newly created #GValue, or %NULL in case of error
+
+Free-function: gda_value_free</doc>
         <type name="GObject.Value" c:type="GValue*"/>
       </return-value>
       <parameters>
         <parameter name="val" transfer-ownership="none">
+          <doc xml:space="preserve">value to set for the new #GValue.</doc>
           <type name="glong" c:type="time_t"/>
         </parameter>
       </parameters>

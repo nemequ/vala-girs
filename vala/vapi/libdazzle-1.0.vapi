@@ -787,6 +787,7 @@ namespace Dazzle {
 		protected PreferencesGroup ();
 		public void add (Gtk.Widget widget);
 		public int get_priority ();
+		public unowned Gtk.SizeGroup get_size_group (uint column);
 		public unowned string get_title ();
 		public uint refilter (Dazzle.PatternSpec spec);
 		public void set_map (GLib.HashTable<void*,void*> map);

@@ -4778,8 +4778,6 @@ namespace NM {
 		public unowned string get_interface_name ();
 		public unowned string get_path ();
 		public unowned NM.Setting get_setting (GLib.Type setting_type);
-		[Version (since = "1.14")]
-		public unowned NM.Setting6Lowpan get_setting_6lowpan ();
 		public unowned NM.Setting8021x get_setting_802_1x ();
 		public unowned NM.SettingAdsl get_setting_adsl ();
 		public unowned NM.SettingBluetooth get_setting_bluetooth ();
@@ -4817,8 +4815,6 @@ namespace NM {
 		[Version (since = "1.6")]
 		public unowned NM.SettingProxy get_setting_proxy ();
 		public unowned NM.SettingSerial get_setting_serial ();
-		[Version (since = "1.14")]
-		public unowned NM.SettingSriov get_setting_sriov ();
 		[Version (since = "1.12")]
 		public unowned NM.SettingTCConfig get_setting_tc_config ();
 		public unowned NM.SettingTeam get_setting_team ();
@@ -4833,8 +4829,6 @@ namespace NM {
 		public unowned NM.SettingWired get_setting_wired ();
 		public unowned NM.SettingWireless get_setting_wireless ();
 		public unowned NM.SettingWirelessSecurity get_setting_wireless_security ();
-		[Version (since = "1.14")]
-		public unowned NM.SettingWpan get_setting_wpan ();
 		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
 		[Version (since = "1.10")]
 		public (unowned NM.Setting)[] get_settings ();

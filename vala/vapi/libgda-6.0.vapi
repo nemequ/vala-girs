@@ -2042,17 +2042,11 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public abstract bool write_node ([CCode (type = "xmlNodePtr")] Xml.Node* node) throws GLib.Error;
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_lockable_get_type ()")]
+	[CCode (cheader_filename = "libgda/libgda.h", type_cname = "GdaLockableInterface", type_id = "gda_lockable_get_type ()")]
 	public interface Lockable : GLib.Object {
-		[NoWrapper]
-		public abstract void i_lock ();
-		[NoWrapper]
-		public abstract bool i_trylock ();
-		[NoWrapper]
-		public abstract void i_unlock ();
-		public void @lock ();
-		public bool trylock ();
-		public void @unlock ();
+		public abstract void @lock ();
+		public abstract bool trylock ();
+		public abstract void @unlock ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_cname = "GdaProviderInterface", type_id = "gda_provider_get_type ()")]
 	public interface Provider : GLib.Object {
@@ -2161,7 +2155,9 @@ namespace Gda {
 		public abstract Gda.DataModel enums_type () throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		[Version (since = "6.0")]
-		public Gda.DataModel? execute_query (string sql, Gda.Set @params) throws GLib.Error;
+		public Gda.DataModel? execute_query (string sql, Gda.Set? @params) throws GLib.Error;
+		[Version (since = "6.0")]
+		public Gda.Row? execute_query_row (string sql, Gda.Set @params) throws GLib.Error;
 		[Version (since = "6.0")]
 		public Gda.Connection get_connection ();
 		[Version (since = "6.0")]
