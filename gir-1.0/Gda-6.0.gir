@@ -1297,7 +1297,7 @@ data model.</doc>
       <property name="id" writable="1" transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
       <glib:signal name="g-type-changed" when="last">
@@ -5387,7 +5387,7 @@ will speed things up as less data will be processed.</doc>
                c:type="GdaDataHandler"
                glib:type-name="GdaDataHandler"
                glib:get-type="gda_data_handler_get_type"
-               glib:type-struct="DataHandlerIface">
+               glib:type-struct="DataHandlerInterface">
       <function name="get_default"
                 c:identifier="gda_data_handler_get_default"
                 version="4.2.3">
@@ -5736,8 +5736,8 @@ Note: the @str string must be in the current locale representation</doc>
         </parameters>
       </method>
     </interface>
-    <record name="DataHandlerIface"
-            c:type="GdaDataHandlerIface"
+    <record name="DataHandlerInterface"
+            c:type="GdaDataHandlerInterface"
             glib:is-gtype-struct-for="DataHandler">
       <field name="g_iface">
         <type name="GObject.TypeInterface" c:type="GTypeInterface"/>
@@ -11873,7 +11873,7 @@ This value is ignore for column types except float or double.</doc>
           </instance-parameter>
           <parameter name="table" transfer-ownership="none">
             <doc xml:space="preserve">table to append</doc>
-            <type name="DdlTable" c:type="const GdaDdlTable*"/>
+            <type name="DdlTable" c:type="GdaDdlTable*"/>
           </parameter>
         </parameters>
       </method>
@@ -11891,7 +11891,7 @@ This value is ignore for column types except float or double.</doc>
           </instance-parameter>
           <parameter name="view" transfer-ownership="none">
             <doc xml:space="preserve">view to append</doc>
-            <type name="DdlView" c:type="const GdaDdlView*"/>
+            <type name="DdlView" c:type="GdaDdlView*"/>
           </parameter>
         </parameters>
       </method>
@@ -11900,7 +11900,7 @@ This value is ignore for column types except float or double.</doc>
               version="6.0">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a list of tables</doc>
-          <type name="GLib.List" c:type="const GList*">
+          <type name="GLib.List" c:type="GList*">
             <type name="DdlTable"/>
           </type>
         </return-value>
@@ -11916,7 +11916,7 @@ This value is ignore for column types except float or double.</doc>
               version="6.0">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a list of views</doc>
-          <type name="GLib.List" c:type="const GList*">
+          <type name="GLib.List" c:type="GList*">
             <type name="DdlView"/>
           </type>
         </return-value>
@@ -12536,6 +12536,10 @@ This method is called with "IFNOTEXISTS" option.</doc>
             <doc xml:space="preserve">a #GdaConnection object</doc>
             <type name="Connection" c:type="GdaConnection*"/>
           </parameter>
+          <parameter name="ifnotexists" transfer-ownership="none">
+            <doc xml:space="preserve">Set to %TRUE if table should be created with "IFNOTEXISTS" option</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_columns"
@@ -12546,7 +12550,7 @@ should not be freed.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">A list of #GdaDdlColumn objects or %NULL if the internal list is
 not set or if %NULL is passed.</doc>
-          <type name="GLib.List" c:type="const GList*">
+          <type name="GLib.List" c:type="GList*">
             <type name="DdlColumn"/>
           </type>
         </return-value>
@@ -12559,13 +12563,14 @@ not set or if %NULL is passed.</doc>
       </method>
       <method name="get_fkeys"
               c:identifier="gda_ddl_table_get_fkeys"
-              version="6.0">
+              version="6.0"
+              introspectable="0">
         <doc xml:space="preserve">Use this method to obtain internal list of all fkeys. The internal list
 should not be freed.</doc>
-        <return-value transfer-ownership="none">
+        <return-value>
           <doc xml:space="preserve">A list of #GdaDdlFkey objects or %NULL if the internal list is not
 set or %NULL is passed</doc>
-          <type name="GLib.List" c:type="const GList*">
+          <type name="GLib.List" c:type="GList*">
             <type name="DdlFkey"/>
           </type>
         </return-value>
@@ -12618,6 +12623,9 @@ operation.</doc>
           <parameter name="op" transfer-ownership="none">
             <doc xml:space="preserve">an instance of #GdaServerOperation to populate.</doc>
             <type name="ServerOperation" c:type="GdaServerOperation*"/>
+          </parameter>
+          <parameter name="ifnotexists" transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </method>
@@ -14137,7 +14145,7 @@ have been freed. If necessary, use gda_holder_get_value() to get the real value.
 the holder's value changes.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
       <glib:signal name="attribute-changed" when="first">
@@ -14888,6 +14896,22 @@ To be used by provider's implementation</doc>
           <parameter name="table_name" transfer-ownership="none">
             <doc xml:space="preserve">the name of a table present in @store</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="create_struct" c:identifier="gda_meta_store_create_struct">
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GdaMetaStruct using @store</doc>
+          <type name="MetaStruct" c:type="GdaMetaStruct*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="store" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdaMetaStore</doc>
+            <type name="MetaStore" c:type="GdaMetaStore*"/>
+          </instance-parameter>
+          <parameter name="features" transfer-ownership="none">
+            <doc xml:space="preserve">features of new struct</doc>
+            <type name="MetaStructFeature" c:type="GdaMetaStructFeature"/>
           </parameter>
         </parameters>
       </method>
@@ -15875,25 +15899,6 @@ signal, or %NULL if signal propagation should continue</doc>
            glib:type-name="GdaMetaStruct"
            glib:get-type="gda_meta_struct_get_type"
            glib:type-struct="MetaStructClass">
-      <constructor name="new" c:identifier="gda_meta_struct_new">
-        <doc xml:space="preserve">Creates a new #GdaMetaStruct object. The @features specifies the extra features which will also be computed:
-the more features, the more time it takes to run. Features such as table's columns, each column's attributes, etc
-are not optional and will always be computed.</doc>
-        <return-value transfer-ownership="full">
-          <doc xml:space="preserve">the newly created #GdaMetaStruct object</doc>
-          <type name="MetaStruct" c:type="GdaMetaStruct*"/>
-        </return-value>
-        <parameters>
-          <parameter name="store" transfer-ownership="none">
-            <doc xml:space="preserve">a #GdaMetaStore from which the new #GdaMetaStruct object will fetch information</doc>
-            <type name="MetaStore" c:type="GdaMetaStore*"/>
-          </parameter>
-          <parameter name="features" transfer-ownership="none">
-            <doc xml:space="preserve">the kind of extra information the new #GdaMetaStruct object will compute</doc>
-            <type name="MetaStructFeature" c:type="GdaMetaStructFeature"/>
-          </parameter>
-        </parameters>
-      </constructor>
       <function name="error_quark" c:identifier="gda_meta_struct_error_quark">
         <return-value transfer-ownership="none">
           <type name="GLib.Quark" c:type="GQuark"/>
@@ -16209,11 +16214,8 @@ the XML file structure is given, and no guarantee that it will remain as it is g
                 transfer-ownership="none">
         <type name="MetaStore"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="MetaStructPrivate" c:type="GdaMetaStructPrivate*"/>
       </field>
     </class>
     <record name="MetaStructClass"
@@ -16290,10 +16292,6 @@ the XML file structure is given, and no guarantee that it will remain as it is g
         <doc xml:space="preserve">all the features are computed</doc>
       </member>
     </bitfield>
-    <record name="MetaStructPrivate"
-            c:type="GdaMetaStructPrivate"
-            disguised="1">
-    </record>
     <record name="MetaTable" c:type="GdaMetaTable">
       <doc xml:space="preserve">This structure specifies a #GdaMetaDbObject to represent a table's specific attributes,
 its contents must not be modified.
@@ -24978,10 +24976,6 @@ for example does not support multi-threading at all)</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
     </record>
-    <record name="ServerProviderInfo"
-            c:type="GdaServerProviderInfo"
-            disguised="1">
-    </record>
     <record name="ServerProviderMeta" c:type="GdaServerProviderMeta">
       <doc xml:space="preserve">These methods must be implemented by providers to update a connection's associated metadata (in a
 #GdaMetaStore object), see the &lt;link linkend="prov-metadata"&gt;Virtual methods for providers/Methods - metadata&lt;/link&gt;
@@ -31503,7 +31497,7 @@ to specialize some aspects of SQL rendering to be adapted to the database,'s own
       <property name="structure" writable="1" transfer-ownership="none">
         <type name="gpointer" c:type="gpointer"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
       <glib:signal name="checked" when="first">
@@ -32103,29 +32097,59 @@ transaction if there are several nested transactions</doc>
           </parameter>
         </parameters>
       </method>
-      <field name="object">
+      <method name="get_isolation_level"
+              c:identifier="gda_transaction_status_get_isolation_level">
+        <return-value transfer-ownership="none">
+          <type name="TransactionIsolation" c:type="GdaTransactionIsolation"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="st" transfer-ownership="none">
+            <type name="TransactionStatus" c:type="GdaTransactionStatus*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_state" c:identifier="gda_transaction_status_get_state">
+        <return-value transfer-ownership="none">
+          <type name="TransactionStatusState"
+                c:type="GdaTransactionStatusState"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="st" transfer-ownership="none">
+            <type name="TransactionStatus" c:type="GdaTransactionStatus*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_isolation_level"
+              c:identifier="gda_transaction_status_set_isolation_level">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="st" transfer-ownership="none">
+            <type name="TransactionStatus" c:type="GdaTransactionStatus*"/>
+          </instance-parameter>
+          <parameter name="il" transfer-ownership="none">
+            <type name="TransactionIsolation"
+                  c:type="GdaTransactionIsolation"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_state" c:identifier="gda_transaction_status_set_state">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="st" transfer-ownership="none">
+            <type name="TransactionStatus" c:type="GdaTransactionStatus*"/>
+          </instance-parameter>
+          <parameter name="state" transfer-ownership="none">
+            <type name="TransactionStatusState"
+                  c:type="GdaTransactionStatusState"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="name">
-        <type name="utf8" c:type="gchar*"/>
-      </field>
-      <field name="isolation_level">
-        <type name="TransactionIsolation" c:type="GdaTransactionIsolation"/>
-      </field>
-      <field name="state">
-        <type name="TransactionStatusState"
-              c:type="GdaTransactionStatusState"/>
-      </field>
-      <field name="events">
-        <type name="GLib.List" c:type="GList*">
-          <type name="TransactionStatusEvent"/>
-        </type>
-      </field>
-      <field name="_gda_reserved1" readable="0" private="1">
-        <type name="gpointer" c:type="gpointer"/>
-      </field>
-      <field name="_gda_reserved2" readable="0" private="1">
-        <type name="gpointer" c:type="gpointer"/>
       </field>
     </class>
     <record name="TransactionStatusClass"
@@ -33104,11 +33128,8 @@ priority over the GdaTreeMgrColumns:connection property.</doc>
         <doc xml:space="preserve">If no set, then the table name will be fetched from the parent node using the "table_name" attribute</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="TreeManager" c:type="GdaTreeManager"/>
-      </field>
-      <field name="priv">
-        <type name="TreeMgrColumnsPriv" c:type="GdaTreeMgrColumnsPriv*"/>
       </field>
     </class>
     <record name="TreeMgrColumnsClass"
@@ -33117,10 +33138,6 @@ priority over the GdaTreeMgrColumns:connection property.</doc>
       <field name="object_class">
         <type name="TreeManagerClass" c:type="GdaTreeManagerClass"/>
       </field>
-    </record>
-    <record name="TreeMgrColumnsPriv"
-            c:type="GdaTreeMgrColumnsPriv"
-            disguised="1">
     </record>
     <class name="TreeMgrLabel"
            c:symbol-prefix="tree_mgr_label"
@@ -33151,21 +33168,16 @@ priority over the GdaTreeMgrColumns:connection property.</doc>
                 transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="TreeManager" c:type="GdaTreeManager"/>
-      </field>
-      <field name="priv">
-        <type name="TreeMgrLabelPriv" c:type="GdaTreeMgrLabelPriv*"/>
       </field>
     </class>
     <record name="TreeMgrLabelClass"
             c:type="GdaTreeMgrLabelClass"
             glib:is-gtype-struct-for="TreeMgrLabel">
-      <field name="object_class">
+      <field name="parent_class">
         <type name="TreeManagerClass" c:type="GdaTreeManagerClass"/>
       </field>
-    </record>
-    <record name="TreeMgrLabelPriv" c:type="GdaTreeMgrLabelPriv" disguised="1">
     </record>
     <class name="TreeMgrLdap"
            c:symbol-prefix="tree_mgr_ldap"
@@ -33270,11 +33282,8 @@ the #GdaTreeMgrSchema:connection property is specified instead. This property ha
 priority over the GdaTreeMgrSchema:connection property.</doc>
         <type name="MetaStore"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="TreeManager" c:type="GdaTreeManager"/>
-      </field>
-      <field name="priv">
-        <type name="TreeMgrSchemasPriv" c:type="GdaTreeMgrSchemasPriv*"/>
       </field>
     </class>
     <record name="TreeMgrSchemasClass"
@@ -33283,10 +33292,6 @@ priority over the GdaTreeMgrSchema:connection property.</doc>
       <field name="object_class">
         <type name="TreeManagerClass" c:type="GdaTreeManagerClass"/>
       </field>
-    </record>
-    <record name="TreeMgrSchemasPriv"
-            c:type="GdaTreeMgrSchemasPriv"
-            disguised="1">
     </record>
     <class name="TreeMgrSelect"
            c:symbol-prefix="tree_mgr_select"
@@ -33337,11 +33342,8 @@ the #GdaDataModel resulting from the execution of @stmt.</doc>
                 transfer-ownership="none">
         <type name="Statement"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="TreeManager" c:type="GdaTreeManager"/>
-      </field>
-      <field name="priv">
-        <type name="TreeMgrSelectPriv" c:type="GdaTreeMgrSelectPriv*"/>
       </field>
     </class>
     <record name="TreeMgrSelectClass"
@@ -33350,10 +33352,6 @@ the #GdaDataModel resulting from the execution of @stmt.</doc>
       <field name="object_class">
         <type name="TreeManagerClass" c:type="GdaTreeManagerClass"/>
       </field>
-    </record>
-    <record name="TreeMgrSelectPriv"
-            c:type="GdaTreeMgrSelectPriv"
-            disguised="1">
     </record>
     <class name="TreeMgrTables"
            c:symbol-prefix="tree_mgr_tables"
@@ -33413,11 +33411,8 @@ found that way, then the list of visible tables (tables which can be identified 
 a schema) will be used</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="TreeManager" c:type="GdaTreeManager"/>
-      </field>
-      <field name="priv">
-        <type name="TreeMgrTablesPriv" c:type="GdaTreeMgrTablesPriv*"/>
       </field>
     </class>
     <record name="TreeMgrTablesClass"
@@ -33426,10 +33421,6 @@ a schema) will be used</doc>
       <field name="object_class">
         <type name="TreeManagerClass" c:type="GdaTreeManagerClass"/>
       </field>
-    </record>
-    <record name="TreeMgrTablesPriv"
-            c:type="GdaTreeMgrTablesPriv"
-            disguised="1">
     </record>
     <class name="TreeNode"
            c:symbol-prefix="tree_node"
@@ -33703,7 +33694,7 @@ copied), except if @value is %NULL, in which case the attribute is removed.</doc
       <property name="name" writable="1" transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
       </field>
       <glib:signal name="node-changed" when="last" version="4.2">

@@ -492,7 +492,6 @@ namespace Gegl {
 		public int length;
 		[CCode (array_length = false)]
 		public weak Gegl.BufferIterator2Item[] items;
-		public bool next ();
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	public struct BufferIterator2Item {

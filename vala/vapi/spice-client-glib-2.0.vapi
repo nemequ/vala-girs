@@ -94,9 +94,18 @@ namespace Spice {
 	public class DisplayChannel : Spice.Channel {
 		[CCode (has_construct_function = false)]
 		protected DisplayChannel ();
-		[NoAccessorMethod]
+		[Version (since = "0.35")]
+		public static void change_preferred_compression (Spice.Channel channel, int compression);
+		[Version (since = "0.35")]
+		public static void change_preferred_video_codec_type (Spice.Channel channel, int codec_type);
+		[Version (since = "0.35")]
+		public unowned Spice.GlScanout get_gl_scanout ();
+		[Version (since = "0.35")]
+		public static bool get_primary (Spice.Channel channel, uint32 surface_id, Spice.DisplayPrimary primary);
+		[Version (since = "0.35")]
+		public void gl_draw_done ();
 		[Version (since = "0.31")]
-		public Spice.GlScanout gl_scanout { owned get; }
+		public Spice.GlScanout gl_scanout { get; }
 		[NoAccessorMethod]
 		public uint height { get; }
 		[NoAccessorMethod]
@@ -113,6 +122,7 @@ namespace Spice {
 		public virtual signal void display_primary_destroy ();
 		[Version (since = "0.31")]
 		public signal void gl_draw (uint x, uint y, uint width, uint height);
+		public signal void* streaming_mode (bool streaming_mode);
 	}
 	[CCode (cheader_filename = "spice-client.h", type_id = "spice_file_transfer_task_get_type ()")]
 	public class FileTransferTask : GLib.Object {
@@ -152,6 +162,22 @@ namespace Spice {
 	public class InputsChannel : Spice.Channel {
 		[CCode (has_construct_function = false)]
 		protected InputsChannel ();
+		[Version (since = "0.35")]
+		public void button_press (int button, int button_state);
+		[Version (since = "0.35")]
+		public void button_release (int button, int button_state);
+		[Version (since = "0.35")]
+		public void key_press (uint scancode);
+		[Version (since = "0.35")]
+		public void key_press_and_release (uint scancode);
+		[Version (since = "0.35")]
+		public void key_release (uint scancode);
+		[Version (since = "0.35")]
+		public void motion (int dx, int dy, int button_state);
+		[Version (since = "0.35")]
+		public void position (int x, int y, int display, int button_state);
+		[Version (since = "0.35")]
+		public void set_key_locks (uint locks);
 		[NoAccessorMethod]
 		public int key_modifiers { get; }
 		public virtual signal void inputs_modifiers ();
@@ -160,6 +186,26 @@ namespace Spice {
 	public class MainChannel : Spice.Channel {
 		[CCode (has_construct_function = false)]
 		protected MainChannel ();
+		[Version (since = "0.35")]
+		public bool agent_test_capability (uint32 cap);
+		[Version (since = "0.35")]
+		public void clipboard_selection_grab (uint selection, uint32 types, int ntypes);
+		[Version (since = "0.35")]
+		public void clipboard_selection_notify (uint selection, uint32 type, uint8 data, size_t size);
+		[Version (since = "0.35")]
+		public void clipboard_selection_release (uint selection);
+		[Version (since = "0.35")]
+		public void clipboard_selection_request (uint selection, uint32 type);
+		[Version (since = "0.35")]
+		public async bool file_copy_async ([CCode (array_length = false, array_null_terminated = true)] GLib.File[] sources, GLib.FileCopyFlags flags, GLib.Cancellable? cancellable, GLib.FileProgressCallback? progress_callback) throws GLib.Error;
+		[Version (since = "0.35")]
+		public void request_mouse_mode (int mode);
+		[Version (since = "0.35")]
+		public bool send_monitor_config ();
+		[Version (since = "0.35")]
+		public void update_display (int id, int x, int y, int width, int height, bool update);
+		[Version (since = "0.35")]
+		public void update_display_enabled (int id, bool enabled, bool update);
 		[NoAccessorMethod]
 		public int agent_caps_0 { get; }
 		[NoAccessorMethod]
@@ -234,6 +280,10 @@ namespace Spice {
 	public class PortChannel : Spice.Channel {
 		[CCode (has_construct_function = false)]
 		protected PortChannel ();
+		[Version (since = "0.35")]
+		public void event (uint8 event);
+		[Version (since = "0.35")]
+		public async ssize_t write_async ([CCode (array_length_cname = "count", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] buffer, GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoAccessorMethod]
 		public string port_name { owned get; }
 		[NoAccessorMethod]
@@ -249,6 +299,8 @@ namespace Spice {
 		protected RecordChannel ();
 		[NoWrapper]
 		public virtual void record_data (void* data, int size);
+		[Version (since = "0.35")]
+		public void send_data (void* data, size_t bytes, uint32 time);
 		[NoAccessorMethod]
 		public bool mute { get; set; }
 		[NoAccessorMethod]
@@ -361,6 +413,8 @@ namespace Spice {
 		public Spice.SessionVerify verify { get; set construct; }
 		public virtual signal void channel_destroy (Spice.Channel channel);
 		public virtual signal void channel_new (Spice.Channel channel);
+		[Version (since = "0.35")]
+		public signal void disconnected ();
 		public signal void mm_time_reset ();
 	}
 	[CCode (cheader_filename = "spice-client.h", type_id = "spice_smartcard_channel_get_type ()")]
@@ -540,39 +594,48 @@ namespace Spice {
 	[Version (since = "0.24")]
 	public const int GTK_MINOR_VERSION;
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.31")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.31")]
 	public static void display_change_preferred_compression (Spice.Channel channel, int compression);
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.34")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.34")]
 	public static void display_change_preferred_video_codec_type (Spice.Channel channel, int codec_type);
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.31")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.31")]
 	public static unowned Spice.GlScanout display_get_gl_scanout (Spice.DisplayChannel channel);
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static bool display_get_primary (Spice.Channel channel, uint32 surface_id, Spice.DisplayPrimary primary);
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.31")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.31")]
 	public static void display_gl_draw_done (Spice.DisplayChannel channel);
 	[CCode (cheader_filename = "spice-client.h")]
 	public static GLib.OptionGroup get_option_group ();
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static void inputs_button_press (Spice.InputsChannel channel, int button, int button_state);
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static void inputs_button_release (Spice.InputsChannel channel, int button, int button_state);
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static void inputs_key_press (Spice.InputsChannel channel, uint scancode);
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.13")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.13")]
 	public static void inputs_key_press_and_release (Spice.InputsChannel channel, uint scancode);
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static void inputs_key_release (Spice.InputsChannel channel, uint scancode);
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static void inputs_motion (Spice.InputsChannel channel, int dx, int dy, int button_state);
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static void inputs_position (Spice.InputsChannel channel, int x, int y, int display, int button_state);
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static void inputs_set_key_locks (Spice.InputsChannel channel, uint locks);
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static bool main_agent_test_capability (Spice.MainChannel channel, uint32 cap);
 	[CCode (cheader_filename = "spice-client.h")]
 	[Version (deprecated = true, deprecated_since = "0.6")]
@@ -587,41 +650,46 @@ namespace Spice {
 	[Version (deprecated = true, deprecated_since = "0.6")]
 	public static void main_clipboard_request (Spice.MainChannel channel, uint32 type);
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.6")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.6")]
 	public static void main_clipboard_selection_grab (Spice.MainChannel channel, uint selection, uint32 types, int ntypes);
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.6")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.6")]
 	public static void main_clipboard_selection_notify (Spice.MainChannel channel, uint selection, uint32 type, uint8 data, size_t size);
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.6")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.6")]
 	public static void main_clipboard_selection_release (Spice.MainChannel channel, uint selection);
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.6")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.6")]
 	public static void main_clipboard_selection_request (Spice.MainChannel channel, uint selection, uint32 type);
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static async bool main_file_copy_async (Spice.MainChannel channel, [CCode (array_length = false, array_null_terminated = true)] GLib.File[] sources, GLib.FileCopyFlags flags, GLib.Cancellable? cancellable, GLib.FileProgressCallback? progress_callback) throws GLib.Error;
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.32")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.32")]
 	public static void main_request_mouse_mode (Spice.MainChannel channel, int mode);
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static bool main_send_monitor_config (Spice.MainChannel channel);
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static void main_set_display (Spice.MainChannel channel, int id, int x, int y, int width, int height);
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.6")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.6")]
 	public static void main_set_display_enabled (Spice.MainChannel channel, int id, bool enabled);
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static void main_update_display (Spice.MainChannel channel, int id, int x, int y, int width, int height, bool update);
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.30")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.30")]
 	public static void main_update_display_enabled (Spice.MainChannel channel, int id, bool enabled, bool update);
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.15")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.15")]
 	public static void port_event (Spice.PortChannel port, uint8 event);
 	[CCode (cheader_filename = "spice-client.h")]
-	[Version (since = "0.15")]
+	[Version (deprecated = true, deprecated_since = "0.35", since = "0.15")]
 	public static async ssize_t port_write_async (Spice.PortChannel port, [CCode (array_length_cname = "count", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] buffer, GLib.Cancellable? cancellable) throws GLib.Error;
 	[CCode (cheader_filename = "spice-client.h")]
+	[Version (deprecated = true, deprecated_since = "0.35")]
 	public static void record_send_data (Spice.RecordChannel channel, void* data, size_t bytes, uint32 time);
 	[CCode (cheader_filename = "spice-client.h")]
 	public static void set_session_option (Spice.Session session);

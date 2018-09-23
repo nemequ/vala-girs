@@ -684,7 +684,7 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public void append_fkey (Gda.DdlFkey fkey);
 		[Version (since = "6.0")]
-		public bool create (Gda.Connection cnc) throws GLib.Error;
+		public bool create (Gda.Connection cnc, bool ifnotexists) throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		[CCode (has_construct_function = false)]
 		[Version (since = "6.0")]
@@ -692,12 +692,10 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public unowned GLib.List<Gda.DdlColumn> get_columns ();
 		[Version (since = "6.0")]
-		public unowned GLib.List<Gda.DdlFkey> get_fkeys ();
-		[Version (since = "6.0")]
 		public bool is_temp ();
 		public bool is_valid ();
 		[Version (since = "6.0")]
-		public bool prepare_create (Gda.ServerOperation op) throws GLib.Error;
+		public bool prepare_create (Gda.ServerOperation op, bool ifnotexists) throws GLib.Error;
 		[Version (since = "6.0")]
 		public void set_temp (bool istemp);
 		public bool update (Gda.MetaTable obj, Gda.Connection cnc) throws GLib.Error;
@@ -904,6 +902,7 @@ namespace Gda {
 		[CCode (has_construct_function = false)]
 		public MetaStore (string? cnc_string);
 		public Gda.DataModel create_modify_data_model (string table_name);
+		public Gda.MetaStruct create_struct (Gda.MetaStructFeature features);
 		[Version (since = "4.2.4")]
 		public bool declare_foreign_key (Gda.MetaStruct? mstruct, string fk_name, string? catalog, string? schema, string table, string? ref_catalog, string? ref_schema, string ref_table, [CCode (array_length_cname = "nb_cols", array_length_pos = 8.5, array_length_type = "guint")] string[] colnames, [CCode (array_length_cname = "nb_cols", array_length_pos = 8.5, array_length_type = "guint")] string[] ref_colnames) throws GLib.Error;
 		public static GLib.Quark error_quark ();
@@ -960,7 +959,7 @@ namespace Gda {
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_meta_struct_get_type ()")]
 	public class MetaStruct : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public MetaStruct (Gda.MetaStore store, Gda.MetaStructFeature features);
+		protected MetaStruct ();
 		public unowned Gda.MetaDbObject? complement (Gda.MetaDbObjectType type, GLib.Value? catalog, GLib.Value? schema, GLib.Value name) throws GLib.Error;
 		public bool complement_all () throws GLib.Error;
 		public bool complement_default () throws GLib.Error;
@@ -1217,10 +1216,6 @@ namespace Gda {
 		public void* pad2;
 		public weak GLib.DestroyNotify provider_data_destroy_func;
 		public weak Gda.Worker worker;
-	}
-	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
-	[Compact]
-	public class ServerProviderInfo {
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_set_get_type ()")]
 	public class Set : GLib.Object {
@@ -1691,10 +1686,6 @@ namespace Gda {
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_transaction_status_get_type ()")]
 	public class TransactionStatus : GLib.Object {
-		public weak GLib.List<Gda.TransactionStatusEvent> events;
-		public Gda.TransactionIsolation isolation_level;
-		public weak string name;
-		public Gda.TransactionStatusState state;
 		[CCode (has_construct_function = false)]
 		public TransactionStatus (string name);
 		public Gda.TransactionStatusEvent add_event_sql (string sql, Gda.ConnectionEvent conn_event);
@@ -1703,6 +1694,10 @@ namespace Gda {
 		public Gda.TransactionStatus? find (string str, Gda.TransactionStatusEvent destev);
 		public Gda.TransactionStatus? find_current (Gda.TransactionStatusEvent destev, bool unnamed_only);
 		public void free_events (Gda.TransactionStatusEvent event, bool free_after);
+		public Gda.TransactionIsolation get_isolation_level ();
+		public Gda.TransactionStatusState get_state ();
+		public void set_isolation_level (Gda.TransactionIsolation il);
+		public void set_state (Gda.TransactionStatusState state);
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gda_transaction_status_event_get_type ()")]
 	[Compact]
@@ -1794,10 +1789,6 @@ namespace Gda {
 		[NoAccessorMethod]
 		public string table_name { construct; }
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
-	[Compact]
-	public class TreeMgrColumnsPriv {
-	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_tree_mgr_label_get_type ()")]
 	public class TreeMgrLabel : Gda.TreeManager {
 		[CCode (has_construct_function = false, type = "GdaTreeManager*")]
@@ -1805,10 +1796,6 @@ namespace Gda {
 		public TreeMgrLabel (string label);
 		[NoAccessorMethod]
 		public string label { construct; }
-	}
-	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
-	[Compact]
-	public class TreeMgrLabelPriv {
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_tree_mgr_ldap_get_type ()")]
 	public class TreeMgrLdap : Gda.TreeManager {
@@ -1833,10 +1820,6 @@ namespace Gda {
 		[Version (since = "4.2.4")]
 		public Gda.MetaStore meta_store { owned get; construct; }
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
-	[Compact]
-	public class TreeMgrSchemasPriv {
-	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_tree_mgr_select_get_type ()")]
 	public class TreeMgrSelect : Gda.TreeManager {
 		[CCode (has_construct_function = false, type = "GdaTreeManager*")]
@@ -1848,10 +1831,6 @@ namespace Gda {
 		public Gda.Set @params { owned get; construct; }
 		[NoAccessorMethod]
 		public Gda.Statement statement { owned get; construct; }
-	}
-	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
-	[Compact]
-	public class TreeMgrSelectPriv {
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_tree_mgr_tables_get_type ()")]
 	public class TreeMgrTables : Gda.TreeManager {
@@ -1865,10 +1844,6 @@ namespace Gda {
 		public Gda.MetaStore meta_store { owned get; construct; }
 		[NoAccessorMethod]
 		public string schema { construct; }
-	}
-	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
-	[Compact]
-	public class TreeMgrTablesPriv {
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_tree_node_get_type ()")]
 	public class TreeNode : GLib.Object {
@@ -1967,7 +1942,7 @@ namespace Gda {
 		public ushort gtrid_length;
 		public string to_string ();
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_data_handler_get_type ()")]
+	[CCode (cheader_filename = "libgda/libgda.h", type_cname = "GdaDataHandlerInterface", type_id = "gda_data_handler_get_type ()")]
 	public interface DataHandler : GLib.Object {
 		public abstract bool accepts_g_type (GLib.Type type);
 		[Version (since = "4.2.3")]

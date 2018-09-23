@@ -1332,6 +1332,101 @@ if you need it later!</doc>
            glib:get-type="spice_display_channel_get_type"
            glib:type-struct="DisplayChannelClass">
       <doc xml:space="preserve">The #SpiceDisplayChannel struct is opaque and should not be accessed directly.</doc>
+      <function name="change_preferred_compression"
+                c:identifier="spice_display_channel_change_preferred_compression"
+                version="0.35">
+        <doc xml:space="preserve">Tells the spice server to change the preferred image compression
+for the @channel.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceDisplayChannel</doc>
+            <type name="Channel" c:type="SpiceChannel*"/>
+          </parameter>
+          <parameter name="compression" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceImageCompression</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="change_preferred_video_codec_type"
+                c:identifier="spice_display_channel_change_preferred_video_codec_type"
+                version="0.35">
+        <doc xml:space="preserve">Tells the spice server to change the preferred video codec type for
+streaming in @channel. Application can set only one preferred video codec per
+display channel.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceDisplayChannel</doc>
+            <type name="Channel" c:type="SpiceChannel*"/>
+          </parameter>
+          <parameter name="codec_type" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceVideoCodecType</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="get_primary"
+                c:identifier="spice_display_channel_get_primary"
+                version="0.35">
+        <doc xml:space="preserve">Retrieve primary display surface @surface_id.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if the primary surface was found and its details
+collected in @primary.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceDisplayChannel</doc>
+            <type name="Channel" c:type="SpiceChannel*"/>
+          </parameter>
+          <parameter name="surface_id" transfer-ownership="none">
+            <doc xml:space="preserve">a surface id</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+          <parameter name="primary" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceDisplayPrimary</doc>
+            <type name="DisplayPrimary" c:type="SpiceDisplayPrimary*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <method name="get_gl_scanout"
+              c:identifier="spice_display_channel_get_gl_scanout"
+              version="0.35">
+        <doc xml:space="preserve">Retrieves the GL scanout if available</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the current GL scanout, or %NULL if none or not valid</doc>
+          <type name="GlScanout" c:type="const SpiceGlScanout*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceDisplayChannel</doc>
+            <type name="DisplayChannel" c:type="SpiceDisplayChannel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="gl_draw_done"
+              c:identifier="spice_display_channel_gl_draw_done"
+              version="0.35">
+        <doc xml:space="preserve">After a SpiceDisplayChannel::gl-draw is emitted, the client should
+draw the current display with the current GL scanout, and must
+release the GL resource with a call to spice_display_gl_draw_done()
+(failing to do so for each gl-draw may result in a frozen display).</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceDisplayChannel</doc>
+            <type name="DisplayChannel" c:type="SpiceDisplayChannel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <property name="gl-scanout" version="0.31" transfer-ownership="none">
         <doc xml:space="preserve">The last #SpiceGlScanout received.</doc>
         <type name="GlScanout"/>
@@ -1471,6 +1566,23 @@ resources.</doc>
           <parameter name="height" transfer-ownership="none">
             <doc xml:space="preserve">height</doc>
             <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
+      <glib:signal name="streaming-mode">
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">handle for the display window if possible
+
+The #SpiceDisplayChannel::streaming-mode signal is emitted when
+spice server is working in streaming mode.
+
+Since 0.35</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </return-value>
+        <parameters>
+          <parameter name="streaming_mode" transfer-ownership="none">
+            <doc xml:space="preserve">%TRUE when it's streaming mode</doc>
+            <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </glib:signal>
@@ -1753,7 +1865,7 @@ the @data, or -1 if not shm</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="GTK_MINOR_VERSION"
-              value="34"
+              value="35"
               c:type="SPICE_GTK_MINOR_VERSION"
               version="0.24">
       <doc xml:space="preserve">Spice-Gtk minor version component (e.g. 2 if version is 1.2.3)</doc>
@@ -1810,6 +1922,181 @@ the @data, or -1 if not shm</doc>
            glib:get-type="spice_inputs_channel_get_type"
            glib:type-struct="InputsChannelClass">
       <doc xml:space="preserve">The #SpiceInputsChannel struct is opaque and should not be accessed directly.</doc>
+      <method name="button_press"
+              c:identifier="spice_inputs_channel_button_press"
+              version="0.35">
+        <doc xml:space="preserve">Press a mouse button.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceInputsChannel</doc>
+            <type name="InputsChannel" c:type="SpiceInputsChannel*"/>
+          </instance-parameter>
+          <parameter name="button" transfer-ownership="none">
+            <doc xml:space="preserve">a SPICE_MOUSE_BUTTON</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="button_state" transfer-ownership="none">
+            <doc xml:space="preserve">SPICE_MOUSE_BUTTON_MASK flags</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="button_release"
+              c:identifier="spice_inputs_channel_button_release"
+              version="0.35">
+        <doc xml:space="preserve">Release a button.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceInputsChannel</doc>
+            <type name="InputsChannel" c:type="SpiceInputsChannel*"/>
+          </instance-parameter>
+          <parameter name="button" transfer-ownership="none">
+            <doc xml:space="preserve">a SPICE_MOUSE_BUTTON</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="button_state" transfer-ownership="none">
+            <doc xml:space="preserve">SPICE_MOUSE_BUTTON_MASK flags</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="key_press"
+              c:identifier="spice_inputs_channel_key_press"
+              version="0.35">
+        <doc xml:space="preserve">Press a key.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceInputsChannel</doc>
+            <type name="InputsChannel" c:type="SpiceInputsChannel*"/>
+          </instance-parameter>
+          <parameter name="scancode" transfer-ownership="none">
+            <doc xml:space="preserve">a PC XT (set 1) key scancode.  For scancodes with an %0xe0
+           prefix, drop the prefix and OR the scancode with %0x100.</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="key_press_and_release"
+              c:identifier="spice_inputs_channel_key_press_and_release"
+              version="0.35">
+        <doc xml:space="preserve">Press and release a key event atomically (in the same message).</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceInputsChannel</doc>
+            <type name="InputsChannel" c:type="SpiceInputsChannel*"/>
+          </instance-parameter>
+          <parameter name="scancode" transfer-ownership="none">
+            <doc xml:space="preserve">a PC XT (set 1) key scancode.  For scancodes with an %0xe0
+           prefix, drop the prefix and OR the scancode with %0x100.</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="key_release"
+              c:identifier="spice_inputs_channel_key_release"
+              version="0.35">
+        <doc xml:space="preserve">Release a key.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceInputsChannel</doc>
+            <type name="InputsChannel" c:type="SpiceInputsChannel*"/>
+          </instance-parameter>
+          <parameter name="scancode" transfer-ownership="none">
+            <doc xml:space="preserve">a PC XT (set 1) key scancode.  For scancodes with an %0xe0
+           prefix, drop the prefix and OR the scancode with %0x100.</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="motion"
+              c:identifier="spice_inputs_channel_motion"
+              version="0.35">
+        <doc xml:space="preserve">Change mouse position (used in SPICE_MOUSE_MODE_SERVER).</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceInputsChannel</doc>
+            <type name="InputsChannel" c:type="SpiceInputsChannel*"/>
+          </instance-parameter>
+          <parameter name="dx" transfer-ownership="none">
+            <doc xml:space="preserve">delta X mouse coordinates</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="dy" transfer-ownership="none">
+            <doc xml:space="preserve">delta Y mouse coordinates</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="button_state" transfer-ownership="none">
+            <doc xml:space="preserve">SPICE_MOUSE_BUTTON_MASK flags</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="position"
+              c:identifier="spice_inputs_channel_position"
+              version="0.35">
+        <doc xml:space="preserve">Change mouse position (used in SPICE_MOUSE_MODE_CLIENT).</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceInputsChannel</doc>
+            <type name="InputsChannel" c:type="SpiceInputsChannel*"/>
+          </instance-parameter>
+          <parameter name="x" transfer-ownership="none">
+            <doc xml:space="preserve">X mouse coordinates</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="y" transfer-ownership="none">
+            <doc xml:space="preserve">Y mouse coordinates</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="display" transfer-ownership="none">
+            <doc xml:space="preserve">display channel id</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+          <parameter name="button_state" transfer-ownership="none">
+            <doc xml:space="preserve">SPICE_MOUSE_BUTTON_MASK flags</doc>
+            <type name="gint" c:type="gint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_key_locks"
+              c:identifier="spice_inputs_channel_set_key_locks"
+              version="0.35">
+        <doc xml:space="preserve">Set the keyboard locks on the guest (Caps, Num, Scroll..)</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceInputsChannel</doc>
+            <type name="InputsChannel" c:type="SpiceInputsChannel*"/>
+          </instance-parameter>
+          <parameter name="locks" transfer-ownership="none">
+            <doc xml:space="preserve">#SpiceInputsLock modifiers flags</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="key-modifiers" transfer-ownership="none">
         <type name="gint" c:type="gint"/>
       </property>
@@ -1885,6 +2172,342 @@ state from #SpiceInputsChannel:key-modifiers property.</doc>
            glib:get-type="spice_main_channel_get_type"
            glib:type-struct="MainChannelClass">
       <doc xml:space="preserve">The #SpiceMainChannel struct is opaque and should not be accessed directly.</doc>
+      <method name="agent_test_capability"
+              c:identifier="spice_main_channel_agent_test_capability"
+              version="0.35">
+        <doc xml:space="preserve">Test capability of a remote agent.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if @cap (channel kind capability) is available.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceMainChannel</doc>
+            <type name="MainChannel" c:type="SpiceMainChannel*"/>
+          </instance-parameter>
+          <parameter name="cap" transfer-ownership="none">
+            <doc xml:space="preserve">an agent capability identifier</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clipboard_selection_grab"
+              c:identifier="spice_main_channel_clipboard_selection_grab"
+              version="0.35">
+        <doc xml:space="preserve">Grab the guest clipboard, with #VD_AGENT_CLIPBOARD @types.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceMainChannel</doc>
+            <type name="MainChannel" c:type="SpiceMainChannel*"/>
+          </instance-parameter>
+          <parameter name="selection" transfer-ownership="none">
+            <doc xml:space="preserve">one of the clipboard #VD_AGENT_CLIPBOARD_SELECTION_*</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="types" transfer-ownership="none">
+            <doc xml:space="preserve">an array of #VD_AGENT_CLIPBOARD types available in the clipboard</doc>
+            <type name="guint32" c:type="guint32*"/>
+          </parameter>
+          <parameter name="ntypes" transfer-ownership="none">
+            <doc xml:space="preserve">the number of @types</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clipboard_selection_notify"
+              c:identifier="spice_main_channel_clipboard_selection_notify"
+              version="0.35">
+        <doc xml:space="preserve">Send the clipboard data to the guest.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceMainChannel</doc>
+            <type name="MainChannel" c:type="SpiceMainChannel*"/>
+          </instance-parameter>
+          <parameter name="selection" transfer-ownership="none">
+            <doc xml:space="preserve">one of the clipboard #VD_AGENT_CLIPBOARD_SELECTION_*</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">a #VD_AGENT_CLIPBOARD type</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+          <parameter name="data" transfer-ownership="none">
+            <doc xml:space="preserve">clipboard data</doc>
+            <type name="guint8" c:type="const guchar*"/>
+          </parameter>
+          <parameter name="size" transfer-ownership="none">
+            <doc xml:space="preserve">data length in bytes</doc>
+            <type name="gsize" c:type="size_t"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clipboard_selection_release"
+              c:identifier="spice_main_channel_clipboard_selection_release"
+              version="0.35">
+        <doc xml:space="preserve">Release the clipboard (for example, when the client loses the
+clipboard grab): Inform the guest no clipboard data is available.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceMainChannel</doc>
+            <type name="MainChannel" c:type="SpiceMainChannel*"/>
+          </instance-parameter>
+          <parameter name="selection" transfer-ownership="none">
+            <doc xml:space="preserve">one of the clipboard #VD_AGENT_CLIPBOARD_SELECTION_*</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="clipboard_selection_request"
+              c:identifier="spice_main_channel_clipboard_selection_request"
+              version="0.35">
+        <doc xml:space="preserve">Request clipboard data of @type from the guest. The reply is sent
+through the #SpiceMainChannel::main-clipboard-selection signal.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceMainChannel</doc>
+            <type name="MainChannel" c:type="SpiceMainChannel*"/>
+          </instance-parameter>
+          <parameter name="selection" transfer-ownership="none">
+            <doc xml:space="preserve">one of the clipboard #VD_AGENT_CLIPBOARD_SELECTION_*</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="type" transfer-ownership="none">
+            <doc xml:space="preserve">a #VD_AGENT_CLIPBOARD type</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="file_copy_async"
+              c:identifier="spice_main_channel_file_copy_async"
+              version="0.35">
+        <doc xml:space="preserve">Copies the file @sources to guest
+
+If @cancellable is not %NULL, then the operation can be cancelled by
+triggering the cancellable object from another thread. If the operation
+was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+
+If @progress_callback is not %NULL, then the operation can be monitored by
+setting this to a #GFileProgressCallback function. @progress_callback_data
+will be passed to this function. It is guaranteed that this callback will
+be called after all data has been transferred with the total number of bytes
+copied during the operation. Note that before release 0.31, progress_callback
+was broken since it only provided status for a single file transfer, but did
+not provide a way to determine which file it referred to. In release 0.31,
+this behavior was changed so that progress_callback provides the status of
+all ongoing file transfers. If you need to monitor the status of individual
+files, please connect to the #SpiceMainChannel::new-file-transfer signal.
+
+When the operation is finished, callback will be called. You can then call
+spice_main_file_copy_finish() to get the result of the operation. Note that
+before release 0.33 the callback was called for each file in multiple file
+transfer. This behavior was changed for the same reason as the
+progress_callback (above). If you need to monitor the ending of individual
+files, you can connect to "finished" signal from each SpiceFileTransferTask.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceMainChannel</doc>
+            <type name="MainChannel" c:type="SpiceMainChannel*"/>
+          </instance-parameter>
+          <parameter name="sources" transfer-ownership="none">
+            <doc xml:space="preserve">a %NULL-terminated array of #GFile objects to be transferred</doc>
+            <array c:type="GFile**">
+              <type name="Gio.File" c:type="GFile*"/>
+            </array>
+          </parameter>
+          <parameter name="flags" transfer-ownership="none">
+            <doc xml:space="preserve">set of #GFileCopyFlags</doc>
+            <type name="Gio.FileCopyFlags" c:type="GFileCopyFlags"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional #GCancellable object, %NULL to ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="progress_callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="call"
+                     closure="4">
+            <doc xml:space="preserve">function to callback with
+    progress information, or %NULL if progress information is not needed</doc>
+            <type name="Gio.FileProgressCallback"
+                  c:type="GFileProgressCallback"/>
+          </parameter>
+          <parameter name="progress_callback_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">user data to pass to @progress_callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="6">
+            <doc xml:space="preserve">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="file_copy_finish"
+              c:identifier="spice_main_channel_file_copy_finish"
+              throws="1">
+        <doc xml:space="preserve">Finishes copying the file started with
+spice_main_file_copy_async().</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a %TRUE on success, %FALSE on error.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceMainChannel</doc>
+            <type name="MainChannel" c:type="SpiceMainChannel*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult.</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="request_mouse_mode"
+              c:identifier="spice_main_channel_request_mouse_mode"
+              version="0.35">
+        <doc xml:space="preserve">Request a mouse mode to the server. The server may not be able to
+change the mouse mode, but spice-gtk will try to request it
+when possible.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a %SpiceMainChannel</doc>
+            <type name="MainChannel" c:type="SpiceMainChannel*"/>
+          </instance-parameter>
+          <parameter name="mode" transfer-ownership="none">
+            <doc xml:space="preserve">a SPICE_MOUSE_MODE</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="send_monitor_config"
+              c:identifier="spice_main_channel_send_monitor_config"
+              version="0.35">
+        <doc xml:space="preserve">Send monitors configuration previously set with
+spice_main_set_display() and spice_main_set_display_enabled()</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceMainChannel</doc>
+            <type name="MainChannel" c:type="SpiceMainChannel*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="update_display"
+              c:identifier="spice_main_channel_update_display"
+              version="0.35">
+        <doc xml:space="preserve">Update the display @id resolution.
+
+If @update is %TRUE, the remote configuration will be updated too
+after 1 second without further changes. You can send when you want
+without delay the new configuration to the remote with
+spice_main_send_monitor_config()</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceMainChannel</doc>
+            <type name="MainChannel" c:type="SpiceMainChannel*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">display ID</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="x" transfer-ownership="none">
+            <doc xml:space="preserve">x position</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="y" transfer-ownership="none">
+            <doc xml:space="preserve">y position</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="width" transfer-ownership="none">
+            <doc xml:space="preserve">display width</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <doc xml:space="preserve">display height</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="update" transfer-ownership="none">
+            <doc xml:space="preserve">if %TRUE, update guest resolution after 1sec.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update_display_enabled"
+              c:identifier="spice_main_channel_update_display_enabled"
+              version="0.35">
+        <doc xml:space="preserve">When sending monitor configuration to agent guest, if @enabled is %FALSE,
+don't set display @id, which the agent translates to disabling the display
+id. If @enabled is %TRUE, the monitor will be included in the next monitor
+update. Note: this will take effect next time the monitor configuration is
+sent.
+
+If @update is %FALSE, no server update will be triggered by this call, but
+the value will be saved and used in the next configuration update.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceMainChannel</doc>
+            <type name="MainChannel" c:type="SpiceMainChannel*"/>
+          </instance-parameter>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">display ID (if -1: set all displays)</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+          <parameter name="enabled" transfer-ownership="none">
+            <doc xml:space="preserve">wether display @id is enabled</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+          <parameter name="update" transfer-ownership="none">
+            <doc xml:space="preserve">if %TRUE, update guest display state after 1sec.</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="agent-caps-0" transfer-ownership="none">
         <type name="gint" c:type="gint"/>
       </property>
@@ -2423,6 +3046,99 @@ characteristics.</doc>
            glib:get-type="spice_port_channel_get_type"
            glib:type-struct="PortChannelClass">
       <doc xml:space="preserve">The #SpicePortChannel struct is opaque and should not be accessed directly.</doc>
+      <method name="event"
+              c:identifier="spice_port_channel_event"
+              version="0.35">
+        <doc xml:space="preserve">Send an event to the port.
+
+Note: The values SPICE_PORT_EVENT_CLOSED and
+SPICE_PORT_EVENT_OPENED are managed by the channel connection
+state.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="port" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpicePortChannel</doc>
+            <type name="PortChannel" c:type="SpicePortChannel*"/>
+          </instance-parameter>
+          <parameter name="event" transfer-ownership="none">
+            <doc xml:space="preserve">a SPICE_PORT_EVENT value</doc>
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="write_async"
+              c:identifier="spice_port_channel_write_async"
+              version="0.35">
+        <doc xml:space="preserve">Request an asynchronous write of count bytes from @buffer into the
+@port. When the operation is finished @callback will be called. You
+can then call spice_port_write_finish() to get the result of
+the operation.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="port" transfer-ownership="none">
+            <doc xml:space="preserve">A #SpicePortChannel</doc>
+            <type name="PortChannel" c:type="SpicePortChannel*"/>
+          </instance-parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve">the buffer
+containing the data to write</doc>
+            <array length="1" zero-terminated="0" c:type="void*">
+              <type name="guint8"/>
+            </array>
+          </parameter>
+          <parameter name="count" transfer-ownership="none">
+            <doc xml:space="preserve">the number of bytes to write</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">optional GCancellable object, NULL to ignore</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="4">
+            <doc xml:space="preserve">callback to call when the request is satisfied</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="write_finish"
+              c:identifier="spice_port_channel_write_finish"
+              version="0.35"
+              throws="1">
+        <doc xml:space="preserve">Finishes a port write operation.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a #gssize containing the number of bytes written to the stream.</doc>
+          <type name="gssize" c:type="gssize"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="port" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpicePortChannel</doc>
+            <type name="PortChannel" c:type="SpicePortChannel*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">a #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="port-name" transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
@@ -2538,6 +3254,35 @@ port event is received.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
+      <method name="send_data"
+              c:identifier="spice_record_channel_send_data"
+              version="0.35">
+        <doc xml:space="preserve">Send recorded PCM data to the guest.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="channel" transfer-ownership="none">
+            <doc xml:space="preserve">a #SpiceRecordChannel</doc>
+            <type name="RecordChannel" c:type="SpiceRecordChannel*"/>
+          </instance-parameter>
+          <parameter name="data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">PCM data</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="bytes" transfer-ownership="none">
+            <doc xml:space="preserve">size of @data</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="time" transfer-ownership="none">
+            <doc xml:space="preserve">stream timestamp</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="mute" writable="1" transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </property>
@@ -2841,7 +3586,7 @@ several CA certificates identified by:
  ... (CA certificate in base64 encoding) ...
  -----END CERTIFICATE-----</doc>
         <array name="GLib.ByteArray">
-          <type name="gpointer" c:type="gpointer"/>
+          <type name="guint8" c:type="guint8"/>
         </array>
       </property>
       <property name="ca-file" writable="1" transfer-ownership="none">
@@ -2972,7 +3717,7 @@ of the form &lt;![CDATA[ [protocol://]&lt;host&gt;[:port] ]]&gt;</doc>
       </property>
       <property name="pubkey" writable="1" transfer-ownership="none">
         <array name="GLib.ByteArray">
-          <type name="gpointer" c:type="gpointer"/>
+          <type name="guint8" c:type="guint8"/>
         </array>
       </property>
       <property name="read-only"
@@ -3091,6 +3836,12 @@ certificate should be checked</doc>
             <type name="Channel"/>
           </parameter>
         </parameters>
+      </glib:signal>
+      <glib:signal name="disconnected" when="first" version="0.35">
+        <doc xml:space="preserve">The #SpiceSession::disconnected signal is emitted when all channels have been destroyed.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
       </glib:signal>
       <glib:signal name="mm-time-reset" when="first">
         <doc xml:space="preserve">The #SpiceSession::mm-time-reset is emitted when we identify discontinuity in mm-time
@@ -4364,9 +5115,12 @@ an USB device has been removed.</doc>
     </function>
     <function name="display_change_preferred_compression"
               c:identifier="spice_display_change_preferred_compression"
-              version="0.31">
+              version="0.31"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Tells the spice server to change the preferred image compression
 for the @channel.</doc>
+      <doc-deprecated xml:space="preserve">use spice_display_channel_change_preferred_compression() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4383,10 +5137,13 @@ for the @channel.</doc>
     </function>
     <function name="display_change_preferred_video_codec_type"
               c:identifier="spice_display_change_preferred_video_codec_type"
-              version="0.34">
+              version="0.34"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Tells the spice server to change the preferred video codec type for
 streaming in @channel. Application can set only one preferred video codec per
 display channel.</doc>
+      <doc-deprecated xml:space="preserve">use spice_display_channel_change_preferred_video_codec_type() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4403,8 +5160,11 @@ display channel.</doc>
     </function>
     <function name="display_get_gl_scanout"
               c:identifier="spice_display_get_gl_scanout"
-              version="0.31">
+              version="0.31"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Retrieves the GL scanout if available</doc>
+      <doc-deprecated xml:space="preserve">use spice_display_channel_get_gl_scanout() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">the current GL scanout, or %NULL if none or not valid</doc>
         <type name="GlScanout" c:type="const SpiceGlScanout*"/>
@@ -4417,8 +5177,11 @@ display channel.</doc>
       </parameters>
     </function>
     <function name="display_get_primary"
-              c:identifier="spice_display_get_primary">
+              c:identifier="spice_display_get_primary"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Retrieve primary display surface @surface_id.</doc>
+      <doc-deprecated xml:space="preserve">use spice_display_channel_get_primary() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if the primary surface was found and its details
 collected in @primary.</doc>
@@ -4441,11 +5204,14 @@ collected in @primary.</doc>
     </function>
     <function name="display_gl_draw_done"
               c:identifier="spice_display_gl_draw_done"
-              version="0.31">
+              version="0.31"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">After a SpiceDisplayChannel::gl-draw is emitted, the client should
 draw the current display with the current GL scanout, and must
 release the GL resource with a call to spice_display_gl_draw_done()
 (failing to do so for each gl-draw may result in a frozen display).</doc>
+      <doc-deprecated xml:space="preserve">use spice_display_channel_gl_draw_done() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4507,8 +5273,11 @@ spice_set_session_option() after to set the options on a
       </return-value>
     </function>
     <function name="inputs_button_press"
-              c:identifier="spice_inputs_button_press">
+              c:identifier="spice_inputs_button_press"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Press a mouse button.</doc>
+      <doc-deprecated xml:space="preserve">use spice_inputs_channel_button_press() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4528,8 +5297,11 @@ spice_set_session_option() after to set the options on a
       </parameters>
     </function>
     <function name="inputs_button_release"
-              c:identifier="spice_inputs_button_release">
+              c:identifier="spice_inputs_button_release"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Release a button.</doc>
+      <doc-deprecated xml:space="preserve">use spice_inputs_channel_button_release() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4548,8 +5320,12 @@ spice_set_session_option() after to set the options on a
         </parameter>
       </parameters>
     </function>
-    <function name="inputs_key_press" c:identifier="spice_inputs_key_press">
+    <function name="inputs_key_press"
+              c:identifier="spice_inputs_key_press"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Press a key.</doc>
+      <doc-deprecated xml:space="preserve">use spice_inputs_channel_key_press() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4567,7 +5343,9 @@ spice_set_session_option() after to set the options on a
     </function>
     <function name="inputs_key_press_and_release"
               c:identifier="spice_inputs_key_press_and_release"
-              version="0.13">
+              version="0.13"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Press and release a key event atomically (in the same message).</doc>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
@@ -4585,8 +5363,11 @@ spice_set_session_option() after to set the options on a
       </parameters>
     </function>
     <function name="inputs_key_release"
-              c:identifier="spice_inputs_key_release">
+              c:identifier="spice_inputs_key_release"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Release a key.</doc>
+      <doc-deprecated xml:space="preserve">use spice_inputs_channel_key_release() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4602,8 +5383,12 @@ spice_set_session_option() after to set the options on a
         </parameter>
       </parameters>
     </function>
-    <function name="inputs_motion" c:identifier="spice_inputs_motion">
-      <doc xml:space="preserve">Change mouse position (used in SPICE_MOUSE_MODE_CLIENT).</doc>
+    <function name="inputs_motion"
+              c:identifier="spice_inputs_motion"
+              deprecated="1"
+              deprecated-version="0.35">
+      <doc xml:space="preserve">Change mouse position (used in SPICE_MOUSE_MODE_SERVER).</doc>
+      <doc-deprecated xml:space="preserve">use spice_inputs_channel_motion() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4626,8 +5411,12 @@ spice_set_session_option() after to set the options on a
         </parameter>
       </parameters>
     </function>
-    <function name="inputs_position" c:identifier="spice_inputs_position">
+    <function name="inputs_position"
+              c:identifier="spice_inputs_position"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Change mouse position (used in SPICE_MOUSE_MODE_CLIENT).</doc>
+      <doc-deprecated xml:space="preserve">use spice_inputs_channel_position() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4655,8 +5444,11 @@ spice_set_session_option() after to set the options on a
       </parameters>
     </function>
     <function name="inputs_set_key_locks"
-              c:identifier="spice_inputs_set_key_locks">
+              c:identifier="spice_inputs_set_key_locks"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Set the keyboard locks on the guest (Caps, Num, Scroll..)</doc>
+      <doc-deprecated xml:space="preserve">use spice_inputs_channel_set_key_locks() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4672,8 +5464,11 @@ spice_set_session_option() after to set the options on a
       </parameters>
     </function>
     <function name="main_agent_test_capability"
-              c:identifier="spice_main_agent_test_capability">
+              c:identifier="spice_main_agent_test_capability"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Test capability of a remote agent.</doc>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_agent_test_capability() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE if @cap (channel kind capability) is available.</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -4694,7 +5489,7 @@ spice_set_session_option() after to set the options on a
               deprecated="1"
               deprecated-version="0.6">
       <doc xml:space="preserve">Grab the guest clipboard, with #VD_AGENT_CLIPBOARD @types.</doc>
-      <doc-deprecated xml:space="preserve">use spice_main_clipboard_selection_grab() instead.</doc-deprecated>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_clipboard_selection_grab() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4718,7 +5513,7 @@ spice_set_session_option() after to set the options on a
               deprecated="1"
               deprecated-version="0.6">
       <doc xml:space="preserve">Send the clipboard data to the guest.</doc>
-      <doc-deprecated xml:space="preserve">use spice_main_clipboard_selection_notify() instead.</doc-deprecated>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_clipboard_selection_notify() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4747,7 +5542,7 @@ spice_set_session_option() after to set the options on a
               deprecated-version="0.6">
       <doc xml:space="preserve">Release the clipboard (for example, when the client loses the
 clipboard grab): Inform the guest no clipboard data is available.</doc>
-      <doc-deprecated xml:space="preserve">use spice_main_clipboard_selection_release() instead.</doc-deprecated>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_clipboard_selection_release() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4764,7 +5559,7 @@ clipboard grab): Inform the guest no clipboard data is available.</doc>
               deprecated-version="0.6">
       <doc xml:space="preserve">Request clipboard data of @type from the guest. The reply is sent
 through the #SpiceMainChannel::main-clipboard signal.</doc>
-      <doc-deprecated xml:space="preserve">use spice_main_clipboard_selection_request() instead.</doc-deprecated>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_clipboard_selection_request() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4781,8 +5576,11 @@ through the #SpiceMainChannel::main-clipboard signal.</doc>
     </function>
     <function name="main_clipboard_selection_grab"
               c:identifier="spice_main_clipboard_selection_grab"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Grab the guest clipboard, with #VD_AGENT_CLIPBOARD @types.</doc>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_clipboard_selection_grab() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4807,8 +5605,11 @@ through the #SpiceMainChannel::main-clipboard signal.</doc>
     </function>
     <function name="main_clipboard_selection_notify"
               c:identifier="spice_main_clipboard_selection_notify"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Send the clipboard data to the guest.</doc>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_clipboard_selection_notify() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4837,9 +5638,12 @@ through the #SpiceMainChannel::main-clipboard signal.</doc>
     </function>
     <function name="main_clipboard_selection_release"
               c:identifier="spice_main_clipboard_selection_release"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Release the clipboard (for example, when the client loses the
 clipboard grab): Inform the guest no clipboard data is available.</doc>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_clipboard_selection_release() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4856,9 +5660,12 @@ clipboard grab): Inform the guest no clipboard data is available.</doc>
     </function>
     <function name="main_clipboard_selection_request"
               c:identifier="spice_main_clipboard_selection_request"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Request clipboard data of @type from the guest. The reply is sent
 through the #SpiceMainChannel::main-clipboard-selection signal.</doc>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_clipboard_selection_request() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4878,30 +5685,11 @@ through the #SpiceMainChannel::main-clipboard-selection signal.</doc>
       </parameters>
     </function>
     <function name="main_file_copy_async"
-              c:identifier="spice_main_file_copy_async">
-      <doc xml:space="preserve">Copies the file @sources to guest
-
-If @cancellable is not %NULL, then the operation can be cancelled by
-triggering the cancellable object from another thread. If the operation
-was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
-
-If @progress_callback is not %NULL, then the operation can be monitored by
-setting this to a #GFileProgressCallback function. @progress_callback_data
-will be passed to this function. It is guaranteed that this callback will
-be called after all data has been transferred with the total number of bytes
-copied during the operation. Note that before release 0.31, progress_callback
-was broken since it only provided status for a single file transfer, but did
-not provide a way to determine which file it referred to. In release 0.31,
-this behavior was changed so that progress_callback provides the status of
-all ongoing file transfers. If you need to monitor the status of individual
-files, please connect to the #SpiceMainChannel::new-file-transfer signal.
-
-When the operation is finished, callback will be called. You can then call
-spice_main_file_copy_finish() to get the result of the operation. Note that
-before release 0.33 the callback was called for each file in multiple file
-transfer. This behavior was changed for the same reason as the
-progress_callback (above). If you need to monitor the ending of individual
-files, you can connect to "finished" signal from each SpiceFileTransferTask.</doc>
+              c:identifier="spice_main_file_copy_async"
+              deprecated="1"
+              deprecated-version="0.35">
+      <doc xml:space="preserve">See: spice_main_channel_file_copy_async()</doc>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_file_copy_async() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -4985,10 +5773,13 @@ spice_main_file_copy_async().</doc>
     </function>
     <function name="main_request_mouse_mode"
               c:identifier="spice_main_request_mouse_mode"
-              version="0.32">
+              version="0.32"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Request a mouse mode to the server. The server may not be able to
 change the mouse mode, but spice-gtk will try to request it
 when possible.</doc>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_request_mouse_mode() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -5004,9 +5795,12 @@ when possible.</doc>
       </parameters>
     </function>
     <function name="main_send_monitor_config"
-              c:identifier="spice_main_send_monitor_config">
+              c:identifier="spice_main_send_monitor_config"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Send monitors configuration previously set with
 spice_main_set_display() and spice_main_set_display_enabled()</doc>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_send_monitor_config() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">%TRUE on success.</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -5018,9 +5812,13 @@ spice_main_set_display() and spice_main_set_display_enabled()</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="main_set_display" c:identifier="spice_main_set_display">
+    <function name="main_set_display"
+              c:identifier="spice_main_set_display"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Notify the guest of screen resolution change. The notification is
 sent 1 second later, if no further changes happen.</doc>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_update_display() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -5053,11 +5851,14 @@ sent 1 second later, if no further changes happen.</doc>
     </function>
     <function name="main_set_display_enabled"
               c:identifier="spice_main_set_display_enabled"
-              version="0.6">
+              version="0.6"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">When sending monitor configuration to agent guest, don't set
 display @id, which the agent translates to disabling the display
 id. Note: this will take effect next time the monitor
 configuration is sent.</doc>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_update_display_enabled() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -5077,13 +5878,16 @@ configuration is sent.</doc>
       </parameters>
     </function>
     <function name="main_update_display"
-              c:identifier="spice_main_update_display">
+              c:identifier="spice_main_update_display"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Update the display @id resolution.
 
 If @update is %TRUE, the remote configuration will be updated too
 after 1 second without further changes. You can send when you want
 without delay the new configuration to the remote with
 spice_main_send_monitor_config()</doc>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_update_display() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -5120,7 +5924,9 @@ spice_main_send_monitor_config()</doc>
     </function>
     <function name="main_update_display_enabled"
               c:identifier="spice_main_update_display_enabled"
-              version="0.30">
+              version="0.30"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">When sending monitor configuration to agent guest, if @enabled is %FALSE,
 don't set display @id, which the agent translates to disabling the display
 id. If @enabled is %TRUE, the monitor will be included in the next monitor
@@ -5129,6 +5935,7 @@ sent.
 
 If @update is %FALSE, no server update will be triggered by this call, but
 the value will be saved and used in the next configuration update.</doc>
+      <doc-deprecated xml:space="preserve">use spice_main_channel_update_display_enabled() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -5164,12 +5971,17 @@ the value will be saved and used in the next configuration update.</doc>
         </parameter>
       </parameters>
     </callback>
-    <function name="port_event" c:identifier="spice_port_event" version="0.15">
+    <function name="port_event"
+              c:identifier="spice_port_event"
+              version="0.15"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Send an event to the port.
 
 Note: The values SPICE_PORT_EVENT_CLOSED and
 SPICE_PORT_EVENT_OPENED are managed by the channel connection
 state.</doc>
+      <doc-deprecated xml:space="preserve">use spice_port_channel_event() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -5186,11 +5998,14 @@ state.</doc>
     </function>
     <function name="port_write_async"
               c:identifier="spice_port_write_async"
-              version="0.15">
+              version="0.15"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Request an asynchronous write of count bytes from @buffer into the
 @port. When the operation is finished @callback will be called. You
 can then call spice_port_write_finish() to get the result of
 the operation.</doc>
+      <doc-deprecated xml:space="preserve">use spice_port_channel_write_async() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -5238,8 +6053,11 @@ containing the data to write</doc>
     <function name="port_write_finish"
               c:identifier="spice_port_write_finish"
               version="0.15"
+              deprecated="1"
+              deprecated-version="0.35"
               throws="1">
       <doc xml:space="preserve">Finishes a port write operation.</doc>
+      <doc-deprecated xml:space="preserve">use spice_port_channel_write_finish() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve">a #gssize containing the number of bytes written to the stream.</doc>
         <type name="gssize" c:type="gssize"/>
@@ -5255,8 +6073,12 @@ containing the data to write</doc>
         </parameter>
       </parameters>
     </function>
-    <function name="record_send_data" c:identifier="spice_record_send_data">
+    <function name="record_send_data"
+              c:identifier="spice_record_send_data"
+              deprecated="1"
+              deprecated-version="0.35">
       <doc xml:space="preserve">Send recorded PCM data to the guest.</doc>
+      <doc-deprecated xml:space="preserve">use spice_record_channel_send_data() instead.</doc-deprecated>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -5333,7 +6155,7 @@ arguments given to spice_get_option_group() option group.</doc>
       <parameters>
         <parameter name="uuid" transfer-ownership="none">
           <doc xml:space="preserve">UUID byte array</doc>
-          <type name="guint8" c:type="const guint8"/>
+          <type name="guint8" c:type="const guint8*"/>
         </parameter>
       </parameters>
     </function>

@@ -1558,7 +1558,17 @@ iterator handle is no longer valid after invoking this function.</doc>
         <doc xml:space="preserve">Adds an additional buffer iterator that will be processed in sync with
 the original one, if the buffer doesn't align with the other for tile access
 the corresponding scans and regions will be serialized automatically using
-gegl_buffer_get.</doc>
+gegl_buffer_get.
+
+If the buffer shares its tiles with a previously-added buffer (in
+particular, if the same buffer is added more than once), and at least one of
+the buffers is accessed for writing, the corresponding iterated-over areas
+should either completely overlap, or not overlap at all, in the coordinate-
+system of the underlying tile storage (that is, after shifting each area by
+the corresponding buffer's shift-x and shift-y properties).  If the areas
+overlap, at most one of the buffers may be accessed for writing, and the
+data pointers of the corresponding iterator items may refer to the same
+data.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">an integer handle refering to the indice in the iterator structure
 of the added buffer.</doc>
@@ -1596,12 +1606,21 @@ extent at 1:1, x,y,width and height are/(2^level)</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="next" c:identifier="gegl_buffer_iterator2_next">
+      <method name="next"
+              c:identifier="gegl_buffer_iterator2_next"
+              introspectable="0">
+        <doc xml:space="preserve">Do an iteration, this causes a new set of iterator-&gt;data[] to become
+available if there is more data to process. Changed data from a previous
+iteration step will also be saved now. When there is no more data to
+be processed FALSE will be returned (and the iterator handle is no longer
+valid).</doc>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve">TRUE if there is more work FALSE if iteration is complete.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="iterator" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeglBufferIterator</doc>
             <type name="BufferIterator2" c:type="GeglBufferIterator2*"/>
           </instance-parameter>
         </parameters>
@@ -1624,7 +1643,9 @@ iterator handle is no longer valid after invoking this function.</doc>
       <function name="empty_new"
                 c:identifier="gegl_buffer_iterator2_empty_new"
                 introspectable="0">
+        <doc xml:space="preserve">Create a new buffer iterator without adding any buffers.</doc>
         <return-value>
+          <doc xml:space="preserve">a new buffer iterator.</doc>
           <type name="BufferIterator2" c:type="GeglBufferIterator2*"/>
         </return-value>
         <parameters>
@@ -6345,6 +6366,21 @@ ended terminated with NULL.</doc>
           <doc xml:space="preserve">the settings for the operation. Zero or more key/value pairs,
 ended terminated with NULL.</doc>
           <type name="va_list" c:type="va_list"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="buffer_iterator2_empty_new"
+              c:identifier="gegl_buffer_iterator2_empty_new"
+              moved-to="BufferIterator2.empty_new"
+              introspectable="0">
+      <doc xml:space="preserve">Create a new buffer iterator without adding any buffers.</doc>
+      <return-value>
+        <doc xml:space="preserve">a new buffer iterator.</doc>
+        <type name="BufferIterator2" c:type="GeglBufferIterator2*"/>
+      </return-value>
+      <parameters>
+        <parameter name="max_slots" transfer-ownership="none">
+          <type name="gint" c:type="int"/>
         </parameter>
       </parameters>
     </function>
