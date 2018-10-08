@@ -1383,6 +1383,17 @@ and you have a dead line based aggregator subclass.</doc>
       <property name="latency" writable="1" transfer-ownership="none">
         <type name="guint64" c:type="guint64"/>
       </property>
+      <property name="min-upstream-latency"
+                version="1.16"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Force minimum upstream latency (in nanoseconds). When sources with a
+higher latency are expected to be plugged in dynamically after the
+aggregator has started playing, this allows overriding the minimum
+latency reported by the initial source(s). This is only taken into
+account when larger than the actually reported minimum latency.</doc>
+        <type name="guint64" c:type="guint64"/>
+      </property>
       <property name="start-time" writable="1" transfer-ownership="none">
         <type name="guint64" c:type="guint64"/>
       </property>
@@ -12020,6 +12031,21 @@ buffers.</doc>
       <doc xml:space="preserve">#GstQueueArray is an object that provides standard queue functionality
 based on an array instead of linked lists. This reduces the overhead
 caused by memory management by a large factor.</doc>
+      <method name="clear"
+              c:identifier="gst_queue_array_clear"
+              version="1.16"
+              introspectable="0">
+        <doc xml:space="preserve">Clears queue @array and frees all memory associated to it.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="array" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstQueueArray object</doc>
+            <type name="QueueArray" c:type="GstQueueArray*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="drop_element"
               c:identifier="gst_queue_array_drop_element"
               version="1.2"
@@ -12357,6 +12383,34 @@ it from the queue.</doc>
                      nullable="1"
                      allow-none="1">
             <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_clear_func"
+              c:identifier="gst_queue_array_set_clear_func"
+              version="1.16"
+              introspectable="0">
+        <doc xml:space="preserve">Sets a function to clear an element of @array.
+
+The @clear_func will be called when an element in the array
+data segment is removed and when the array is freed and data
+segment is deallocated as well. @clear_func will be passed a
+pointer to the element to clear, rather than the element itself.
+
+Note that in contrast with other uses of #GDestroyNotify
+functions, @clear_func is expected to clear the contents of
+the array element it is given, but not free the element itself.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="array" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstQueueArray object</doc>
+            <type name="QueueArray" c:type="GstQueueArray*"/>
+          </instance-parameter>
+          <parameter name="clear_func" transfer-ownership="none" scope="async">
+            <doc xml:space="preserve">a function to clear an element of @array</doc>
+            <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
           </parameter>
         </parameters>
       </method>

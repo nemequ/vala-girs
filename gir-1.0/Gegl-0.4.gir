@@ -954,7 +954,7 @@ efficient.</doc>
           <parameter name="scale" transfer-ownership="none">
             <doc xml:space="preserve">a matrix that indicates scaling factors, see
 gegl_sampler_compute_scale the same.</doc>
-            <type name="Matrix2" c:type="GeglMatrix2*"/>
+            <type name="BufferMatrix2" c:type="GeglBufferMatrix2*"/>
           </parameter>
           <parameter name="dest"
                      transfer-ownership="none"
@@ -1012,7 +1012,7 @@ is more efficient.</doc>
           <parameter name="scale" transfer-ownership="none">
             <doc xml:space="preserve">a matrix that indicates scaling factors, see
 gegl_sampler_compute_scale the same.</doc>
-            <type name="Matrix2" c:type="GeglMatrix2*"/>
+            <type name="BufferMatrix2" c:type="GeglBufferMatrix2*"/>
           </parameter>
           <parameter name="dest"
                      transfer-ownership="none"
@@ -1223,6 +1223,32 @@ Returns TRUE if the change of abyss was successful.</doc>
           <parameter name="color" transfer-ownership="none">
             <doc xml:space="preserve">the GeglColor to fill with.</doc>
             <type name="Color" c:type="GeglColor*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_color_from_pixel"
+              c:identifier="gegl_buffer_set_color_from_pixel"
+              introspectable="0">
+        <doc xml:space="preserve">Sets the region covered by rect to the the provided pixel.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeglBuffer</doc>
+            <type name="Buffer" c:type="GeglBuffer*"/>
+          </instance-parameter>
+          <parameter name="rect" transfer-ownership="none">
+            <doc xml:space="preserve">a rectangular region to fill with a color.</doc>
+            <type name="Rectangle" c:type="const GeglRectangle*"/>
+          </parameter>
+          <parameter name="pixel" transfer-ownership="none">
+            <doc xml:space="preserve">pointer to the data of a single pixel</doc>
+            <type name="guint8" c:type="const guchar*"/>
+          </parameter>
+          <parameter name="pixel_format" transfer-ownership="none">
+            <doc xml:space="preserve">the babl format of the pixel, if missing - the soft format of dst.</doc>
+            <type c:type="const Babl*"/>
           </parameter>
         </parameters>
       </method>
@@ -1670,6 +1696,34 @@ iterator handle is no longer valid after invoking this function.</doc>
     <record name="BufferIteratorPriv"
             c:type="GeglBufferIteratorPriv"
             disguised="1">
+    </record>
+    <record name="BufferMatrix2" c:type="GeglBufferMatrix2">
+      <field name="coeff" writable="1">
+        <array zero-terminated="0" c:type="gdouble" fixed-size="2">
+          <type name="gdouble" c:type="gdouble"/>
+        </array>
+      </field>
+      <method name="determinant"
+              c:identifier="gegl_buffer_matrix2_determinant">
+        <return-value transfer-ownership="none">
+          <type name="gdouble" c:type="gdouble"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="matrix" transfer-ownership="none">
+            <type name="BufferMatrix2" c:type="GeglBufferMatrix2*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="is_scale" c:identifier="gegl_buffer_matrix2_is_scale">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="matrix" transfer-ownership="none">
+            <type name="BufferMatrix2" c:type="GeglBufferMatrix2*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
     </record>
     <constant name="CH_BACK_CENTER" value="256" c:type="GEGL_CH_BACK_CENTER">
       <type name="gint" c:type="gint"/>
@@ -2634,33 +2688,6 @@ Returns the number of points for the coordinates in the curve.</doc>
     <constant name="MINOR_VERSION" value="4" c:type="GEGL_MINOR_VERSION">
       <type name="gint" c:type="gint"/>
     </constant>
-    <record name="Matrix2" c:type="GeglMatrix2">
-      <field name="coeff" writable="1">
-        <array zero-terminated="0" c:type="gdouble" fixed-size="2">
-          <type name="gdouble" c:type="gdouble"/>
-        </array>
-      </field>
-      <method name="determinant" c:identifier="gegl_matrix2_determinant">
-        <return-value transfer-ownership="none">
-          <type name="gdouble" c:type="gdouble"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="matrix" transfer-ownership="none">
-            <type name="Matrix2" c:type="GeglMatrix2*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-      <method name="is_scale" c:identifier="gegl_matrix2_is_scale">
-        <return-value transfer-ownership="none">
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="matrix" transfer-ownership="none">
-            <type name="Matrix2" c:type="GeglMatrix2*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
-    </record>
     <record name="Matrix3"
             c:type="GeglMatrix3"
             glib:type-name="GeglMatrix3"
@@ -5672,7 +5699,7 @@ Returns TRUE if the result is not empty.</doc>
           </parameter>
           <parameter name="scale" transfer-ownership="none">
             <doc xml:space="preserve">matrix representing extent of sampling area in source buffer.</doc>
-            <type name="Matrix2" c:type="GeglMatrix2*"/>
+            <type name="BufferMatrix2" c:type="GeglBufferMatrix2*"/>
           </parameter>
           <parameter name="output"
                      transfer-ownership="none"
@@ -5734,7 +5761,7 @@ additional NaN / inifinity checks on passed in coordinates.</doc>
           <type name="gdouble" c:type="gdouble"/>
         </parameter>
         <parameter name="scale" transfer-ownership="none">
-          <type name="Matrix2" c:type="GeglMatrix2*"/>
+          <type name="BufferMatrix2" c:type="GeglBufferMatrix2*"/>
         </parameter>
         <parameter name="output"
                    transfer-ownership="none"
@@ -5908,12 +5935,15 @@ commands they don't handle themselves to this function.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="get_extent" c:identifier="gegl_tile_backend_get_extent">
+      <method name="get_extent"
+              c:identifier="gegl_tile_backend_get_extent"
+              introspectable="0">
         <return-value transfer-ownership="full">
           <type name="Rectangle" c:type="GeglRectangle"/>
         </return-value>
         <parameters>
           <instance-parameter name="tile_backend" transfer-ownership="none">
+            <doc xml:space="preserve">a #GeglTileBackend</doc>
             <type name="TileBackend" c:type="GeglTileBackend*"/>
           </instance-parameter>
         </parameters>

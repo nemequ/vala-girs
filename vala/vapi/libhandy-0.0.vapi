@@ -34,12 +34,15 @@ namespace Hdy {
 		public Dialer ();
 		public void clear_number ();
 		public unowned string get_number ();
+		public Gtk.ReliefStyle get_relief ();
 		public bool get_show_action_buttons ();
 		public void set_number (string number);
+		public void set_relief (Gtk.ReliefStyle relief);
 		public void set_show_action_buttons (bool show);
 		[NoAccessorMethod]
 		public uint column_spacing { get; set; }
 		public string number { get; set; }
+		public Gtk.ReliefStyle relief { get; set; }
 		[NoAccessorMethod]
 		public uint row_spacing { get; set; }
 		public bool show_action_buttons { get; set; }
@@ -75,9 +78,11 @@ namespace Hdy {
 		[CCode (has_construct_function = false)]
 		public HeaderGroup ();
 		public void add_header_bar (Gtk.HeaderBar header_bar);
-		public void set_focus (Gtk.Widget child);
-		[NoAccessorMethod]
-		public bool focus { get; set; }
+		public unowned Gtk.HeaderBar? get_focus ();
+		public unowned GLib.SList<Gtk.HeaderBar> get_header_bars ();
+		public void remove_header_bar (Gtk.HeaderBar header_bar);
+		public void set_focus (Gtk.HeaderBar? header_bar);
+		public Gtk.HeaderBar focus { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_leaflet_get_type ()")]
 	public class Leaflet : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {

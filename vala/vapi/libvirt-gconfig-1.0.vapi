@@ -121,6 +121,7 @@ namespace GVirConfig {
 		public void set_cpu (GVirConfig.DomainCpu? cpu);
 		public void set_current_memory (uint64 memory);
 		public bool set_custom_xml (string xml, string ns, string ns_uri) throws GLib.Error;
+		public bool set_custom_xml_ns_children (string xml, string ns, string ns_uri) throws GLib.Error;
 		public void set_description (string? description);
 		public void set_devices (GLib.List<GVirConfig.DomainDevice> devices);
 		public void set_features ([CCode (array_length = false, array_null_terminated = true)] string[] features);

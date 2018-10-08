@@ -219,7 +219,7 @@ namespace Gda {
 		public Gda.DataModel statement_execute_select_full (Gda.Statement stmt, Gda.Set? @params, Gda.StatementModelUsage model_usage, [CCode (array_length = false)] GLib.Type[]? col_types = null) throws GLib.Error;
 		public bool statement_prepare (Gda.Statement stmt) throws GLib.Error;
 		public string statement_to_sql (Gda.Statement stmt, Gda.Set? @params, Gda.StatementSqlFlag flags, out GLib.SList<weak Gda.Holder>? params_used) throws GLib.Error;
-		public static void string_split (string string, string out_cnc_params, string out_provider, string out_username, string? out_password);
+		public static void string_split (string string, out string out_cnc_params, out string out_provider, out string out_username, out string out_password);
 		public bool supports_feature (Gda.ConnectionFeature feature);
 		public bool update_meta_store (Gda.MetaContext? context) throws GLib.Error;
 		[Version (since = "4.2.3")]
@@ -665,7 +665,7 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public unowned string get_ref_table ();
 		[Version (since = "6.0")]
-		public bool prepare_create (Gda.ServerOperation op) throws GLib.Error;
+		public bool prepare_create (Gda.ServerOperation op, int i) throws GLib.Error;
 		[Version (since = "6.0")]
 		public void set_field (string field, string reffield);
 		[Version (since = "6.0")]

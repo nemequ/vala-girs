@@ -393,7 +393,7 @@ namespace Gegl {
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	[Compact]
 	public class Sampler {
-		public void @get (double x, double y, Gegl.Matrix2 scale, void* output, Gegl.AbyssPolicy repeat_mode);
+		public void @get (double x, double y, Gegl.BufferMatrix2 scale, void* output, Gegl.AbyssPolicy repeat_mode);
 		public unowned Gegl.Rectangle get_context_rect ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_stats_get_type ()")]
@@ -444,7 +444,6 @@ namespace Gegl {
 		[CCode (has_construct_function = false)]
 		protected TileBackend ();
 		public void* command (Gegl.TileCommand command, int x, int y, int z, void* data);
-		public Gegl.Rectangle get_extent ();
 		public bool get_flush_on_destroy ();
 		public int get_tile_height ();
 		public int get_tile_size ();
@@ -499,6 +498,13 @@ namespace Gegl {
 		public weak Gegl.Rectangle roi;
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
+	public struct BufferMatrix2 {
+		[CCode (array_length = false)]
+		public weak double coeff[2];
+		public double determinant ();
+		public bool is_scale ();
+	}
+	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	public struct Lookup {
 		public weak Gegl.LookupFunction function;
 		public void* data;
@@ -511,13 +517,6 @@ namespace Gegl {
 		public weak uint32 bitmask[25600];
 		[CCode (array_length = false)]
 		public weak float[] table;
-	}
-	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
-	public struct Matrix2 {
-		[CCode (array_length = false)]
-		public weak double coeff[2];
-		public double determinant ();
-		public bool is_scale ();
 	}
 	[CCode (cheader_filename = "gegl.h", cname = "GeglParamSpecEnum", has_type_id = false)]
 	[GIR (name = "ParamSpecEnum")]
@@ -742,7 +741,7 @@ namespace Gegl {
 	[CCode (cheader_filename = "gegl.h", instance_pos = 1.9)]
 	public delegate void NodeFunction (Gegl.PathItem node);
 	[CCode (cheader_filename = "gegl.h", has_target = false)]
-	public delegate void SamplerGetFun (Gegl.Sampler self, double x, double y, Gegl.Matrix2 scale, void* output, Gegl.AbyssPolicy repeat_mode);
+	public delegate void SamplerGetFun (Gegl.Sampler self, double x, double y, Gegl.BufferMatrix2 scale, void* output, Gegl.AbyssPolicy repeat_mode);
 	[CCode (cheader_filename = "gegl.h", instance_pos = 1.9)]
 	public delegate void TileCallback (Gegl.Tile tile);
 	[CCode (cheader_filename = "gegl.h", has_target = false)]

@@ -652,8 +652,12 @@ namespace NM {
 		public const string INTERFACE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP4_CONFIG")]
 		public const string IP4_CONFIG;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP4_CONNECTIVITY")]
+		public const string IP4_CONNECTIVITY;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP6_CONFIG")]
 		public const string IP6_CONFIG;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP6_CONNECTIVITY")]
+		public const string IP6_CONNECTIVITY;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_INTERFACE")]
 		public const string IP_INTERFACE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_ENCAPSULATION_LIMIT")]
@@ -823,6 +827,8 @@ namespace NM {
 		public bool get_autoconnect ();
 		public unowned GLib.GenericArray<NM.RemoteConnection> get_available_connections ();
 		public NM.DeviceCapabilities get_capabilities ();
+		[Version (since = "1.16")]
+		public NM.ConnectivityState get_connectivity (int addr_family);
 		public unowned string get_description ();
 		public NM.DeviceType get_device_type ();
 		public unowned NM.DhcpConfig get_dhcp4_config ();
@@ -876,7 +882,13 @@ namespace NM {
 		[NoAccessorMethod]
 		public string @interface { owned get; }
 		public NM.IPConfig ip4_config { get; }
+		[NoAccessorMethod]
+		[Version (since = "1.16")]
+		public NM.ConnectivityState ip4_connectivity { get; }
 		public NM.IPConfig ip6_config { get; }
+		[NoAccessorMethod]
+		[Version (since = "1.16")]
+		public NM.ConnectivityState ip6_connectivity { get; }
 		[NoAccessorMethod]
 		public string ip_interface { owned get; }
 		public GLib.GenericArray<void*> lldp_neighbors { get; }
@@ -4391,14 +4403,24 @@ namespace NM {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.14")]
 		public SettingWpan ();
+		[Version (since = "1.16")]
+		public int16 get_channel ();
 		[Version (since = "1.14")]
 		public unowned string get_mac_address ();
+		[Version (since = "1.16")]
+		public int16 get_page ();
 		[Version (since = "1.14")]
 		public uint16 get_pan_id ();
 		[Version (since = "1.14")]
 		public uint16 get_short_address ();
 		[NoAccessorMethod]
+		[Version (since = "1.16")]
+		public int channel { get; set; }
+		[NoAccessorMethod]
 		public string mac_address { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.16")]
+		public int page { get; set; }
 		[NoAccessorMethod]
 		public uint pan_id { get; set; }
 		[NoAccessorMethod]
@@ -6150,8 +6172,16 @@ namespace NM {
 	public const string SETTING_USER_DATA;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_SETTING_NAME")]
 	public const string SETTING_USER_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_CHANNEL")]
+	public const string SETTING_WPAN_CHANNEL;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_CHANNEL_DEFAULT")]
+	public const int SETTING_WPAN_CHANNEL_DEFAULT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_MAC_ADDRESS")]
 	public const string SETTING_WPAN_MAC_ADDRESS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_PAGE")]
+	public const string SETTING_WPAN_PAGE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_PAGE_DEFAULT")]
+	public const int SETTING_WPAN_PAGE_DEFAULT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_PAN_ID")]
 	public const string SETTING_WPAN_PAN_ID;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_SETTING_NAME")]

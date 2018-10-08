@@ -1223,6 +1223,33 @@ namespace Dazzle {
 		public Dazzle.ShortcutTheme theme { get; set; }
 		public signal void changed ();
 	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcut_tooltip_get_type ()")]
+	public class ShortcutTooltip : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.32")]
+		public ShortcutTooltip ();
+		[Version (since = "3.320")]
+		public unowned string? get_accel ();
+		[Version (since = "3.32")]
+		public unowned string? get_command_id ();
+		[Version (since = "3.32")]
+		public unowned string? get_title ();
+		[Version (since = "3.32")]
+		public unowned Gtk.Widget? get_widget ();
+		[Version (since = "3.32")]
+		public void set_accel (string? accel);
+		[Version (since = "3.32")]
+		public void set_command_id (string command_id);
+		[Version (since = "3.32")]
+		public void set_title (string? title);
+		[Version (since = "3.32")]
+		public void set_widget (Gtk.Widget? widget);
+		public string accel { get; set; }
+		public string command_id { get; set; }
+		[Version (since = "3.32")]
+		public string title { get; set; }
+		public Gtk.Widget widget { get; set; }
+	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcuts_group_get_type ()")]
 	public class ShortcutsGroup : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false)]

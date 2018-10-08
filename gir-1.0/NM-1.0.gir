@@ -5890,9 +5890,19 @@ and some #NMSetting8021x operations.</doc>
               c:type="NM_DEVICE_IP4_CONFIG">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="DEVICE_IP4_CONNECTIVITY"
+              value="ip4-connectivity"
+              c:type="NM_DEVICE_IP4_CONNECTIVITY">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="DEVICE_IP6_CONFIG"
               value="ip6-config"
               c:type="NM_DEVICE_IP6_CONFIG">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="DEVICE_IP6_CONNECTIVITY"
+              value="ip6-connectivity"
+              c:type="NM_DEVICE_IP6_CONNECTIVITY">
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="DEVICE_IP_INTERFACE"
@@ -6939,6 +6949,27 @@ the connection, and must not be modified.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="get_connectivity"
+              c:identifier="nm_device_get_connectivity"
+              version="1.16">
+        <doc xml:space="preserve">The connectivity state of the device for given address family.
+Supported address families are %AF_INET for IPv4, %AF_INET6
+for IPv6 or %AF_UNSPEC for any.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the current connectivity state</doc>
+          <type name="ConnectivityState" c:type="NMConnectivityState"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMDevice</doc>
+            <type name="Device" c:type="NMDevice*"/>
+          </instance-parameter>
+          <parameter name="addr_family" transfer-ownership="none">
+            <doc xml:space="preserve">network address family</doc>
+            <type name="gint" c:type="int"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="get_description" c:identifier="nm_device_get_description">
         <doc xml:space="preserve">Gets a description of @device, based on its vendor and product names.</doc>
         <return-value transfer-ownership="none">
@@ -7581,9 +7612,21 @@ operations like addressing and routing.</doc>
         <doc xml:space="preserve">The #NMIP4Config of the device.</doc>
         <type name="IPConfig"/>
       </property>
+      <property name="ip4-connectivity"
+                version="1.16"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The IPv4 connectivity state of the device.</doc>
+        <type name="ConnectivityState"/>
+      </property>
       <property name="ip6-config" transfer-ownership="none">
         <doc xml:space="preserve">The IPv6 #NMIPConfig of the device.</doc>
         <type name="IPConfig"/>
+      </property>
+      <property name="ip6-connectivity"
+                version="1.16"
+                transfer-ownership="none">
+        <doc xml:space="preserve">The IPv6 connectivity state of the device.</doc>
+        <type name="ConnectivityState"/>
       </property>
       <property name="lldp-neighbors" transfer-ownership="none">
         <doc xml:space="preserve">The LLDP neighbors.</doc>
@@ -17067,10 +17110,30 @@ for this connection.</doc>
               c:type="NM_SETTING_WIRELESS_WAKE_ON_WLAN">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="SETTING_WPAN_CHANNEL"
+              value="channel"
+              c:type="NM_SETTING_WPAN_CHANNEL">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_WPAN_CHANNEL_DEFAULT"
+              value="-1"
+              c:type="NM_SETTING_WPAN_CHANNEL_DEFAULT">
+      <type name="gint" c:type="gint"/>
+    </constant>
     <constant name="SETTING_WPAN_MAC_ADDRESS"
               value="mac-address"
               c:type="NM_SETTING_WPAN_MAC_ADDRESS">
       <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_WPAN_PAGE"
+              value="page"
+              c:type="NM_SETTING_WPAN_PAGE">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="SETTING_WPAN_PAGE_DEFAULT"
+              value="-1"
+              c:type="NM_SETTING_WPAN_PAGE_DEFAULT">
+      <type name="gint" c:type="gint"/>
     </constant>
     <constant name="SETTING_WPAN_PAN_ID"
               value="pan-id"
@@ -27865,7 +27928,7 @@ for example:
 
   "2 mac=00:11:22:33:44:55 spoof-check=true".
 
-The "vlans" attribute is represented as a semicolor-separated
+The "vlans" attribute is represented as a semicolon-separated
 list of VLAN descriptors, where each descriptor has the form
 
   "ID[.PRIORITY[.PROTO]]".
@@ -28547,7 +28610,7 @@ watcher. Available link watchers are 'ethtool', 'nsna_ping' and
 Available keys are:   ethtool: 'delay-up', 'delay-down', 'init-wait';
 nsna_ping: 'init-wait', 'interval', 'missed-max', 'target-host';
 arp_ping: all the ones in nsna_ping and 'source-host', 'validate-active',
-'validate-incative', 'send-always'. See teamd.conf man for more details.</doc>
+'validate-inactive', 'send-always'. See teamd.conf man for more details.</doc>
         <array name="GLib.PtrArray">
           <type name="TeamLinkWatcher"/>
         </array>
@@ -28906,7 +28969,7 @@ watcher. Available link watchers are 'ethtool', 'nsna_ping' and
 Available keys are:   ethtool: 'delay-up', 'delay-down', 'init-wait';
 nsna_ping: 'init-wait', 'interval', 'missed-max', 'target-host';
 arp_ping: all the ones in nsna_ping and 'source-host', 'validate-active',
-'validate-incative', 'send-always'. See teamd.conf man for more details.</doc>
+'validate-inactive', 'send-always'. See teamd.conf man for more details.</doc>
         <array name="GLib.PtrArray">
           <type name="TeamLinkWatcher"/>
         </array>
@@ -31711,14 +31774,19 @@ administered.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="hidden" writable="1" transfer-ownership="none">
-        <doc xml:space="preserve">If %TRUE, indicates this network is a non-broadcasting network that hides
-its SSID.  In this case various workarounds may take place, such as
-probe-scanning the SSID for more reliable network discovery.  However,
+        <doc xml:space="preserve">If %TRUE, indicates that the network is a non-broadcasting network that
+hides its SSID. This works both in infrastructure and AP mode.
+
+In infrastructure mode, various workarounds are used for a more reliable
+discovery of hidden networks, such as probe-scanning the SSID.  However,
 these workarounds expose inherent insecurities with hidden SSID networks,
 and thus hidden SSID networks should be used with caution.
 
-Note that marking the network as hidden may be a privacy issue for you, as
-the explicit probe-scans may be distinctly recognizable on the air.</doc>
+In AP mode, the created network does not broadcast its SSID.
+
+Note that marking the network as hidden may be a privacy issue for you
+(in infrastructure mode) or client stations (in AP mode), as the explicit
+probe-scans are distinctly recognizable on the air.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="mac-address" writable="1" transfer-ownership="none">
@@ -32812,12 +32880,40 @@ are supported by all devices.</doc>
           <type name="Setting" c:type="NMSetting*"/>
         </return-value>
       </constructor>
+      <method name="get_channel"
+              c:identifier="nm_setting_wpan_get_channel"
+              version="1.16">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingWpan:channel property of the setting</doc>
+          <type name="gint16" c:type="gint16"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingWpan</doc>
+            <type name="SettingWpan" c:type="NMSettingWpan*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="get_mac_address"
               c:identifier="nm_setting_wpan_get_mac_address"
               version="1.14">
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">the #NMSettingWpan:mac-address property of the setting</doc>
           <type name="utf8" c:type="const char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="setting" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMSettingWpan</doc>
+            <type name="SettingWpan" c:type="NMSettingWpan*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_page"
+              c:identifier="nm_setting_wpan_get_page"
+              version="1.16">
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the #NMSettingWpan:page property of the setting</doc>
+          <type name="gint16" c:type="gint16"/>
         </return-value>
         <parameters>
           <instance-parameter name="setting" transfer-ownership="none">
@@ -32854,10 +32950,26 @@ are supported by all devices.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <property name="channel"
+                version="1.16"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">IEEE 802.15.4 channel. A positive integer or -1, meaning "do not
+set, use whatever the device is already set to".</doc>
+        <type name="gint" c:type="gint"/>
+      </property>
       <property name="mac-address" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">If specified, this connection will only apply to the IEEE 802.15.4 (WPAN)
 MAC layer device whose permanent MAC address matches.</doc>
         <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="page"
+                version="1.16"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">IEEE 802.15.4 channel page. A positive integer or -1, meaning "do not
+set, use whatever the device is already set to".</doc>
+        <type name="gint" c:type="gint"/>
       </property>
       <property name="pan-id" writable="1" transfer-ownership="none">
         <doc xml:space="preserve">IEEE 802.15.4 Personal Area Network (PAN) identifier.</doc>
