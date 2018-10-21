@@ -3357,7 +3357,7 @@ time, rather than from the library linked against at application run
 time.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="EDS_MICRO_VERSION" value="1" c:type="EDS_MICRO_VERSION">
+    <constant name="EDS_MICRO_VERSION" value="2" c:type="EDS_MICRO_VERSION">
       <doc xml:space="preserve">The micro version number of the Evolution-Data-Server library.  Like
 eds_micro_version(), but from the headers used at application compile
 time, rather than from the library linked against at application run
@@ -15063,6 +15063,25 @@ The returned string should be freed with g_free() when no longer needed.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="dup_language"
+              c:identifier="e_source_mail_composition_dup_language"
+              version="3.32">
+        <doc xml:space="preserve">Thread-safe variation of e_source_mail_composition_get_language().
+Use this function when accessing @extension from multiple threads.
+
+The returned string should be freed with g_free() when no longer needed.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly-allocated copy of #ESourceMailComposition:language</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESourceMailComposition</doc>
+            <type name="SourceMailComposition"
+                  c:type="ESourceMailComposition*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="dup_templates_folder"
               c:identifier="e_source_mail_composition_dup_templates_folder"
               version="3.6">
@@ -15133,6 +15152,22 @@ should not be modified or freed.</doc>
 The format of the identifier string is defined by the client application.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">an identifier for the preferred drafts folder</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESourceMailComposition</doc>
+            <type name="SourceMailComposition"
+                  c:type="ESourceMailComposition*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_language"
+              c:identifier="e_source_mail_composition_get_language"
+              version="3.32">
+        <doc xml:space="preserve">Returns a string identifying the preferred language, like "en_US".</doc>
+        <return-value transfer-ownership="none" nullable="1">
+          <doc xml:space="preserve">an identifier for the preferred language, or %NULL for none</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
@@ -15309,6 +15344,33 @@ leading and trailing whitespace.  If the resulting string is empty,
           </parameter>
         </parameters>
       </method>
+      <method name="set_language"
+              c:identifier="e_source_mail_composition_set_language"
+              version="3.32">
+        <doc xml:space="preserve">Sets the preferred language by an identifier string, like "en_US".
+Use %NULL to unset any previous value.
+
+The internal copy of @language is automatically stripped of
+leading and trailing whitespace.  If the resulting string is empty,
+%NULL is set instead.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="extension" transfer-ownership="none">
+            <doc xml:space="preserve">an #ESourceMailComposition</doc>
+            <type name="SourceMailComposition"
+                  c:type="ESourceMailComposition*"/>
+          </instance-parameter>
+          <parameter name="language"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an identifier for the preferred language, or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_reply_style"
               c:identifier="e_source_mail_composition_set_reply_style"
               version="3.20">
@@ -15434,6 +15496,12 @@ To unset the preference, use the %E_THREE_STATE_INCONSISTENT.</doc>
         </array>
       </property>
       <property name="drafts-folder"
+                writable="1"
+                construct="1"
+                transfer-ownership="none">
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="language"
                 writable="1"
                 construct="1"
                 transfer-ownership="none">
@@ -21686,6 +21754,10 @@ or e_webdav_access_control_entry_copy(). The function does nothing, if @ptr is %
               value="8"
               c:identifier="E_WEBDAV_DISCOVER_SUPPORTS_TASKS">
       </member>
+      <member name="calendar_auto_schedule"
+              value="64"
+              c:identifier="E_WEBDAV_DISCOVER_SUPPORTS_CALENDAR_AUTO_SCHEDULE">
+      </member>
     </bitfield>
     <record name="WebDAVDiscoveredSource" c:type="EWebDAVDiscoveredSource">
       <field name="href" writable="1">
@@ -22301,6 +22373,10 @@ or e_webdav_resource_copy(). The function does nothing, if @ptr is %NULL.</doc>
       <member name="timezone"
               value="32"
               c:identifier="E_WEBDAV_RESOURCE_SUPPORTS_TIMEZONE">
+      </member>
+      <member name="last"
+              value="32"
+              c:identifier="E_WEBDAV_RESOURCE_SUPPORTS_LAST">
       </member>
     </bitfield>
     <class name="WebDAVSession"
@@ -27090,6 +27166,25 @@ Note: Pair function for this is e_util_strv_to_slist().</doc>
           <type name="GLib.SList" c:type="const GSList*">
             <type name="utf8"/>
           </type>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="util_strcmp0" c:identifier="e_util_strcmp0" version="3.32">
+      <doc xml:space="preserve">Compares @str1 and @str2 like g_strcmp0(), except it handles %NULL and
+empty strings as equal.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">an integer less than 0 when @str1 is before @str2; 0 when
+   the strings are equal and an integer greated than 0 when @str1 is after @str2.</doc>
+        <type name="gint" c:type="gint"/>
+      </return-value>
+      <parameters>
+        <parameter name="str1" transfer-ownership="none">
+          <doc xml:space="preserve">a C string on %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="str2" transfer-ownership="none">
+          <doc xml:space="preserve">another C string or %NULL</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>
     </function>

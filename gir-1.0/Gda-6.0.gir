@@ -17,9 +17,6 @@ and/or use gtk-doc annotations.  -->
     <alias name="SqlBuilderId" c:type="GdaSqlBuilderId">
       <type name="guint" c:type="guint"/>
     </alias>
-    <alias name="SqlErrorType" c:type="GdaSqlErrorType">
-      <type name="SqlError" c:type="GdaSqlError"/>
-    </alias>
     <constant name="ATTRIBUTE_AUTO_INCREMENT"
               value="__gda_attr_autoinc"
               c:type="GDA_ATTRIBUTE_AUTO_INCREMENT">
@@ -360,8 +357,7 @@ Note that if @batch does not need any parameter, then @out_params is set to %NUL
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
-                     optional="1"
-                     allow-none="1">
+                     nullable="1">
             <doc xml:space="preserve">a place to store a new #GdaSet object, or %NULL</doc>
             <type name="Set" c:type="GdaSet**"/>
           </parameter>
@@ -1653,11 +1649,8 @@ This method may fail with a %GDA_CONFIG_ERROR domain error (see the #GdaConfigEr
         <doc xml:space="preserve">File to use for per-user DSN list. When changed, the whole list of DSN will be reloaded.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <field name="object">
+      <field name="parent_instance">
         <type name="GObject.Object" c:type="GObject"/>
-      </field>
-      <field name="priv">
-        <type name="ConfigPrivate" c:type="GdaConfigPrivate*"/>
       </field>
       <glib:signal name="dsn-added" when="first">
         <doc xml:space="preserve">Gets emitted whenever a new DSN has been defined</doc>
@@ -1723,7 +1716,7 @@ This method may fail with a %GDA_CONFIG_ERROR domain error (see the #GdaConfigEr
     <record name="ConfigClass"
             c:type="GdaConfigClass"
             glib:is-gtype-struct-for="Config">
-      <field name="object_class">
+      <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
       <field name="dsn_added">
@@ -1833,8 +1826,6 @@ This method may fail with a %GDA_CONFIG_ERROR domain error (see the #GdaConfigEr
               c:identifier="GDA_CONFIG_PROVIDER_CREATION_ERROR">
       </member>
     </enumeration>
-    <record name="ConfigPrivate" c:type="GdaConfigPrivate" disguised="1">
-    </record>
     <class name="Connection"
            c:symbol-prefix="connection"
            c:type="GdaConnection"
@@ -2133,7 +2124,7 @@ out_password: "pass"]]&gt;&lt;/programlisting&gt;</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full">
-            <doc xml:space="preserve">(allow-none): a place to store the new string containing the &amp;lt;password&amp;gt; part, or %NULL</doc>
+            <doc xml:space="preserve">(nullable): a place to store the new string containing the &amp;lt;password&amp;gt; part, or %NULL</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
         </parameters>
@@ -12575,11 +12566,10 @@ not set or if %NULL is passed.</doc>
       </method>
       <method name="get_fkeys"
               c:identifier="gda_ddl_table_get_fkeys"
-              version="6.0"
-              introspectable="0">
+              version="6.0">
         <doc xml:space="preserve">Use this method to obtain internal list of all fkeys. The internal list
 should not be freed.</doc>
-        <return-value>
+        <return-value transfer-ownership="none">
           <doc xml:space="preserve">A list of #GdaDdlFkey objects or %NULL if the internal list is not
 set or %NULL is passed</doc>
           <type name="GLib.List" c:type="GList*">
@@ -12956,7 +12946,11 @@ occurrence of "'" with "''" and "\" with "\\"</doc>
         </parameters>
       </function>
     </glib:boxed>
-    <record name="Diff" c:type="GdaDiff">
+    <record name="Diff"
+            c:type="GdaDiff"
+            glib:type-name="GdaDiff"
+            glib:get-type="gda_diff_get_type"
+            c:symbol-prefix="diff">
       <field name="type" writable="1">
         <type name="DiffType" c:type="GdaDiffType"/>
       </field>
@@ -14340,7 +14334,8 @@ Note: unlike g_mutex_lock(), this method recursive, which means a thread can loc
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="lock" transfer-ownership="none">
+          <instance-parameter name="lockable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdaLockable object.</doc>
             <type name="Lockable" c:type="GdaLockable*"/>
           </instance-parameter>
         </parameters>
@@ -14356,7 +14351,8 @@ Note: unlike g_mutex_lock(), this method recursive, which means a thread can loc
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
-          <instance-parameter name="lock" transfer-ownership="none">
+          <instance-parameter name="lockable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdaLockable object.</doc>
             <type name="Lockable" c:type="GdaLockable*"/>
           </instance-parameter>
         </parameters>
@@ -14368,7 +14364,8 @@ used gda_lockable_lock() or gda_lockable_trylock()).</doc>
           <type name="none" c:type="void"/>
         </return-value>
         <parameters>
-          <instance-parameter name="lock" transfer-ownership="none">
+          <instance-parameter name="lockable" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdaLockable object.</doc>
             <type name="Lockable" c:type="GdaLockable*"/>
           </instance-parameter>
         </parameters>
@@ -14432,7 +14429,8 @@ used gda_lockable_lock() or gda_lockable_trylock()).</doc>
             <type name="none" c:type="void"/>
           </return-value>
           <parameters>
-            <parameter name="lock" transfer-ownership="none">
+            <parameter name="lockable" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdaLockable object.</doc>
               <type name="Lockable" c:type="GdaLockable*"/>
             </parameter>
           </parameters>
@@ -14445,7 +14443,8 @@ used gda_lockable_lock() or gda_lockable_trylock()).</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
-            <parameter name="lock" transfer-ownership="none">
+            <parameter name="lockable" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdaLockable object.</doc>
               <type name="Lockable" c:type="GdaLockable*"/>
             </parameter>
           </parameters>
@@ -14457,7 +14456,8 @@ used gda_lockable_lock() or gda_lockable_trylock()).</doc>
             <type name="none" c:type="void"/>
           </return-value>
           <parameters>
-            <parameter name="lock" transfer-ownership="none">
+            <parameter name="lockable" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdaLockable object.</doc>
               <type name="Lockable" c:type="GdaLockable*"/>
             </parameter>
           </parameters>
@@ -17396,8 +17396,7 @@ will return %NULL</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="container"
-                     optional="1"
-                     allow-none="1">
+                     nullable="1">
             <type name="GLib.SList" c:type="GSList**">
               <type name="Holder"/>
             </type>
@@ -17977,8 +17976,7 @@ will return %NULL</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="container"
-                     optional="1"
-                     allow-none="1">
+                     nullable="1">
             <type name="GLib.SList" c:type="GSList**">
               <type name="Holder"/>
             </type>
@@ -18046,7 +18044,11 @@ will return %NULL</doc>
         </parameters>
       </method>
     </interface>
-    <record name="ProviderInfo" c:type="GdaProviderInfo">
+    <record name="ProviderInfo"
+            c:type="GdaProviderInfo"
+            glib:type-name="GdaProviderInfo"
+            glib:get-type="gda_provider_info_get_type"
+            c:symbol-prefix="provider_info">
       <doc xml:space="preserve">This structure holds the information associated to a database provider as discovered by Libgda.</doc>
       <field name="id" writable="1">
         <doc xml:space="preserve">the unique identifier of the database provider</doc>
@@ -18303,8 +18305,7 @@ will return %NULL</doc>
                        direction="out"
                        caller-allocates="0"
                        transfer-ownership="container"
-                       optional="1"
-                       allow-none="1">
+                       nullable="1">
               <type name="GLib.SList" c:type="GSList**">
                 <type name="Holder"/>
               </type>
@@ -19371,6 +19372,29 @@ will return %NULL</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="table"
+                      invoker="table"
+                      version="6.0"
+                      stability="Unstable"
+                      throws="1">
+        <return-value transfer-ownership="full">
+          <type name="Row" c:type="GdaRow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prov" transfer-ownership="none">
+            <type name="ProviderMeta" c:type="GdaProviderMeta*"/>
+          </instance-parameter>
+          <parameter name="table_catalog" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="table_schema" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="table_name_n" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="table_column"
                       invoker="table_column"
                       version="6.0"
@@ -19420,31 +19444,22 @@ will return %NULL</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="table_view"
-                      invoker="table_view"
+      <virtual-method name="tables"
+                      invoker="tables"
                       version="6.0"
                       stability="Unstable"
                       throws="1">
         <return-value transfer-ownership="full">
-          <type name="Row" c:type="GdaRow*"/>
+          <type name="DataModel" c:type="GdaDataModel*"/>
         </return-value>
         <parameters>
           <instance-parameter name="prov" transfer-ownership="none">
             <type name="ProviderMeta" c:type="GdaProviderMeta*"/>
           </instance-parameter>
-          <parameter name="table_catalog" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="table_schema" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="table_name_n" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="tables_views"
-                      invoker="tables_views"
+      <virtual-method name="tables_columns"
+                      invoker="tables_columns"
                       version="6.0"
                       stability="Unstable"
                       throws="1">
@@ -19565,8 +19580,31 @@ will return %NULL</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="view_col"
-                      invoker="view_col"
+      <virtual-method name="view"
+                      invoker="view"
+                      version="6.0"
+                      stability="Unstable"
+                      throws="1">
+        <return-value transfer-ownership="full">
+          <type name="Row" c:type="GdaRow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prov" transfer-ownership="none">
+            <type name="ProviderMeta" c:type="GdaProviderMeta*"/>
+          </instance-parameter>
+          <parameter name="view_catalog" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="view_schema" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="view_name_n" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="view_column"
+                      invoker="view_column"
                       version="6.0"
                       stability="Unstable"
                       throws="1">
@@ -19591,12 +19629,11 @@ will return %NULL</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="view_cols"
-                      invoker="view_cols"
-                      version="6.0"
-                      stability="Unstable"
+      <virtual-method name="view_columns"
+                      invoker="view_columns"
+                      introspectable="0"
                       throws="1">
-        <return-value transfer-ownership="full">
+        <return-value>
           <type name="DataModel" c:type="GdaDataModel*"/>
         </return-value>
         <parameters>
@@ -19614,8 +19651,22 @@ will return %NULL</doc>
           </parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="views_cols"
-                      invoker="views_cols"
+      <virtual-method name="views"
+                      invoker="views"
+                      version="6.0"
+                      stability="Unstable"
+                      throws="1">
+        <return-value transfer-ownership="full">
+          <type name="DataModel" c:type="GdaDataModel*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prov" transfer-ownership="none">
+            <type name="ProviderMeta" c:type="GdaProviderMeta*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="views_columns"
+                      invoker="views_columns"
                       version="6.0"
                       stability="Unstable"
                       throws="1">
@@ -20415,6 +20466,29 @@ will return %NULL</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="table"
+              c:identifier="gda_provider_meta_table"
+              version="6.0"
+              stability="Unstable"
+              throws="1">
+        <return-value transfer-ownership="full">
+          <type name="Row" c:type="GdaRow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prov" transfer-ownership="none">
+            <type name="ProviderMeta" c:type="GdaProviderMeta*"/>
+          </instance-parameter>
+          <parameter name="table_catalog" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="table_schema" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="table_name_n" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="table_column"
               c:identifier="gda_provider_meta_table_column"
               version="6.0"
@@ -20464,31 +20538,22 @@ will return %NULL</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="table_view"
-              c:identifier="gda_provider_meta_table_view"
+      <method name="tables"
+              c:identifier="gda_provider_meta_tables"
               version="6.0"
               stability="Unstable"
               throws="1">
         <return-value transfer-ownership="full">
-          <type name="Row" c:type="GdaRow*"/>
+          <type name="DataModel" c:type="GdaDataModel*"/>
         </return-value>
         <parameters>
           <instance-parameter name="prov" transfer-ownership="none">
             <type name="ProviderMeta" c:type="GdaProviderMeta*"/>
           </instance-parameter>
-          <parameter name="table_catalog" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="table_schema" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
-          <parameter name="table_name_n" transfer-ownership="none">
-            <type name="utf8" c:type="const gchar*"/>
-          </parameter>
         </parameters>
       </method>
-      <method name="tables_views"
-              c:identifier="gda_provider_meta_tables_views"
+      <method name="tables_columns"
+              c:identifier="gda_provider_meta_tables_columns"
               version="6.0"
               stability="Unstable"
               throws="1">
@@ -20609,8 +20674,31 @@ will return %NULL</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="view_col"
-              c:identifier="gda_provider_meta_view_col"
+      <method name="view"
+              c:identifier="gda_provider_meta_view"
+              version="6.0"
+              stability="Unstable"
+              throws="1">
+        <return-value transfer-ownership="full">
+          <type name="Row" c:type="GdaRow*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prov" transfer-ownership="none">
+            <type name="ProviderMeta" c:type="GdaProviderMeta*"/>
+          </instance-parameter>
+          <parameter name="view_catalog" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="view_schema" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="view_name_n" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="view_column"
+              c:identifier="gda_provider_meta_view_column"
               version="6.0"
               stability="Unstable"
               throws="1">
@@ -20635,12 +20723,11 @@ will return %NULL</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="view_cols"
-              c:identifier="gda_provider_meta_view_cols"
-              version="6.0"
-              stability="Unstable"
+      <method name="view_columns"
+              c:identifier="gda_provider_meta_view_columns"
+              introspectable="0"
               throws="1">
-        <return-value transfer-ownership="full">
+        <return-value>
           <type name="DataModel" c:type="GdaDataModel*"/>
         </return-value>
         <parameters>
@@ -20658,8 +20745,22 @@ will return %NULL</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="views_cols"
-              c:identifier="gda_provider_meta_views_cols"
+      <method name="views"
+              c:identifier="gda_provider_meta_views"
+              version="6.0"
+              stability="Unstable"
+              throws="1">
+        <return-value transfer-ownership="full">
+          <type name="DataModel" c:type="GdaDataModel*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="prov" transfer-ownership="none">
+            <type name="ProviderMeta" c:type="GdaProviderMeta*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="views_columns"
+              c:identifier="gda_provider_meta_views_columns"
               version="6.0"
               stability="Unstable"
               throws="1">
@@ -21015,8 +21116,8 @@ will return %NULL</doc>
           </parameters>
         </callback>
       </field>
-      <field name="tables_views">
-        <callback name="tables_views" throws="1">
+      <field name="tables_columns">
+        <callback name="tables_columns" throws="1">
           <return-value transfer-ownership="full">
             <type name="DataModel" c:type="GdaDataModel*"/>
           </return-value>
@@ -21027,8 +21128,20 @@ will return %NULL</doc>
           </parameters>
         </callback>
       </field>
-      <field name="table_view">
-        <callback name="table_view" throws="1">
+      <field name="tables">
+        <callback name="tables" throws="1">
+          <return-value transfer-ownership="full">
+            <type name="DataModel" c:type="GdaDataModel*"/>
+          </return-value>
+          <parameters>
+            <parameter name="prov" transfer-ownership="none">
+              <type name="ProviderMeta" c:type="GdaProviderMeta*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="table">
+        <callback name="table" throws="1">
           <return-value transfer-ownership="full">
             <type name="Row" c:type="GdaRow*"/>
           </return-value>
@@ -21043,6 +21156,39 @@ will return %NULL</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="table_name_n" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="views">
+        <callback name="views" throws="1">
+          <return-value transfer-ownership="full">
+            <type name="DataModel" c:type="GdaDataModel*"/>
+          </return-value>
+          <parameters>
+            <parameter name="prov" transfer-ownership="none">
+              <type name="ProviderMeta" c:type="GdaProviderMeta*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="view">
+        <callback name="view" throws="1">
+          <return-value transfer-ownership="full">
+            <type name="Row" c:type="GdaRow*"/>
+          </return-value>
+          <parameters>
+            <parameter name="prov" transfer-ownership="none">
+              <type name="ProviderMeta" c:type="GdaProviderMeta*"/>
+            </parameter>
+            <parameter name="view_catalog" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="view_schema" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+            <parameter name="view_name_n" transfer-ownership="none">
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
           </parameters>
@@ -21105,8 +21251,8 @@ will return %NULL</doc>
           </parameters>
         </callback>
       </field>
-      <field name="views_cols">
-        <callback name="views_cols" throws="1">
+      <field name="views_columns">
+        <callback name="views_columns" throws="1">
           <return-value transfer-ownership="full">
             <type name="DataModel" c:type="GdaDataModel*"/>
           </return-value>
@@ -21117,9 +21263,9 @@ will return %NULL</doc>
           </parameters>
         </callback>
       </field>
-      <field name="view_cols">
-        <callback name="view_cols" throws="1">
-          <return-value transfer-ownership="full">
+      <field name="view_columns" introspectable="0">
+        <callback name="view_columns" introspectable="0" throws="1">
+          <return-value>
             <type name="DataModel" c:type="GdaDataModel*"/>
           </return-value>
           <parameters>
@@ -21138,8 +21284,8 @@ will return %NULL</doc>
           </parameters>
         </callback>
       </field>
-      <field name="view_col">
-        <callback name="view_col" throws="1">
+      <field name="view_column">
+        <callback name="view_column" throws="1">
           <return-value transfer-ownership="full">
             <type name="Row" c:type="GdaRow*"/>
           </return-value>
@@ -29779,8 +29925,7 @@ To include variables in the @sql string, see the
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
-                     optional="1"
-                     allow-none="1">
+                     nullable="1">
             <doc xml:space="preserve">location to store a pointer to remaining part of @sql in case @sql has multiple statement, or %NULL</doc>
             <type name="utf8" c:type="const gchar**"/>
           </parameter>
@@ -29817,8 +29962,7 @@ To include variables in the @sql string, see the
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
-                     optional="1"
-                     allow-none="1">
+                     nullable="1">
             <doc xml:space="preserve">location to store a pointer to remaining part of @sql in case an error occurred while parsing @sql, or %NULL</doc>
             <type name="utf8" c:type="const gchar**"/>
           </parameter>
@@ -31331,8 +31475,7 @@ Note that if @stmt does not need any parameter, then @out_params is set to %NULL
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
-                     optional="1"
-                     allow-none="1">
+                     nullable="1">
             <doc xml:space="preserve">a place to store a new #GdaSet object, or %NULL</doc>
             <type name="Set" c:type="GdaSet**"/>
           </parameter>
@@ -31475,8 +31618,7 @@ in this case the result is similar to calling gda_connection_statement_to_sql().
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="container"
-                     optional="1"
-                     allow-none="1">
+                     nullable="1">
             <doc xml:space="preserve">a place to store the list of actual #GdaHolder objects in @params used to do the rendering, or %NULL</doc>
             <type name="GLib.SList" c:type="GSList**">
               <type name="Holder"/>
@@ -33068,8 +33210,7 @@ need to be updated ore moved</doc>
                    direction="out"
                    caller-allocates="0"
                    transfer-ownership="full"
-                   optional="1"
-                   allow-none="1">
+                   nullable="1">
           <doc xml:space="preserve">a boolean to store if there was an error (can be %NULL)</doc>
           <type name="gboolean" c:type="gboolean*"/>
         </parameter>
@@ -34558,8 +34699,7 @@ still be completed because the PREPARE phase succeeded (through the recover meth
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
-                     optional="1"
-                     allow-none="1">
+                     nullable="1">
             <doc xml:space="preserve">a place to store the list of connections for which the commit phase failed, or %NULL</doc>
             <type name="GLib.SList" c:type="GSList**">
               <type name="Connection"/>
@@ -34586,8 +34726,7 @@ connections needed to be recovered.</doc>
                      direction="out"
                      caller-allocates="0"
                      transfer-ownership="full"
-                     optional="1"
-                     allow-none="1">
+                     nullable="1">
             <doc xml:space="preserve">a place to store the list of connections for which the there were data to recover and which failed to be actually committed, or %NULL</doc>
             <type name="GLib.SList" c:type="GSList**">
               <type name="Connection"/>

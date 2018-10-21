@@ -19,7 +19,7 @@ namespace Gda {
 		public void add_statement (Gda.Statement stmt);
 		public Gda.Batch copy ();
 		public static GLib.Quark error_quark ();
-		public bool get_parameters (out Gda.Set out_params) throws GLib.Error;
+		public bool get_parameters (out Gda.Set? out_params) throws GLib.Error;
 		public unowned GLib.SList<Gda.Statement> get_statements ();
 		public void remove_statement (Gda.Statement stmt);
 		public string serialize ();
@@ -113,7 +113,7 @@ namespace Gda {
 		public static int get_dsn_info_index (string dsn_name);
 		public static int get_nb_dsn ();
 		public static unowned Gda.ServerProvider get_provider (string provider_name) throws GLib.Error;
-		public static unowned Gda.ProviderInfo? get_provider_info (string provider_name);
+		public static unowned Gda.ProviderInfo get_provider_info (string provider_name);
 		public static Gda.DataModel list_dsn ();
 		public static Gda.DataModel list_providers ();
 		public static bool remove_dsn (string dsn_name) throws GLib.Error;
@@ -287,7 +287,7 @@ namespace Gda {
 		public DataComparator (Gda.DataModel old_model, Gda.DataModel new_model);
 		public bool compute_diff () throws GLib.Error;
 		public static GLib.Quark error_quark ();
-		public unowned Gda.Diff? get_diff (int pos);
+		public unowned Gda.Diff get_diff (int pos);
 		public int get_n_diffs ();
 		public void set_key_columns ([CCode (array_length_cname = "nb_cols", array_length_pos = 1.1)] int[] col_numbers);
 		[NoAccessorMethod]
@@ -692,6 +692,8 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public unowned GLib.List<Gda.DdlColumn> get_columns ();
 		[Version (since = "6.0")]
+		public unowned GLib.List<Gda.DdlFkey> get_fkeys ();
+		[Version (since = "6.0")]
 		public bool is_temp ();
 		public bool is_valid ();
 		[Version (since = "6.0")]
@@ -739,6 +741,14 @@ namespace Gda {
 	public class Default {
 		public static string escape_string (string string);
 		public static string unescape_string (string string);
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gda_diff_get_type ()")]
+	[Compact]
+	public class Diff {
+		public int new_row;
+		public int old_row;
+		public Gda.DiffType type;
+		public weak GLib.HashTable<void*,void*> values;
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gda_dsn_info_get_type ()")]
 	[Compact]
@@ -1018,6 +1028,16 @@ namespace Gda {
 		public void copy_contents (Gda.PStmt dest);
 		public unowned Gda.Statement get_gda_statement ();
 		public void set_gda_statement (Gda.Statement? stmt);
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gda_provider_info_get_type ()")]
+	[Compact]
+	public class ProviderInfo {
+		public weak Gda.Set auth_params;
+		public weak string description;
+		public weak Gda.Set dsn_params;
+		public weak string icon_id;
+		public weak string id;
+		public weak string location;
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gda_quark_list_get_type ()")]
 	[Compact]
@@ -1496,8 +1516,8 @@ namespace Gda {
 		public SqlParser ();
 		public static GLib.Quark error_quark ();
 		public Gda.Batch? parse_file_as_batch (string filename) throws GLib.Error;
-		public Gda.Statement? parse_string (string sql, out string remain) throws GLib.Error;
-		public Gda.Batch? parse_string_as_batch (string sql, out string remain) throws GLib.Error;
+		public Gda.Statement? parse_string (string sql, out string? remain) throws GLib.Error;
+		public Gda.Batch? parse_string_as_batch (string sql, out string? remain) throws GLib.Error;
 		public void set_overflow_error ();
 		public void set_syntax_error ();
 		[NoAccessorMethod]
@@ -1637,12 +1657,12 @@ namespace Gda {
 		public bool check_validity (Gda.Connection? cnc) throws GLib.Error;
 		public Gda.Statement copy ();
 		public static GLib.Quark error_quark ();
-		public bool get_parameters (out Gda.Set out_params) throws GLib.Error;
+		public bool get_parameters (out Gda.Set? out_params) throws GLib.Error;
 		public Gda.SqlStatementType get_statement_type ();
 		public bool is_useless ();
 		public bool normalize (Gda.Connection cnc) throws GLib.Error;
 		public string serialize ();
-		public string to_sql_extended (Gda.Connection? cnc, Gda.Set? @params, Gda.StatementSqlFlag flags, out GLib.SList<weak Gda.Holder> params_used) throws GLib.Error;
+		public string to_sql_extended (Gda.Connection? cnc, Gda.Set? @params, Gda.StatementSqlFlag flags, out GLib.SList<weak Gda.Holder>? params_used) throws GLib.Error;
 		public string to_sql_real (Gda.SqlRenderingContext context) throws GLib.Error;
 		[NoAccessorMethod]
 		public void* structure { get; set; }
@@ -1920,8 +1940,8 @@ namespace Gda {
 		[CCode (has_construct_function = false)]
 		public XaTransaction (uint32 format, string global_transaction_id);
 		public bool begin () throws GLib.Error;
-		public bool commit (out GLib.SList<Gda.Connection> cnc_to_recover) throws GLib.Error;
-		public bool commit_recovered (out GLib.SList<Gda.Connection> cnc_to_recover) throws GLib.Error;
+		public bool commit (out GLib.SList<Gda.Connection>? cnc_to_recover) throws GLib.Error;
+		public bool commit_recovered (out GLib.SList<Gda.Connection>? cnc_to_recover) throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		public bool register_connection (Gda.Connection cnc, string branch) throws GLib.Error;
 		public bool rollback () throws GLib.Error;
@@ -2072,7 +2092,7 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public abstract bool statement_prepare (Gda.Connection cnc, Gda.Statement stmt) throws GLib.Error;
 		[Version (since = "6.0")]
-		public abstract string statement_to_sql (Gda.Connection cnc, Gda.Statement stmt, Gda.Set? @params, Gda.StatementSqlFlag flags, out GLib.SList<weak Gda.Holder> params_used) throws GLib.Error;
+		public abstract string statement_to_sql (Gda.Connection cnc, Gda.Statement stmt, Gda.Set? @params, Gda.StatementSqlFlag flags, out GLib.SList<weak Gda.Holder>? params_used) throws GLib.Error;
 		[Version (since = "6.0")]
 		public abstract bool supports_feature (Gda.Connection cnc, Gda.ConnectionFeature feature);
 		[Version (since = "6.0")]
@@ -2166,13 +2186,15 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public abstract Gda.DataModel schematas () throws GLib.Error;
 		[Version (since = "6.0")]
+		public abstract Gda.Row table (string table_catalog, string table_schema, string table_name_n) throws GLib.Error;
+		[Version (since = "6.0")]
 		public abstract Gda.Row table_column (string table_catalog, string table_schema, string table_name, string column_name) throws GLib.Error;
 		[Version (since = "6.0")]
 		public abstract Gda.DataModel table_columns (string table_catalog, string table_schema, string table_name) throws GLib.Error;
 		[Version (since = "6.0")]
-		public abstract Gda.Row table_view (string table_catalog, string table_schema, string table_name_n) throws GLib.Error;
+		public abstract Gda.DataModel tables () throws GLib.Error;
 		[Version (since = "6.0")]
-		public abstract Gda.DataModel tables_views () throws GLib.Error;
+		public abstract Gda.DataModel tables_columns () throws GLib.Error;
 		[Version (since = "6.0")]
 		public abstract Gda.Row trigger (string table_catalog, string table_schema, string table_name) throws GLib.Error;
 		[Version (since = "6.0")]
@@ -2186,20 +2208,15 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public abstract Gda.DataModel udts () throws GLib.Error;
 		[Version (since = "6.0")]
-		public abstract Gda.Row view_col (string view_catalog, string view_schema, string view_name, string column_name) throws GLib.Error;
+		public abstract Gda.Row view (string view_catalog, string view_schema, string view_name_n) throws GLib.Error;
 		[Version (since = "6.0")]
-		public abstract Gda.DataModel view_cols (string view_catalog, string view_schema, string view_name) throws GLib.Error;
+		public abstract Gda.Row view_column (string view_catalog, string view_schema, string view_name, string column_name) throws GLib.Error;
 		[Version (since = "6.0")]
-		public abstract Gda.DataModel views_cols () throws GLib.Error;
+		public abstract Gda.DataModel views () throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel views_columns () throws GLib.Error;
 		[ConcreteAccessor]
 		public abstract Gda.Connection connection { owned get; construct; }
-	}
-	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
-	public struct Diff {
-		public Gda.DiffType type;
-		public int old_row;
-		public int new_row;
-		public weak GLib.HashTable<void*,void*> values;
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
 	public struct MetaDbObject {
@@ -2253,15 +2270,6 @@ namespace Gda {
 		public Gda.MetaTable table;
 		public weak string view_def;
 		public bool is_updatable;
-	}
-	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
-	public struct ProviderInfo {
-		public weak string id;
-		public weak string location;
-		public weak string description;
-		public weak Gda.Set dsn_params;
-		public weak Gda.Set auth_params;
-		public weak string icon_id;
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
 	public struct ServerProviderHandlerInfo {

@@ -717,12 +717,16 @@ namespace E {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] dup_cc ();
 		public string dup_drafts_folder ();
+		[Version (since = "3.32")]
+		public string dup_language ();
 		public string dup_templates_folder ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_bcc ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_cc ();
 		public unowned string get_drafts_folder ();
+		[Version (since = "3.32")]
+		public unowned string? get_language ();
 		[Version (since = "3.20")]
 		public E.SourceMailCompositionReplyStyle get_reply_style ();
 		public bool get_sign_imip ();
@@ -734,6 +738,8 @@ namespace E {
 		public void set_bcc ([CCode (array_length = false, array_null_terminated = true)] string[] bcc);
 		public void set_cc ([CCode (array_length = false, array_null_terminated = true)] string[] cc);
 		public void set_drafts_folder (string? drafts_folder);
+		[Version (since = "3.32")]
+		public void set_language (string? language);
 		[Version (since = "3.20")]
 		public void set_reply_style (E.SourceMailCompositionReplyStyle reply_style);
 		public void set_sign_imip (bool sign_imip);
@@ -747,6 +753,7 @@ namespace E {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] cc { get; set construct; }
 		public string drafts_folder { get; set construct; }
+		public string language { get; set construct; }
 		public E.SourceMailCompositionReplyStyle reply_style { get; set construct; }
 		public bool sign_imip { get; set construct; }
 		public E.ThreeState start_bottom { get; set construct; }
@@ -1579,7 +1586,8 @@ namespace E {
 		CONTACTS,
 		EVENTS,
 		MEMOS,
-		TASKS
+		TASKS,
+		CALENDAR_AUTO_SCHEDULE
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_LIST_", has_type_id = false)]
 	[Flags]
@@ -1647,7 +1655,8 @@ namespace E {
 		MEMOS,
 		TASKS,
 		FREEBUSY,
-		TIMEZONE
+		TIMEZONE,
+		LAST
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_XMLHASH_STATUS_", has_type_id = false)]
 	public enum XmlHashStatus {
@@ -2101,6 +2110,9 @@ namespace E {
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.4")]
 	public static string[] util_slist_to_strv (GLib.SList<string> strings);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.32")]
+	public static int util_strcmp0 (string str1, string str2);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.6")]
 	public static string util_strdup_strip (string? string);

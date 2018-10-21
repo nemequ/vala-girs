@@ -98,8 +98,11 @@ namespace MM {
 		protected Call ();
 		public async bool accept (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool accept_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public string dup_audio_port ();
 		public string dup_number ();
 		public string dup_path ();
+		public MM.CallAudioFormat get_audio_format ();
+		public unowned string get_audio_port ();
 		public MM.CallDirection get_direction ();
 		public unowned string get_number ();
 		public unowned string get_path ();
@@ -107,10 +110,26 @@ namespace MM {
 		public MM.CallStateReason get_state_reason ();
 		public async bool hangup (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool hangup_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public unowned MM.CallAudioFormat peek_audio_format ();
 		public async bool send_dtmf (string dtmf, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool send_dtmf_sync (string dtmf, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool start (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool start_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_call_audio_format_get_type ()")]
+	public class CallAudioFormat : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public CallAudioFormat ();
+		public MM.CallAudioFormat dup ();
+		[CCode (has_construct_function = false)]
+		public CallAudioFormat.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
+		public GLib.Variant get_dictionary ();
+		public unowned string get_encoding ();
+		public uint get_rate ();
+		public unowned string get_resolution ();
+		public void set_encoding (string encoding);
+		public void set_rate (uint rate);
+		public void set_resolution (string resolution);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_call_properties_get_type ()")]
 	public class CallProperties : GLib.Object {
@@ -1730,7 +1749,8 @@ namespace MM {
 		ACCEPTED,
 		TERMINATED,
 		REFUSED_OR_BUSY,
-		ERROR;
+		ERROR,
+		AUDIO_SETUP_FAILED;
 		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_FIRMWARE_IMAGE_TYPE_", type_id = "mm_firmware_image_type_get_type ()")]
@@ -2650,6 +2670,10 @@ namespace MM {
 	public const string CALL_METHOD_SENDDTMF;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_START")]
 	public const string CALL_METHOD_START;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_PROPERTY_AUDIOFORMAT")]
+	public const string CALL_PROPERTY_AUDIOFORMAT;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_PROPERTY_AUDIOPORT")]
+	public const string CALL_PROPERTY_AUDIOPORT;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_PROPERTY_DIRECTION")]
 	public const string CALL_PROPERTY_DIRECTION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_PROPERTY_NUMBER")]

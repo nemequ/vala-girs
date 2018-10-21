@@ -558,6 +558,7 @@ namespace GVirConfig {
 		public DomainOs.from_xml (string xml) throws GLib.Error;
 		public unowned string get_arch ();
 		public GLib.List<weak GVirConfig.DomainOsBootDevice> get_boot_devices ();
+		public unowned string get_machine ();
 		public GVirConfig.DomainOsType get_os_type ();
 		public void set_arch (string arch);
 		public void set_boot_devices (GLib.List<GVirConfig.DomainOsBootDevice> boot_devices);
@@ -1145,7 +1146,8 @@ namespace GVirConfig {
 		ES1370,
 		PCSPK,
 		AC97,
-		ICH6
+		ICH6,
+		ICH9
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_TIMER_TICK_POLICY_", type_id = "gvir_config_domain_timer_tick_policy_get_type ()")]
 	public enum DomainTimerTickPolicy {

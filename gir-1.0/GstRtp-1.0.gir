@@ -1953,6 +1953,21 @@ audio codec</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="is_source_info_enabled"
+              c:identifier="gst_rtp_base_depayload_is_source_info_enabled"
+              version="1.16">
+        <doc xml:space="preserve">Queries whether #GstRTPSourceMeta will be added to depayloaded buffers.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if source-info is enabled.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="depayload" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTPBaseDepayload</doc>
+            <type name="RTPBaseDepayload" c:type="GstRTPBaseDepayload*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="push" c:identifier="gst_rtp_base_depayload_push">
         <doc xml:space="preserve">Push @out_buf to the peer of @filter. This function takes ownership of
 @out_buf.
@@ -1992,6 +2007,31 @@ the outgoing buffer when it didn't have a timestamp already.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_source_info_enabled"
+              c:identifier="gst_rtp_base_depayload_set_source_info_enabled"
+              version="1.16">
+        <doc xml:space="preserve">Enable or disable adding #GstRTPSourceMeta to depayloaded buffers.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="depayload" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTPBaseDepayload</doc>
+            <type name="RTPBaseDepayload" c:type="GstRTPBaseDepayload*"/>
+          </instance-parameter>
+          <parameter name="enable" transfer-ownership="none">
+            <doc xml:space="preserve">whether to add meta about RTP sources to buffer</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="source-info"
+                version="1.16"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Add RTP source information found in RTP header as meta to output buffer.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
       <property name="stats" transfer-ownership="none">
         <doc xml:space="preserve">Various depayloader statistics retrieved atomically (and are therefore
 synchroized with each other). This property return a GstStructure named
@@ -2225,6 +2265,58 @@ the last processed buffer and current state of the stream being depayloaded:
           </parameter>
         </parameters>
       </virtual-method>
+      <method name="allocate_output_buffer"
+              c:identifier="gst_rtp_base_payload_allocate_output_buffer"
+              version="1.16">
+        <doc xml:space="preserve">Allocate a new #GstBuffer with enough data to hold an RTP packet with
+minimum @csrc_count CSRCs, a payload length of @payload_len and padding of
+@pad_len. If @payload has #GstRTPBasePayload:source-info %TRUE additional
+CSRCs may be allocated and filled with RTP source information.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A newly allocated buffer that can hold an RTP packet with given
+parameters.</doc>
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="payload" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTPBasePayload</doc>
+            <type name="RTPBasePayload" c:type="GstRTPBasePayload*"/>
+          </instance-parameter>
+          <parameter name="payload_len" transfer-ownership="none">
+            <doc xml:space="preserve">the length of the payload</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="pad_len" transfer-ownership="none">
+            <doc xml:space="preserve">the amount of padding</doc>
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+          <parameter name="csrc_count" transfer-ownership="none">
+            <doc xml:space="preserve">the minimum number of CSRC entries</doc>
+            <type name="guint8" c:type="guint8"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_source_count"
+              c:identifier="gst_rtp_base_payload_get_source_count"
+              version="1.16">
+        <doc xml:space="preserve">Count the total number of RTP sources found in the meta of @buffer, which
+will be automically added by gst_rtp_base_payload_allocate_output_buffer().
+If #GstRTPBasePayload:source-info is %FALSE the count will be 0.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The number of sources.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="payload" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTPBasePayload</doc>
+            <type name="RTPBasePayload" c:type="GstRTPBasePayload*"/>
+          </instance-parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstBuffer, typically the buffer to payload</doc>
+            <type name="Gst.Buffer" c:type="GstBuffer*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="is_filled" c:identifier="gst_rtp_base_payload_is_filled">
         <doc xml:space="preserve">Check if the packet with @size and @duration would exceed the configured
 maximum size.</doc>
@@ -2246,6 +2338,22 @@ configured MTU or max_ptime.</doc>
             <doc xml:space="preserve">the duration of the packet</doc>
             <type name="Gst.ClockTime" c:type="GstClockTime"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="is_source_info_enabled"
+              c:identifier="gst_rtp_base_payload_is_source_info_enabled"
+              version="1.16">
+        <doc xml:space="preserve">Queries whether the payloader will add contributing sources (CSRCs) to the
+RTP header from #GstRTPSourceMeta.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if source-info is enabled.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="payload" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTPBasePayload</doc>
+            <type name="RTPBasePayload" c:type="GstRTPBasePayload*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="push" c:identifier="gst_rtp_base_payload_push">
@@ -2345,6 +2453,25 @@ Variable arguments should be in the form field name, field type
           </parameter>
         </parameters>
       </method>
+      <method name="set_source_info_enabled"
+              c:identifier="gst_rtp_base_payload_set_source_info_enabled"
+              version="1.16">
+        <doc xml:space="preserve">Enable or disable adding contributing sources to RTP packets from
+#GstRTPSourceMeta.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="payload" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTPBasePayload</doc>
+            <type name="RTPBasePayload" c:type="GstRTPBasePayload*"/>
+          </instance-parameter>
+          <parameter name="enable" transfer-ownership="none">
+            <doc xml:space="preserve">whether to add contributing sources to RTP packets</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </parameter>
+        </parameters>
+      </method>
       <property name="max-ptime" writable="1" transfer-ownership="none">
         <type name="gint64" c:type="gint64"/>
       </property>
@@ -2385,6 +2512,14 @@ timestamps for audio streams.</doc>
       </property>
       <property name="seqnum-offset" writable="1" transfer-ownership="none">
         <type name="gint" c:type="gint"/>
+      </property>
+      <property name="source-info"
+                version="1.16"
+                writable="1"
+                transfer-ownership="none">
+        <doc xml:space="preserve">Enable writing the CSRC field in allocated RTP header based on RTP source
+information found in the input buffer's #GstRTPSourceMeta.</doc>
+        <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="ssrc" writable="1" transfer-ownership="none">
         <type name="guint" c:type="guint"/>
@@ -3952,6 +4087,96 @@ types specified with @payload_type.</doc>
         <doc xml:space="preserve">the secure Audio/Visual profile with feedback (RFC 5124)</doc>
       </member>
     </enumeration>
+    <record name="RTPSourceMeta" c:type="GstRTPSourceMeta" version="1.16">
+      <doc xml:space="preserve">Meta describing the source(s) of the buffer.</doc>
+      <field name="meta" writable="1">
+        <doc xml:space="preserve">parent #GstMeta</doc>
+        <type name="Gst.Meta" c:type="GstMeta"/>
+      </field>
+      <field name="ssrc" writable="1">
+        <doc xml:space="preserve">the SSRC</doc>
+        <type name="guint32" c:type="guint32"/>
+      </field>
+      <field name="ssrc_valid" writable="1">
+        <doc xml:space="preserve">whether @ssrc is set and valid</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="csrc" writable="1">
+        <doc xml:space="preserve">pointer to the CSRCs</doc>
+        <array zero-terminated="0" c:type="guint32" fixed-size="15">
+          <type name="guint32" c:type="guint32"/>
+        </array>
+      </field>
+      <field name="csrc_count" writable="1">
+        <doc xml:space="preserve">number of elements in @csrc</doc>
+        <type name="guint" c:type="guint"/>
+      </field>
+      <method name="append_csrc"
+              c:identifier="gst_rtp_source_meta_append_csrc"
+              version="1.16">
+        <doc xml:space="preserve">Appends @csrc to the list of contributing sources in @meta.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE if all elements in @csrc was added, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="meta" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTPSourceMeta</doc>
+            <type name="RTPSourceMeta" c:type="GstRTPSourceMeta*"/>
+          </instance-parameter>
+          <parameter name="csrc" transfer-ownership="none">
+            <doc xml:space="preserve">the csrcs to append</doc>
+            <type name="guint32" c:type="const guint32*"/>
+          </parameter>
+          <parameter name="csrc_count" transfer-ownership="none">
+            <doc xml:space="preserve">number of elements in @csrc</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_source_count"
+              c:identifier="gst_rtp_source_meta_get_source_count"
+              version="1.16">
+        <doc xml:space="preserve">Count the total number of RTP sources found in @meta, both SSRC and CSRC.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The number of RTP sources</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="meta" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTPSourceMeta</doc>
+            <type name="RTPSourceMeta" c:type="const GstRTPSourceMeta*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_ssrc"
+              c:identifier="gst_rtp_source_meta_set_ssrc"
+              version="1.16">
+        <doc xml:space="preserve">Sets @ssrc in @meta. If @ssrc is %NULL the ssrc of @meta will be unset.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">%TRUE on success, %FALSE otherwise.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="meta" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstRTPSourceMeta</doc>
+            <type name="RTPSourceMeta" c:type="GstRTPSourceMeta*"/>
+          </instance-parameter>
+          <parameter name="ssrc"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">pointer to the SSRC</doc>
+            <type name="guint32" c:type="guint32*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <function name="get_info" c:identifier="gst_rtp_source_meta_get_info">
+        <return-value transfer-ownership="none">
+          <type name="Gst.MetaInfo" c:type="const GstMetaInfo*"/>
+        </return-value>
+      </function>
+    </record>
     <constant name="RTP_HDREXT_BASE"
               value="urn:ietf:params:rtp-hdrext:"
               c:type="GST_RTP_HDREXT_BASE">
@@ -4148,10 +4373,62 @@ types specified with @payload_type.</doc>
               c:type="GST_RTP_PAYLOAD_TS48_STRING">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="RTP_SOURCE_META_MAX_CSRC_COUNT"
+              value="15"
+              c:type="GST_RTP_SOURCE_META_MAX_CSRC_COUNT">
+      <type name="gint" c:type="gint"/>
+    </constant>
     <constant name="RTP_VERSION" value="2" c:type="GST_RTP_VERSION">
       <doc xml:space="preserve">The supported RTP version 2.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
+    <function name="buffer_add_rtp_source_meta"
+              c:identifier="gst_buffer_add_rtp_source_meta"
+              version="1.16">
+      <doc xml:space="preserve">Attaches RTP source information to @buffer.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the #GstRTPSourceMeta on @buffer.</doc>
+        <type name="RTPSourceMeta" c:type="GstRTPSourceMeta*"/>
+      </return-value>
+      <parameters>
+        <parameter name="buf" transfer-ownership="none">
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </parameter>
+        <parameter name="ssrc"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">pointer to the SSRC</doc>
+          <type name="guint32" c:type="const guint32*"/>
+        </parameter>
+        <parameter name="csrc"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">pointer to the CSRCs</doc>
+          <type name="guint32" c:type="const guint32*"/>
+        </parameter>
+        <parameter name="csrc_count" transfer-ownership="none">
+          <doc xml:space="preserve">number of elements in @csrc</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="buffer_get_rtp_source_meta"
+              c:identifier="gst_buffer_get_rtp_source_meta"
+              version="1.16">
+      <doc xml:space="preserve">Find the #GstRTPSourceMeta on @buffer.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">the #GstRTPSourceMeta or %NULL when there
+is no such metadata on @buffer.</doc>
+        <type name="RTPSourceMeta" c:type="GstRTPSourceMeta*"/>
+      </return-value>
+      <parameters>
+        <parameter name="buf" transfer-ownership="none">
+          <type name="Gst.Buffer" c:type="GstBuffer*"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="rtcp_buffer_map"
               c:identifier="gst_rtcp_buffer_map"
               moved-to="RTCPBuffer.map">
@@ -4819,6 +5096,19 @@ types specified with @payload_type.</doc>
           <type name="guint8" c:type="guint8"/>
         </parameter>
       </parameters>
+    </function>
+    <function name="rtp_source_meta_api_get_type"
+              c:identifier="gst_rtp_source_meta_api_get_type">
+      <return-value transfer-ownership="none">
+        <type name="GType" c:type="GType"/>
+      </return-value>
+    </function>
+    <function name="rtp_source_meta_get_info"
+              c:identifier="gst_rtp_source_meta_get_info"
+              moved-to="RTPSourceMeta.get_info">
+      <return-value transfer-ownership="none">
+        <type name="Gst.MetaInfo" c:type="const GstMetaInfo*"/>
+      </return-value>
     </function>
   </namespace>
 </repository>

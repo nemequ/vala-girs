@@ -1426,6 +1426,16 @@ only be accessed using the provided API.</doc>
               c:type="MM_CALL_METHOD_START">
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="CALL_PROPERTY_AUDIOFORMAT"
+              value="AudioFormat"
+              c:type="MM_CALL_PROPERTY_AUDIOFORMAT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="CALL_PROPERTY_AUDIOPORT"
+              value="AudioPort"
+              c:type="MM_CALL_PROPERTY_AUDIOPORT">
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="CALL_PROPERTY_DIRECTION"
               value="Direction"
               c:type="MM_CALL_PROPERTY_DIRECTION">
@@ -1554,6 +1564,20 @@ See mm_call_accept() for the asynchronous version of this method.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="dup_audio_port" c:identifier="mm_call_dup_audio_port">
+        <doc xml:space="preserve">Gets the kernel device used for audio (if any).</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">The audio port, or %NULL if call audio is not
+routed via the host or couldn't be retrieved.</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #MMCall.</doc>
+            <type name="Call" c:type="MMCall*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="dup_number" c:identifier="mm_call_dup_number">
         <doc xml:space="preserve">Gets the call number. In outgoing calls contains the dialing number or
 the remote number in incoming calls</doc>
@@ -1573,6 +1597,39 @@ the remote number in incoming calls</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">The DBus path of the #MMCall object. The returned value should be freed with g_free().</doc>
           <type name="utf8" c:type="gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #MMCall.</doc>
+            <type name="Call" c:type="MMCall*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_audio_format" c:identifier="mm_call_get_audio_format">
+        <doc xml:space="preserve">Gets a #MMCallAudioFormat object specifying the audio format used by the
+audio port if call audio is routed via the host.
+
+&lt;warning&gt;The values reported by @self are not updated when the values in the
+interface change. Instead, the client is expected to call
+mm_call_get_audio_format() again to get a new #MMCallAudioFormat with the
+new values.&lt;/warning&gt;</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A #MMCallAudioFormat that must be freed with g_object_unref() or %NULL if unknown.</doc>
+          <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #MMCall.</doc>
+            <type name="Call" c:type="MMCall*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_audio_port" c:identifier="mm_call_get_audio_port">
+        <doc xml:space="preserve">Gets the kernel device used for audio (if any).</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">The audio port, or %NULL if call audio is not
+routed via the host or couldn't be retrieved.</doc>
+          <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
@@ -1736,6 +1793,26 @@ See mm_call_hangup() for the asynchronous version of this method.</doc>
             <doc xml:space="preserve">A #GCancellable or %NULL.</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="peek_audio_format"
+              c:identifier="mm_call_peek_audio_format">
+        <doc xml:space="preserve">Gets a #MMCallAudioFormat object specifying the audio format used by the
+audio port if call audio is routed via the host.
+
+&lt;warning&gt;The returned value is only valid until the property changes so
+it is only safe to use this function on the thread where
+@self was constructed. Use mm_call_get_audio_format() if on another
+thread.&lt;/warning&gt;</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">A #MMCallAudioFormat. Do not free the returned value, it belongs to @self.</doc>
+          <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">A #MMCall.</doc>
+            <type name="Call" c:type="MMCall*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <method name="send_dtmf" c:identifier="mm_call_send_dtmf">
@@ -1923,10 +2000,164 @@ See mm_call_start() for the asynchronous version of this method.</doc>
       <field name="parent" introspectable="0" readable="0" private="1">
         <type c:type="MmGdbusCallProxy"/>
       </field>
-      <field name="unused" readable="0" private="1">
-        <type name="gpointer" c:type="gpointer"/>
+      <field name="priv" readable="0" private="1">
+        <type name="CallPrivate" c:type="MMCallPrivate*"/>
       </field>
     </class>
+    <class name="CallAudioFormat"
+           c:symbol-prefix="call_audio_format"
+           c:type="MMCallAudioFormat"
+           parent="GObject.Object"
+           glib:type-name="MMCallAudioFormat"
+           glib:get-type="mm_call_audio_format_get_type"
+           glib:type-struct="CallAudioFormatClass">
+      <doc xml:space="preserve">The #MMCallAudioFormat structure contains private data and should
+only be accessed using the provided API.</doc>
+      <constructor name="new" c:identifier="mm_call_audio_format_new">
+        <return-value transfer-ownership="full">
+          <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+        </return-value>
+      </constructor>
+      <constructor name="new_from_dictionary"
+                   c:identifier="mm_call_audio_format_new_from_dictionary"
+                   throws="1">
+        <return-value transfer-ownership="full">
+          <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+        </return-value>
+        <parameters>
+          <parameter name="dictionary" transfer-ownership="none">
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <method name="dup" c:identifier="mm_call_audio_format_dup">
+        <doc xml:space="preserve">Creates a copy of @orig.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a newly created #MMCallAudioFormat</doc>
+          <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="orig" transfer-ownership="none">
+            <doc xml:space="preserve">a #MMCallAudioFormat</doc>
+            <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_dictionary"
+              c:identifier="mm_call_audio_format_get_dictionary">
+        <return-value transfer-ownership="full">
+          <type name="GLib.Variant" c:type="GVariant*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_encoding"
+              c:identifier="mm_call_audio_format_get_encoding">
+        <doc xml:space="preserve">Gets the encoding of the audio format.  For example, "pcm" for PCM-encoded
+audio.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a string with the encoding, or #NULL if unknown. Do not free the returned value, it is owned by @self.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #MMCallAudioFormat.</doc>
+            <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_rate" c:identifier="mm_call_audio_format_get_rate">
+        <doc xml:space="preserve">Gets the sampling rate of the audio format.  For example, 8000 for an 8000hz
+sampling rate.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">the sampling rate, or 0 if unknown.</doc>
+          <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #MMCallAudioFormat.</doc>
+            <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_resolution"
+              c:identifier="mm_call_audio_format_get_resolution">
+        <doc xml:space="preserve">Gets the resolution of the audio format.  For example, "s16le" for signed
+16-bit little-endian audio sampling resolution.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">a string with the resolution, or #NULL if unknown. Do not free the returned value, it is owned by @self.</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve">a #MMCallAudioFormat.</doc>
+            <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="set_encoding"
+              c:identifier="mm_call_audio_format_set_encoding">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+          </instance-parameter>
+          <parameter name="encoding" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_rate" c:identifier="mm_call_audio_format_set_rate">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+          </instance-parameter>
+          <parameter name="rate" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="set_resolution"
+              c:identifier="mm_call_audio_format_set_resolution">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="CallAudioFormat" c:type="MMCallAudioFormat*"/>
+          </instance-parameter>
+          <parameter name="resolution" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <field name="parent" readable="0" private="1">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="CallAudioFormatPrivate"
+              c:type="MMCallAudioFormatPrivate*"/>
+      </field>
+    </class>
+    <record name="CallAudioFormatClass"
+            c:type="MMCallAudioFormatClass"
+            glib:is-gtype-struct-for="CallAudioFormat">
+      <field name="parent" readable="0" private="1">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+    </record>
+    <record name="CallAudioFormatPrivate"
+            c:type="MMCallAudioFormatPrivate"
+            disguised="1">
+    </record>
     <record name="CallClass"
             c:type="MMCallClass"
             glib:is-gtype-struct-for="Call">
@@ -1967,6 +2198,8 @@ See mm_call_start() for the asynchronous version of this method.</doc>
         </parameters>
       </function>
     </enumeration>
+    <record name="CallPrivate" c:type="MMCallPrivate" disguised="1">
+    </record>
     <class name="CallProperties"
            c:symbol-prefix="call_properties"
            c:type="MMCallProperties"
@@ -2265,6 +2498,11 @@ accessed using the provided API.</doc>
               value="6"
               c:identifier="MM_CALL_STATE_REASON_ERROR"
               glib:nick="error">
+      </member>
+      <member name="audio_setup_failed"
+              value="7"
+              c:identifier="MM_CALL_STATE_REASON_AUDIO_SETUP_FAILED"
+              glib:nick="audio-setup-failed">
       </member>
       <function name="get_string"
                 c:identifier="mm_call_state_reason_get_string">

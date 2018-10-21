@@ -10,9 +10,9 @@
 <include name="Pango" version="1.0"/>
 <include name="cairo" version="1.0"/>
 <include name="Gdk" version="3.0"/>
-<package name="libgitg/libgitg-1.0"/>
+<package name="gitg-1.0"/>
 <c:include name="libgitg/gitg-platform-support.h"/>
-<c:include name="libgitg/libgitg.h"/>
+<c:include name="libgitg.h"/>
 <namespace name="Gitg" version="1.0" c:prefix="Gitg">
 	<enumeration name="AuthenticationLifeTime" c:type="GitgAuthenticationLifeTime" glib:type-name="GitgAuthenticationLifeTime" glib:get-type="gitg_authentication_life_time_get_type">
 		<member name="forget" c:identifier="GITG_AUTHENTICATION_LIFE_TIME_FORGET" value="0"/>
@@ -618,7 +618,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="ids" transfer-ownership="none">
-					<array length="1">
+					<array length="1" c:type="GgitOId**">
 						<type name="Ggit.OId" c:type="GgitOId*"/>
 					</array>
 				</parameter>
@@ -633,7 +633,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="ids" transfer-ownership="none">
-					<array length="1">
+					<array length="1" c:type="GgitOId**">
 						<type name="Ggit.OId" c:type="GgitOId*"/>
 					</array>
 				</parameter>
@@ -727,13 +727,13 @@
 			</parameters>
 		</method>
 		<property name="permanent-lanes" writable="1">
-			<array>
+			<array c:type="GgitOId**">
 				<type name="Ggit.OId" c:type="GgitOId*"/>
 			</array>
 		</property>
 		<method name="get_permanent_lanes" c:identifier="gitg_commit_model_get_permanent_lanes">
 			<return-value transfer-ownership="none">
-				<array length="0">
+				<array length="0" c:type="GgitOId**">
 					<type name="Ggit.OId" c:type="GgitOId*"/>
 				</array>
 			</return-value>
@@ -749,7 +749,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="value" transfer-ownership="none">
-					<array length="1">
+					<array length="1" c:type="GgitOId**">
 						<type name="Ggit.OId" c:type="GgitOId*"/>
 					</array>
 				</parameter>
@@ -1114,6 +1114,66 @@
 		</field>
 	</record>
 	<record name="DiffStatPrivate" c:type="GitgDiffStatPrivate" disguised="1"/>
+	<class name="DiffViewOptions" c:type="GitgDiffViewOptions" glib:type-name="GitgDiffViewOptions" glib:get-type="gitg_diff_view_options_get_type" glib:type-struct="DiffViewOptionsClass" parent="Gtk.Toolbar">
+		<field name="parent_instance">
+			<type name="Gtk.Toolbar" c:type="GtkToolbar"/>
+		</field>
+		<field name="priv">
+			<type name="DiffViewOptionsPrivate" c:type="GitgDiffViewOptionsPrivate*"/>
+		</field>
+		<constructor name="new" c:identifier="gitg_diff_view_options_new">
+			<return-value transfer-ownership="none">
+				<type name="Gitg.DiffViewOptions" c:type="GitgDiffViewOptions*"/>
+			</return-value>
+			<parameters>
+				<parameter name="view" transfer-ownership="none" allow-none="1">
+					<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
+				</parameter>
+			</parameters>
+		</constructor>
+		<property name="context-lines" writable="1">
+			<type name="gint" c:type="gint"/>
+		</property>
+		<method name="get_context_lines" c:identifier="gitg_diff_view_options_get_context_lines">
+			<return-value transfer-ownership="none">
+				<type name="gint" c:type="gint"/>
+			</return-value>
+		</method>
+		<method name="set_context_lines" c:identifier="gitg_diff_view_options_set_context_lines">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none">
+					<type name="gint" c:type="gint"/>
+				</parameter>
+			</parameters>
+		</method>
+		<property name="view" writable="1" construct="1">
+			<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
+		</property>
+		<method name="get_view" c:identifier="gitg_diff_view_options_get_view">
+			<return-value transfer-ownership="none" allow-none="1">
+				<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
+			</return-value>
+		</method>
+		<method name="set_view" c:identifier="gitg_diff_view_options_set_view">
+			<return-value transfer-ownership="none">
+				<type name="none"/>
+			</return-value>
+			<parameters>
+				<parameter name="value" transfer-ownership="none" allow-none="1">
+					<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
+				</parameter>
+			</parameters>
+		</method>
+	</class>
+	<record name="DiffViewOptionsClass" c:type="GitgDiffViewOptionsClass" glib:is-gtype-struct-for="DiffViewOptions">
+		<field name="parent_class">
+			<type name="Gtk.ToolbarClass" c:type="GtkToolbarClass"/>
+		</field>
+	</record>
+	<record name="DiffViewOptionsPrivate" c:type="GitgDiffViewOptionsPrivate" disguised="1"/>
 	<class name="DiffView" c:type="GitgDiffView" glib:type-name="GitgDiffView" glib:get-type="gitg_diff_view_get_type" glib:type-struct="DiffViewClass" parent="Gtk.Grid">
 		<field name="parent_instance">
 			<type name="Gtk.Grid" c:type="GtkGrid"/>
@@ -1431,13 +1491,13 @@
 			</parameters>
 		</method>
 		<property name="selection">
-			<array>
+			<array c:type="GitgPatchSet**">
 				<type name="Gitg.PatchSet" c:type="GitgPatchSet*"/>
 			</array>
 		</property>
 		<method name="get_selection" c:identifier="gitg_diff_view_get_selection">
 			<return-value transfer-ownership="full">
-				<array length="0">
+				<array length="0" c:type="GitgPatchSet**">
 					<type name="Gitg.PatchSet" c:type="GitgPatchSet*"/>
 				</array>
 			</return-value>
@@ -1466,66 +1526,6 @@
 		</field>
 	</record>
 	<record name="DiffViewPrivate" c:type="GitgDiffViewPrivate" disguised="1"/>
-	<class name="DiffViewOptions" c:type="GitgDiffViewOptions" glib:type-name="GitgDiffViewOptions" glib:get-type="gitg_diff_view_options_get_type" glib:type-struct="DiffViewOptionsClass" parent="Gtk.Toolbar">
-		<field name="parent_instance">
-			<type name="Gtk.Toolbar" c:type="GtkToolbar"/>
-		</field>
-		<field name="priv">
-			<type name="DiffViewOptionsPrivate" c:type="GitgDiffViewOptionsPrivate*"/>
-		</field>
-		<constructor name="new" c:identifier="gitg_diff_view_options_new">
-			<return-value transfer-ownership="none">
-				<type name="Gitg.DiffViewOptions" c:type="GitgDiffViewOptions*"/>
-			</return-value>
-			<parameters>
-				<parameter name="view" transfer-ownership="none" allow-none="1">
-					<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-				</parameter>
-			</parameters>
-		</constructor>
-		<property name="context-lines" writable="1">
-			<type name="gint" c:type="gint"/>
-		</property>
-		<method name="get_context_lines" c:identifier="gitg_diff_view_options_get_context_lines">
-			<return-value transfer-ownership="none">
-				<type name="gint" c:type="gint"/>
-			</return-value>
-		</method>
-		<method name="set_context_lines" c:identifier="gitg_diff_view_options_set_context_lines">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none">
-					<type name="gint" c:type="gint"/>
-				</parameter>
-			</parameters>
-		</method>
-		<property name="view" writable="1" construct="1">
-			<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-		</property>
-		<method name="get_view" c:identifier="gitg_diff_view_options_get_view">
-			<return-value transfer-ownership="none" allow-none="1">
-				<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-			</return-value>
-		</method>
-		<method name="set_view" c:identifier="gitg_diff_view_options_set_view">
-			<return-value transfer-ownership="none">
-				<type name="none"/>
-			</return-value>
-			<parameters>
-				<parameter name="value" transfer-ownership="none" allow-none="1">
-					<type name="Gitg.DiffView" c:type="GitgDiffView*"/>
-				</parameter>
-			</parameters>
-		</method>
-	</class>
-	<record name="DiffViewOptionsClass" c:type="GitgDiffViewOptionsClass" glib:is-gtype-struct-for="DiffViewOptions">
-		<field name="parent_class">
-			<type name="Gtk.ToolbarClass" c:type="GtkToolbarClass"/>
-		</field>
-	</record>
-	<record name="DiffViewOptionsPrivate" c:type="GitgDiffViewOptionsPrivate" disguised="1"/>
 	<class name="Hook" c:type="GitgHook" glib:type-name="GitgHook" glib:get-type="gitg_hook_get_type" glib:type-struct="HookClass" parent="GObject.Object">
 		<field name="parent_instance">
 			<type name="GObject.Object" c:type="GObject"/>
@@ -1663,13 +1663,13 @@
 			</parameters>
 		</method>
 		<property name="output">
-			<array>
+			<array c:type="gchar**">
 				<type name="utf8" c:type="gchar*"/>
 			</array>
 		</property>
 		<method name="get_output" c:identifier="gitg_hook_get_output">
 			<return-value transfer-ownership="full">
-				<array length="0">
+				<array length="0" c:type="gchar**">
 					<type name="utf8" c:type="gchar*"/>
 				</array>
 			</return-value>
@@ -1781,59 +1781,6 @@
 			</return-value>
 		</constructor>
 	</record>
-	<class name="Lane" c:type="GitgLane" glib:type-name="GitgLane" glib:get-type="gitg_lane_get_type" glib:type-struct="LaneClass" parent="GObject.Object">
-		<field name="parent_instance">
-			<type name="GObject.Object" c:type="GObject"/>
-		</field>
-		<field name="priv">
-			<type name="LanePrivate" c:type="GitgLanePrivate*"/>
-		</field>
-		<field name="color">
-			<type name="Gitg.Color" c:type="GitgColor*"/>
-		</field>
-		<field name="from">
-			<type name="GLib.SList" c:type="GSList*">
-				<type name="gint" c:type="gint"/>
-			</type>
-		</field>
-		<field name="tag">
-			<type name="Gitg.LaneTag" c:type="GitgLaneTag"/>
-		</field>
-		<field name="boundary_id" allow-none="1">
-			<type name="Ggit.OId" c:type="GgitOId*"/>
-		</field>
-		<constructor name="new" c:identifier="gitg_lane_new">
-			<return-value transfer-ownership="full">
-				<type name="Gitg.Lane" c:type="GitgLane*"/>
-			</return-value>
-		</constructor>
-		<constructor name="with_color" c:identifier="gitg_lane_new_with_color">
-			<return-value transfer-ownership="full">
-				<type name="Gitg.Lane" c:type="GitgLane*"/>
-			</return-value>
-			<parameters>
-				<parameter name="color" transfer-ownership="none" allow-none="1">
-					<type name="Gitg.Color" c:type="GitgColor*"/>
-				</parameter>
-			</parameters>
-		</constructor>
-		<method name="copy" c:identifier="gitg_lane_copy">
-			<return-value transfer-ownership="full">
-				<type name="Gitg.Lane" c:type="GitgLane*"/>
-			</return-value>
-		</method>
-		<method name="dup" c:identifier="gitg_lane_dup">
-			<return-value transfer-ownership="full">
-				<type name="Gitg.Lane" c:type="GitgLane*"/>
-			</return-value>
-		</method>
-	</class>
-	<record name="LaneClass" c:type="GitgLaneClass" glib:is-gtype-struct-for="Lane">
-		<field name="parent_class">
-			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
-		</field>
-	</record>
-	<record name="LanePrivate" c:type="GitgLanePrivate" disguised="1"/>
 	<class name="Lanes" c:type="GitgLanes" glib:type-name="GitgLanes" glib:get-type="gitg_lanes_get_type" glib:type-struct="LanesClass" parent="GObject.Object">
 		<field name="parent_instance">
 			<type name="GObject.Object" c:type="GObject"/>
@@ -1852,7 +1799,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="reserved" transfer-ownership="none" allow-none="1">
-					<array length="1">
+					<array length="1" c:type="GgitOId**">
 						<type name="Ggit.OId" c:type="GgitOId*"/>
 					</array>
 				</parameter>
@@ -1963,6 +1910,59 @@
 		</field>
 	</record>
 	<record name="LanesPrivate" c:type="GitgLanesPrivate" disguised="1"/>
+	<class name="Lane" c:type="GitgLane" glib:type-name="GitgLane" glib:get-type="gitg_lane_get_type" glib:type-struct="LaneClass" parent="GObject.Object">
+		<field name="parent_instance">
+			<type name="GObject.Object" c:type="GObject"/>
+		</field>
+		<field name="priv">
+			<type name="LanePrivate" c:type="GitgLanePrivate*"/>
+		</field>
+		<field name="color">
+			<type name="Gitg.Color" c:type="GitgColor*"/>
+		</field>
+		<field name="from">
+			<type name="GLib.SList" c:type="GSList*">
+				<type name="gint" c:type="gint"/>
+			</type>
+		</field>
+		<field name="tag">
+			<type name="Gitg.LaneTag" c:type="GitgLaneTag"/>
+		</field>
+		<field name="boundary_id" allow-none="1">
+			<type name="Ggit.OId" c:type="GgitOId*"/>
+		</field>
+		<constructor name="new" c:identifier="gitg_lane_new">
+			<return-value transfer-ownership="full">
+				<type name="Gitg.Lane" c:type="GitgLane*"/>
+			</return-value>
+		</constructor>
+		<constructor name="with_color" c:identifier="gitg_lane_new_with_color">
+			<return-value transfer-ownership="full">
+				<type name="Gitg.Lane" c:type="GitgLane*"/>
+			</return-value>
+			<parameters>
+				<parameter name="color" transfer-ownership="none" allow-none="1">
+					<type name="Gitg.Color" c:type="GitgColor*"/>
+				</parameter>
+			</parameters>
+		</constructor>
+		<method name="copy" c:identifier="gitg_lane_copy">
+			<return-value transfer-ownership="full">
+				<type name="Gitg.Lane" c:type="GitgLane*"/>
+			</return-value>
+		</method>
+		<method name="dup" c:identifier="gitg_lane_dup">
+			<return-value transfer-ownership="full">
+				<type name="Gitg.Lane" c:type="GitgLane*"/>
+			</return-value>
+		</method>
+	</class>
+	<record name="LaneClass" c:type="GitgLaneClass" glib:is-gtype-struct-for="Lane">
+		<field name="parent_class">
+			<type name="GObject.ObjectClass" c:type="GObjectClass"/>
+		</field>
+	</record>
+	<record name="LanePrivate" c:type="GitgLanePrivate" disguised="1"/>
 	<class name="ProgressBin" c:type="GitgProgressBin" glib:type-name="GitgProgressBin" glib:get-type="gitg_progress_bin_get_type" glib:type-struct="ProgressBinClass" parent="Gtk.Bin">
 		<field name="parent_instance">
 			<type name="Gtk.Bin" c:type="GtkBin"/>
@@ -2228,13 +2228,13 @@
 			</return-value>
 		</method>
 		<property name="fetch-specs" writable="1">
-			<array>
+			<array c:type="gchar**">
 				<type name="utf8" c:type="gchar*"/>
 			</array>
 		</property>
 		<method name="get_fetch_specs" c:identifier="gitg_remote_get_fetch_specs">
 			<return-value transfer-ownership="full" allow-none="1">
-				<array length="0">
+				<array length="0" c:type="gchar**">
 					<type name="utf8" c:type="gchar*"/>
 				</array>
 			</return-value>
@@ -2250,7 +2250,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="value" transfer-ownership="none" allow-none="1">
-					<array length="1">
+					<array length="1" c:type="gchar**">
 						<type name="utf8" c:type="gchar*"/>
 					</array>
 				</parameter>
@@ -2260,13 +2260,13 @@
 			</parameters>
 		</method>
 		<property name="push-specs" writable="1">
-			<array>
+			<array c:type="gchar**">
 				<type name="utf8" c:type="gchar*"/>
 			</array>
 		</property>
 		<method name="get_push_specs" c:identifier="gitg_remote_get_push_specs">
 			<return-value transfer-ownership="full" allow-none="1">
-				<array length="0">
+				<array length="0" c:type="gchar**">
 					<type name="utf8" c:type="gchar*"/>
 				</array>
 			</return-value>
@@ -2282,7 +2282,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="value" transfer-ownership="none" allow-none="1">
-					<array length="1">
+					<array length="1" c:type="gchar**">
 						<type name="utf8" c:type="gchar*"/>
 					</array>
 				</parameter>
@@ -2450,13 +2450,13 @@
 			</parameters>
 		</method>
 		<property name="selection">
-			<array>
+			<array c:type="GitgRepositoryListBoxRow**">
 				<type name="Gitg.RepositoryListBoxRow" c:type="GitgRepositoryListBoxRow*"/>
 			</array>
 		</property>
 		<method name="get_selection" c:identifier="gitg_repository_list_box_get_selection">
 			<return-value transfer-ownership="full">
-				<array length="0">
+				<array length="0" c:type="GitgRepositoryListBoxRow**">
 					<type name="Gitg.RepositoryListBoxRow" c:type="GitgRepositoryListBoxRow*"/>
 				</array>
 			</return-value>
@@ -3145,7 +3145,7 @@
 		</method>
 		<method name="get_selected_items" c:identifier="gitg_sidebar_get_selected_items">
 			<return-value transfer-ownership="full">
-				<array length="0">
+				<array length="0" c:type="gpointer*">
 					<type name="gpointer" c:type="gpointer"/>
 				</array>
 			</return-value>
@@ -3374,7 +3374,7 @@
 		</method>
 		<method name="next_items_finish" c:identifier="gitg_stage_status_enumerator_next_items_finish">
 			<return-value transfer-ownership="full">
-				<array length="1">
+				<array length="1" c:type="GitgStageStatusItem**">
 					<type name="Gitg.StageStatusItem" c:type="GitgStageStatusItem*"/>
 				</array>
 			</return-value>
@@ -3399,7 +3399,7 @@
 			<type name="utf8" c:type="gchar*"/>
 		</field>
 		<field name="patches">
-			<array>
+			<array c:type="GitgPatchSetPatch*">
 				<type name="Gitg.PatchSetPatch" c:type="GitgPatchSetPatch"/>
 			</array>
 		</field>
@@ -3542,7 +3542,7 @@
 					<type name="Ggit.Signature" c:type="GgitSignature*"/>
 				</parameter>
 				<parameter name="parents" transfer-ownership="none" allow-none="1">
-					<array length="6">
+					<array length="6" c:type="GgitOId**">
 						<type name="Ggit.OId" c:type="GgitOId*"/>
 					</array>
 				</parameter>
@@ -3591,7 +3591,7 @@
 					<type name="Ggit.Signature" c:type="GgitSignature*"/>
 				</parameter>
 				<parameter name="parents" transfer-ownership="none" allow-none="1">
-					<array length="6">
+					<array length="6" c:type="GgitOId**">
 						<type name="Ggit.OId" c:type="GgitOId*"/>
 					</array>
 				</parameter>
@@ -3975,7 +3975,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="files" transfer-ownership="none" allow-none="1">
-					<array length="1">
+					<array length="1" c:type="GitgStageStatusItem**">
 						<type name="Gitg.StageStatusItem" c:type="GitgStageStatusItem*"/>
 					</array>
 				</parameter>
@@ -4038,7 +4038,7 @@
 			</return-value>
 			<parameters>
 				<parameter name="files" transfer-ownership="none">
-					<array length="1">
+					<array length="1" c:type="GitgStageStatusItem**">
 						<type name="Gitg.StageStatusItem" c:type="GitgStageStatusItem*"/>
 					</array>
 				</parameter>
@@ -4102,6 +4102,35 @@
 		</field>
 	</record>
 	<record name="StagePrivate" c:type="GitgStagePrivate" disguised="1"/>
+	<class name="Theme" c:type="GitgTheme" glib:type-name="GitgTheme" glib:get-type="gitg_theme_get_type" glib:type-struct="ThemeClass" parent="Gtk.Widget">
+		<field name="parent_instance">
+			<type name="Gtk.Widget" c:type="GtkWidget"/>
+		</field>
+		<field name="priv">
+			<type name="ThemePrivate" c:type="GitgThemePrivate*"/>
+		</field>
+		<function name="instance" c:identifier="gitg_theme_instance">
+			<return-value transfer-ownership="none">
+				<type name="Gitg.Theme" c:type="GitgTheme*"/>
+			</return-value>
+		</function>
+		<method name="is_theme_dark" c:identifier="gitg_theme_is_theme_dark">
+			<return-value transfer-ownership="full">
+				<type name="gboolean" c:type="gboolean"/>
+			</return-value>
+		</method>
+		<constructor name="new" c:identifier="gitg_theme_new">
+			<return-value transfer-ownership="none">
+				<type name="Gitg.Theme" c:type="GitgTheme*"/>
+			</return-value>
+		</constructor>
+	</class>
+	<record name="ThemeClass" c:type="GitgThemeClass" glib:is-gtype-struct-for="Theme">
+		<field name="parent_class">
+			<type name="Gtk.WidgetClass" c:type="GtkWidgetClass"/>
+		</field>
+	</record>
+	<record name="ThemePrivate" c:type="GitgThemePrivate" disguised="1"/>
 	<record name="Utils">
 		<function name="replace_home_dir_with_tilde" c:identifier="gitg_utils_replace_home_dir_with_tilde">
 			<return-value transfer-ownership="full">
