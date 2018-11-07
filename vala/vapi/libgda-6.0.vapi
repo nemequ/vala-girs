@@ -138,6 +138,8 @@ namespace Gda {
 		public void clear_events_list ();
 		public bool close () throws GLib.Error;
 		public bool commit_transaction (string? name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public Gda.DdlCreator create_ddl_creator ();
 		public Gda.ServerOperation create_operation (Gda.ServerOperationType type, Gda.Set? options) throws GLib.Error;
 		public Gda.SqlParser create_parser ();
 		public void del_prepared_statement (Gda.Statement gda_stmt);
@@ -633,13 +635,15 @@ namespace Gda {
 		public unowned GLib.List<Gda.DdlTable> get_tables ();
 		[Version (since = "6.0")]
 		public unowned GLib.List<Gda.DdlView> get_views ();
-		public bool parse_cnc (Gda.Connection cnc) throws GLib.Error;
+		public bool parse_cnc () throws GLib.Error;
 		public bool parse_file_from_path (string xmlfile) throws GLib.Error;
-		public bool perform_operation (Gda.Connection cnc) throws GLib.Error;
+		public bool perform_operation () throws GLib.Error;
 		[Version (since = "6.0")]
 		public static bool validate_file_from_path (string xmlfile) throws GLib.Error;
 		[Version (since = "6.0")]
 		public bool write_to_path (string path) throws GLib.Error;
+		[NoAccessorMethod]
+		public Gda.Connection connection { owned get; set; }
 		[NoAccessorMethod]
 		public string schema_name { owned get; set; }
 	}
@@ -1026,7 +1030,7 @@ namespace Gda {
 		[CCode (has_construct_function = false)]
 		protected PStmt ();
 		public void copy_contents (Gda.PStmt dest);
-		public unowned Gda.Statement get_gda_statement ();
+		public Gda.Statement get_gda_statement ();
 		public void set_gda_statement (Gda.Statement? stmt);
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gda_provider_info_get_type ()")]
@@ -2067,6 +2071,7 @@ namespace Gda {
 		public abstract Gda.DataHandler get_data_handler (Gda.Connection cnc, GLib.Type g_type, string dbms_type);
 		[Version (since = "6.0")]
 		public abstract string get_def_dbms_type (Gda.Connection cnc, GLib.Type g_type);
+		public abstract Gda.Set get_last_inserted (Gda.Connection cnc) throws GLib.Error;
 		[Version (since = "6.0")]
 		public abstract unowned string get_name ();
 		[Version (since = "6.0")]
@@ -2211,6 +2216,8 @@ namespace Gda {
 		public abstract Gda.Row view (string view_catalog, string view_schema, string view_name_n) throws GLib.Error;
 		[Version (since = "6.0")]
 		public abstract Gda.Row view_column (string view_catalog, string view_schema, string view_name, string column_name) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract Gda.DataModel view_columns (string view_catalog, string view_schema, string view_name) throws GLib.Error;
 		[Version (since = "6.0")]
 		public abstract Gda.DataModel views () throws GLib.Error;
 		[Version (since = "6.0")]

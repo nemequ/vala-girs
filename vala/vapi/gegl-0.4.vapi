@@ -633,6 +633,25 @@ namespace Gegl {
 		[CCode (cname = "Read/Write")]
 		READWRITE
 	}
+	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_babl_variant_get_type ()")]
+	public enum BablVariant {
+		[CCode (cname = "Float")]
+		FLOAT,
+		[CCode (cname = "Linear")]
+		LINEAR,
+		[CCode (cname = "Non-linear")]
+		NON_LINEAR,
+		[CCode (cname = "Perceptual")]
+		PERCEPTUAL,
+		[CCode (cname = "Linear-premultiplied")]
+		LINEAR_PREMULTIPLIED,
+		[CCode (cname = "Perceptual-premultiplied")]
+		PERCEPTUAL_PREMULTIPLIED,
+		[CCode (cname = "Linear-premultiplied-if-alpha")]
+		LINEAR_PREMULTIPLIED_IF_ALPHA,
+		[CCode (cname = "Perceptual-premultiplied-if-alpha")]
+		PERCEPTUAL_PREMULTIPLIED_IF_ALPHA
+	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_BLIT_", has_type_id = false)]
 	[Flags]
 	public enum BlitFlags {

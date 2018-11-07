@@ -2410,6 +2410,27 @@ gda_connection_begin_transaction() first.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="create_ddl_creator"
+              c:identifier="gda_connection_create_ddl_creator"
+              version="6.0">
+        <doc xml:space="preserve">A convenient method to create a new #GdaDdlCreator instance and set the current @cnc as a
+property.  If for some reason, this approach doesn't fit well, the same task can be achieved
+by the following code:
+
+GdaDdlCreator *creator = gda_ddl_creator_new ();
+g_object_set (creator, "connection", cnc, NULL);</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">A new instance of #GdaDdlCreator. The new object should be deallocated
+using g_object_unref().</doc>
+          <type name="DdlCreator" c:type="GdaDdlCreator*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="cnc" transfer-ownership="none">
+            <doc xml:space="preserve">A #GdaConnection object to use</doc>
+            <type name="Connection" c:type="GdaConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="create_operation"
               c:identifier="gda_connection_create_operation"
               throws="1">
@@ -11930,7 +11951,8 @@ This value is ignore for column types except float or double.</doc>
       <method name="parse_cnc"
               c:identifier="gda_ddl_creator_parse_cnc"
               throws="1">
-        <doc xml:space="preserve">Parse cnc to populate @self object.</doc>
+        <doc xml:space="preserve">Parse cnc to populate @self object. This method should be called every time after database was
+modified or @self was just created.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">Returns %TRUE if succeeded, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -11940,10 +11962,6 @@ This value is ignore for column types except float or double.</doc>
             <doc xml:space="preserve">a #GdaDdlCreator instance</doc>
             <type name="DdlCreator" c:type="GdaDdlCreator*"/>
           </instance-parameter>
-          <parameter name="cnc" transfer-ownership="none">
-            <doc xml:space="preserve">Connection to parse</doc>
-            <type name="Connection" c:type="GdaConnection*"/>
-          </parameter>
         </parameters>
       </method>
       <method name="parse_file"
@@ -12065,10 +12083,6 @@ issue was open on gitlab page.</doc>
             <doc xml:space="preserve">a #GdaDdlCreator object</doc>
             <type name="DdlCreator" c:type="GdaDdlCreator*"/>
           </instance-parameter>
-          <parameter name="cnc" transfer-ownership="none">
-            <doc xml:space="preserve">a connection object to work with</doc>
-            <type name="Connection" c:type="GdaConnection*"/>
-          </parameter>
         </parameters>
       </method>
       <method name="write_to_file"
@@ -12113,6 +12127,9 @@ Similar to gda_ddl_creator_write_to_path()</doc>
           </parameter>
         </parameters>
       </method>
+      <property name="connection" writable="1" transfer-ownership="none">
+        <type name="Connection"/>
+      </property>
       <property name="schema-name" writable="1" transfer-ownership="none">
         <type name="utf8" c:type="gchar*"/>
       </property>
@@ -16772,7 +16789,7 @@ Free-function: gda_numeric_free</doc>
 
 Note: if that statement has been modified since the creation of @pstmt, then this method
 will return %NULL</doc>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">the #GdaStatement</doc>
           <type name="Statement" c:type="GdaStatement*"/>
         </return-value>
@@ -17092,6 +17109,25 @@ will return %NULL</doc>
           </parameter>
           <parameter name="g_type" transfer-ownership="none">
             <type name="GType" c:type="GType"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_last_inserted"
+                      invoker="get_last_inserted"
+                      throws="1">
+        <doc xml:space="preserve">This command should be called inmediately called after a INSERT SQL command</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GdaSet with all data of the last inserted row</doc>
+          <type name="Set" c:type="GdaSet*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdaProvider object</doc>
+            <type name="Provider" c:type="GdaProvider*"/>
+          </instance-parameter>
+          <parameter name="cnc" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdaConnection to get last inserted from</doc>
+            <type name="Connection" c:type="GdaConnection*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -17672,6 +17708,25 @@ will return %NULL</doc>
           </parameter>
           <parameter name="g_type" transfer-ownership="none">
             <type name="GType" c:type="GType"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_last_inserted"
+              c:identifier="gda_provider_get_last_inserted"
+              throws="1">
+        <doc xml:space="preserve">This command should be called inmediately called after a INSERT SQL command</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GdaSet with all data of the last inserted row</doc>
+          <type name="Set" c:type="GdaSet*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="provider" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdaProvider object</doc>
+            <type name="Provider" c:type="GdaProvider*"/>
+          </instance-parameter>
+          <parameter name="cnc" transfer-ownership="none">
+            <doc xml:space="preserve">a #GdaConnection to get last inserted from</doc>
+            <type name="Connection" c:type="GdaConnection*"/>
           </parameter>
         </parameters>
       </method>
@@ -18629,6 +18684,24 @@ will return %NULL</doc>
             </parameter>
             <parameter name="last_inserted_row" transfer-ownership="none">
               <type name="Set" c:type="GdaSet**"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_last_inserted">
+        <callback name="get_last_inserted" throws="1">
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve">a #GdaSet with all data of the last inserted row</doc>
+            <type name="Set" c:type="GdaSet*"/>
+          </return-value>
+          <parameters>
+            <parameter name="provider" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdaProvider object</doc>
+              <type name="Provider" c:type="GdaProvider*"/>
+            </parameter>
+            <parameter name="cnc" transfer-ownership="none">
+              <doc xml:space="preserve">a #GdaConnection to get last inserted from</doc>
+              <type name="Connection" c:type="GdaConnection*"/>
             </parameter>
           </parameters>
         </callback>
@@ -19631,9 +19704,10 @@ will return %NULL</doc>
       </virtual-method>
       <virtual-method name="view_columns"
                       invoker="view_columns"
-                      introspectable="0"
+                      version="6.0"
+                      stability="Unstable"
                       throws="1">
-        <return-value>
+        <return-value transfer-ownership="full">
           <type name="DataModel" c:type="GdaDataModel*"/>
         </return-value>
         <parameters>
@@ -20725,9 +20799,10 @@ will return %NULL</doc>
       </method>
       <method name="view_columns"
               c:identifier="gda_provider_meta_view_columns"
-              introspectable="0"
+              version="6.0"
+              stability="Unstable"
               throws="1">
-        <return-value>
+        <return-value transfer-ownership="full">
           <type name="DataModel" c:type="GdaDataModel*"/>
         </return-value>
         <parameters>
@@ -21263,9 +21338,9 @@ will return %NULL</doc>
           </parameters>
         </callback>
       </field>
-      <field name="view_columns" introspectable="0">
-        <callback name="view_columns" introspectable="0" throws="1">
-          <return-value>
+      <field name="view_columns">
+        <callback name="view_columns" throws="1">
+          <return-value transfer-ownership="full">
             <type name="DataModel" c:type="GdaDataModel*"/>
           </return-value>
           <parameters>

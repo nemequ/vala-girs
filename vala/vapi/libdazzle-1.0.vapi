@@ -515,14 +515,14 @@ namespace Dazzle {
 		public GraphModel ();
 		public uint add_column (Dazzle.GraphColumn column);
 		public int64 get_end_time ();
-		public bool get_iter_first (Dazzle.GraphModelIter iter);
-		public bool get_iter_last (Dazzle.GraphModelIter iter);
+		public bool get_iter_first (out Dazzle.GraphModelIter iter);
+		public bool get_iter_last (out Dazzle.GraphModelIter iter);
 		public uint get_max_samples ();
 		public uint get_n_columns ();
 		public GLib.TimeSpan get_timespan ();
 		public static int64 iter_get_timestamp (Dazzle.GraphModelIter iter);
-		public static void iter_get_value (Dazzle.GraphModelIter iter, uint column, GLib.Value value);
-		public static bool iter_next (Dazzle.GraphModelIter iter);
+		public static GLib.Value iter_get_value (Dazzle.GraphModelIter iter, uint column);
+		public static bool iter_next (ref Dazzle.GraphModelIter iter);
 		[Version (since = "3.30")]
 		public static void iter_set_value (Dazzle.GraphModelIter iter, uint column, GLib.Value value);
 		public void push (out Dazzle.GraphModelIter iter, int64 timestamp);

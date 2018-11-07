@@ -24626,7 +24626,11 @@ See [memory management of sources][mainloop-memory-management] for details
 on how to handle memory management of @data.
 
 Typically, you won't use this function. Instead use functions specific
-to the type of source you are using.</doc>
+to the type of source you are using, such as g_idle_add() or g_timeout_add().
+
+It is safe to call this function multiple times on a source which has already
+been attached to a context. The changes will take effect for the next time
+the source is dispatched after this call returns.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -24667,7 +24671,11 @@ to the type of source you are using.</doc>
 g_source_set_callback_indirect() assumes
 an initial reference count on @callback_data, and thus
 @callback_funcs-&gt;unref will eventually be called once more
-than @callback_funcs-&gt;ref.</doc>
+than @callback_funcs-&gt;ref.
+
+It is safe to call this function multiple times on a source which has already
+been attached to a context. The changes will take effect for the next time
+the source is dispatched after this call returns.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -31183,6 +31191,11 @@ in the container.  See g_variant_n_children().
 The returned value is never floating.  You should free it with
 g_variant_unref() when you're done with it.
 
+There may be implementation specific restrictions on deeply nested values,
+which would result in the unit tuple being returned as the child value,
+instead of further nested children. #GVariant is guaranteed to handle
+nesting up to at least 64 levels.
+
 This function is O(1).</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">the child at the specified index</doc>
@@ -31811,7 +31824,10 @@ check.
 
 If @value is found to be in normal form then it will be marked as
 being trusted.  If the value was already marked as being trusted then
-this function will immediately return %TRUE.</doc>
+this function will immediately return %TRUE.
+
+There may be implementation specific restrictions on deeply nested values.
+GVariant is guaranteed to handle nesting up to at least 64 levels.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE if @value is in normal form</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -33676,7 +33692,10 @@ The valid basic type strings are "b", "y", "n", "q", "i", "u", "x", "t",
 
 The above definition is recursive to arbitrary depth. "aaaaai" and
 "(ui(nq((y)))s)" are both valid type strings, as is
-"a(aa(ui)(qna{ya(yd)}))".
+"a(aa(ui)(qna{ya(yd)}))". In order to not hit memory limits, #GVariant
+imposes a limit on recursion depth of 65 nested containers. This is the
+limit in the D-Bus specification (64) plus one to allow a #GDBusMessage to
+be nested in a top-level tuple.
 
 The meaning of each of the characters is as follows:
 - `b`: the type string of %G_VARIANT_TYPE_BOOLEAN; a boolean value.
@@ -34308,6 +34327,17 @@ Since 2.24</doc>
         </return-value>
         <parameters>
           <parameter name="arg0" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="string_get_depth_"
+                c:identifier="g_variant_type_string_get_depth_">
+        <return-value transfer-ownership="none">
+          <type name="gsize" c:type="gsize"/>
+        </return-value>
+        <parameters>
+          <parameter name="type_string" transfer-ownership="none">
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -42488,7 +42518,9 @@ separator is returned. If @file_name is empty, it gets ".".</doc>
       </parameters>
     </function>
     <function name="path_get_dirname" c:identifier="g_path_get_dirname">
-      <doc xml:space="preserve">Gets the directory components of a file name.
+      <doc xml:space="preserve">Gets the directory components of a file name. For example, the directory
+component of `/usr/bin/test` is `/usr/bin`. The directory component of `/`
+is `/`.
 
 If the file name has no directory components "." is returned.
 The returned string should be freed when no longer needed.</doc>
@@ -50451,6 +50483,39 @@ doing anything else with it.</doc>
         </parameter>
       </parameters>
     </function>
+    <function name="utf8_validate_len"
+              c:identifier="g_utf8_validate_len"
+              version="2.60">
+      <doc xml:space="preserve">Validates UTF-8 encoded text.
+
+As with g_utf8_validate(), but @max_len must be set, and hence this function
+will always return %FALSE if any of the bytes of @str are nul.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">%TRUE if the text was valid UTF-8</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="str" transfer-ownership="none">
+          <doc xml:space="preserve">a pointer to character data</doc>
+          <array length="1" zero-terminated="0" c:type="const gchar*">
+            <type name="guint8"/>
+          </array>
+        </parameter>
+        <parameter name="max_len" transfer-ownership="none">
+          <doc xml:space="preserve">max bytes to validate</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="end"
+                   direction="out"
+                   caller-allocates="0"
+                   transfer-ownership="none"
+                   optional="1"
+                   allow-none="1">
+          <doc xml:space="preserve">return location for end of valid data</doc>
+          <type name="utf8" c:type="const gchar**"/>
+        </parameter>
+      </parameters>
+    </function>
     <function name="uuid_string_is_valid"
               c:identifier="g_uuid_string_is_valid"
               version="2.52">
@@ -50671,6 +50736,18 @@ function.</doc>
       </return-value>
       <parameters>
         <parameter name="arg0" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="variant_type_string_get_depth_"
+              c:identifier="g_variant_type_string_get_depth_"
+              moved-to="VariantType.string_get_depth_">
+      <return-value transfer-ownership="none">
+        <type name="gsize" c:type="gsize"/>
+      </return-value>
+      <parameters>
+        <parameter name="type_string" transfer-ownership="none">
           <type name="utf8" c:type="const gchar*"/>
         </parameter>
       </parameters>

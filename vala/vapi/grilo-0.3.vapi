@@ -133,7 +133,7 @@ namespace Grl {
 		[Version (since = "0.2.12")]
 		public int64 get_int64 (Grl.KeyID key);
 		[Version (since = "0.1.4")]
-		public GLib.List<weak Grl.KeyID> get_keys ();
+		public GLib.List<Grl.KeyID> get_keys ();
 		[Version (since = "0.1.10")]
 		public unowned Grl.RelatedKeys get_related_keys (Grl.KeyID key, uint index);
 		[Version (since = "0.1.13")]
@@ -522,11 +522,11 @@ namespace Grl {
 		[Version (since = "0.2.0")]
 		public unowned GLib.Value? get_key_filter (Grl.KeyID key);
 		[Version (since = "0.2.0")]
-		public GLib.List<weak Grl.KeyID> get_key_filter_list ();
+		public GLib.List<Grl.KeyID> get_key_filter_list ();
 		[Version (since = "0.2.0")]
 		public void get_key_range_filter (Grl.KeyID key, out GLib.Value min_value, out GLib.Value max_value);
 		[Version (since = "0.2.0")]
-		public GLib.List<weak Grl.KeyID> get_key_range_filter_list ();
+		public GLib.List<Grl.KeyID> get_key_range_filter_list ();
 		[Version (since = "0.2.12")]
 		public Grl.ResolutionFlags get_resolution_flags ();
 		[Version (since = "0.2.0")]
@@ -609,7 +609,7 @@ namespace Grl {
 		[Version (since = "0.2.0")]
 		public static unowned Grl.Registry get_default ();
 		[Version (since = "0.2.0")]
-		public GLib.List<weak Grl.KeyID> get_metadata_keys ();
+		public GLib.List<Grl.KeyID> get_metadata_keys ();
 		[Version (since = "0.2.0")]
 		public GLib.List<weak Grl.Plugin> get_plugins (bool only_loaded);
 		[Version (since = "0.2.0")]
@@ -675,7 +675,7 @@ namespace Grl {
 		[Version (since = "0.2.12")]
 		public int64 get_int64 (Grl.KeyID key);
 		[Version (since = "0.1.13")]
-		public GLib.List<weak Grl.KeyID> get_keys ();
+		public GLib.List<Grl.KeyID> get_keys ();
 		[Version (since = "0.1.10")]
 		public unowned string get_string (Grl.KeyID key);
 		[Version (since = "0.1.10")]
@@ -795,7 +795,7 @@ namespace Grl {
 		[NoWrapper]
 		public virtual void store_metadata (Grl.SourceStoreMetadataSpec sms);
 		[Version (since = "0.2.0")]
-		public GLib.List<weak Grl.KeyID> store_metadata_sync (Grl.Media media, GLib.List<Grl.KeyID>? keys, Grl.WriteFlags flags) throws GLib.Error;
+		public GLib.List<Grl.KeyID> store_metadata_sync (Grl.Media media, GLib.List<Grl.KeyID>? keys, Grl.WriteFlags flags) throws GLib.Error;
 		[Version (since = "0.3.0")]
 		public void store_sync (Grl.Media? parent, Grl.Media media, Grl.WriteFlags flags) throws GLib.Error;
 		[Version (since = "0.2.0")]

@@ -512,7 +512,7 @@ namespace Cd {
 		[Version (since = "0.1.32")]
 		public unowned string get_manufacturer (string locale) throws GLib.Error;
 		[Version (since = "0.1.32")]
-		public GLib.HashTable<weak void*,weak void*> get_metadata ();
+		public GLib.HashTable<void*,void*> get_metadata ();
 		[Version (since = "0.1.32")]
 		public unowned string get_metadata_item (string key);
 		[Version (since = "0.1.32")]
@@ -537,7 +537,7 @@ namespace Cd {
 		[Version (since = "0.1.32")]
 		public double get_version ();
 		[Version (since = "0.1.34")]
-		public GLib.Array<weak Cd.ProfileWarning> get_warnings ();
+		public GLib.Array<Cd.ProfileWarning> get_warnings ();
 		[Version (since = "0.1.32")]
 		public unowned Cd.ColorXYZ get_white ();
 		[Version (since = "0.1.32")]

@@ -1689,6 +1689,24 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_wrapped_bytes"
+                   c:identifier="gst_buffer_new_wrapped_bytes"
+                   version="1.16">
+        <doc xml:space="preserve">Creates a new #GstBuffer that wraps the given @bytes. The data inside
+@bytes cannot be %NULL and the resulting buffer will be marked as read only.
+
+MT safe.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GstBuffer wrapping @bytes</doc>
+          <type name="Buffer" c:type="GstBuffer*"/>
+        </return-value>
+        <parameters>
+          <parameter name="bytes" transfer-ownership="none">
+            <doc xml:space="preserve">a #GBytes to wrap</doc>
+            <type name="GLib.Bytes" c:type="GBytes*"/>
+          </parameter>
+        </parameters>
+      </constructor>
       <constructor name="new_wrapped_full"
                    c:identifier="gst_buffer_new_wrapped_full">
         <doc xml:space="preserve">Allocate a new buffer that wraps the given memory. @data must point to
@@ -7572,6 +7590,24 @@ MT safe.</doc>
           </parameter>
         </parameters>
       </function>
+      <function name="id_get_clock"
+                c:identifier="gst_clock_id_get_clock"
+                version="1.16">
+        <doc xml:space="preserve">This function returns the underlying clock.</doc>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve">a #GstClock or %NULL when the
+    underlying clock has been freed.  Unref after usage.
+
+MT safe.</doc>
+          <type name="Clock" c:type="GstClock*"/>
+        </return-value>
+        <parameters>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstClockID</doc>
+            <type name="ClockID" c:type="GstClockID"/>
+          </parameter>
+        </parameters>
+      </function>
       <function name="id_get_time" c:identifier="gst_clock_id_get_time">
         <doc xml:space="preserve">Get the time of the clock ID</doc>
         <return-value transfer-ownership="none">
@@ -7631,6 +7667,30 @@ MT safe.</doc>
           <parameter name="id" transfer-ownership="none">
             <doc xml:space="preserve">The id to unschedule</doc>
             <type name="ClockID" c:type="GstClockID"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="id_uses_clock"
+                c:identifier="gst_clock_id_uses_clock"
+                version="1.16">
+        <doc xml:space="preserve">This function returns whether @id uses @clock as the underlying clock.
+@clock can be NULL, in which case the return value indicates whether
+the underlying clock has been freed.  If this is the case, the @id is
+no longer usable and should be freed.</doc>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve">whether the clock @id uses the same underlying #GstClock @clock.
+
+MT safe.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <parameter name="id" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstClockID to check</doc>
+            <type name="ClockID" c:type="GstClockID"/>
+          </parameter>
+          <parameter name="clock" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstClock to compare against</doc>
+            <type name="Clock" c:type="GstClock*"/>
           </parameter>
         </parameters>
       </function>
@@ -8702,11 +8762,18 @@ not be extended or allocated using a custom allocator.</doc>
       <field name="woken_up" writable="1">
         <type name="gboolean" c:type="gboolean"/>
       </field>
-      <field name="_gst_reserved" readable="0" private="1">
-        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
+      <union name="ABI" c:type="ABI">
+        <field name="_gst_reserved" writable="1">
+          <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+            <type name="gpointer" c:type="gpointer"/>
+          </array>
+        </field>
+        <record name="abi" c:type="abi">
+          <field name="clock" writable="1">
+            <type name="GObject.WeakRef" c:type="GWeakRef"/>
+          </field>
+        </record>
+      </union>
     </record>
     <enumeration name="ClockEntryType"
                  glib:type-name="GstClockEntryType"
@@ -12450,7 +12517,8 @@ for more details and common types. E.g: "Sink/File"</doc>
     </constant>
     <constant name="ERROR_SYSTEM"
               value="system error: %s"
-              c:type="GST_ERROR_SYSTEM">
+              c:type="GST_ERROR_SYSTEM"
+              introspectable="0">
       <doc xml:space="preserve">Builds a string using errno describing the previously failed system
 call.  To be used as the debug argument in #GST_ELEMENT_ERROR.</doc>
       <type name="utf8" c:type="gchar*"/>
@@ -17938,7 +18006,10 @@ exactly</doc>
 its real value.</doc>
       <type name="gint64" c:type="gint64"/>
     </constant>
-    <constant name="FOURCC_FORMAT" value="c%c%c%c" c:type="GST_FOURCC_FORMAT">
+    <constant name="FOURCC_FORMAT"
+              value="c%c%c%c"
+              c:type="GST_FOURCC_FORMAT"
+              introspectable="0">
       <doc xml:space="preserve">Can be used together with #GST_FOURCC_ARGS to properly output a
 #guint32 fourcc value in a printf()-style text message.
 
@@ -25051,7 +25122,10 @@ the application will choose the appropriate protection system based on the infor
 received through EME API.</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <constant name="PTR_FORMAT" value="paA" c:type="GST_PTR_FORMAT">
+    <constant name="PTR_FORMAT"
+              value="paA"
+              c:type="GST_PTR_FORMAT"
+              introspectable="0">
       <doc xml:space="preserve">printf format type used to debug GStreamer types. You can use this in
 combination with GStreamer's debug logging system as well as the functions
 gst_info_vasprintf(), gst_info_strdup_vprintf() and gst_info_strdup_printf()
@@ -35040,7 +35114,10 @@ both reading and writing, or either (but unspecified which).</doc>
       <doc xml:space="preserve">Constant that defines one GStreamer second.</doc>
       <type name="ClockTimeDiff" c:type="GstClockTimeDiff"/>
     </constant>
-    <constant name="SEGMENT_FORMAT" value="paB" c:type="GST_SEGMENT_FORMAT">
+    <constant name="SEGMENT_FORMAT"
+              value="paB"
+              c:type="GST_SEGMENT_FORMAT"
+              introspectable="0">
       <doc xml:space="preserve">printf format type used to debug GStreamer segments. You can use this in
 combination with GStreamer's debug logging system as well as the functions
 gst_info_vasprintf(), gst_info_strdup_vprintf() and gst_info_strdup_printf()
@@ -35061,7 +35138,8 @@ Can be used as a default value in variables used to store seqnum.</doc>
     <constant name="STIME_FORMAT"
               value="c%"
               c:type="GST_STIME_FORMAT"
-              version="1.6">
+              version="1.6"
+              introspectable="0">
       <doc xml:space="preserve">A string that can be used in printf-like format strings to display a signed
 #GstClockTimeDiff or #gint64 value in h:m:s format.  Use GST_TIME_ARGS() to
 construct the matching arguments.
@@ -39753,7 +39831,8 @@ The higher the value, the more the user likes this media
     </constant>
     <constant name="TIME_FORMAT"
               value="u:%02u:%02u.%09u"
-              c:type="GST_TIME_FORMAT">
+              c:type="GST_TIME_FORMAT"
+              introspectable="0">
       <doc xml:space="preserve">A string that can be used in printf-like format strings to display a
 #GstClockTime value in h:m:s format.  Use GST_TIME_ARGS() to construct
 the matching arguments.
@@ -45379,6 +45458,78 @@ when there are nested #GstCaps / #GstStructure deeper than one level.</doc>
         <parameter name="string" transfer-ownership="none">
           <doc xml:space="preserve">a string to convert to #GstCaps</doc>
           <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="clear_mini_object"
+              c:identifier="gst_clear_mini_object"
+              version="1.16"
+              introspectable="0">
+      <doc xml:space="preserve">Clears a reference to a #GstMiniObject.
+
+@object_ptr must not be %NULL.
+
+If the reference is %NULL then this function does nothing.
+Otherwise, the reference count of the object is decreased using
+gst_mini_object_unref() and the pointer is set to %NULL.
+
+A macro is also included that allows this function to be used without
+pointer casts.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="object_ptr" transfer-ownership="none">
+          <doc xml:space="preserve">a pointer to a #GstMiniObject reference</doc>
+          <type name="MiniObject" c:type="GstMiniObject**"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="clear_object"
+              c:identifier="gst_clear_object"
+              version="1.16"
+              introspectable="0">
+      <doc xml:space="preserve">Clears a reference to a #GstObject.
+
+@object_ptr must not be %NULL.
+
+If the reference is %NULL then this function does nothing.
+Otherwise, the reference count of the object is decreased using
+gst_object_unref() and the pointer is set to %NULL.
+
+A macro is also included that allows this function to be used without
+pointer casts.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="object_ptr" transfer-ownership="none">
+          <doc xml:space="preserve">a pointer to a #GstObject reference</doc>
+          <type name="Object" c:type="GstObject**"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="clear_structure"
+              c:identifier="gst_clear_structure"
+              version="1.16"
+              introspectable="0">
+      <doc xml:space="preserve">Clears a reference to a #GstStructure.
+
+@structure_ptr must not be %NULL.
+
+If the reference is %NULL then this function does nothing.
+Otherwise, the structure is free'd using gst_structure_free() and the
+pointer is set to %NULL.
+
+A macro is also included that allows this function to be used without
+pointer casts.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="structure_ptr" transfer-ownership="none">
+          <doc xml:space="preserve">a pointer to a #GstStructure reference</doc>
+          <type name="Structure" c:type="GstStructure**"/>
         </parameter>
       </parameters>
     </function>

@@ -417,7 +417,7 @@ namespace Champlain {
 		public void add_node (Champlain.Location location);
 		public bool get_closed ();
 		[Version (since = "0.12.4")]
-		public GLib.List<weak uint> get_dash ();
+		public GLib.List<uint> get_dash ();
 		public bool get_fill ();
 		public Clutter.Color? get_fill_color ();
 		public GLib.List<weak Champlain.Location> get_nodes ();

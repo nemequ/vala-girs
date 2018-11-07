@@ -4600,11 +4600,33 @@ you may disagree with them.
 
 You're free to disagree with these, and of course you should use your own
 brain to work our if your child is able to cope with the concepts enumerated
-here. Some 13 year olds mey be fine with the concept of mutilation of body
-parts, others may get nightmares.</doc>
+here. Some 13 year olds may be fine with the concept of mutilation of body
+parts; others may get nightmares.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">The age in years, 0 for no rating, or G_MAXUINT for no details.</doc>
           <type name="guint" c:type="guint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="content_rating" transfer-ownership="none">
+            <doc xml:space="preserve">a #AsContentRating</doc>
+            <type name="ContentRating" c:type="AsContentRating*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_rating_ids"
+              c:identifier="as_content_rating_get_rating_ids"
+              version="0.7.15">
+        <doc xml:space="preserve">Gets the set of ratings IDs which are present in this @content_rating. An
+example of a ratings ID is `violence-bloodshed`.
+
+The IDs are returned in lexicographical order.</doc>
+        <return-value transfer-ownership="container">
+          <doc xml:space="preserve">%NULL-terminated
+   array of ratings IDs; each ratings ID is owned by the #AsContentRating and
+   must not be freed, but the container must be freed with g_free()</doc>
+          <array c:type="const gchar**">
+            <type name="utf8"/>
+          </array>
         </return-value>
         <parameters>
           <instance-parameter name="content_rating" transfer-ownership="none">
@@ -9229,7 +9251,10 @@ to the store.
 
 If the root node does not have a 'origin' attribute, then the method
 as_store_set_origin() should be called *before* this function if cached
-icons are required.</doc>
+icons are required.
+
+If @file does not exist, %G_IO_ERROR_NOT_FOUND will be returned. Other
+#GIOErrors and #AsStoreErrors may be returned as appropriate.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">%TRUE for success</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -11185,6 +11210,19 @@ or removed from the store.</doc>
         <doc xml:space="preserve">Installed by the user</doc>
       </member>
     </enumeration>
+    <bitfield name="VersionCompareFlag" c:type="AsVersionCompareFlag">
+      <doc xml:space="preserve">The flags used when comparing version numbers.</doc>
+      <member name="none"
+              value="0"
+              c:identifier="AS_VERSION_COMPARE_FLAG_NONE">
+        <doc xml:space="preserve">No flags set</doc>
+      </member>
+      <member name="use_heuristics"
+              value="1"
+              c:identifier="AS_VERSION_COMPARE_FLAG_USE_HEURISTICS">
+        <doc xml:space="preserve">Use a heuristic to parse version numbers</doc>
+      </member>
+    </bitfield>
     <bitfield name="VersionParseFlag" c:type="AsVersionParseFlag">
       <doc xml:space="preserve">The flags used when parsing version numbers.</doc>
       <member name="none" value="0" c:identifier="AS_VERSION_PARSE_FLAG_NONE">
@@ -12746,6 +12784,29 @@ sections.</doc>
         <parameter name="version_b" transfer-ownership="none">
           <doc xml:space="preserve">the release version, e.g. 1.2.3.1</doc>
           <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="utils_vercmp_full"
+              c:identifier="as_utils_vercmp_full"
+              version="0.7.15">
+      <doc xml:space="preserve">Compares version numbers for sorting.</doc>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve">-1 if a &lt; b, +1 if a &gt; b, 0 if they are equal, and %G_MAXINT on error</doc>
+        <type name="gint" c:type="gint"/>
+      </return-value>
+      <parameters>
+        <parameter name="version_a" transfer-ownership="none">
+          <doc xml:space="preserve">the release version, e.g. 1.2.3</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="version_b" transfer-ownership="none">
+          <doc xml:space="preserve">the release version, e.g. 1.2.3.1</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="flags" transfer-ownership="none">
+          <doc xml:space="preserve">some #AsVersionCompareFlag</doc>
+          <type name="VersionCompareFlag" c:type="AsVersionCompareFlag"/>
         </parameter>
       </parameters>
     </function>

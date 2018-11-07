@@ -60,9 +60,9 @@ synchronization metadata on buffers from the pool.</doc>
             c:symbol-prefix="egl_image">
       <doc xml:space="preserve">#GstEGLImage represents and holds an #EGLImage handle.
 
-A #GstEGLImage can be created from a dmabuf with gst_egl_image_from_dmabuf()
-or #GstGLMemoryEGL provides a #GstAllocator to allocate #EGLImage's bound to
-and OpenGL texture.</doc>
+A #GstEGLImage can be created from a dmabuf with gst_egl_image_from_dmabuf(),
+or gst_egl_image_from_dmabuf_direct(), or #GstGLMemoryEGL provides a
+#GstAllocator to allocate #EGLImage's bound to and OpenGL texture.</doc>
       <field name="parent" readable="0" private="1">
         <type name="Gst.MiniObject" c:type="GstMiniObject"/>
       </field>
@@ -157,6 +157,13 @@ and OpenGL texture.</doc>
         </parameters>
       </method>
       <function name="from_dmabuf" c:identifier="gst_egl_image_from_dmabuf">
+        <doc xml:space="preserve">Creates an EGL image that imports the dmabuf FD. The dmabuf data
+is passed as RGBA data. Shaders later take this "RGBA" data and
+convert it from its true format (described by in_info) to actual
+RGBA output. For example, with I420, three EGL images are created,
+one for each plane, each EGL image with a single-channel R format.
+With NV12, two EGL images are created, one with R format, one
+with RG format etc.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a #GstEGLImage wrapping @dmabuf or %NULL on failure</doc>
           <type name="EGLImage" c:type="GstEGLImage*"/>
@@ -181,6 +188,40 @@ and OpenGL texture.</doc>
           <parameter name="offset" transfer-ownership="none">
             <doc xml:space="preserve">the byte-offset in the data</doc>
             <type name="gsize" c:type="gsize"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="from_dmabuf_direct"
+                c:identifier="gst_egl_image_from_dmabuf_direct">
+        <doc xml:space="preserve">Creates an EGL image that imports the dmabuf FD. The dmabuf data
+is passed directly as the format described in in_info. This is
+useful if the hardware is capable of performing color space conversions
+internally. The appropriate DRM format is picked, and the EGL image
+is created with this DRM format.
+
+Another notable difference to gst_egl_image_from_dmabuf()
+is that this function creates one EGL image for all planes, not one for
+a single plane.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a #GstEGLImage wrapping @dmabuf or %NULL on failure</doc>
+          <type name="EGLImage" c:type="GstEGLImage*"/>
+        </return-value>
+        <parameters>
+          <parameter name="context" transfer-ownership="none">
+            <doc xml:space="preserve">a #GstGLContext (must be an EGL context)</doc>
+            <type name="GLContext" c:type="GstGLContext*"/>
+          </parameter>
+          <parameter name="fd" transfer-ownership="none">
+            <doc xml:space="preserve">Array of DMABuf file descriptors</doc>
+            <type name="gint" c:type="gint*"/>
+          </parameter>
+          <parameter name="offset" transfer-ownership="none">
+            <doc xml:space="preserve">Array of offsets, relative to the DMABuf</doc>
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+          <parameter name="in_info" transfer-ownership="none">
+            <doc xml:space="preserve">the #GstVideoInfo</doc>
+            <type name="GstVideo.VideoInfo" c:type="GstVideoInfo*"/>
           </parameter>
         </parameters>
       </function>
@@ -9921,6 +9962,13 @@ you are writing to OpenGL. Conversely, combining #GST_MAP_GL with
     <function name="egl_image_from_dmabuf"
               c:identifier="gst_egl_image_from_dmabuf"
               moved-to="EGLImage.from_dmabuf">
+      <doc xml:space="preserve">Creates an EGL image that imports the dmabuf FD. The dmabuf data
+is passed as RGBA data. Shaders later take this "RGBA" data and
+convert it from its true format (described by in_info) to actual
+RGBA output. For example, with I420, three EGL images are created,
+one for each plane, each EGL image with a single-channel R format.
+With NV12, two EGL images are created, one with R format, one
+with RG format etc.</doc>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve">a #GstEGLImage wrapping @dmabuf or %NULL on failure</doc>
         <type name="EGLImage" c:type="GstEGLImage*"/>
@@ -9945,6 +9993,41 @@ you are writing to OpenGL. Conversely, combining #GST_MAP_GL with
         <parameter name="offset" transfer-ownership="none">
           <doc xml:space="preserve">the byte-offset in the data</doc>
           <type name="gsize" c:type="gsize"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="egl_image_from_dmabuf_direct"
+              c:identifier="gst_egl_image_from_dmabuf_direct"
+              moved-to="EGLImage.from_dmabuf_direct">
+      <doc xml:space="preserve">Creates an EGL image that imports the dmabuf FD. The dmabuf data
+is passed directly as the format described in in_info. This is
+useful if the hardware is capable of performing color space conversions
+internally. The appropriate DRM format is picked, and the EGL image
+is created with this DRM format.
+
+Another notable difference to gst_egl_image_from_dmabuf()
+is that this function creates one EGL image for all planes, not one for
+a single plane.</doc>
+      <return-value transfer-ownership="full">
+        <doc xml:space="preserve">a #GstEGLImage wrapping @dmabuf or %NULL on failure</doc>
+        <type name="EGLImage" c:type="GstEGLImage*"/>
+      </return-value>
+      <parameters>
+        <parameter name="context" transfer-ownership="none">
+          <doc xml:space="preserve">a #GstGLContext (must be an EGL context)</doc>
+          <type name="GLContext" c:type="GstGLContext*"/>
+        </parameter>
+        <parameter name="fd" transfer-ownership="none">
+          <doc xml:space="preserve">Array of DMABuf file descriptors</doc>
+          <type name="gint" c:type="gint*"/>
+        </parameter>
+        <parameter name="offset" transfer-ownership="none">
+          <doc xml:space="preserve">Array of offsets, relative to the DMABuf</doc>
+          <type name="gsize" c:type="gsize*"/>
+        </parameter>
+        <parameter name="in_info" transfer-ownership="none">
+          <doc xml:space="preserve">the #GstVideoInfo</doc>
+          <type name="GstVideo.VideoInfo" c:type="GstVideoInfo*"/>
         </parameter>
       </parameters>
     </function>

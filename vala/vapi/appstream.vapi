@@ -11,7 +11,7 @@ namespace AppStream {
 		[Version (since = "0.12.1")]
 		public AppStream.AgreementKind get_kind ();
 		[Version (since = "0.12.1")]
-		public unowned AppStream.AgreementSection get_section_default ();
+		public unowned AppStream.AgreementSection? get_section_default ();
 		[Version (since = "0.12.1")]
 		public GLib.GenericArray<weak AppStream.AgreementSection> get_sections ();
 		[Version (since = "0.12.1")]
@@ -135,15 +135,15 @@ namespace AppStream {
 		[Version (since = "0.9.2")]
 		public unowned GLib.GenericArray<AppStream.Component> get_addons ();
 		[Version (since = "0.12.1")]
-		public unowned AppStream.Agreement get_agreement_by_kind (AppStream.AgreementKind kind);
+		public unowned AppStream.Agreement? get_agreement_by_kind (AppStream.AgreementKind kind);
 		[Version (since = "0.8.0")]
-		public unowned AppStream.Bundle get_bundle (AppStream.BundleKind bundle_kind);
+		public unowned AppStream.Bundle? get_bundle (AppStream.BundleKind bundle_kind);
 		[Version (since = "0.10")]
 		public unowned GLib.GenericArray<AppStream.Bundle> get_bundles ();
 		public unowned GLib.GenericArray<string> get_categories ();
 		public unowned GLib.GenericArray<string> get_compulsory_for_desktops ();
 		[Version (since = "0.11.0")]
-		public unowned AppStream.ContentRating get_content_rating (string kind);
+		public unowned AppStream.ContentRating? get_content_rating (string kind);
 		[Version (since = "0.11.0")]
 		public unowned GLib.GenericArray<AppStream.ContentRating> get_content_ratings ();
 		[Version (since = "0.10.5")]
@@ -156,8 +156,8 @@ namespace AppStream {
 		public unowned string get_desktop_id ();
 		public unowned string get_developer_name ();
 		[Version (since = "0.7.0")]
-		public unowned GLib.GenericArray<string> get_extends ();
-		public unowned AppStream.Icon get_icon_by_size (uint width, uint height);
+		public unowned GLib.GenericArray<string>? get_extends ();
+		public unowned AppStream.Icon? get_icon_by_size (uint width, uint height);
 		public unowned GLib.GenericArray<AppStream.Icon> get_icons ();
 		public unowned string get_id ();
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -168,7 +168,7 @@ namespace AppStream {
 		[Version (since = "0.7.0")]
 		public GLib.List<weak string> get_languages ();
 		[Version (since = "0.11.0")]
-		public unowned AppStream.Launchable get_launchable (AppStream.LaunchableKind kind);
+		public unowned AppStream.Launchable? get_launchable (AppStream.LaunchableKind kind);
 		[Version (since = "0.11.0")]
 		public unowned GLib.GenericArray<AppStream.Launchable> get_launchables ();
 		[Version (since = "0.9.8")]
@@ -182,7 +182,7 @@ namespace AppStream {
 		public unowned string get_project_group ();
 		public unowned string get_project_license ();
 		public unowned GLib.GenericArray<AppStream.Provided> get_provided ();
-		public unowned AppStream.Provided get_provided_for_kind (AppStream.ProvidedKind kind);
+		public unowned AppStream.Provided? get_provided_for_kind (AppStream.ProvidedKind kind);
 		[Version (since = "0.12.0")]
 		public unowned GLib.GenericArray<AppStream.Relation> get_recommends ();
 		public unowned GLib.GenericArray<AppStream.Release> get_releases ();
@@ -358,7 +358,7 @@ namespace AppStream {
 		public string components_to_collection (AppStream.FormatKind format) throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		public unowned string get_architecture ();
-		public unowned AppStream.Component get_component ();
+		public unowned AppStream.Component? get_component ();
 		public unowned GLib.GenericArray<AppStream.Component> get_components ();
 		public AppStream.FormatStyle get_format_style ();
 		public AppStream.FormatVersion get_format_version ();
@@ -477,10 +477,10 @@ namespace AppStream {
 		public void add_location (string location);
 		public unowned string get_active_locale ();
 		[Version (since = "0.8.2")]
-		public unowned AppStream.Checksum get_checksum (AppStream.ChecksumKind kind);
+		public unowned AppStream.Checksum? get_checksum (AppStream.ChecksumKind kind);
 		[Version (since = "0.10")]
 		public unowned GLib.GenericArray<AppStream.Checksum> get_checksums ();
-		public unowned string get_description ();
+		public unowned string? get_description ();
 		[Version (since = "0.12.0")]
 		public AppStream.ReleaseKind get_kind ();
 		[Version (since = "0.8.1")]
@@ -490,7 +490,7 @@ namespace AppStream {
 		public uint64 get_timestamp ();
 		[Version (since = "0.6.5")]
 		public AppStream.UrgencyKind get_urgency ();
-		public unowned string get_version ();
+		public unowned string? get_version ();
 		[Version (since = "0.12.0")]
 		public static AppStream.ReleaseKind kind_from_string (string kind_str);
 		[Version (since = "0.12.0")]
@@ -882,10 +882,10 @@ namespace AppStream {
 	public static string markup_convert_simple (string markup) throws GLib.Error;
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.9.8")]
-	public static string spdx_license_detokenize (string license_tokens);
+	public static string? spdx_license_detokenize (string license_tokens);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "appstream.h")]
 	[Version (since = "0.9.8")]
-	public static string[] spdx_license_tokenize (string license);
+	public static string[]? spdx_license_tokenize (string license);
 	[CCode (cheader_filename = "appstream.h")]
 	public static int utils_compare_versions (string a, string b);
 	[CCode (cheader_filename = "appstream.h")]

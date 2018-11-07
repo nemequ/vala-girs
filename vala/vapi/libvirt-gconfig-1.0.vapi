@@ -557,7 +557,7 @@ namespace GVirConfig {
 		[CCode (has_construct_function = false)]
 		public DomainOs.from_xml (string xml) throws GLib.Error;
 		public unowned string get_arch ();
-		public GLib.List<weak GVirConfig.DomainOsBootDevice> get_boot_devices ();
+		public GLib.List<GVirConfig.DomainOsBootDevice> get_boot_devices ();
 		public unowned string get_machine ();
 		public GVirConfig.DomainOsType get_os_type ();
 		public void set_arch (string arch);

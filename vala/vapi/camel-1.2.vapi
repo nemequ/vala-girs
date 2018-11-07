@@ -600,7 +600,7 @@ namespace Camel {
 		[Version (since = "3.4")]
 		public void* get_folder ();
 		[Version (since = "3.6")]
-		public GLib.HashTable<weak string,weak int> get_hash ();
+		public GLib.HashTable<weak string,int> get_hash ();
 		[Version (since = "3.4")]
 		public unowned Camel.Index get_index ();
 		[Version (since = "3.12")]
@@ -2207,7 +2207,7 @@ namespace Camel {
 		public VeeSummary (Camel.Folder parent);
 		public Camel.VeeMessageInfo add (Camel.VeeMessageInfoData mi_data);
 		[Version (since = "3.6")]
-		public GLib.HashTable<weak string,weak int> get_uids_for_subfolder (Camel.Folder subfolder);
+		public GLib.HashTable<weak string,int> get_uids_for_subfolder (Camel.Folder subfolder);
 		[Version (since = "3.6")]
 		public void remove (string vuid, Camel.Folder subfolder);
 		[Version (since = "3.6")]

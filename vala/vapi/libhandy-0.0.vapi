@@ -29,7 +29,7 @@ namespace Hdy {
 		public int maximum_width { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_dialer_get_type ()")]
-	public class Dialer : Gtk.EventBox, Atk.Implementor, Gtk.Buildable {
+	public class Dialer : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Dialer ();
 		public void clear_number ();
@@ -160,6 +160,8 @@ namespace Hdy {
 		NONE,
 		SLIDE
 	}
+	[CCode (cheader_filename = "handy.h")]
+	public static bool init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref string[]? argv);
 	[CCode (cheader_filename = "handy.h")]
 	public static long string_utf8_len (GLib.StringBuilder string);
 	[CCode (cheader_filename = "handy.h")]
