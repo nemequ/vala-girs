@@ -10629,7 +10629,9 @@ If @key is %NULL then @comment will be read from above
 @group_name. If both @key and @group_name are %NULL, then
 @comment will be read from above the first group in the file.
 
-Note that the returned string includes the '#' comment markers.</doc>
+Note that the returned string does not include the '#' comment markers,
+but does include any whitespace after them (on each line). It includes
+the line breaks between lines, but does not include the final line break.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve">a comment that should be freed with g_free()</doc>
           <type name="utf8" c:type="gchar*"/>
@@ -30131,7 +30133,11 @@ expectation.
 inner interface for creation of new serialised values that gets
 called from various functions in gvariant.c.
 
-A reference is taken on @bytes.</doc>
+A reference is taken on @bytes.
+
+The data in @bytes must be aligned appropriately for the @type being loaded.
+Otherwise this function will internally create a copy of the memory (since
+GLib 2.60) or (in older versions) fail and exit the process.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a new #GVariant with a floating reference</doc>
           <type name="Variant" c:type="GVariant*"/>
@@ -30177,7 +30183,12 @@ endianness. g_variant_byteswap() can be used to recover the original values.
 
 @notify will be called with @user_data when @data is no longer
 needed.  The exact time of this call is unspecified and might even be
-before this function returns.</doc>
+before this function returns.
+
+Note: @data must be backed by memory that is aligned appropriately for the
+@type being loaded. Otherwise this function will internally create a copy of
+the memory (since GLib 2.60) or (in older versions) fail and exit the
+process.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve">a new floating #GVariant of type @type</doc>
           <type name="Variant" c:type="GVariant*"/>

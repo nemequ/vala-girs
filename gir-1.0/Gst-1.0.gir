@@ -8762,18 +8762,11 @@ not be extended or allocated using a custom allocator.</doc>
       <field name="woken_up" writable="1">
         <type name="gboolean" c:type="gboolean"/>
       </field>
-      <union name="ABI" c:type="ABI">
-        <field name="_gst_reserved" writable="1">
-          <array zero-terminated="0" c:type="gpointer" fixed-size="4">
-            <type name="gpointer" c:type="gpointer"/>
-          </array>
-        </field>
-        <record name="abi" c:type="abi">
-          <field name="clock" writable="1">
-            <type name="GObject.WeakRef" c:type="GWeakRef"/>
-          </field>
-        </record>
-      </union>
+      <field name="_gst_reserved" readable="0" private="1">
+        <array zero-terminated="0" c:type="gpointer" fixed-size="4">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
     </record>
     <enumeration name="ClockEntryType"
                  glib:type-name="GstClockEntryType"
@@ -10672,7 +10665,7 @@ and GST_DEBUG_BIN_TO_DOT_FILE_WITH_TS().</doc>
         <doc xml:space="preserve">show all the typical details that one might want</doc>
       </member>
       <member name="verbose"
-              value="-1"
+              value="4294967295"
               c:identifier="GST_DEBUG_GRAPH_SHOW_VERBOSE"
               glib:nick="verbose">
         <doc xml:space="preserve">show all details regardless of how large or
@@ -32220,6 +32213,17 @@ Free-function: gst_query_unref()</doc>
           </parameter>
         </parameters>
       </constructor>
+      <constructor name="new_bitrate"
+                   c:identifier="gst_query_new_bitrate"
+                   version="1.16">
+        <doc xml:space="preserve">Constructs a new query object for querying the bitrate.
+
+Free-function: gst_query_unref()</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">a new #GstQuery</doc>
+          <type name="Query" c:type="GstQuery*"/>
+        </return-value>
+      </constructor>
       <constructor name="new_buffering" c:identifier="gst_query_new_buffering">
         <doc xml:space="preserve">Constructs a new query object for querying the buffering status of
 a stream.
@@ -32823,6 +32827,29 @@ gst_query_parse_nth_allocation_pool().</doc>
                      allow-none="1">
             <doc xml:space="preserve">Whether a #GstBufferPool is needed</doc>
             <type name="gboolean" c:type="gboolean*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="parse_bitrate"
+              c:identifier="gst_query_parse_bitrate"
+              version="1.16">
+        <doc xml:space="preserve">Get the results of a bitrate query. See also gst_query_set_bitrate().</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="query" transfer-ownership="none">
+            <doc xml:space="preserve">a GST_QUERY_BITRATE type #GstQuery</doc>
+            <type name="Query" c:type="GstQuery*"/>
+          </instance-parameter>
+          <parameter name="nominal_bitrate"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve">The resulting bitrate in bits per second</doc>
+            <type name="guint" c:type="guint*"/>
           </parameter>
         </parameters>
       </method>
@@ -33726,6 +33753,26 @@ they should make all future requests to the original URI.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="set_bitrate"
+              c:identifier="gst_query_set_bitrate"
+              version="1.16">
+        <doc xml:space="preserve">Set the results of a bitrate query.  The nominal bitrate is the average
+bitrate expected over the length of the stream as advertised in file
+headers (or similar).</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="query" transfer-ownership="none">
+            <doc xml:space="preserve">a GST_QUERY_BITRATE type #GstQuery</doc>
+            <type name="Query" c:type="GstQuery*"/>
+          </instance-parameter>
+          <parameter name="nominal_bitrate" transfer-ownership="none">
+            <doc xml:space="preserve">the nominal bitrate in bits per second</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="set_buffering_percent"
               c:identifier="gst_query_set_buffering_percent">
         <doc xml:space="preserve">Set the percentage of buffered data. This is a value between 0 and 100.
@@ -34332,6 +34379,12 @@ to permanent or not.</doc>
               glib:nick="context">
         <doc xml:space="preserve">query the pipeline-local context from
     downstream or upstream (since 1.2)</doc>
+      </member>
+      <member name="bitrate"
+              value="51202"
+              c:identifier="GST_QUERY_BITRATE"
+              glib:nick="bitrate">
+        <doc xml:space="preserve">the bitrate query (since 1.16)</doc>
       </member>
       <function name="get_flags" c:identifier="gst_query_type_get_flags">
         <doc xml:space="preserve">Gets the #GstQueryTypeFlags associated with @type.</doc>

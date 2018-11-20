@@ -876,11 +876,14 @@ namespace Dazzle {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ProgressMenuButton ();
 		public double get_progress ();
+		public bool get_show_progress ();
 		public bool get_show_theatric ();
 		public void reset_theatrics ();
 		public void set_progress (double progress);
+		public void set_show_progress (bool show_progress);
 		public void set_show_theatric (bool show_theatic);
 		public double progress { get; set; }
+		public bool show_progress { get; set; }
 		public bool show_theatric { get; set; }
 		[NoAccessorMethod]
 		public string theatric_icon_name { owned get; set; }
@@ -1970,6 +1973,10 @@ namespace Dazzle {
 	public static string[] dnd_get_uri_list (Gtk.SelectionData selection_data);
 	[CCode (cheader_filename = "dazzle.h")]
 	public static bool file_manager_show (GLib.File file) throws GLib.Error;
+	[CCode (cheader_filename = "dazzle.h")]
+	public static uint frame_source_add (uint frames_per_sec, GLib.SourceFunc callback);
+	[CCode (cheader_filename = "dazzle.h")]
+	public static uint frame_source_add_full (int priority, uint frames_per_sec, owned GLib.SourceFunc callback);
 	[CCode (cheader_filename = "dazzle.h")]
 	public static string fuzzy_highlight (string str, string query, bool case_sensitive);
 	[CCode (cheader_filename = "dazzle.h")]

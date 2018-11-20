@@ -344,7 +344,7 @@ To obtain the list of connections that are compatible with this access point,
 use nm_client_get_connections() and then filter the returned list for a given
 #NMDevice using nm_device_filter_connections() and finally filter that list
 with this function.</doc>
-        <return-value transfer-ownership="container">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">an array of
 #NMConnections that could be activated with the given @ap.  The array should
 be freed with g_ptr_array_unref() when it is no longer required.</doc>
@@ -1921,6 +1921,116 @@ track the activation to its completion.</doc>
               c:identifier="nm_client_add_and_activate_connection_finish"
               throws="1">
         <doc xml:space="preserve">Gets the result of a call to nm_client_add_and_activate_connection_async().
+
+You can call nm_active_connection_get_connection() on the returned
+#NMActiveConnection to find the path of the created #NMConnection.</doc>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve">the new #NMActiveConnection on success, %NULL on
+  failure, in which case @error will be set.</doc>
+          <type name="ActiveConnection" c:type="NMActiveConnection*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">an #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve">the result passed to the #GAsyncReadyCallback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_and_activate_connection_options"
+              c:identifier="nm_client_add_and_activate_connection_options"
+              version="1.16">
+        <doc xml:space="preserve">Adds a new connection using the given details (if any) as a template,
+automatically filling in missing settings with the capabilities of the given
+device and specific object.  The new connection is then asynchronously
+activated as with nm_client_activate_connection_async(). Cannot be used for
+VPN connections at this time.
+
+Note that the callback is invoked when NetworkManager has started activating
+the new connection, not when it finishes. You can used the returned
+#NMActiveConnection object (in particular, #NMActiveConnection:state) to
+track the activation to its completion.
+
+This is identitcal to nm_client_add_and_activate_connection_async() but takes
+a further @options parameter. Currently the following options are supported
+by the daemon:
+ * "persist": A string describing how the connection should be stored.
+              The default is "disk", but it can be modified to "memory" (until
+              the daemon quits) or "volatile" (will be deleted on disconnect).
+ * "bind-activation": Bind the connection lifetime to something. The default is "none",
+           meaning an explicit disconnect is needed. The value "dbus-client"
+           means the connection will automatically be deactivated when the calling
+           DBus client disappears from the system bus.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="client" transfer-ownership="none">
+            <doc xml:space="preserve">a #NMClient</doc>
+            <type name="Client" c:type="NMClient*"/>
+          </instance-parameter>
+          <parameter name="partial"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">an #NMConnection to add; the connection may be
+  partially filled (or even %NULL) and will be completed by NetworkManager
+  using the given @device and @specific_object before being added</doc>
+            <type name="Connection" c:type="NMConnection*"/>
+          </parameter>
+          <parameter name="device" transfer-ownership="none">
+            <doc xml:space="preserve">the #NMDevice</doc>
+            <type name="Device" c:type="NMDevice*"/>
+          </parameter>
+          <parameter name="specific_object"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">the object path of a connection-type-specific
+  object this activation should use. This parameter is currently ignored for
+  wired and mobile broadband connections, and the value of %NULL should be used
+  (ie, no specific object).  For Wi-Fi or WiMAX connections, pass the object
+  path of a #NMAccessPoint or #NMWimaxNsp owned by @device, which you can
+  get using nm_object_get_path(), and which will be used to complete the
+  details of the newly added connection.</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+          <parameter name="options" transfer-ownership="none">
+            <doc xml:space="preserve">a #GVariant containing a dictionary with options, or %NULL</doc>
+            <type name="GLib.Variant" c:type="GVariant*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">a #GCancellable, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="6">
+            <doc xml:space="preserve">callback to be called when the activation has started</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve">caller-specific data passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_and_activate_connection_options_finish"
+              c:identifier="nm_client_add_and_activate_connection_options_finish"
+              throws="1">
+        <doc xml:space="preserve">Gets the result of a call to nm_client_add_and_activate_connection_options().
 
 You can call nm_active_connection_get_connection() on the returned
 #NMActiveConnection to find the path of the created #NMConnection.</doc>
@@ -6755,7 +6865,7 @@ unencrypted or WEP-enabled SSIDs.  The returned array will not contain
 Ethernet, Bluetooth, Wi-Fi WPA connections, or any other connection that is
 incompatible with the device. To get the full list of connections see
 nm_client_get_connections().</doc>
-        <return-value transfer-ownership="container">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">an array of
 #NMConnections that could be activated with the given @device.  The array
 should be freed with g_ptr_array_unref() when it is no longer required.</doc>
@@ -22742,11 +22852,11 @@ different IDs. Or with ipv6.addr-gen-mode=stable-privacy, also the device's
 name is included, so that different interfaces yield different addresses.
 
 The '$' character is treated special to perform dynamic substitutions
-at runtime. Currently supported are "${CONNECTION}", "${DEVICE}",
+at runtime. Currently supported are "${CONNECTION}", "${DEVICE}", "${MAC}",
 "${BOOT}", "${RANDOM}".
 These effectively create unique IDs per-connection, per-device, per-boot,
 or every time. Note that "${DEVICE}" corresponds the the interface name of the
-device.
+device and "${MAC}" is the permanent MAC address of the device.
 Any unrecognized patterns following '$' are treated verbatim, however
 are reserved for future use. You are thus advised to avoid '$' or
 escape it as "$$".
@@ -24030,11 +24140,16 @@ current or permanent MAC address of the device to generate a client identifier
 with type ethernet (01). Currently, these options only work for ethernet
 type of links.
 
-The special value "stable" is supported to generate a type 0 client identifier based
-on the stable-id (see connection.stable-id) and a per-host key.
+The special value "duid" generates a RFC4361-compliant client identifier based
+on a hash of the interface name as IAID and /etc/machine-id.
 
-If unset, a globally configured default is used. If still unset, the
-client-id from the last lease is reused.</doc>
+The special value "stable" is supported to generate a type 0 client identifier based
+on the stable-id (see connection.stable-id) and a per-host key. If you set the
+stable-id, you may want to include the "${DEVICE}" or "{$MAC}" specifier to get a
+per-device key.
+
+If unset, a globally configured default is used. If still unset, the default
+depends on the DHCP plugin.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="dhcp-fqdn"
@@ -24201,7 +24316,8 @@ timestamp that is used globally (for all profiles) and persisted to disk.
 
 The special values "stable-llt", "stable-ll" and "stable-uuid" will generate
 a DUID of the corresponding type, derived from the connection's stable-id and
-a per-host unique key.
+a per-host unique key. You may want to include the "${DEVICE}" or "${MAC}" specifier
+in the stable-id, in case this profile gets activated on multiple devices.
 So, the link-layer address of "stable-ll" and "stable-llt" will be a generated
 address derived from the stable id. The DUID-LLT time value in the "stable-llt"
 option will be picked among a static timespan of three years (the upper bound
@@ -25129,8 +25245,9 @@ distinct from an empty list of properties.</doc>
         <doc xml:space="preserve">DNS servers priority.
 
 The relative priority for DNS servers specified by this setting.  A lower
-value is better (higher priority).  Zero selects the default value, which
-is 50 for VPNs and 100 for other connections.
+value is better (higher priority). Zero selects a globally configured
+default value. If the latter is missing or zero too, it defaults to
+50 for VPNs and 100 for other connections.
 
 Note that the priority is to order DNS settings for multiple active
 connections.  It does not disambiguate multiple DNS servers within the
@@ -37937,7 +38054,7 @@ connection may be activated with that NSP.  The connection must match the
         <doc xml:space="preserve">Filters a given array of connections for a given #NMWimaxNsp object and
 return connections which may be activated with the NSP.  Any returned
 connections will match the @nsp's network name and other attributes.</doc>
-        <return-value transfer-ownership="container">
+        <return-value transfer-ownership="full">
           <doc xml:space="preserve">an array of
 #NMConnections that could be activated with the given @nsp.  The array should
 be freed with g_ptr_array_unref() when it is no longer required.</doc>

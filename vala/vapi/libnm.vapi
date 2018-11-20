@@ -303,7 +303,7 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected AccessPoint ();
 		public bool connection_valid (NM.Connection connection);
-		public GLib.GenericArray<weak NM.Connection> filter_connections (GLib.GenericArray<NM.Connection> connections);
+		public GLib.GenericArray<NM.Connection> filter_connections (GLib.GenericArray<NM.Connection> connections);
 		public unowned string get_bssid ();
 		public NM.80211ApFlags get_flags ();
 		public uint32 get_frequency ();
@@ -498,6 +498,8 @@ namespace NM {
 		public Client (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async NM.ActiveConnection activate_connection_async (NM.Connection? connection, NM.Device? device, string? specific_object, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async NM.ActiveConnection add_and_activate_connection_async (NM.Connection? partial, NM.Device device, string? specific_object, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.16")]
+		public async NM.ActiveConnection add_and_activate_connection_options (NM.Connection? partial, NM.Device device, string? specific_object, GLib.Variant options, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async NM.RemoteConnection add_connection_async (NM.Connection connection, bool save_to_disk, GLib.Cancellable? cancellable) throws GLib.Error;
 		public NM.ConnectivityState check_connectivity (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async NM.ConnectivityState check_connectivity_async (GLib.Cancellable? cancellable) throws GLib.Error;
@@ -818,7 +820,7 @@ namespace NM {
 		public static string[] disambiguate_names ([CCode (array_length_cname = "num_devices", array_length_pos = 1.1)] NM.Device[] devices);
 		public bool disconnect (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool disconnect_async (GLib.Cancellable? cancellable) throws GLib.Error;
-		public GLib.GenericArray<weak NM.Connection> filter_connections (GLib.GenericArray<NM.Connection> connections);
+		public GLib.GenericArray<NM.Connection> filter_connections (GLib.GenericArray<NM.Connection> connections);
 		public unowned NM.ActiveConnection get_active_connection ();
 		[Version (since = "1.2")]
 		public NM.Connection get_applied_connection (uint32 flags, out uint64 version_id, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -4776,7 +4778,7 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected WimaxNsp ();
 		public bool connection_valid (NM.Connection connection);
-		public GLib.GenericArray<weak NM.Connection> filter_connections (GLib.GenericArray<NM.Connection> connections);
+		public GLib.GenericArray<NM.Connection> filter_connections (GLib.GenericArray<NM.Connection> connections);
 		public unowned string get_name ();
 		public NM.WimaxNspNetworkType get_network_type ();
 		public uint32 get_signal_quality ();

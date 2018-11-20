@@ -679,6 +679,7 @@ namespace MM {
 		public unowned string get_path ();
 		public GLib.List<MM.Pco> get_pco ();
 		public MM.Modem3gppRegistrationState get_registration_state ();
+		[Version (deprecated = true, deprecated_since = "1.10.0.")]
 		public MM.Modem3gppSubscriptionState get_subscription_state ();
 		public static unowned string network_availability_get_string (MM.Modem3gppNetworkAvailability val);
 		public static void network_free (MM.Modem3gppNetwork network);

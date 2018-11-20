@@ -1753,6 +1753,17 @@ iterator handle is no longer valid after invoking this function.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <method name="is_identity"
+              c:identifier="gegl_buffer_matrix2_is_identity">
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="matrix" transfer-ownership="none">
+            <type name="BufferMatrix2" c:type="GeglBufferMatrix2*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="is_scale" c:identifier="gegl_buffer_matrix2_is_scale">
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -4176,6 +4187,88 @@ keys.</doc>
       <member name="input" value="512" c:identifier="GEGL_PARAM_PAD_INPUT">
       </member>
     </bitfield>
+    <callback name="ParallelDistributeAreaFunc"
+              c:type="GeglParallelDistributeAreaFunc">
+      <doc xml:space="preserve">Specifies the type of function passed to
+gegl_parallel_distribute_area().
+
+The function should process the sub-area specified by @area.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="area" transfer-ownership="none">
+          <doc xml:space="preserve">the current sub-area</doc>
+          <type name="Rectangle" c:type="const GeglRectangle*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="1">
+          <doc xml:space="preserve">user data pointer</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <callback name="ParallelDistributeFunc"
+              c:type="GeglParallelDistributeFunc">
+      <doc xml:space="preserve">Specifies the type of function passed to gegl_parallel_distribute().
+
+The function should process the @i-th part of the data, out of @n
+equal parts.  @n may be less-than or equal-to the @max_n argument
+passed to gegl_parallel_distribute().</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="i" transfer-ownership="none">
+          <doc xml:space="preserve">the current thread index, in the range [0,@n)</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="n" transfer-ownership="none">
+          <doc xml:space="preserve">the number of threads execution is distributed across</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="2">
+          <doc xml:space="preserve">user data pointer</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <callback name="ParallelDistributeRangeFunc"
+              c:type="GeglParallelDistributeRangeFunc">
+      <doc xml:space="preserve">Specifies the type of function passed to
+gegl_parallel_distribute_range().
+
+The function should process @size elements of the data, starting
+at @offset.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="offset" transfer-ownership="none">
+          <doc xml:space="preserve">the current data offset</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="size" transfer-ownership="none">
+          <doc xml:space="preserve">the current data size</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="2">
+          <doc xml:space="preserve">user data pointer</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <class name="ParamAudioFragment"
            c:symbol-prefix="param_audio_fragment"
            parent="GObject.ParamSpec"
@@ -6952,6 +7045,109 @@ Returns a pointer to the allocated memory.</doc>
         <parameter name="count" transfer-ownership="none">
           <doc xml:space="preserve">number of copies</doc>
           <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="parallel_distribute"
+              c:identifier="gegl_parallel_distribute">
+      <doc xml:space="preserve">Distributes the execution of a function across multiple threads,
+by calling it with a different index on each thread.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="max_n" transfer-ownership="none">
+          <doc xml:space="preserve">the maximal number of threads to use</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+        <parameter name="func"
+                   transfer-ownership="none"
+                   scope="call"
+                   closure="2">
+          <doc xml:space="preserve">the function to call</doc>
+          <type name="ParallelDistributeFunc"
+                c:type="GeglParallelDistributeFunc"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">user data to pass to the function</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="parallel_distribute_area"
+              c:identifier="gegl_parallel_distribute_area">
+      <doc xml:space="preserve">Distributes the processing of a planar data-structure across
+multiple threads, by calling the given function with different
+sub-areas on different threads.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="area" transfer-ownership="none">
+          <doc xml:space="preserve">the area to process</doc>
+          <type name="Rectangle" c:type="const GeglRectangle*"/>
+        </parameter>
+        <parameter name="thread_cost" transfer-ownership="none">
+          <doc xml:space="preserve">the cost of using each additional thread, relative
+              to the cost of processing a single data element</doc>
+          <type name="gdouble" c:type="gdouble"/>
+        </parameter>
+        <parameter name="split_strategy" transfer-ownership="none">
+          <doc xml:space="preserve">the strategy to use for dividing the area</doc>
+          <type name="SplitStrategy" c:type="GeglSplitStrategy"/>
+        </parameter>
+        <parameter name="func"
+                   transfer-ownership="none"
+                   scope="call"
+                   closure="4">
+          <doc xml:space="preserve">the function to call</doc>
+          <type name="ParallelDistributeAreaFunc"
+                c:type="GeglParallelDistributeAreaFunc"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">user data to pass to the function</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="parallel_distribute_range"
+              c:identifier="gegl_parallel_distribute_range">
+      <doc xml:space="preserve">Distributes the processing of a linear data-structure across
+multiple threads, by calling the given function with different
+sub-ranges on different threads.</doc>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="size" transfer-ownership="none">
+          <doc xml:space="preserve">the total size of the data</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+        <parameter name="thread_cost" transfer-ownership="none">
+          <doc xml:space="preserve">the cost of using each additional thread, relative
+              to the cost of processing a single data element</doc>
+          <type name="gdouble" c:type="gdouble"/>
+        </parameter>
+        <parameter name="func"
+                   transfer-ownership="none"
+                   scope="call"
+                   closure="3">
+          <doc xml:space="preserve">the function to call</doc>
+          <type name="ParallelDistributeRangeFunc"
+                c:type="GeglParallelDistributeRangeFunc"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve">user data to pass to the function</doc>
+          <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
     </function>

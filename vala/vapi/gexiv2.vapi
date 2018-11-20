@@ -16,7 +16,7 @@ namespace GExiv2 {
 		public void erase_exif_thumbnail ();
 		[Version (deprecated = true, deprecated_since = "0.10.3")]
 		public void free ();
-		public bool from_app1_segment ([CCode (array_length = false)] uchar[] data, long n_data) throws GLib.Error;
+		public bool from_app1_segment ([CCode (array_length_cname = "n_data", array_length_pos = 1.1, array_length_type = "glong")] uint8[] data) throws GLib.Error;
 		public string? generate_xmp_packet (GExiv2.XmpFormatFlags xmp_format_flags, uint32 padding);
 		public string? get_comment ();
 		public bool get_exif_tag_rational (string tag, out int nom, out int den);
@@ -64,7 +64,7 @@ namespace GExiv2 {
 		public static bool is_exif_tag (string tag);
 		public static bool is_iptc_tag (string tag);
 		public static bool is_xmp_tag (string tag);
-		public bool open_buf ([CCode (array_length = false)] uchar[] data, long n_data) throws GLib.Error;
+		public bool open_buf ([CCode (array_length_cname = "n_data", array_length_pos = 1.1, array_length_type = "glong")] uint8[] data) throws GLib.Error;
 		public bool open_path (string path) throws GLib.Error;
 		public static bool register_xmp_namespace (string name, string prefix);
 		[Version (since = "0.10.6")]

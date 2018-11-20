@@ -386,6 +386,10 @@ namespace Camel {
 		[Version (since = "2.32")]
 		public int get_frozen_count ();
 		public unowned string get_full_name ();
+		[Version (since = "3.32")]
+		public Camel.ThreeState get_mark_seen ();
+		[Version (since = "3.32")]
+		public int get_mark_seen_timeout ();
 		[Version (since = "3.0")]
 		public async unowned Camel.MimeMessage get_message (string message_uid, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.24")]
@@ -442,6 +446,10 @@ namespace Camel {
 		public void set_full_name (string full_name);
 		[Version (since = "2.30")]
 		public void set_lock_async (bool skip_folder_lock);
+		[Version (since = "3.32")]
+		public void set_mark_seen (Camel.ThreeState mark_seen);
+		[Version (since = "3.32")]
+		public void set_mark_seen_timeout (int timeout);
 		[Version (deprecated = true)]
 		public virtual bool set_message_flags (string uid, uint32 mask, uint32 @set);
 		[Version (deprecated = true)]
@@ -471,6 +479,10 @@ namespace Camel {
 		public string description { get; set construct; }
 		public string display_name { get; set construct; }
 		public string full_name { get; set construct; }
+		[Version (since = "3.32")]
+		public Camel.ThreeState mark_seen { get; set construct; }
+		[Version (since = "3.32")]
+		public int mark_seen_timeout { get; set construct; }
 		public Camel.Store parent_store { get; construct; }
 		[HasEmitter]
 		public virtual signal void changed (Camel.FolderChangeInfo changes);

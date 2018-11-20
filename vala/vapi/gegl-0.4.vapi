@@ -502,6 +502,7 @@ namespace Gegl {
 		[CCode (array_length = false)]
 		public weak double coeff[2];
 		public double determinant ();
+		public bool is_identity ();
 		public bool is_scale ();
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
@@ -759,6 +760,12 @@ namespace Gegl {
 	public delegate float LookupFunction (float value, void* data);
 	[CCode (cheader_filename = "gegl.h", instance_pos = 1.9)]
 	public delegate void NodeFunction (Gegl.PathItem node);
+	[CCode (cheader_filename = "gegl.h", instance_pos = 1.9)]
+	public delegate void ParallelDistributeAreaFunc (Gegl.Rectangle area);
+	[CCode (cheader_filename = "gegl.h", instance_pos = 2.9)]
+	public delegate void ParallelDistributeFunc (int i, int n);
+	[CCode (cheader_filename = "gegl.h", instance_pos = 2.9)]
+	public delegate void ParallelDistributeRangeFunc (size_t offset, size_t size);
 	[CCode (cheader_filename = "gegl.h", has_target = false)]
 	public delegate void SamplerGetFun (Gegl.Sampler self, double x, double y, Gegl.BufferMatrix2 scale, void* output, Gegl.AbyssPolicy repeat_mode);
 	[CCode (cheader_filename = "gegl.h", instance_pos = 1.9)]
@@ -923,6 +930,12 @@ namespace Gegl {
 	public static (unowned string)[] list_operations ();
 	[CCode (cheader_filename = "gegl.h")]
 	public static void load_module_directory (string path);
+	[CCode (cheader_filename = "gegl.h")]
+	public static void parallel_distribute (int max_n, Gegl.ParallelDistributeFunc func);
+	[CCode (cheader_filename = "gegl.h")]
+	public static void parallel_distribute_area (Gegl.Rectangle area, double thread_cost, Gegl.SplitStrategy split_strategy, Gegl.ParallelDistributeAreaFunc func);
+	[CCode (cheader_filename = "gegl.h")]
+	public static void parallel_distribute_range (size_t size, double thread_cost, Gegl.ParallelDistributeRangeFunc func);
 	[CCode (cheader_filename = "gegl.h")]
 	public static void reset_stats ();
 	[CCode (cheader_filename = "gegl.h")]

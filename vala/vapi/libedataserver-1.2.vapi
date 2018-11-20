@@ -696,15 +696,25 @@ namespace E {
 		[Version (since = "3.16")]
 		public unowned string get_archive_folder ();
 		public unowned string get_identity_uid ();
+		[Version (since = "3.32")]
+		public E.ThreeState get_mark_seen ();
+		[Version (since = "3.32")]
+		public int get_mark_seen_timeout ();
 		[Version (since = "3.20")]
 		public bool get_needs_initial_setup ();
 		[Version (since = "3.16")]
 		public void set_archive_folder (string? archive_folder);
 		public void set_identity_uid (string? identity_uid);
+		[Version (since = "3.32")]
+		public void set_mark_seen (E.ThreeState mark_seen);
+		[Version (since = "3.32")]
+		public void set_mark_seen_timeout (int timeout);
 		[Version (since = "3.20")]
 		public void set_needs_initial_setup (bool needs_initial_setup);
 		public string archive_folder { get; set construct; }
 		public string identity_uid { get; set construct; }
+		public E.ThreeState mark_seen { get; set construct; }
+		public int mark_seen_timeout { get; set construct; }
 		public bool needs_initial_setup { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mail_composition_get_type ()")]
