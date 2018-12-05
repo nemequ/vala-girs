@@ -403,7 +403,7 @@ namespace NM {
 		public string type { owned get; }
 		public string uuid { get; }
 		public bool vpn { get; }
-		public signal void state_changed (uint object, uint p0);
+		public signal void state_changed (uint state, uint reason);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_checkpoint_get_type ()")]
 	public class Checkpoint : NM.Object, GLib.AsyncInitable, GLib.Initable {

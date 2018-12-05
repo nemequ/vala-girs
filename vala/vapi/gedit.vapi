@@ -354,7 +354,7 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_make_valid_utf8 (string name);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	public static void utils_menu_position_under_tree_view (Gtk.Menu menu, int x, int y, bool push_in, void* user_data);
+	public static bool utils_menu_position_under_tree_view (Gtk.TreeView tree_view, Gdk.Rectangle rect);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static void utils_menu_position_under_widget (Gtk.Menu menu, int x, int y, bool push_in, void* user_data);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]

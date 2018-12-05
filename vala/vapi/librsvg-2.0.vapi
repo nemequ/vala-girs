@@ -39,14 +39,16 @@ namespace Rsvg {
 		public unowned string get_desc ();
 		[Version (since = "2.14")]
 		public Rsvg.DimensionData get_dimensions ();
-		[Version (since = "2.22")]
+		[Version (deprecated = true, since = "2.22")]
 		public bool get_dimensions_sub (out Rsvg.DimensionData dimension_data, string? id);
+		[Version (since = "2.46")]
+		public bool get_geometry_sub (out unowned Rsvg.Rectangle? ink_rect, out unowned Rsvg.Rectangle? logical_rect, string? id);
 		[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]
 		public unowned string get_metadata ();
 		public Gdk.Pixbuf? get_pixbuf ();
 		[Version (since = "2.14")]
 		public Gdk.Pixbuf? get_pixbuf_sub (string? id);
-		[Version (since = "2.22")]
+		[Version (deprecated = true, since = "2.22")]
 		public bool get_position_sub (out Rsvg.PositionData position_data, string? id);
 		[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]
 		public unowned string get_title ();
@@ -100,6 +102,7 @@ namespace Rsvg {
 		public int width { get; }
 	}
 	[CCode (cheader_filename = "librsvg/rsvg.h", has_type_id = false)]
+	[Version (deprecated = true, deprecated_since = "2.46")]
 	public struct DimensionData {
 		public int width;
 		public int height;
@@ -107,9 +110,18 @@ namespace Rsvg {
 		public double ex;
 	}
 	[CCode (cheader_filename = "librsvg/rsvg.h", has_type_id = false)]
+	[Version (deprecated = true, deprecated_since = "2.46")]
 	public struct PositionData {
 		public int x;
 		public int y;
+	}
+	[CCode (cheader_filename = "librsvg/rsvg.h", has_type_id = false)]
+	[Version (since = "2.46")]
+	public struct Rectangle {
+		public double x;
+		public double y;
+		public double width;
+		public double height;
 	}
 	[CCode (cheader_filename = "librsvg/rsvg.h", cprefix = "RSVG_HANDLE_", type_id = "rsvg_handle_flags_get_type ()")]
 	[Flags]

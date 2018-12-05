@@ -697,13 +697,12 @@ namespace Gda {
 		public unowned GLib.List<Gda.DdlColumn> get_columns ();
 		[Version (since = "6.0")]
 		public unowned GLib.List<Gda.DdlFkey> get_fkeys ();
-		[Version (since = "6.0")]
-		public bool is_temp ();
+		public bool get_is_temp ();
 		public bool is_valid ();
 		[Version (since = "6.0")]
 		public bool prepare_create (Gda.ServerOperation op, bool ifnotexists) throws GLib.Error;
 		[Version (since = "6.0")]
-		public void set_temp (bool istemp);
+		public void set_is_temp (bool istemp);
 		public bool update (Gda.MetaTable obj, Gda.Connection cnc) throws GLib.Error;
 		[NoAccessorMethod]
 		public string comment { owned get; set; }

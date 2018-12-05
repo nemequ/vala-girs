@@ -302,7 +302,7 @@ namespace Goa {
 		public void set_read_later (Goa.ReadLater? interface_);
 		[Version (since = "3.6.0")]
 		public void set_ticketing (Goa.Ticketing? interface_);
-		[Version (since = "3.26.0")]
+		[Version (deprecated = true, since = "3.26.0")]
 		public void set_todo (Goa.Todo? interface_);
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_password_based_proxy_get_type ()")]
@@ -396,21 +396,26 @@ namespace Goa {
 		public TicketingSkeleton ();
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_todo_proxy_get_type ()")]
-	[Version (since = "3.26.0")]
+	[Version (deprecated = true, since = "3.26.0")]
 	public class TodoProxy : GLib.DBusProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, Goa.Todo {
 		[CCode (cname = "goa_todo_proxy_new", has_construct_function = false)]
+		[Version (deprecated = true, since = "3.26.0")]
 		public async TodoProxy (GLib.DBusConnection connection, GLib.DBusProxyFlags flags, string? name, string object_path, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (cname = "goa_todo_proxy_new_for_bus", has_construct_function = false)]
+		[Version (deprecated = true, since = "3.26.0")]
 		public async TodoProxy.for_bus (GLib.BusType bus_type, GLib.DBusProxyFlags flags, string name, string object_path, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (has_construct_function = false, type = "GoaTodo*")]
+		[Version (deprecated = true, since = "3.26.0")]
 		public TodoProxy.for_bus_sync (GLib.BusType bus_type, GLib.DBusProxyFlags flags, string name, string object_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false, type = "GoaTodo*")]
+		[Version (deprecated = true, since = "3.26.0")]
 		public TodoProxy.sync (GLib.DBusConnection connection, GLib.DBusProxyFlags flags, string? name, string object_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_todo_skeleton_get_type ()")]
-	[Version (since = "3.26.0")]
+	[Version (deprecated = true, since = "3.26.0")]
 	public class TodoSkeleton : GLib.DBusInterfaceSkeleton, GLib.DBusInterface, Goa.Todo {
 		[CCode (has_construct_function = false, type = "GoaTodo*")]
+		[Version (deprecated = true, since = "3.26.0")]
 		public TodoSkeleton ();
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_account_get_type ()")]
@@ -474,7 +479,7 @@ namespace Goa {
 		[Version (since = "3.6.0")]
 		public abstract bool ticketing_disabled { get; set; }
 		[NoAccessorMethod]
-		[Version (since = "3.26.0")]
+		[Version (deprecated = true, since = "3.26.0")]
 		public abstract bool todo_disabled { get; set; }
 		public virtual signal bool handle_ensure_credentials (GLib.DBusMethodInvocation invocation);
 		public virtual signal bool handle_remove (GLib.DBusMethodInvocation invocation);
@@ -670,7 +675,7 @@ namespace Goa {
 		public Goa.ReadLater get_read_later ();
 		[Version (since = "3.6.0")]
 		public Goa.Ticketing get_ticketing ();
-		[Version (since = "3.26.0")]
+		[Version (deprecated = true, since = "3.26.0")]
 		public Goa.Todo get_todo ();
 		[NoAccessorMethod]
 		public abstract Goa.Account account { owned get; set; }
@@ -721,7 +726,7 @@ namespace Goa {
 		[Version (since = "3.6.0")]
 		public abstract Goa.Ticketing ticketing { owned get; set; }
 		[NoAccessorMethod]
-		[Version (since = "3.26.0")]
+		[Version (deprecated = true, since = "3.26.0")]
 		public abstract Goa.Todo todo { owned get; set; }
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_password_based_get_type ()")]
@@ -766,9 +771,11 @@ namespace Goa {
 		public virtual signal bool handle_get_ticket (GLib.DBusMethodInvocation invocation);
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_todo_get_type ()")]
-	[Version (since = "3.26.0")]
+	[Version (deprecated = true, since = "3.26.0")]
 	public interface Todo : GLib.Object {
+		[Version (deprecated = true, since = "3.26.0")]
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
+		[Version (deprecated = true, since = "3.26.0")]
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	}
 	[CCode (cheader_filename = "goa/goa.h", cprefix = "GOA_ERROR_")]
@@ -883,9 +890,9 @@ namespace Goa {
 	[Version (since = "3.6.0")]
 	public static uint ticketing_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.26.0")]
+	[Version (deprecated = true, since = "3.26.0")]
 	public static unowned GLib.DBusInterfaceInfo todo_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.26.0")]
+	[Version (deprecated = true, since = "3.26.0")]
 	public static uint todo_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 }

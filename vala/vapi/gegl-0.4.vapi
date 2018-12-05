@@ -55,6 +55,8 @@ namespace Gegl {
 		public bool set_extent (Gegl.Rectangle extent);
 		public void set_pattern (Gegl.Rectangle rect, Gegl.Buffer pattern, int x_offset, int y_offset);
 		public long signal_connect (string detailed_signal, [CCode (scope = "async")] GLib.Callback c_handler);
+		public static string? swap_create_file (string? suffix);
+		public static void swap_remove_file (string path);
 		[NoAccessorMethod]
 		public int abyss_height { get; construct; }
 		[NoAccessorMethod]
@@ -93,10 +95,6 @@ namespace Gegl {
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	[Compact]
-	public class BufferIterator2Priv {
-	}
-	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
-	[Compact]
 	public class BufferIteratorPriv {
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_color_get_type ()")]
@@ -123,17 +121,17 @@ namespace Gegl {
 		[NoAccessorMethod]
 		public double quality { get; set construct; }
 		[NoAccessorMethod]
-		public int queue_size { get; set construct; }
+		public int queue_size { get; set; }
 		[NoAccessorMethod]
-		public string swap { owned get; set construct; }
+		public string swap { owned get; set; }
 		[NoAccessorMethod]
 		public int threads { get; set construct; }
 		[NoAccessorMethod]
-		public uint64 tile_cache_size { get; set construct; }
+		public uint64 tile_cache_size { get; set; }
 		[NoAccessorMethod]
-		public int tile_height { get; set construct; }
+		public int tile_height { get; set; }
 		[NoAccessorMethod]
-		public int tile_width { get; set construct; }
+		public int tile_width { get; set; }
 		[NoAccessorMethod]
 		public bool use_opencl { get; set construct; }
 	}
@@ -466,6 +464,7 @@ namespace Gegl {
 		[CCode (has_construct_function = false)]
 		protected TileHandler ();
 		public void damage_rect (Gegl.Rectangle rect);
+		public void damage_tile (int x, int y, int z, uint64 damage);
 		public void set_source (Gegl.TileSource source);
 		[NoAccessorMethod]
 		public GLib.Object source { owned get; set construct; }
@@ -482,18 +481,10 @@ namespace Gegl {
 	public struct BufferIterator {
 		public int length;
 		[CCode (array_length = false)]
-		public weak void* data[6];
-		[CCode (array_length = false)]
-		public weak Gegl.Rectangle roi[6];
+		public weak Gegl.BufferIteratorItem[] items;
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
-	public struct BufferIterator2 {
-		public int length;
-		[CCode (array_length = false)]
-		public weak Gegl.BufferIterator2Item[] items;
-	}
-	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
-	public struct BufferIterator2Item {
+	public struct BufferIteratorItem {
 		public void* data;
 		public weak Gegl.Rectangle roi;
 	}
@@ -651,7 +642,9 @@ namespace Gegl {
 		[CCode (cname = "Linear-premultiplied-if-alpha")]
 		LINEAR_PREMULTIPLIED_IF_ALPHA,
 		[CCode (cname = "Perceptual-premultiplied-if-alpha")]
-		PERCEPTUAL_PREMULTIPLIED_IF_ALPHA
+		PERCEPTUAL_PREMULTIPLIED_IF_ALPHA,
+		[CCode (cname = "add-alpha")]
+		ADD_ALPHA
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_BLIT_", has_type_id = false)]
 	[Flags]
@@ -774,8 +767,6 @@ namespace Gegl {
 	public delegate void* TileSourceCommand (Gegl.TileSource gegl_tile_source, Gegl.TileCommand command, int x, int y, int z, void* data);
 	[CCode (cheader_filename = "gegl.h", cname = "GEGL_AUTO_ROWSTRIDE")]
 	public const int AUTO_ROWSTRIDE;
-	[CCode (cheader_filename = "gegl.h", cname = "GEGL_BUFFER_MAX_ITERATORS")]
-	public const int BUFFER_MAX_ITERATORS;
 	[CCode (cheader_filename = "gegl.h", cname = "GEGL_CH_BACK_CENTER")]
 	public const int CH_BACK_CENTER;
 	[CCode (cheader_filename = "gegl.h", cname = "GEGL_CH_BACK_LEFT")]

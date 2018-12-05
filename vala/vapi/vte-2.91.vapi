@@ -32,6 +32,7 @@ namespace Vte {
 		public Regex.for_search (string pattern, ssize_t pattern_length, uint32 flags) throws GLib.Error;
 		public bool jit (uint32 flags) throws GLib.Error;
 		public Vte.Regex @ref ();
+		public string substitute (string subject, string replacement, uint32 flags) throws GLib.Error;
 		public Vte.Regex unref ();
 	}
 	[CCode (cheader_filename = "vte/vte.h", type_id = "vte_terminal_get_type ()")]

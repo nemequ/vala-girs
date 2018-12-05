@@ -128,6 +128,20 @@ namespace Hdy {
 		public Gtk.Widget visible_child { get; set; }
 		public string visible_child_name { get; set; }
 	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_search_bar_get_type ()")]
+	public class SearchBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public SearchBar ();
+		public void connect_entry (Gtk.Entry entry);
+		public bool get_search_mode ();
+		public bool get_show_close_button ();
+		public bool handle_event (Gdk.Event event);
+		public void set_search_mode (bool search_mode);
+		public void set_show_close_button (bool visible);
+		[NoAccessorMethod]
+		public bool search_mode_enabled { get; set; }
+		public bool show_close_button { get; set construct; }
+	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_title_bar_get_type ()")]
 	public class TitleBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
@@ -161,7 +175,7 @@ namespace Hdy {
 		SLIDE
 	}
 	[CCode (cheader_filename = "handy.h")]
-	public static bool init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref string[]? argv);
+	public static bool init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref unowned string[]? argv);
 	[CCode (cheader_filename = "handy.h")]
 	public static long string_utf8_len (GLib.StringBuilder string);
 	[CCode (cheader_filename = "handy.h")]

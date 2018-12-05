@@ -201,6 +201,8 @@ namespace Dazzle {
 		public void add_glob (GLib.File directory, string glob, GLib.TimeSpan min_age);
 		public bool execute (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool execute_async (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.32")]
+		public signal void remove_file (GLib.File file);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_dock_bin_get_type ()")]
 	public class DockBin : Gtk.Container, Atk.Implementor, Dazzle.Dock, Dazzle.DockItem, Gtk.Buildable {
@@ -375,6 +377,8 @@ namespace Dazzle {
 	public class FileChooserEntry : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public FileChooserEntry (string title, Gtk.FileChooserAction action);
+		[Version (since = "3.32")]
+		public unowned Gtk.Entry get_entry ();
 		public GLib.File? get_file ();
 		public void set_file (GLib.File file);
 		[NoAccessorMethod]
@@ -916,6 +920,7 @@ namespace Dazzle {
 		public RadioBox ();
 		public void add_item (string id, string text);
 		public unowned string get_active_id ();
+		public void remove_item (string id);
 		public void set_active_id (string id);
 		public string active_id { get; set; }
 		[NoAccessorMethod]
