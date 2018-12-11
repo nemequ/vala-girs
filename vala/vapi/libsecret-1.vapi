@@ -283,15 +283,6 @@ namespace Secret {
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static string password_lookupv_sync (Secret.Schema schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
-	[Version (since = "0.18.7")]
-	public static GLib.List<GLib.HashTable<void*,void*>> password_search_finish (GLib.AsyncResult result) throws GLib.Error;
-	[CCode (cheader_filename = "libsecret/secret.h")]
-	[Version (since = "0.18.7")]
-	public static async void password_searchv (Secret.Schema schema, GLib.HashTable<string,string> attributes, Secret.SearchFlags flags, GLib.Cancellable? cancellable);
-	[CCode (cheader_filename = "libsecret/secret.h")]
-	[Version (since = "0.18.7")]
-	public static GLib.List<GLib.HashTable<void*,void*>> password_searchv_sync (Secret.Schema schema, GLib.HashTable<string,string> attributes, Secret.SearchFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static async bool password_store (Secret.Schema schema, string? collection, string label, string password, GLib.Cancellable? cancellable, ...) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static bool password_store_sync (Secret.Schema schema, string? collection, string label, string password, GLib.Cancellable? cancellable = null, ...) throws GLib.Error;

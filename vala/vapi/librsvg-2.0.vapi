@@ -18,6 +18,7 @@ namespace Rsvg {
 	public class Handle : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Handle ();
+		[Version (deprecated = true, deprecated_since = "2.46.")]
 		public bool close () throws GLib.Error;
 		[Version (deprecated = true, deprecated_since = "2.13.90", replacement = "GLib.Object.unref")]
 		public void free ();
@@ -39,7 +40,7 @@ namespace Rsvg {
 		public unowned string get_desc ();
 		[Version (since = "2.14")]
 		public Rsvg.DimensionData get_dimensions ();
-		[Version (deprecated = true, since = "2.22")]
+		[Version (deprecated = true, deprecated_since = "2.46.", since = "2.22")]
 		public bool get_dimensions_sub (out Rsvg.DimensionData dimension_data, string? id);
 		[Version (since = "2.46")]
 		public bool get_geometry_sub (out unowned Rsvg.Rectangle? ink_rect, out unowned Rsvg.Rectangle? logical_rect, string? id);
@@ -48,7 +49,7 @@ namespace Rsvg {
 		public Gdk.Pixbuf? get_pixbuf ();
 		[Version (since = "2.14")]
 		public Gdk.Pixbuf? get_pixbuf_sub (string? id);
-		[Version (deprecated = true, since = "2.22")]
+		[Version (deprecated = true, deprecated_since = "2.46.", since = "2.22")]
 		public bool get_position_sub (out Rsvg.PositionData position_data, string? id);
 		[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]
 		public unowned string get_title ();
@@ -74,6 +75,7 @@ namespace Rsvg {
 		[CCode (has_construct_function = false)]
 		[Version (since = "2.36")]
 		public Handle.with_flags (Rsvg.HandleFlags flags);
+		[Version (deprecated = true, deprecated_since = "2.46.")]
 		public bool write ([CCode (array_length_cname = "count", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] buf) throws GLib.Error;
 		public string base_uri { get; set construct; }
 		[NoAccessorMethod]
@@ -102,7 +104,7 @@ namespace Rsvg {
 		public int width { get; }
 	}
 	[CCode (cheader_filename = "librsvg/rsvg.h", has_type_id = false)]
-	[Version (deprecated = true, deprecated_since = "2.46")]
+	[Version (deprecated = true, deprecated_since = "2.46.")]
 	public struct DimensionData {
 		public int width;
 		public int height;
@@ -110,7 +112,7 @@ namespace Rsvg {
 		public double ex;
 	}
 	[CCode (cheader_filename = "librsvg/rsvg.h", has_type_id = false)]
-	[Version (deprecated = true, deprecated_since = "2.46")]
+	[Version (deprecated = true, deprecated_since = "2.46.")]
 	public struct PositionData {
 		public int x;
 		public int y;

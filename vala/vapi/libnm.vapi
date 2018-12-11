@@ -547,6 +547,7 @@ namespace NM {
 		public NM.State get_state ();
 		public unowned string get_version ();
 		public bool load_connections ([CCode (array_length = false, array_null_terminated = true)] string[] filenames, out string failures, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (async_result_pos = 2.1)]
 		public async bool load_connections_async ([CCode (array_length = false, array_null_terminated = true)] string[] filenames, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] failures) throws GLib.Error;
 		public bool networking_get_enabled ();
 		public bool networking_set_enabled (bool enabled) throws GLib.Error;
@@ -4951,7 +4952,8 @@ namespace NM {
 		LAYER2_READY,
 		IP4_READY,
 		IP6_READY,
-		MASTER_HAS_SLAVES
+		MASTER_HAS_SLAVES,
+		LIFETIME_BOUND_TO_PROFILE_VISIBILITY
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_ACTIVE_CONNECTION_STATE_", type_id = "nm_active_connection_state_get_type ()")]
 	public enum ActiveConnectionState {

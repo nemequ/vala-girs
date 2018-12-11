@@ -420,6 +420,7 @@ namespace Goa {
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_account_get_type ()")]
 	public interface Account : GLib.Object {
+		[CCode (async_result_pos = 2.1)]
 		public async bool call_ensure_credentials (GLib.Cancellable? cancellable, out int out_expires_in) throws GLib.Error;
 		public bool call_ensure_credentials_sync (out int out_expires_in, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_remove (GLib.Cancellable? cancellable) throws GLib.Error;
@@ -589,6 +590,7 @@ namespace Goa {
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_manager_get_type ()")]
 	public interface Manager : GLib.Object {
+		[CCode (async_result_pos = 2.1)]
 		public async bool call_add_account (string arg_provider, string arg_identity, string arg_presentation_identity, GLib.Variant arg_credentials, GLib.Variant arg_details, GLib.Cancellable? cancellable, out string out_account_object_path) throws GLib.Error;
 		public bool call_add_account_sync (string arg_provider, string arg_identity, string arg_presentation_identity, GLib.Variant arg_credentials, GLib.Variant arg_details, out string out_account_object_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_add_account (owned GLib.DBusMethodInvocation invocation, string account_object_path);
@@ -620,6 +622,7 @@ namespace Goa {
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_oauth2_based_get_type ()")]
 	public interface OAuth2Based : GLib.Object {
+		[CCode (async_result_pos = 3.1)]
 		public async bool call_get_access_token (GLib.Cancellable? cancellable, out string out_access_token, out int out_expires_in) throws GLib.Error;
 		public bool call_get_access_token_sync (out string out_access_token, out int out_expires_in, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_get_access_token (owned GLib.DBusMethodInvocation invocation, string access_token, int expires_in);
@@ -633,6 +636,7 @@ namespace Goa {
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_oauth_based_get_type ()")]
 	public interface OAuthBased : GLib.Object {
+		[CCode (async_result_pos = 4.1)]
 		public async bool call_get_access_token (GLib.Cancellable? cancellable, out string out_access_token, out string out_access_token_secret, out int out_expires_in) throws GLib.Error;
 		public bool call_get_access_token_sync (out string out_access_token, out string out_access_token_secret, out int out_expires_in, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_get_access_token (owned GLib.DBusMethodInvocation invocation, string access_token, string access_token_secret, int expires_in);
@@ -732,6 +736,7 @@ namespace Goa {
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_password_based_get_type ()")]
 	[Version (since = "3.6.0")]
 	public interface PasswordBased : GLib.Object {
+		[CCode (async_result_pos = 2.1)]
 		public async bool call_get_password (string arg_id, GLib.Cancellable? cancellable, out string out_password) throws GLib.Error;
 		public bool call_get_password_sync (string arg_id, out string out_password, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_get_password (owned GLib.DBusMethodInvocation invocation, string password);
