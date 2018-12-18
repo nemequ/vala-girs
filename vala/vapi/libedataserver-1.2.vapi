@@ -1397,8 +1397,8 @@ namespace E {
 		public abstract void prepare_refresh_token_message (E.Source source, Soup.Message message);
 		public bool receive_and_store_token_sync (E.Source source, string authorization_code, [CCode (delegate_target_pos = 3.5)] E.OAuth2ServiceRefSourceFunc ref_source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool refresh_and_store_token_sync (E.Source source, string refresh_token, [CCode (delegate_target_pos = 3.5)] E.OAuth2ServiceRefSourceFunc ref_source, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public static void util_set_to_form (GLib.HashTable<void*,void*> form, string name, string? value);
-		public static void util_take_to_form (GLib.HashTable<void*,void*> form, string name, owned string? value);
+		public static void util_set_to_form (GLib.HashTable<string,string> form, string name, string? value);
+		public static void util_take_to_form (GLib.HashTable<string,string> form, string name, owned string? value);
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
@@ -2028,10 +2028,10 @@ namespace E {
 	public static long mktime_utc ([CCode (type = "tm*")] Posix.tm tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.28")]
-	public static void oauth2_service_util_set_to_form (GLib.HashTable<void*,void*> form, string name, string? value);
+	public static void oauth2_service_util_set_to_form (GLib.HashTable<string,string> form, string name, string? value);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.28")]
-	public static void oauth2_service_util_take_to_form (GLib.HashTable<void*,void*> form, string name, owned string? value);
+	public static void oauth2_service_util_take_to_form (GLib.HashTable<string,string> form, string name, owned string? value);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.8")]
 	public static void queue_transfer (GLib.Queue src_queue, GLib.Queue dst_queue);

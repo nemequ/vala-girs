@@ -2,6 +2,37 @@
 
 [CCode (cprefix = "Hdy", gir_namespace = "Handy", gir_version = "0.0", lower_case_cprefix = "hdy_")]
 namespace Hdy {
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_action_row_get_type ()")]
+	public class ActionRow : Gtk.ListBoxRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.0.6")]
+		public ActionRow ();
+		public virtual void activate ();
+		[Version (since = "0.0.6")]
+		public void add_action (Gtk.Widget? widget);
+		[Version (since = "0.0.6")]
+		public void add_prefix (Gtk.Widget? widget);
+		[Version (since = "0.0.6")]
+		public unowned string get_icon_name ();
+		[Version (since = "0.0.6")]
+		public unowned string get_subtitle ();
+		[Version (since = "0.0.6")]
+		public unowned string get_title ();
+		[Version (since = "0.0.6")]
+		public bool get_use_underline ();
+		[Version (since = "0.0.6")]
+		public void set_icon_name (string icon_name);
+		[Version (since = "0.0.6")]
+		public void set_subtitle (string subtitle);
+		[Version (since = "0.0.6")]
+		public void set_title (string title);
+		[Version (since = "0.0.6")]
+		public void set_use_underline (bool use_underline);
+		public string icon_name { get; set; }
+		public string subtitle { get; set; }
+		public string title { get; set; }
+		public bool use_underline { get; set; }
+	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_arrows_get_type ()")]
 	public class Arrows : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
@@ -27,6 +58,18 @@ namespace Hdy {
 		public void set_maximum_width (int maximum_width);
 		public int linear_growth_width { get; set; }
 		public int maximum_width { get; set; }
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_combo_row_get_type ()")]
+	public class ComboRow : Hdy.ActionRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.0.6")]
+		public ComboRow ();
+		[Version (since = "0.0.6")]
+		public void bind_name_model (GLib.ListModel? model, owned Hdy.ComboRowGetNameFunc? get_name_func);
+		[Version (since = "0.0.6")]
+		public unowned GLib.ListModel? get_model ();
+		[Version (since = "0.0.6")]
+		public void set_for_enum (GLib.Type enum_type, owned Hdy.ComboRowGetEnumValueNameFunc? get_name_func);
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_dialer_get_type ()")]
 	public class Dialer : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -72,6 +115,30 @@ namespace Hdy {
 		public int cycle_timeout { get; set construct; }
 		public virtual signal void cycle_end ();
 		public virtual signal void cycle_start ();
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_enum_value_object_get_type ()")]
+	public class EnumValueObject : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public EnumValueObject (GLib.EnumValue enum_value);
+		public unowned string get_name ();
+		public unowned string get_nick ();
+		public int get_value ();
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_expander_row_get_type ()")]
+	public class ExpanderRow : Hdy.ActionRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.0.6")]
+		public ExpanderRow ();
+		[Version (since = "0.0.6")]
+		public bool get_enable_expansion ();
+		[Version (since = "0.0.6")]
+		public bool get_show_enable_switch ();
+		[Version (since = "0.0.6")]
+		public void set_enable_expansion (bool enable_expansion);
+		[Version (since = "0.0.6")]
+		public void set_show_enable_switch (bool show_enable_switch);
+		public bool enable_expansion { get; set; }
+		public bool show_enable_switch { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_header_group_get_type ()")]
 	public class HeaderGroup : GLib.Object, Gtk.Buildable {
@@ -131,12 +198,19 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_search_bar_get_type ()")]
 	public class SearchBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "0.0.6")]
 		public SearchBar ();
+		[Version (since = "0.0.6")]
 		public void connect_entry (Gtk.Entry entry);
+		[Version (since = "0.0.6")]
 		public bool get_search_mode ();
+		[Version (since = "0.0.6")]
 		public bool get_show_close_button ();
+		[Version (since = "0.0.6")]
 		public bool handle_event (Gdk.Event event);
+		[Version (since = "0.0.6")]
 		public void set_search_mode (bool search_mode);
+		[Version (since = "0.0.6")]
 		public void set_show_close_button (bool visible);
 		[NoAccessorMethod]
 		public bool search_mode_enabled { get; set; }
@@ -174,8 +248,18 @@ namespace Hdy {
 		NONE,
 		SLIDE
 	}
+	[CCode (cheader_filename = "handy.h", instance_pos = 1.9)]
+	public delegate string ComboRowGetEnumValueNameFunc (Hdy.EnumValueObject value);
+	[CCode (cheader_filename = "handy.h", instance_pos = 1.9)]
+	public delegate string ComboRowGetNameFunc (GLib.Object item);
+	[CCode (cheader_filename = "handy.h")]
+	[Version (since = "0.0.6")]
+	public static string enum_value_row_name (Hdy.EnumValueObject value, void* user_data);
 	[CCode (cheader_filename = "handy.h")]
 	public static bool init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref unowned string[]? argv);
+	[CCode (cheader_filename = "handy.h")]
+	[Version (since = "0.0.6")]
+	public static void list_box_separator_header (Gtk.ListBoxRow row, Gtk.ListBoxRow? before, void* unused_user_data);
 	[CCode (cheader_filename = "handy.h")]
 	public static long string_utf8_len (GLib.StringBuilder string);
 	[CCode (cheader_filename = "handy.h")]

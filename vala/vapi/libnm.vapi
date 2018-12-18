@@ -4553,6 +4553,9 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.12")]
 		public TeamLinkWatcher.arp_ping (int init_wait, int interval, int missed_max, string target_host, string source_host, NM.TeamLinkWatcherArpPingFlags flags) throws GLib.Error;
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.16")]
+		public TeamLinkWatcher.arp_ping2 (int init_wait, int interval, int missed_max, int vlanid, string target_host, string source_host, NM.TeamLinkWatcherArpPingFlags flags) throws GLib.Error;
 		[Version (since = "1.12")]
 		public NM.TeamLinkWatcher dup ();
 		[Version (since = "1.12")]
@@ -4578,6 +4581,8 @@ namespace NM {
 		public unowned string get_source_host ();
 		[Version (since = "1.12")]
 		public unowned string get_target_host ();
+		[Version (since = "1.16")]
+		public int get_vlanid ();
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.12")]
 		public TeamLinkWatcher.nsna_ping (int init_wait, int interval, int missed_max, string target_host) throws GLib.Error;

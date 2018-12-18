@@ -56,6 +56,7 @@ namespace Gegl {
 		public void set_pattern (Gegl.Rectangle rect, Gegl.Buffer pattern, int x_offset, int y_offset);
 		public long signal_connect (string detailed_signal, [CCode (scope = "async")] GLib.Callback c_handler);
 		public static string? swap_create_file (string? suffix);
+		public static bool swap_has_file (string path);
 		public static void swap_remove_file (string path);
 		[NoAccessorMethod]
 		public int abyss_height { get; construct; }
@@ -124,6 +125,8 @@ namespace Gegl {
 		public int queue_size { get; set; }
 		[NoAccessorMethod]
 		public string swap { owned get; set; }
+		[NoAccessorMethod]
+		public string swap_compression { owned get; set; }
 		[NoAccessorMethod]
 		public int threads { get; set construct; }
 		[NoAccessorMethod]
@@ -415,7 +418,7 @@ namespace Gegl {
 		[NoAccessorMethod]
 		public uint64 swap_total { get; }
 		[NoAccessorMethod]
-		public uint64 swap_total_uncloned { get; }
+		public uint64 swap_total_uncompressed { get; }
 		[NoAccessorMethod]
 		public uint64 swap_write_total { get; }
 		[NoAccessorMethod]
@@ -429,7 +432,7 @@ namespace Gegl {
 		[NoAccessorMethod]
 		public uint64 tile_cache_total_max { get; }
 		[NoAccessorMethod]
-		public uint64 tile_cache_total_uncloned { get; }
+		public uint64 tile_cache_total_uncompressed { get; }
 		[NoAccessorMethod]
 		public uint64 zoom_total { get; }
 	}
@@ -449,6 +452,7 @@ namespace Gegl {
 		public unowned Gegl.TileSource peek_storage ();
 		public void set_extent (Gegl.Rectangle rectangle);
 		public void set_flush_on_destroy (bool flush_on_destroy);
+		[Version (deprecated = true, deprecated_since = "0.4.14")]
 		public static void unlink_swap (string path);
 		public bool flush_on_destroy { get; set; }
 		[NoAccessorMethod]
