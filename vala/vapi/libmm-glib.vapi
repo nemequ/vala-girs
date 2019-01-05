@@ -66,6 +66,7 @@ namespace MM {
 		public unowned string get_apn ();
 		public GLib.Variant get_dictionary ();
 		public MM.BearerIpFamily get_ip_type ();
+		[Version (deprecated = true, deprecated_since = "1.10.0.")]
 		public unowned string get_number ();
 		public unowned string get_password ();
 		public MM.ModemCdmaRmProtocol get_rm_protocol ();
@@ -74,6 +75,7 @@ namespace MM {
 		public void set_allowed_auth (MM.BearerAllowedAuth allowed_auth);
 		public void set_apn (string apn);
 		public void set_ip_type (MM.BearerIpFamily ip_type);
+		[Version (deprecated = true, deprecated_since = "1.10.0.")]
 		public void set_number (string number);
 		public void set_password (string password);
 		public void set_rm_protocol (MM.ModemCdmaRmProtocol protocol);
@@ -197,6 +199,22 @@ namespace MM {
 		public void set_gobi_pri_info (string info);
 		public void set_gobi_pri_unique_id (string id);
 		public void set_gobi_pri_version (string version);
+	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_firmware_update_settings_get_type ()")]
+	public class FirmwareUpdateSettings : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public FirmwareUpdateSettings (MM.ModemFirmwareUpdateMethod method);
+		[CCode (has_construct_function = false)]
+		public FirmwareUpdateSettings.from_variant (GLib.Variant variant) throws GLib.Error;
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_device_ids ();
+		public unowned string get_fastboot_at ();
+		public MM.ModemFirmwareUpdateMethod get_method ();
+		public GLib.Variant get_variant ();
+		public unowned string get_version ();
+		public void set_device_ids (string device_ids);
+		public void set_fastboot_at (string fastboot_at);
+		public void set_version (string version);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusBearerProxy", type_id = "mm_gdbus_bearer_proxy_get_type ()")]
 	public class GdbusBearerProxy : GLib.DBusProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusBearer {
@@ -567,6 +585,8 @@ namespace MM {
 		public async Manager (GLib.DBusConnection connection, GLib.DBusObjectManagerClientFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.DBusProxy get_proxy ();
 		public unowned string get_version ();
+		public async bool inhibit_device (string uid, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool inhibit_device_sync (string uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public unowned GLib.DBusProxy peek_proxy ();
 		public async bool report_kernel_event (MM.KernelEventProperties properties, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool report_kernel_event_sync (MM.KernelEventProperties properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -576,6 +596,8 @@ namespace MM {
 		public bool set_logging_sync (string level, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Manager.sync (GLib.DBusConnection connection, GLib.DBusObjectManagerClientFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool uninhibit_device (string uid, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool uninhibit_device_sync (string uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_modem_get_type ()")]
 	public class Modem : MM.GdbusModemProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModem {
@@ -755,8 +777,10 @@ namespace MM {
 		protected ModemFirmware ();
 		public string dup_path ();
 		public unowned string get_path ();
+		public MM.FirmwareUpdateSettings get_update_settings ();
 		public async bool list (GLib.Cancellable? cancellable, out MM.FirmwareProperties selected, out GLib.List<MM.FirmwareProperties> installed) throws GLib.Error;
 		public bool list_sync (out MM.FirmwareProperties selected, out GLib.List<MM.FirmwareProperties> installed, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public unowned MM.FirmwareUpdateSettings peek_update_settings ();
 		public async bool select (string unique_id, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool select_sync (string unique_id, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
@@ -997,6 +1021,7 @@ namespace MM {
 		public MM.BearerProperties get_bearer_properties ();
 		public GLib.Variant get_dictionary ();
 		public MM.BearerIpFamily get_ip_type ();
+		[Version (deprecated = true, deprecated_since = "1.10.0.")]
 		public unowned string get_number ();
 		public unowned string get_operator_id ();
 		public unowned string get_password ();
@@ -1006,6 +1031,7 @@ namespace MM {
 		public void set_allowed_auth (MM.BearerAllowedAuth allowed_auth);
 		public void set_apn (string apn);
 		public void set_ip_type (MM.BearerIpFamily ip_type);
+		[Version (deprecated = true, deprecated_since = "1.10.0.")]
 		public void set_number (string number);
 		public void set_operator_id (string operator_id);
 		public void set_password (string password);
@@ -1394,6 +1420,8 @@ namespace MM {
 		public void complete_select (owned GLib.DBusMethodInvocation invocation);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
+		[NoAccessorMethod]
+		public abstract GLib.Variant update_settings { owned get; set; }
 		public virtual signal bool handle_list (GLib.DBusMethodInvocation invocation);
 		public virtual signal bool handle_select (GLib.DBusMethodInvocation invocation, string arg_uniqueid);
 	}
@@ -1583,18 +1611,18 @@ namespace MM {
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusObject", type_id = "mm_gdbus_object_get_type ()")]
 	public interface GdbusObject : GLib.DBusObject, GLib.Object {
-		public MM.GdbusModem get_modem ();
-		public MM.GdbusModem3gpp get_modem3gpp ();
-		public MM.GdbusModem3gppUssd get_modem3gpp_ussd ();
-		public MM.GdbusModemCdma get_modem_cdma ();
-		public MM.GdbusModemFirmware get_modem_firmware ();
-		public MM.GdbusModemLocation get_modem_location ();
-		public MM.GdbusModemMessaging get_modem_messaging ();
-		public MM.GdbusModemOma get_modem_oma ();
-		public MM.GdbusModemSignal get_modem_signal ();
-		public MM.GdbusModemSimple get_modem_simple ();
-		public MM.GdbusModemTime get_modem_time ();
-		public MM.GdbusModemVoice get_modem_voice ();
+		public MM.GdbusModem? get_modem ();
+		public MM.GdbusModem3gpp? get_modem3gpp ();
+		public MM.GdbusModem3gppUssd? get_modem3gpp_ussd ();
+		public MM.GdbusModemCdma? get_modem_cdma ();
+		public MM.GdbusModemFirmware? get_modem_firmware ();
+		public MM.GdbusModemLocation? get_modem_location ();
+		public MM.GdbusModemMessaging? get_modem_messaging ();
+		public MM.GdbusModemOma? get_modem_oma ();
+		public MM.GdbusModemSignal? get_modem_signal ();
+		public MM.GdbusModemSimple? get_modem_simple ();
+		public MM.GdbusModemTime? get_modem_time ();
+		public MM.GdbusModemVoice? get_modem_voice ();
 		[NoAccessorMethod]
 		public abstract MM.GdbusModem modem { owned get; set; }
 		[NoAccessorMethod]
@@ -1622,12 +1650,15 @@ namespace MM {
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusOrgFreedesktopModemManager1", type_id = "mm_gdbus_org_freedesktop_modem_manager1_get_type ()")]
 	public interface GdbusOrgFreedesktopModemManager1 : GLib.Object {
+		public async bool call_inhibit_device (string arg_uid, bool arg_inhibit, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_inhibit_device_sync (string arg_uid, bool arg_inhibit, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_report_kernel_event (GLib.Variant arg_properties, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_report_kernel_event_sync (GLib.Variant arg_properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_scan_devices (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_scan_devices_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_set_logging (string arg_level, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_set_logging_sync (string arg_level, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void complete_inhibit_device (owned GLib.DBusMethodInvocation invocation);
 		public void complete_report_kernel_event (owned GLib.DBusMethodInvocation invocation);
 		public void complete_scan_devices (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_logging (owned GLib.DBusMethodInvocation invocation);
@@ -1635,6 +1666,7 @@ namespace MM {
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
 		[NoAccessorMethod]
 		public abstract string version { owned get; set; }
+		public virtual signal bool handle_inhibit_device (GLib.DBusMethodInvocation invocation, string arg_uid, bool arg_inhibit);
 		public virtual signal bool handle_report_kernel_event (GLib.DBusMethodInvocation invocation, GLib.Variant arg_properties);
 		public virtual signal bool handle_scan_devices (GLib.DBusMethodInvocation invocation);
 		public virtual signal bool handle_set_logging (GLib.DBusMethodInvocation invocation, string arg_level);
@@ -2057,6 +2089,14 @@ namespace MM {
 		SM,
 		MT;
 		public unowned string get_string ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_FIRMWARE_UPDATE_METHOD_", type_id = "mm_modem_firmware_update_method_get_type ()")]
+	[Flags]
+	public enum ModemFirmwareUpdateMethod {
+		NONE,
+		FASTBOOT,
+		QMI_PDC;
+		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_LOCATION_ASSISTANCE_DATA_TYPE_", type_id = "mm_modem_location_assistance_data_type_get_type ()")]
 	[Flags]
@@ -2773,6 +2813,8 @@ namespace MM {
 	public const string DBUS_SERVICE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MAJOR_VERSION")]
 	public const int MAJOR_VERSION;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MANAGER_METHOD_INHIBITDEVICE")]
+	public const string MANAGER_METHOD_INHIBITDEVICE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MANAGER_METHOD_REPORTKERNELEVENT")]
 	public const string MANAGER_METHOD_REPORTKERNELEVENT;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MANAGER_METHOD_SCANDEVICES")]
@@ -2793,6 +2835,8 @@ namespace MM {
 	public const string MODEM_FIRMWARE_METHOD_LIST;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_FIRMWARE_METHOD_SELECT")]
 	public const string MODEM_FIRMWARE_METHOD_SELECT;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_FIRMWARE_PROPERTY_UPDATESETTINGS")]
+	public const string MODEM_FIRMWARE_PROPERTY_UPDATESETTINGS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_METHOD_GETLOCATION")]
 	public const string MODEM_LOCATION_METHOD_GETLOCATION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_LOCATION_METHOD_INJECTASSISTANCEDATA")]

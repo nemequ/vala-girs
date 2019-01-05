@@ -361,18 +361,21 @@ namespace Ggit {
 		[CCode (has_construct_function = false)]
 		public DiffFormatEmailOptions ();
 		public unowned Ggit.Signature? get_author ();
+		public unowned string? get_body ();
 		public Ggit.DiffFormatEmailFlags get_flags ();
 		public unowned Ggit.OId? get_id ();
 		public size_t get_patch_number ();
 		public unowned string? get_summary ();
 		public size_t get_total_patches ();
 		public void set_author (Ggit.Signature? author);
+		public void set_body (string? body);
 		public void set_flags (Ggit.DiffFormatEmailFlags flags);
 		public void set_id (Ggit.OId? id);
 		public void set_patch_number (size_t number);
 		public void set_summary (string? summary);
 		public void set_total_patches (size_t patches);
 		public Ggit.Signature author { get; set; }
+		public string body { get; set; }
 		public Ggit.DiffFormatEmailFlags flags { get; set; }
 		public Ggit.OId id { get; set; }
 		public uint64 patch_number { get; set; }

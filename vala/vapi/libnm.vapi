@@ -2677,6 +2677,7 @@ namespace NM {
 		[Version (since = "1.8")]
 		public uint32 get_mtu ();
 		public unowned string get_network_id ();
+		[Version (deprecated = true, deprecated_since = "1.16")]
 		public unowned string get_number ();
 		public unowned string get_password ();
 		public NM.SettingSecretFlags get_password_flags ();
@@ -2700,6 +2701,7 @@ namespace NM {
 		[NoAccessorMethod]
 		public string network_id { owned get; set; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "1.16")]
 		public string number { owned get; set; }
 		[NoAccessorMethod]
 		public string password { owned get; set; }

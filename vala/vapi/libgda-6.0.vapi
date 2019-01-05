@@ -139,7 +139,7 @@ namespace Gda {
 		public bool close () throws GLib.Error;
 		public bool commit_transaction (string? name) throws GLib.Error;
 		[Version (since = "6.0")]
-		public Gda.DdlCreator create_ddl_creator ();
+		public Gda.DbCatalog create_db_catalog ();
 		public Gda.ServerOperation create_operation (Gda.ServerOperationType type, Gda.Set? options) throws GLib.Error;
 		public Gda.SqlParser create_parser ();
 		public void del_prepared_statement (Gda.Statement gda_stmt);
@@ -530,12 +530,12 @@ namespace Gda {
 		[CCode (has_construct_function = false)]
 		protected DataSelectIter ();
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_ddl_base_get_type ()")]
-	public class DdlBase : GLib.Object {
+	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_base_get_type ()")]
+	public class DbBase : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public DdlBase ();
+		public DbBase ();
 		[Version (since = "6.0")]
-		public int compare (Gda.DdlBase b);
+		public int compare (Gda.DbBase b);
 		[Version (since = "6.0")]
 		public unowned string get_catalog ();
 		[Version (since = "6.0")]
@@ -553,14 +553,40 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public void set_schema (string schema);
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_ddl_column_get_type ()")]
-	public class DdlColumn : GLib.Object, Gda.DdlBuildable {
+	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_catalog_get_type ()")]
+	public class DbCatalog : GLib.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "6.0")]
-		public DdlColumn ();
+		public DbCatalog ();
+		[Version (since = "6.0")]
+		public void append_table (Gda.DbTable table);
+		[Version (since = "6.0")]
+		public void append_view (Gda.DbView view);
+		public static GLib.Quark error_quark ();
+		[Version (since = "6.0")]
+		public unowned GLib.List<Gda.DbTable> get_tables ();
+		[Version (since = "6.0")]
+		public unowned GLib.List<Gda.DbView> get_views ();
+		public bool parse_cnc () throws GLib.Error;
+		public bool parse_file_from_path (string xmlfile) throws GLib.Error;
+		public bool perform_operation () throws GLib.Error;
+		[Version (since = "6.0")]
+		public static bool validate_file_from_path (string xmlfile) throws GLib.Error;
+		[Version (since = "6.0")]
+		public bool write_to_path (string path) throws GLib.Error;
+		[NoAccessorMethod]
+		public Gda.Connection connection { owned get; set; }
+		[NoAccessorMethod]
+		public string schema_name { owned get; set; }
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_column_get_type ()")]
+	public class DbColumn : GLib.Object, Gda.DbBuildable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "6.0")]
+		public DbColumn ();
 		public static GLib.Quark error_quark ();
 		[CCode (has_construct_function = false)]
-		public DdlColumn.from_meta (Gda.MetaTableColumn column);
+		public DbColumn.from_meta (Gda.MetaTableColumn column);
 		[Version (since = "6.0")]
 		public bool get_autoinc ();
 		[Version (since = "6.0")]
@@ -621,49 +647,23 @@ namespace Gda {
 		public uint size { get; set; }
 		public bool unique { get; set; }
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_ddl_creator_get_type ()")]
-	public class DdlCreator : GLib.Object {
+	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_fkey_get_type ()")]
+	public class DbFkey : GLib.Object, Gda.DbBuildable {
 		[CCode (has_construct_function = false)]
 		[Version (since = "6.0")]
-		public DdlCreator ();
-		[Version (since = "6.0")]
-		public void append_table (Gda.DdlTable table);
-		[Version (since = "6.0")]
-		public void append_view (Gda.DdlView view);
-		public static GLib.Quark error_quark ();
-		[Version (since = "6.0")]
-		public unowned GLib.List<Gda.DdlTable> get_tables ();
-		[Version (since = "6.0")]
-		public unowned GLib.List<Gda.DdlView> get_views ();
-		public bool parse_cnc () throws GLib.Error;
-		public bool parse_file_from_path (string xmlfile) throws GLib.Error;
-		public bool perform_operation () throws GLib.Error;
-		[Version (since = "6.0")]
-		public static bool validate_file_from_path (string xmlfile) throws GLib.Error;
-		[Version (since = "6.0")]
-		public bool write_to_path (string path) throws GLib.Error;
-		[NoAccessorMethod]
-		public Gda.Connection connection { owned get; set; }
-		[NoAccessorMethod]
-		public string schema_name { owned get; set; }
-	}
-	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_ddl_fkey_get_type ()")]
-	public class DdlFkey : GLib.Object, Gda.DdlBuildable {
+		public DbFkey ();
 		[CCode (has_construct_function = false)]
-		[Version (since = "6.0")]
-		public DdlFkey ();
-		[CCode (has_construct_function = false)]
-		public DdlFkey.from_meta (Gda.MetaTableForeignKey metafkey);
+		public DbFkey.from_meta (Gda.MetaTableForeignKey metafkey);
 		[Version (since = "6.0")]
 		public unowned GLib.List<string> get_field_name ();
 		[Version (since = "6.0")]
 		public unowned string get_ondelete ();
 		[Version (since = "6.0")]
-		public Gda.DdlFkeyReferenceAction get_ondelete_id ();
+		public Gda.DbFkeyReferenceAction get_ondelete_id ();
 		[Version (since = "6.0")]
 		public unowned string get_onupdate ();
 		[Version (since = "6.0")]
-		public Gda.DdlFkeyReferenceAction get_onupdate_id ();
+		public Gda.DbFkeyReferenceAction get_onupdate_id ();
 		[Version (since = "6.0")]
 		public unowned GLib.List<string> get_ref_field ();
 		[Version (since = "6.0")]
@@ -673,30 +673,30 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public void set_field (string field, string reffield);
 		[Version (since = "6.0")]
-		public void set_ondelete (Gda.DdlFkeyReferenceAction id);
+		public void set_ondelete (Gda.DbFkeyReferenceAction id);
 		[Version (since = "6.0")]
-		public void set_onupdate (Gda.DdlFkeyReferenceAction id);
+		public void set_onupdate (Gda.DbFkeyReferenceAction id);
 		[Version (since = "6.0")]
 		public void set_ref_table (string rtable);
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_ddl_table_get_type ()")]
-	public class DdlTable : Gda.DdlBase, Gda.DdlBuildable {
+	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_table_get_type ()")]
+	public class DbTable : Gda.DbBase, Gda.DbBuildable {
 		[CCode (has_construct_function = false)]
-		public DdlTable ();
+		public DbTable ();
 		[Version (since = "6.0")]
-		public void append_column (Gda.DdlColumn column);
+		public void append_column (Gda.DbColumn column);
 		[Version (since = "6.0")]
-		public void append_fkey (Gda.DdlFkey fkey);
+		public void append_fkey (Gda.DbFkey fkey);
 		[Version (since = "6.0")]
 		public bool create (Gda.Connection cnc, bool ifnotexists) throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		[CCode (has_construct_function = false)]
 		[Version (since = "6.0")]
-		public DdlTable.from_meta (Gda.MetaDbObject obj);
+		public DbTable.from_meta (Gda.MetaDbObject obj);
 		[Version (since = "6.0")]
-		public unowned GLib.List<Gda.DdlColumn> get_columns ();
+		public unowned GLib.List<Gda.DbColumn> get_columns ();
 		[Version (since = "6.0")]
-		public unowned GLib.List<Gda.DdlFkey> get_fkeys ();
+		public unowned GLib.List<Gda.DbFkey> get_fkeys ();
 		public bool get_is_temp ();
 		public bool is_valid ();
 		[Version (since = "6.0")]
@@ -709,15 +709,15 @@ namespace Gda {
 		[NoAccessorMethod]
 		public string istemp { owned get; set; }
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_ddl_view_get_type ()")]
-	public class DdlView : Gda.DdlBase, Gda.DdlBuildable {
+	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_view_get_type ()")]
+	public class DbView : Gda.DbBase, Gda.DbBuildable {
 		[CCode (has_construct_function = false)]
 		[Version (since = "6.0")]
-		public DdlView ();
+		public DbView ();
 		[Version (since = "6.0")]
 		public bool create (Gda.Connection cnc) throws GLib.Error;
 		[CCode (has_construct_function = false)]
-		public DdlView.from_meta (Gda.MetaView view);
+		public DbView.from_meta (Gda.MetaView view);
 		public unowned string get_defstring ();
 		[Version (since = "6.0")]
 		public bool get_ifnoexist ();
@@ -2033,8 +2033,8 @@ namespace Gda {
 		[HasEmitter]
 		public virtual signal void row_updated (int row);
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", type_cname = "GdaDdlBuildableInterface", type_id = "gda_ddl_buildable_get_type ()")]
-	public interface DdlBuildable : GLib.Object {
+	[CCode (cheader_filename = "libgda/libgda.h", type_cname = "GdaDbBuildableInterface", type_id = "gda_db_buildable_get_type ()")]
+	public interface DbBuildable : GLib.Object {
 		[Version (since = "6.0")]
 		public abstract bool parse_node ([CCode (type = "xmlNodePtr")] Xml.Node* node) throws GLib.Error;
 		[Version (since = "6.0")]
@@ -2521,13 +2521,8 @@ namespace Gda {
 		SQL_ERROR,
 		SAFETY_LOCKED_ERROR
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DDL_COLUMN_ERROR_", has_type_id = false)]
-	public enum DdlColumnError {
-		[CCode (cname = "GDA_DDL_COLUMN_ERROR_TYPE")]
-		DDL_COLUMN_ERROR_TYPE
-	}
-	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DDL_CREATOR_", has_type_id = false)]
-	public enum DdlCreatorError {
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_CATALOG_", has_type_id = false)]
+	public enum DbCatalogError {
 		CONTEXT_NULL,
 		DOC_NULL,
 		INVALID_XML,
@@ -2539,18 +2534,23 @@ namespace Gda {
 		PARSE_CHUNK,
 		CONNECTION_CLOSED
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DDL_FKEY_", has_type_id = false)]
-	public enum DdlFkeyReferenceAction {
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_COLUMN_ERROR_", has_type_id = false)]
+	public enum DbColumnError {
+		[CCode (cname = "GDA_DB_COLUMN_ERROR_TYPE")]
+		DB_COLUMN_ERROR_TYPE
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_FKEY_", has_type_id = false)]
+	public enum DbFkeyReferenceAction {
 		NO_ACTION,
 		SET_NULL,
 		RESTRICT,
 		SET_DEFAULT,
 		CASCADE
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DDL_TABLE_COLUMN_", has_type_id = false)]
-	public enum DdlTableError {
-		[CCode (cname = "GDA_DDL_TABLE_COLUMN_EMPTY")]
-		DDL_TABLE_COLUMN_EMPTY
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_TABLE_COLUMN_", has_type_id = false)]
+	public enum DbTableError {
+		[CCode (cname = "GDA_DB_TABLE_COLUMN_EMPTY")]
+		DB_TABLE_COLUMN_EMPTY
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DIFF_", has_type_id = false)]
 	public enum DiffType {

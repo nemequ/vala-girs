@@ -17,6 +17,7 @@ namespace GExiv2 {
 		[Version (deprecated = true, deprecated_since = "0.10.3")]
 		public void free ();
 		public bool from_app1_segment ([CCode (array_length_cname = "n_data", array_length_pos = 1.1, array_length_type = "glong")] uint8[] data) throws GLib.Error;
+		public bool from_stream (GLib.InputStream stream) throws GLib.Error;
 		public string? generate_xmp_packet (GExiv2.XmpFormatFlags xmp_format_flags, uint32 padding);
 		public string? get_comment ();
 		public bool get_exif_tag_rational (string tag, out int nom, out int den);

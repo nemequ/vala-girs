@@ -141,7 +141,7 @@ namespace Rsvg {
 	[Version (deprecated = true, deprecated_since = "2.13.90", replacement = "render_cairo")]
 	public delegate void SizeFunc (ref int width, ref int height);
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
-	[Version (since = "2.36")]
+	[Version (deprecated = true, deprecated_since = "2.46", since = "2.36")]
 	public static void cleanup ();
 	[CCode (cheader_filename = "librsvg/rsvg.h")]
 	[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]

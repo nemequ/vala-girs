@@ -17,6 +17,7 @@ namespace GSSDP {
 		public unowned string get_interface ();
 		public unowned string get_network ();
 		public unowned string get_server_id ();
+		public GSSDP.UDAVersion get_uda_version ();
 		public unowned string guess_user_agent (string ip_address);
 		public void remove_header (string name);
 		public void set_network (string network);
@@ -39,7 +40,6 @@ namespace GSSDP {
 		public string server_id { get; set; }
 		[NoAccessorMethod]
 		public uint socket_ttl { get; construct; }
-		[NoAccessorMethod]
 		[Version (since = "1.1.1")]
 		public GSSDP.UDAVersion uda_version { get; construct; }
 	}
