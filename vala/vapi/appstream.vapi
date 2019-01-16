@@ -392,12 +392,12 @@ namespace AppStream {
 		public static GLib.Quark error_quark ();
 		public AppStream.CacheFlags get_cache_flags ();
 		public GLib.GenericArray<AppStream.Component> get_components ();
-		public GLib.GenericArray<weak AppStream.Component> get_components_by_categories (string categories);
-		public GLib.GenericArray<weak AppStream.Component> get_components_by_id (string cid);
-		public GLib.GenericArray<weak AppStream.Component> get_components_by_kind (AppStream.ComponentKind kind);
+		public GLib.GenericArray<AppStream.Component> get_components_by_categories (string categories);
+		public GLib.GenericArray<AppStream.Component> get_components_by_id (string cid);
+		public GLib.GenericArray<AppStream.Component> get_components_by_kind (AppStream.ComponentKind kind);
 		[Version (since = "0.11.4")]
-		public GLib.GenericArray<weak AppStream.Component> get_components_by_launchable (AppStream.LaunchableKind kind, string id);
-		public GLib.GenericArray<weak AppStream.Component> get_components_by_provided_item (AppStream.ProvidedKind kind, string item);
+		public GLib.GenericArray<AppStream.Component> get_components_by_launchable (AppStream.LaunchableKind kind, string id);
+		public GLib.GenericArray<AppStream.Component> get_components_by_provided_item (AppStream.ProvidedKind kind, string item);
 		public AppStream.PoolFlags get_flags ();
 		public unowned string get_locale ();
 		public bool load (GLib.Cancellable? cancellable = null) throws GLib.Error;
