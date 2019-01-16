@@ -190,15 +190,9 @@ namespace E {
 		NO_SPACE,
 		NOT_SUPPORTED
 	}
-	[CCode (cheader_filename = "libebook/libebook.h", cname = "BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS")]
-	[Version (since = "3.2")]
-	public const string BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS;
 	[CCode (cheader_filename = "libebook/libebook.h", cname = "BOOK_BACKEND_PROPERTY_SUPPORTED_AUTH_METHODS")]
 	[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 	public const string BOOK_BACKEND_PROPERTY_SUPPORTED_AUTH_METHODS;
-	[CCode (cheader_filename = "libebook/libebook.h", cname = "BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS")]
-	[Version (since = "3.2")]
-	public const string BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS;
 	[CCode (cheader_filename = "libebook/libebook.h")]
 	public static GLib.Quark book_error_quark ();
 	[CCode (cheader_filename = "libebook/libebook.h")]

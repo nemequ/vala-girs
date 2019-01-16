@@ -939,6 +939,7 @@ namespace Ggit {
 		public void reload (bool force) throws GLib.Error;
 		public void sync () throws GLib.Error;
 		public void unref ();
+		public void update (bool init, Ggit.SubmoduleUpdateOptions options) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_submodule_update_options_get_type ()")]
 	public class SubmoduleUpdateOptions : GLib.Object {

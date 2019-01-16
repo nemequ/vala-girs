@@ -230,7 +230,7 @@ namespace GMime {
 		public uint count8;
 		public GMime.FilterBestFlags flags;
 		[CCode (array_length = false)]
-		public weak uint frombuf[6];
+		public weak uint8 frombuf[6];
 		public uint fromlen;
 		public uint hadfrom;
 		public uint linelen;
@@ -1000,7 +1000,7 @@ namespace GMime {
 	public struct Encoding {
 		public GMime.ContentEncoding encoding;
 		[CCode (array_length = false)]
-		public weak uint uubuf[60];
+		public weak uint8 uubuf[60];
 		public bool encode;
 		public uint32 save;
 		public int state;

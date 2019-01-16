@@ -12,6 +12,8 @@ namespace Hdy {
 		public void add_action (Gtk.Widget? widget);
 		[Version (since = "0.0.6")]
 		public void add_prefix (Gtk.Widget? widget);
+		[Version (since = "0.0.7")]
+		public unowned Gtk.Widget? get_activatable_widget ();
 		[Version (since = "0.0.6")]
 		public unowned string get_icon_name ();
 		[Version (since = "0.0.6")]
@@ -20,6 +22,8 @@ namespace Hdy {
 		public unowned string get_title ();
 		[Version (since = "0.0.6")]
 		public bool get_use_underline ();
+		[Version (since = "0.0.7")]
+		public void set_activatable_widget (Gtk.Widget? widget);
 		[Version (since = "0.0.6")]
 		public void set_icon_name (string icon_name);
 		[Version (since = "0.0.6")]
@@ -28,9 +32,15 @@ namespace Hdy {
 		public void set_title (string title);
 		[Version (since = "0.0.6")]
 		public void set_use_underline (bool use_underline);
+		[Version (since = "0.0.7")]
+		public Gtk.Widget activatable_widget { get; set; }
+		[Version (since = "0.0.6")]
 		public string icon_name { get; set; }
+		[Version (since = "0.0.6")]
 		public string subtitle { get; set; }
+		[Version (since = "0.0.6")]
 		public string title { get; set; }
+		[Version (since = "0.0.6")]
 		public bool use_underline { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_arrows_get_type ()")]
@@ -65,11 +75,19 @@ namespace Hdy {
 		[Version (since = "0.0.6")]
 		public ComboRow ();
 		[Version (since = "0.0.6")]
+		public void bind_model (GLib.ListModel? model, Gtk.ListBoxCreateWidgetFunc? create_list_widget_func, owned Gtk.ListBoxCreateWidgetFunc? create_current_widget_func);
+		[Version (since = "0.0.6")]
 		public void bind_name_model (GLib.ListModel? model, owned Hdy.ComboRowGetNameFunc? get_name_func);
 		[Version (since = "0.0.6")]
 		public unowned GLib.ListModel? get_model ();
+		[Version (since = "0.0.7")]
+		public int get_selected_index ();
 		[Version (since = "0.0.6")]
 		public void set_for_enum (GLib.Type enum_type, owned Hdy.ComboRowGetEnumValueNameFunc? get_name_func);
+		[Version (since = "0.0.7")]
+		public void set_selected_index (int selected_index);
+		[Version (since = "0.0.7")]
+		public int selected_index { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_dialer_get_type ()")]
 	public class Dialer : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -115,6 +133,12 @@ namespace Hdy {
 		public int cycle_timeout { get; set construct; }
 		public virtual signal void cycle_end ();
 		public virtual signal void cycle_start ();
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_dialog_get_type ()")]
+	public class Dialog : Gtk.Dialog, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "0.0.7")]
+		public Dialog (Gtk.Window parent);
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_enum_value_object_get_type ()")]
 	public class EnumValueObject : GLib.Object {

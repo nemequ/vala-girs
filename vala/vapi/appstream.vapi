@@ -391,7 +391,7 @@ namespace AppStream {
 		public void clear_metadata_locations ();
 		public static GLib.Quark error_quark ();
 		public AppStream.CacheFlags get_cache_flags ();
-		public GLib.GenericArray<weak AppStream.Component> get_components ();
+		public GLib.GenericArray<AppStream.Component> get_components ();
 		public GLib.GenericArray<weak AppStream.Component> get_components_by_categories (string categories);
 		public GLib.GenericArray<weak AppStream.Component> get_components_by_id (string cid);
 		public GLib.GenericArray<weak AppStream.Component> get_components_by_kind (AppStream.ComponentKind kind);
@@ -725,7 +725,8 @@ namespace AppStream {
 	public enum MergeKind {
 		NONE,
 		REPLACE,
-		APPEND;
+		APPEND,
+		REMOVE_COMPONENT;
 		public static AppStream.MergeKind from_string (string kind_str);
 		public unowned string to_string ();
 	}
@@ -852,7 +853,8 @@ namespace AppStream {
 		FAQ,
 		HELP,
 		DONATION,
-		TRANSLATE;
+		TRANSLATE,
+		CONTACT;
 		public static AppStream.UrlKind from_string (string url_kind);
 		public unowned string to_string ();
 	}

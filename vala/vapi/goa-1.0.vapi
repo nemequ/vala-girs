@@ -650,37 +650,37 @@ namespace Goa {
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_object_get_type ()")]
 	public interface Object : GLib.DBusObject, GLib.Object {
-		public Goa.Account get_account ();
-		public Goa.Calendar get_calendar ();
-		public Goa.Chat get_chat ();
-		public Goa.Contacts get_contacts ();
-		public Goa.Documents get_documents ();
+		public Goa.Account? get_account ();
+		public Goa.Calendar? get_calendar ();
+		public Goa.Chat? get_chat ();
+		public Goa.Contacts? get_contacts ();
+		public Goa.Documents? get_documents ();
 		[Version (since = "3.6.0")]
-		public Goa.Exchange get_exchange ();
+		public Goa.Exchange? get_exchange ();
 		[Version (since = "3.8.0")]
-		public Goa.Files get_files ();
-		public Goa.Mail get_mail ();
-		public Goa.Manager get_manager ();
+		public Goa.Files? get_files ();
+		public Goa.Mail? get_mail ();
+		public Goa.Manager? get_manager ();
 		[Version (since = "3.14.0")]
-		public Goa.Maps get_maps ();
+		public Goa.Maps? get_maps ();
 		[Version (since = "3.14")]
-		public Goa.MediaServer get_media_server ();
+		public Goa.MediaServer? get_media_server ();
 		[Version (since = "3.18.0")]
-		public Goa.Music get_music ();
-		public Goa.OAuth2Based get_oauth2_based ();
-		public Goa.OAuthBased get_oauth_based ();
+		public Goa.Music? get_music ();
+		public Goa.OAuth2Based? get_oauth2_based ();
+		public Goa.OAuthBased? get_oauth_based ();
 		[Version (since = "3.6.0")]
-		public Goa.PasswordBased get_password_based ();
+		public Goa.PasswordBased? get_password_based ();
 		[Version (since = "3.8.0")]
-		public Goa.Photos get_photos ();
+		public Goa.Photos? get_photos ();
 		[Version (since = "3.12.0")]
-		public Goa.Printers get_printers ();
+		public Goa.Printers? get_printers ();
 		[Version (since = "3.12.0")]
-		public Goa.ReadLater get_read_later ();
+		public Goa.ReadLater? get_read_later ();
 		[Version (since = "3.6.0")]
-		public Goa.Ticketing get_ticketing ();
+		public Goa.Ticketing? get_ticketing ();
 		[Version (deprecated = true, since = "3.26.0")]
-		public Goa.Todo get_todo ();
+		public Goa.Todo? get_todo ();
 		[NoAccessorMethod]
 		public abstract Goa.Account account { owned get; set; }
 		[NoAccessorMethod]

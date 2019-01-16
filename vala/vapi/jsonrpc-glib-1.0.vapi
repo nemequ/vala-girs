@@ -144,7 +144,7 @@ namespace Jsonrpc {
 		public async bool call_async (string method, GLib.Variant? @params, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
 		[CCode (finish_name = "jsonrpc_client_call_finish")]
 		[Version (since = "3.30")]
-		public async bool call_with_id_async (string method, GLib.Variant? @params, out GLib.Variant id, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
+		public async bool call_with_id_async (string method, GLib.Variant? @params, GLib.Variant* id, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
 		[Version (since = "3.26")]
 		public bool close (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.26")]

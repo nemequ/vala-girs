@@ -36,6 +36,7 @@ namespace Gegl {
 		public void flush_ext (Gegl.Rectangle rect);
 		[CCode (has_construct_function = false)]
 		public Buffer.for_backend (Gegl.Rectangle extent, Gegl.TileBackend backend);
+		public void freeze_changed ();
 		public unowned Gegl.Rectangle get_abyss ();
 		public unowned Gegl.Rectangle get_extent ();
 		[CCode (array_length_pos = 4.1, array_length_type = "guint")]
@@ -58,6 +59,7 @@ namespace Gegl {
 		public static string? swap_create_file (string? suffix);
 		public static bool swap_has_file (string path);
 		public static void swap_remove_file (string path);
+		public void thaw_changed ();
 		[NoAccessorMethod]
 		public int abyss_height { get; construct; }
 		[NoAccessorMethod]
@@ -120,6 +122,8 @@ namespace Gegl {
 		[NoAccessorMethod]
 		public int chunk_size { get; set construct; }
 		[NoAccessorMethod]
+		public bool mipmap_rendering { get; set construct; }
+		[NoAccessorMethod]
 		public double quality { get; set construct; }
 		[NoAccessorMethod]
 		public int queue_size { get; set; }
@@ -156,7 +160,7 @@ namespace Gegl {
 	[Compact]
 	public class Matrix3 {
 		[CCode (array_length = false)]
-		public weak double coeff[3];
+		public weak double coeff[9];
 		[CCode (has_construct_function = false)]
 		public Matrix3 ();
 		public Gegl.Matrix3 copy ();
@@ -402,6 +406,8 @@ namespace Gegl {
 		[CCode (has_construct_function = false)]
 		protected Stats ();
 		[NoAccessorMethod]
+		public uint64 scratch_total { get; }
+		[NoAccessorMethod]
 		public bool swap_busy { get; }
 		[NoAccessorMethod]
 		public uint64 swap_file_size { get; }
@@ -495,7 +501,7 @@ namespace Gegl {
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	public struct BufferMatrix2 {
 		[CCode (array_length = false)]
-		public weak double coeff[2];
+		public weak double coeff[4];
 		public double determinant ();
 		public bool is_identity ();
 		public bool is_scale ();

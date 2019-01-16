@@ -54,10 +54,11 @@ namespace GUPnP {
 		[Version (since = "0.17.2")]
 		public static GUPnP.ContextManager create (uint port);
 		[Version (since = "1.1.0")]
-		public static GUPnP.ContextManager create_full (GLib.SocketFamily family, uint port);
+		public static GUPnP.ContextManager create_full (GSSDP.UDAVersion uda_version, GLib.SocketFamily family, uint port);
 		[Version (since = "0.19.1")]
 		public uint get_port ();
 		public GLib.SocketFamily get_socket_family ();
+		public GSSDP.UDAVersion get_uda_version ();
 		public unowned GUPnP.WhiteList get_white_list ();
 		[Version (since = "0.13.0")]
 		public void manage_control_point (GUPnP.ControlPoint control_point);
@@ -69,6 +70,8 @@ namespace GUPnP {
 		[Version (since = "1.1.0")]
 		public GLib.SocketFamily family { get; construct; }
 		public uint port { get; construct; }
+		[Version (since = "1.1.2")]
+		public GLib.SocketFamily uda_version { get; construct; }
 		public GUPnP.WhiteList white_list { get; }
 		public signal void context_available (GUPnP.Context context);
 		public signal void context_unavailable (GUPnP.Context context);

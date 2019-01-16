@@ -870,6 +870,15 @@ namespace E {
 		TOO_LONG;
 		public static GLib.Quark quark ();
 	}
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS")]
+	[Version (since = "3.2")]
+	public const string BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "BOOK_BACKEND_PROPERTY_REVISION")]
+	[Version (since = "3.4")]
+	public const string BOOK_BACKEND_PROPERTY_REVISION;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS")]
+	[Version (since = "3.2")]
+	public const string BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_ADR")]
 	public const string EVC_ADR;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_BDAY")]

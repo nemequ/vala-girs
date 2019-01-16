@@ -1975,6 +1975,7 @@ namespace Dazzle {
 	[Version (since = "3.28")]
 	public static unowned GLib.Cancellable? cancellable_chain (GLib.Cancellable? self = null, GLib.Cancellable? other = null);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "dazzle.h")]
+	[Version (deprecated = true)]
 	public static string[] dnd_get_uri_list (Gtk.SelectionData selection_data);
 	[CCode (cheader_filename = "dazzle.h")]
 	public static bool file_manager_show (GLib.File file) throws GLib.Error;
@@ -2027,5 +2028,5 @@ namespace Dazzle {
 	[CCode (cheader_filename = "dazzle.h")]
 	public static string pango_font_description_to_css (Pango.FontDescription font_desc);
 	[CCode (cheader_filename = "dazzle.h")]
-	public static void rgba_shade (Gdk.RGBA rgba, Gdk.RGBA dst, double k);
+	public static void rgba_shade (Gdk.RGBA rgba, out Gdk.RGBA dst, double k);
 }

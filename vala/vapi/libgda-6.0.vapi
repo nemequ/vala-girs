@@ -690,9 +690,6 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public bool create (Gda.Connection cnc, bool ifnotexists) throws GLib.Error;
 		public static GLib.Quark error_quark ();
-		[CCode (has_construct_function = false)]
-		[Version (since = "6.0")]
-		public DbTable.from_meta (Gda.MetaDbObject obj);
 		[Version (since = "6.0")]
 		public unowned GLib.List<Gda.DbColumn> get_columns ();
 		[Version (since = "6.0")]
@@ -716,8 +713,6 @@ namespace Gda {
 		public DbView ();
 		[Version (since = "6.0")]
 		public bool create (Gda.Connection cnc) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		public DbView.from_meta (Gda.MetaView view);
 		public unowned string get_defstring ();
 		[Version (since = "6.0")]
 		public bool get_ifnoexist ();
@@ -901,6 +896,7 @@ namespace Gda {
 		public Gda.MetaContext copy ();
 		[Version (since = "5.2")]
 		public void free ();
+		public int get_n_columns ();
 		[Version (since = "5.2")]
 		public unowned string get_table ();
 		[Version (since = "5.2")]
@@ -909,6 +905,7 @@ namespace Gda {
 		public void set_columns (GLib.HashTable<string,GLib.Value?> columns, Gda.Connection? cnc);
 		[Version (since = "5.2")]
 		public void set_table (string table);
+		public string stringify ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_meta_store_get_type ()")]
 	public class MetaStore : GLib.Object {
@@ -1671,6 +1668,17 @@ namespace Gda {
 		public void* structure { get; set; }
 		public virtual signal void checked (Gda.Connection cnc, bool checked);
 		public virtual signal void reset ();
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gda_text_get_type ()")]
+	[Compact]
+	public class Text {
+		[CCode (has_construct_function = false)]
+		public Text ();
+		public void free ();
+		public unowned string get_string ();
+		public void set_string (string str);
+		public void take_string (string str);
+		public static string to_alphanum (string text);
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gda_time_get_type ()")]
 	[Compact]
@@ -3153,8 +3161,6 @@ namespace Gda {
 	public static Gda.Binary string_to_binary (string? str);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static Gda.Blob string_to_blob (string str);
-	[CCode (cheader_filename = "libgda/libgda.h")]
-	public static string text_to_alphanum (string text);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "4.2.6")]
 	public static bool utility_check_data_model_v (Gda.DataModel model, [CCode (array_length_cname = "nbcols", array_length_pos = 1.5)] GLib.Type[] types);

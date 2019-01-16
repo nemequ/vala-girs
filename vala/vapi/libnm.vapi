@@ -497,9 +497,9 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		public Client (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async NM.ActiveConnection activate_connection_async (NM.Connection? connection, NM.Device? device, string? specific_object, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async NM.ActiveConnection add_and_activate_connection_async (NM.Connection? partial, NM.Device device, string? specific_object, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.16")]
-		public async NM.ActiveConnection add_and_activate_connection_options (NM.Connection? partial, NM.Device device, string? specific_object, GLib.Variant options, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async NM.ActiveConnection add_and_activate_connection2 (NM.Connection? partial, NM.Device device, string? specific_object, GLib.Variant options, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async NM.ActiveConnection add_and_activate_connection_async (NM.Connection? partial, NM.Device device, string? specific_object, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async NM.RemoteConnection add_connection_async (NM.Connection connection, bool save_to_disk, GLib.Cancellable? cancellable) throws GLib.Error;
 		public NM.ConnectivityState check_connectivity (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async NM.ConnectivityState check_connectivity_async (GLib.Cancellable? cancellable) throws GLib.Error;
@@ -1769,8 +1769,6 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected Setting ();
 		public bool compare (NM.Setting b, NM.SettingCompareFlags flags);
-		[NoWrapper]
-		public virtual bool compare_property (NM.Setting other, GLib.ParamSpec prop_spec, NM.SettingCompareFlags flags);
 		public bool diff (NM.Setting b, NM.SettingCompareFlags flags, bool invert_results, ref GLib.HashTable<string,uint32> results);
 		public NM.Setting duplicate ();
 		public void enumerate_values (NM.SettingValueIterFn func);
@@ -5459,6 +5457,7 @@ namespace NM {
 		REQUIRED
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_WIRELESS_SECURITY_WPS_METHOD_", type_id = "nm_setting_wireless_security_wps_method_get_type ()")]
+	[Flags]
 	[Version (since = "1.10")]
 	public enum SettingWirelessSecurityWpsMethod {
 		DEFAULT,

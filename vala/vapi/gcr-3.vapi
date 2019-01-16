@@ -493,7 +493,7 @@ namespace Gcr {
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "gcr/gcr-base.h")]
 	public static unowned string[]? pkcs11_get_trust_lookup_uris ();
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
-	public static Gck.Slot pkcs11_get_trust_store_slot ();
+	public static Gck.Slot? pkcs11_get_trust_store_slot ();
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
 	public static unowned string? pkcs11_get_trust_store_uri ();
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
