@@ -208,6 +208,7 @@ namespace Gegl {
 		public bool has_pad (string pad_name);
 		public Gegl.Rectangle introspectable_get_bounding_box ();
 		public GLib.Value? introspectable_get_property (string property_name);
+		public bool is_graph ();
 		public void link (Gegl.Node sink);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] list_input_pads ();

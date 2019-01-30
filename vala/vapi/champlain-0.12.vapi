@@ -465,7 +465,7 @@ namespace Champlain {
 		[CCode (has_construct_function = false)]
 		protected Renderer ();
 		public virtual void render (Champlain.Tile tile);
-		public virtual void set_data (string data, uint size);
+		public virtual void set_data ([CCode (array_length_cname = "size", array_length_pos = 1.1, array_length_type = "guint")] uint8[] data);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_scale_get_type ()")]
 	[Version (since = "0.10")]

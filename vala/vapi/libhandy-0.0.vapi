@@ -248,6 +248,21 @@ namespace Hdy {
 		public void set_selection_mode (bool selection_mode);
 		public bool selection_mode { get; set; }
 	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_value_object_get_type ()")]
+	public class ValueObject : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.0.8")]
+		public ValueObject (GLib.Value value);
+		[Version (since = "0.0.8")]
+		public void copy_value (GLib.Value dest);
+		[Version (since = "0.0.8")]
+		public string dup_string ();
+		[Version (since = "0.0.8")]
+		public unowned string get_string ();
+		[Version (since = "0.0.8")]
+		public unowned GLib.Value? get_value ();
+		public GLib.Value value { get; construct; }
+	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_ARROWS_DIRECTION_", type_id = "hdy_arrows_direction_get_type ()")]
 	public enum ArrowsDirection {
 		UP,

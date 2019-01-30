@@ -27,7 +27,7 @@ namespace Rsvg {
 		public Handle.from_data ([CCode (array_length_cname = "data_len", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] data) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		[Version (since = "2.14")]
-		public Handle.from_file (string file_name) throws GLib.Error;
+		public Handle.from_file (string filename) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		[Version (since = "2.32")]
 		public Handle.from_gfile_sync (GLib.File file, Rsvg.HandleFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -86,13 +86,16 @@ namespace Rsvg {
 		[NoAccessorMethod]
 		public double dpi_y { get; set construct; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "2.46.")]
 		public double em { get; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "2.46.")]
 		public double ex { get; }
 		[NoAccessorMethod]
 		[Version (since = "2.36")]
 		public Rsvg.HandleFlags flags { get; construct; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "2.46.")]
 		public int height { get; }
 		[NoAccessorMethod]
 		[Version (deprecated = true, deprecated_since = "2.36")]
@@ -101,6 +104,7 @@ namespace Rsvg {
 		[Version (deprecated = true, deprecated_since = "2.36")]
 		public string title { owned get; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "2.46.")]
 		public int width { get; }
 	}
 	[CCode (cheader_filename = "librsvg/rsvg.h", has_type_id = false)]

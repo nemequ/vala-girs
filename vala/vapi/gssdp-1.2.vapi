@@ -20,6 +20,8 @@ namespace GSSDP {
 		public GSSDP.UDAVersion get_uda_version ();
 		public unowned string guess_user_agent (string ip_address);
 		public void remove_header (string name);
+		public void set_boot_id (int32 boot_id);
+		public void set_config_id (int32 config_id);
 		public void set_network (string network);
 		public void set_server_id (string server_id);
 		[CCode (has_construct_function = false)]
@@ -52,6 +54,8 @@ namespace GSSDP {
 		public ushort get_mx ();
 		public unowned string get_target ();
 		public bool rescan ();
+		[NoWrapper]
+		public virtual void resource_update (string usn, uint boot_id, uint next_boot_id);
 		public void set_active (bool active);
 		public void set_mx (ushort mx);
 		public void set_target (string target);
@@ -76,6 +80,7 @@ namespace GSSDP {
 		public void set_available (bool available);
 		public void set_max_age (uint max_age);
 		public void set_message_delay (uint message_delay);
+		public void update (uint new_boot_id);
 		public bool available { get; set; }
 		public GSSDP.Client client { get; construct; }
 		public uint max_age { get; set; }
