@@ -30,7 +30,7 @@ namespace GUPnP {
 		public bool host_path_for_agent (string local_path, string server_path, GLib.Regex user_agent);
 		[Version (since = "0.20.11")]
 		public void remove_server_handler (string path);
-		[Version (since = "1.11.1")]
+		[Version (since = "1.1.1")]
 		public string rewrite_uri (string uri);
 		[Version (since = "0.20.11")]
 		public void set_acl (GUPnP.Acl? acl);
@@ -267,9 +267,13 @@ namespace GUPnP {
 		public bool add_notify_full (string variable, GLib.Type type, owned GUPnP.ServiceProxyNotifyCallback callback);
 		[Version (since = "0.20.12")]
 		public bool add_raw_notify (owned GUPnP.ServiceProxyNotifyCallback callback);
+		[Version (deprecated = true, deprecated_since = "1.1.2")]
 		public unowned GUPnP.ServiceProxyAction begin_action (string action, [CCode (delegate_target_pos = 2.5, scope = "async")] GUPnP.ServiceProxyActionCallback callback, ...);
 		[Version (since = "0.13.3")]
 		public unowned GUPnP.ServiceProxyAction begin_action_list (string action, GLib.List<string> in_names, GLib.List<GLib.Value?> in_values, [CCode (scope = "async")] GUPnP.ServiceProxyActionCallback callback);
+		public GUPnP.ServiceProxyAction call_action (GUPnP.ServiceProxyAction action, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async GUPnP.ServiceProxyAction call_action_async (GUPnP.ServiceProxyAction action, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.1.2")]
 		public void cancel_action (GUPnP.ServiceProxyAction action);
 		public bool end_action (GUPnP.ServiceProxyAction action, ...) throws GLib.Error;
 		public bool end_action_hash (GUPnP.ServiceProxyAction action, GLib.HashTable<string,GLib.Value*> hash) throws GLib.Error;
@@ -283,9 +287,15 @@ namespace GUPnP {
 		public bool subscribed { get; set; }
 		public virtual signal void subscription_lost (GLib.Error reason);
 	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gupnp_service_proxy_action_get_type ()")]
+	[CCode (cheader_filename = "libgupnp/gupnp.h", ref_function = "gupnp_service_proxy_action_ref", type_id = "gupnp_service_proxy_action_get_type ()", unref_function = "gupnp_service_proxy_action_unref")]
 	[Compact]
 	public class ServiceProxyAction {
+		[CCode (has_construct_function = false)]
+		public ServiceProxyAction.from_list (string action, GLib.List<string> in_names, GLib.List<GLib.Value?> in_values);
+		public bool get_result_hash (ref unowned GLib.HashTable<string,GLib.Value?> out_hash) throws GLib.Error;
+		public bool get_result_list (GLib.List<string> out_names, GLib.List<GLib.Type?> out_types, out GLib.List<GLib.Value?> out_values) throws GLib.Error;
+		public GUPnP.ServiceProxyAction @ref ();
+		public void unref ();
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gupnp_time_get_type ()")]
 	[Compact]

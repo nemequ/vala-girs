@@ -739,14 +739,6 @@ namespace NM {
 		public const string OVS_BRIDGE_SLAVES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_OVS_PORT_SLAVES")]
 		public const string OVS_PORT_SLAVES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_P2P_WIFI_GROUP_OWNER")]
-		public const string P2P_WIFI_GROUP_OWNER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_P2P_WIFI_HW_ADDRESS")]
-		public const string P2P_WIFI_HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_P2P_WIFI_PEERS")]
-		public const string P2P_WIFI_PEERS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_P2P_WIFI_WFDIES")]
-		public const string P2P_WIFI_WFDIES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PHYSICAL_PORT_ID")]
 		public const string PHYSICAL_PORT_ID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PRODUCT")]
@@ -1247,35 +1239,6 @@ namespace NM {
 		[Version (since = "1.14")]
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 	}
-	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_p2p_wifi", type_id = "nm_device_p2p_wifi_get_type ()")]
-	public class DeviceP2PWifi : NM.Device, GLib.AsyncInitable, GLib.Initable {
-		[CCode (has_construct_function = false)]
-		protected DeviceP2PWifi ();
-		[Version (since = "1.16")]
-		public bool get_group_owner ();
-		[Version (since = "1.16")]
-		public unowned string get_hw_address ();
-		[Version (since = "1.16")]
-		public unowned NM.P2PPeer get_peer_by_path (string path);
-		[Version (since = "1.16")]
-		public unowned GLib.GenericArray<NM.P2PPeer> get_peers ();
-		[Version (since = "1.16")]
-		public bool start_find (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "1.16")]
-		public bool stop_find (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "1.16")]
-		public bool group_owner { get; }
-		[Version (since = "1.16")]
-		public string hw_address { get; }
-		[Version (since = "1.16")]
-		public GLib.GenericArray<NM.P2PPeer> peers { get; }
-		[NoAccessorMethod]
-		public GLib.Variant wfdies { owned get; }
-		[Version (since = "1.16")]
-		public virtual signal void peer_added (GLib.Object peer);
-		[Version (since = "1.16")]
-		public virtual signal void peer_removed (GLib.Object peer);
-	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ppp_get_type ()")]
 	public class DevicePpp : NM.Device, GLib.AsyncInitable, GLib.Initable {
 		[CCode (has_construct_function = false)]
@@ -1450,6 +1413,14 @@ namespace NM {
 		public const string LAST_SCAN;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_MODE")]
 		public const string MODE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_P2P_GROUP_OWNER")]
+		public const string P2P_GROUP_OWNER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_P2P_HW_ADDRESS")]
+		public const string P2P_HW_ADDRESS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_P2P_PEERS")]
+		public const string P2P_PEERS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_P2P_WFDIES")]
+		public const string P2P_WFDIES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_PERMANENT_HW_ADDRESS")]
 		public const string PERMANENT_HW_ADDRESS;
 		[CCode (has_construct_function = false)]
@@ -1483,6 +1454,25 @@ namespace NM {
 		public NM.DeviceWifiCapabilities wireless_capabilities { get; }
 		public virtual signal void access_point_added (GLib.Object ap);
 		public virtual signal void access_point_removed (GLib.Object ap);
+	}
+	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_wifi_p2p", type_id = "nm_device_wifi_p2p_get_type ()")]
+	[Version (since = "1.16")]
+	public class DeviceWifiP2P : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected DeviceWifiP2P ();
+		public bool get_group_owner ();
+		public unowned string get_hw_address ();
+		public unowned NM.WifiP2PPeer get_peer_by_path (string path);
+		public unowned GLib.GenericArray<NM.WifiP2PPeer> get_peers ();
+		public async bool start_find (GLib.Variant? options, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool stop_find (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool group_owner { get; }
+		public string hw_address { get; }
+		public GLib.GenericArray<NM.WifiP2PPeer> peers { get; }
+		[NoAccessorMethod]
+		public GLib.Variant wfdies { owned get; }
+		public signal void peer_added (GLib.Object peer);
+		public signal void peer_removed (GLib.Object peer);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_wimax_get_type ()")]
 	public class DeviceWimax : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -1734,55 +1724,6 @@ namespace NM {
 		public virtual void object_creation_failed (string failed_path);
 		public string path { get; }
 	}
-	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "p2p_peer", type_id = "nm_p2p_peer_get_type ()")]
-	public class P2PPeer : NM.Object, GLib.AsyncInitable, GLib.Initable {
-		[CCode (has_construct_function = false)]
-		protected P2PPeer ();
-		[Version (since = "1.16")]
-		public bool connection_valid (NM.Connection connection);
-		[Version (since = "1.16")]
-		public GLib.GenericArray<weak NM.Connection> filter_connections (GLib.GenericArray<NM.Connection> connections);
-		[Version (since = "1.16")]
-		public NM.80211ApFlags get_flags ();
-		[Version (since = "1.16")]
-		public unowned string get_hw_address ();
-		[Version (since = "1.16")]
-		public int get_last_seen ();
-		[Version (since = "1.16")]
-		public unowned string get_manufacturer ();
-		[Version (since = "1.16")]
-		public unowned string get_model ();
-		[Version (since = "1.16")]
-		public unowned string get_model_number ();
-		[Version (since = "1.16")]
-		public unowned string get_name ();
-		[Version (since = "1.16")]
-		public unowned string get_serial ();
-		[Version (since = "1.16")]
-		public uint8 get_strength ();
-		[Version (since = "1.16")]
-		public unowned GLib.Bytes get_wfd_ies ();
-		[Version (since = "1.16")]
-		public NM.80211ApFlags flags { get; }
-		[Version (since = "1.16")]
-		public string hw_address { get; }
-		[Version (since = "1.16")]
-		public int last_seen { get; }
-		[Version (since = "1.16")]
-		public string manufacturer { get; }
-		[Version (since = "1.16")]
-		public string model { get; }
-		[Version (since = "1.16")]
-		public string model_number { get; }
-		[Version (since = "1.16")]
-		public string name { get; }
-		[Version (since = "1.16")]
-		public string serial { get; }
-		[Version (since = "1.16")]
-		public uint8 strength { get; }
-		[Version (since = "1.16")]
-		public GLib.Bytes wfd_ies { get; }
-	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_remote_connection_get_type ()")]
 	public class RemoteConnection : NM.Object, GLib.AsyncInitable, GLib.Initable, NM.Connection {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_DBUS_CONNECTION")]
@@ -1854,6 +1795,8 @@ namespace NM {
 		public const int SECRET;
 		[CCode (has_construct_function = false)]
 		protected Setting ();
+		[NoWrapper]
+		public virtual bool aggregate (int type_i, void* arg);
 		public bool compare (NM.Setting b, NM.SettingCompareFlags flags);
 		public bool diff (NM.Setting b, NM.SettingCompareFlags flags, bool invert_results, ref GLib.HashTable<string,uint32> results);
 		public NM.Setting duplicate ();
@@ -3361,34 +3304,6 @@ namespace NM {
 		[Version (since = "1.10")]
 		public string vlan_mode { owned get; set construct; }
 	}
-	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_p2p_wireless", type_id = "nm_setting_p2p_wireless_get_type ()")]
-	public class SettingP2PWireless : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_P2P_WIRELESS_GO_INTENT")]
-		public const string GO_INTENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_P2P_WIRELESS_PEER")]
-		public const string PEER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_P2P_WIRELESS_PERSISTENT")]
-		public const string PERSISTENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_P2P_WIRELESS_SETTING_NAME")]
-		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_P2P_WIRELESS_WPS_METHOD")]
-		public const string WPS_METHOD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_P2P_WIRELESS_WPS_PIN")]
-		public const string WPS_PIN;
-		[CCode (has_construct_function = false, type = "NMSetting*")]
-		[Version (since = "1.16")]
-		public SettingP2PWireless ();
-		[Version (since = "1.16")]
-		public unowned string get_peer ();
-		[Version (since = "1.16")]
-		public NM.SettingWirelessSecurityWpsMethod get_wps_method ();
-		[NoAccessorMethod]
-		[Version (since = "1.16")]
-		public string peer { owned get; set; }
-		[NoAccessorMethod]
-		[Version (since = "1.16")]
-		public uint wps_method { get; set; }
-	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ppp_get_type ()")]
 	public class SettingPpp : NM.Setting {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_BAUD")]
@@ -4151,6 +4066,24 @@ namespace NM {
 		[Version (since = "1.2")]
 		public uint ttl { get; set construct; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_wifi_p2p", type_id = "nm_setting_wifi_p2p_get_type ()")]
+	[Version (since = "1.16")]
+	public class SettingWifiP2P : NM.Setting {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIFI_P2P_PEER")]
+		public const string PEER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIFI_P2P_SETTING_NAME")]
+		public const string SETTING_NAME;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIFI_P2P_WPS_METHOD")]
+		public const string WPS_METHOD;
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		public SettingWifiP2P ();
+		public unowned string get_peer ();
+		public NM.SettingWirelessSecurityWpsMethod get_wps_method ();
+		[NoAccessorMethod]
+		public string peer { owned get; set; }
+		[NoAccessorMethod]
+		public uint wps_method { get; set; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_wimax_get_type ()")]
 	public class SettingWimax : NM.Setting {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIMAX_MAC_ADDRESS")]
@@ -4887,6 +4820,55 @@ namespace NM {
 		public signal void secrets_required (string message, [CCode (array_length = false, array_null_terminated = true)] string[] hints);
 		public virtual signal void state_changed (uint state);
 	}
+	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "wifi_p2p_peer", type_id = "nm_wifi_p2p_peer_get_type ()")]
+	public class WifiP2PPeer : NM.Object, GLib.AsyncInitable, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected WifiP2PPeer ();
+		[Version (since = "1.16")]
+		public bool connection_valid (NM.Connection connection);
+		[Version (since = "1.16")]
+		public GLib.GenericArray<weak NM.Connection> filter_connections (GLib.GenericArray<NM.Connection> connections);
+		[Version (since = "1.16")]
+		public NM.80211ApFlags get_flags ();
+		[Version (since = "1.16")]
+		public unowned string get_hw_address ();
+		[Version (since = "1.16")]
+		public int get_last_seen ();
+		[Version (since = "1.16")]
+		public unowned string get_manufacturer ();
+		[Version (since = "1.16")]
+		public unowned string get_model ();
+		[Version (since = "1.16")]
+		public unowned string get_model_number ();
+		[Version (since = "1.16")]
+		public unowned string get_name ();
+		[Version (since = "1.16")]
+		public unowned string get_serial ();
+		[Version (since = "1.16")]
+		public uint8 get_strength ();
+		[Version (since = "1.16")]
+		public unowned GLib.Bytes get_wfd_ies ();
+		[Version (since = "1.16")]
+		public NM.80211ApFlags flags { get; }
+		[Version (since = "1.16")]
+		public string hw_address { get; }
+		[Version (since = "1.16")]
+		public int last_seen { get; }
+		[Version (since = "1.16")]
+		public string manufacturer { get; }
+		[Version (since = "1.16")]
+		public string model { get; }
+		[Version (since = "1.16")]
+		public string model_number { get; }
+		[Version (since = "1.16")]
+		public string name { get; }
+		[Version (since = "1.16")]
+		public string serial { get; }
+		[Version (since = "1.16")]
+		public uint8 strength { get; }
+		[Version (since = "1.16")]
+		public GLib.Bytes wfd_ies { get; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_wimax_nsp_get_type ()")]
 	public class WimaxNsp : NM.Object, GLib.AsyncInitable, GLib.Initable {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIMAX_NSP_NAME")]
@@ -5052,7 +5034,8 @@ namespace NM {
 		GROUP_TKIP,
 		GROUP_CCMP,
 		KEY_MGMT_PSK,
-		KEY_MGMT_802_1X
+		KEY_MGMT_802_1X,
+		KEY_MGMT_SAE
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_802_11_MODE_", type_id = "nm_802_11_mode_get_type ()")]
 	public enum @80211Mode {
@@ -5797,7 +5780,9 @@ namespace NM {
 		[CCode (cname = "NM_DEVICE_ERROR_VERSION_ID_MISMATCH")]
 		VERSIONIDMISMATCH,
 		[CCode (cname = "NM_DEVICE_ERROR_MISSING_DEPENDENCIES")]
-		MISSINGDEPENDENCIES;
+		MISSINGDEPENDENCIES,
+		[CCode (cname = "NM_DEVICE_ERROR_INVALID_ARGUMENT")]
+		INVALIDARGUMENT;
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Quark quark ();
 	}
@@ -5909,6 +5894,8 @@ namespace NM {
 	public delegate bool UtilsFileSearchInPathsPredicate (string filename);
 	[CCode (cheader_filename = "NetworkManager.h", instance_pos = 2.9)]
 	public delegate void VpnIterFunc (string key, string value);
+	[CCode (cheader_filename = "NetworkManager.h", cname = "_NMConnectionForEachSecretFunc", instance_pos = 1.9)]
+	public delegate bool _ConnectionForEachSecretFunc (NM.SettingSecretFlags flags);
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CHECKPOINT_CREATED")]
 	public const string CHECKPOINT_CREATED;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CHECKPOINT_DEVICES")]
@@ -6171,26 +6158,6 @@ namespace NM {
 	public const int MICRO_VERSION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_MINOR_VERSION")]
 	public const int MINOR_VERSION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_P2P_PEER_FLAGS")]
-	public const string P2P_PEER_FLAGS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_P2P_PEER_HW_ADDRESS")]
-	public const string P2P_PEER_HW_ADDRESS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_P2P_PEER_LAST_SEEN")]
-	public const string P2P_PEER_LAST_SEEN;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_P2P_PEER_MANUFACTURER")]
-	public const string P2P_PEER_MANUFACTURER;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_P2P_PEER_MODEL")]
-	public const string P2P_PEER_MODEL;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_P2P_PEER_MODEL_NUMBER")]
-	public const string P2P_PEER_MODEL_NUMBER;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_P2P_PEER_NAME")]
-	public const string P2P_PEER_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_P2P_PEER_SERIAL")]
-	public const string P2P_PEER_SERIAL;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_P2P_PEER_STRENGTH")]
-	public const string P2P_PEER_STRENGTH;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_P2P_PEER_WFD_IES")]
-	public const string P2P_PEER_WFD_IES;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_AUTO_REGISTER")]
 	public const string SECRET_AGENT_OLD_AUTO_REGISTER;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_CAPABILITIES")]
@@ -6351,6 +6318,26 @@ namespace NM {
 	public const string TEAM_LINK_WATCHER_NSNA_PING;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VLAN_FLAGS_ALL")]
 	public const int VLAN_FLAGS_ALL;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_FLAGS")]
+	public const string WIFI_P2P_PEER_FLAGS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_HW_ADDRESS")]
+	public const string WIFI_P2P_PEER_HW_ADDRESS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_LAST_SEEN")]
+	public const string WIFI_P2P_PEER_LAST_SEEN;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_MANUFACTURER")]
+	public const string WIFI_P2P_PEER_MANUFACTURER;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_MODEL")]
+	public const string WIFI_P2P_PEER_MODEL;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_MODEL_NUMBER")]
+	public const string WIFI_P2P_PEER_MODEL_NUMBER;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_NAME")]
+	public const string WIFI_P2P_PEER_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_SERIAL")]
+	public const string WIFI_P2P_PEER_SERIAL;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_STRENGTH")]
+	public const string WIFI_P2P_PEER_STRENGTH;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_WFD_IES")]
+	public const string WIFI_P2P_PEER_WFD_IES;
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (since = "1.14")]
 	public static bool ethtool_optname_is_feature (string optname);

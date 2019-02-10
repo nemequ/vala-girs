@@ -32,6 +32,10 @@ namespace GSSDP {
 		[Version (since = "1.1.1")]
 		public GLib.SocketFamily address_family { get; construct; }
 		[NoAccessorMethod]
+		public int boot_id { get; set construct; }
+		[NoAccessorMethod]
+		public int config_id { get; set construct; }
+		[NoAccessorMethod]
 		public string host_ip { owned get; set construct; }
 		[NoAccessorMethod]
 		public GLib.InetAddressMask host_mask { set construct; }
@@ -54,8 +58,6 @@ namespace GSSDP {
 		public ushort get_mx ();
 		public unowned string get_target ();
 		public bool rescan ();
-		[NoWrapper]
-		public virtual void resource_update (string usn, uint boot_id, uint next_boot_id);
 		public void set_active (bool active);
 		public void set_mx (ushort mx);
 		public void set_target (string target);
@@ -65,6 +67,7 @@ namespace GSSDP {
 		public string target { get; set; }
 		public signal void resource_available (string usn, GLib.List<string> locations);
 		public virtual signal void resource_unavailable (string usn);
+		public virtual signal void resource_update (string usn, uint boot_id, uint next_boot_id);
 	}
 	[CCode (cheader_filename = "libgssdp/gssdp.h", type_id = "gssdp_resource_group_get_type ()")]
 	public class ResourceGroup : GLib.Object {

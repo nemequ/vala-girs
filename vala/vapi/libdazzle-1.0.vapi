@@ -846,9 +846,12 @@ namespace Dazzle {
 	public class PreferencesView : Gtk.Bin, Atk.Implementor, Dazzle.Preferences, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public PreferencesView ();
+		public bool get_show_search_entry ();
 		public bool get_use_sidebar ();
 		public void reapply_filter ();
+		public void set_show_search_entry (bool show_search_entry);
 		public void set_use_sidebar (bool use_sidebar);
+		public bool show_search_entry { get; set; }
 		public bool use_sidebar { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_priority_box_get_type ()")]
@@ -1448,6 +1451,8 @@ namespace Dazzle {
 		public void default_position_func (Gdk.Rectangle area, bool is_absolute, void* user_data);
 		public bool get_activate_on_single_click ();
 		public unowned GLib.ListModel? get_model ();
+		[Version (since = "3.32")]
+		public unowned Gtk.Widget get_popover ();
 		public unowned Dazzle.Suggestion? get_suggestion ();
 		public unowned string get_typed_text ();
 		public void set_activate_on_single_click (bool activate_on_single_click);

@@ -43,7 +43,7 @@ namespace Rsvg {
 		[Version (deprecated = true, deprecated_since = "2.46.", since = "2.22")]
 		public bool get_dimensions_sub (out Rsvg.DimensionData dimension_data, string? id);
 		[Version (since = "2.46")]
-		public bool get_geometry_sub (out unowned Rsvg.Rectangle? ink_rect, out unowned Rsvg.Rectangle? logical_rect, string? id);
+		public bool get_geometry_sub (out Rsvg.Rectangle ink_rect, out Rsvg.Rectangle logical_rect, string? id);
 		[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]
 		public unowned string get_metadata ();
 		public Gdk.Pixbuf? get_pixbuf ();

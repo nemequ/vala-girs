@@ -1198,26 +1198,26 @@ namespace Camel {
 		public string build_mbox_from ();
 		public void dump (int body);
 		public void encode_8bit_parts ();
-		public long get_date (int offset);
-		public long get_date_received (int offset);
-		public unowned Camel.InternetAddress get_from ();
-		public unowned string get_message_id ();
-		public unowned Camel.MimePart get_part_by_content_id (string content_id);
-		public unowned Camel.InternetAddress get_recipients (string type);
-		public unowned Camel.InternetAddress get_reply_to ();
-		public unowned string get_source ();
-		public unowned string get_subject ();
+		public long get_date (out int offset);
+		public long get_date_received (out int offset);
+		public unowned Camel.InternetAddress? get_from ();
+		public unowned string? get_message_id ();
+		public unowned Camel.MimePart? get_part_by_content_id (string content_id);
+		public unowned Camel.InternetAddress? get_recipients (string type);
+		public unowned Camel.InternetAddress? get_reply_to ();
+		public unowned string? get_source ();
+		public unowned string? get_subject ();
 		public bool has_8bit_parts ();
 		[Version (since = "2.28")]
 		public bool has_attachment ();
 		public void set_best_encoding (Camel.BestencRequired required, Camel.BestencEncoding enctype);
 		public void set_date (long date, int offset);
-		public void set_from (Camel.InternetAddress from);
-		public void set_message_id (string message_id);
-		public void set_recipients (string type, Camel.InternetAddress recipients);
-		public void set_reply_to (Camel.InternetAddress reply_to);
-		public void set_source (string source_uid);
-		public void set_subject (string subject);
+		public void set_from (Camel.InternetAddress? from);
+		public void set_message_id (string? message_id);
+		public void set_recipients (string type, Camel.InternetAddress? recipients);
+		public void set_reply_to (Camel.InternetAddress? reply_to);
+		public void set_source (string? source_uid);
+		public void set_subject (string? subject);
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_mime_parser_get_type ()")]
 	public class MimeParser : GLib.Object {
@@ -1569,7 +1569,7 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_sasl_get_type ()")]
 	public abstract class Sasl : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public Sasl (string service_name, string mechanism, Camel.Service service);
+		protected Sasl ();
 		public static Camel.ServiceAuthType authtype (string mechanism);
 		public static GLib.List<weak Camel.ServiceAuthType> authtype_list (bool include_plain);
 		[Version (since = "3.0")]
@@ -1579,6 +1579,8 @@ namespace Camel {
 		[Version (since = "3.0")]
 		public string challenge_base64_sync (string token, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual GLib.ByteArray challenge_sync (GLib.ByteArray token, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (cname = "camel_sasl_new")]
+		public static Camel.Sasl? for_service (string service_name, string mechanism, Camel.Service service);
 		public bool get_authenticated ();
 		[Version (since = "2.32")]
 		public unowned string get_mechanism ();
