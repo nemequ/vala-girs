@@ -48,7 +48,7 @@ namespace Dee {
 		[CCode (has_construct_function = false)]
 		public HashIndex (Dee.Model model, Dee.Analyzer analyzer, Dee.ModelReader reader);
 	}
-	[CCode (cheader_filename = "dee-icu.h", free_function = "dee_icu_term_filter_destroy")]
+	[CCode (cheader_filename = "dee-icu.h", free_function = "dee_icu_term_filter_destroy", has_type_id = false)]
 	[Compact]
 	public class ICUTermFilter {
 		public ICUTermFilter (string system_id, string? rules) throws Dee.ICUError;
@@ -72,13 +72,14 @@ namespace Dee {
 		public unowned Dee.ModelIter lookup_one (string term);
 		public Dee.Analyzer analyzer { get; construct; }
 		public Dee.Model model { get; construct; }
+		[NoAccessorMethod]
 		public Dee.ModelReader reader { construct; }
 	}
-	[CCode (cheader_filename = "dee.h", ref_function = "", unref_function = "")]
+	[CCode (cheader_filename = "dee.h", ref_function = "", type_id = "dee_model_iter_get_type ()", unref_function = "")]
 	[Compact]
 	public class ModelIter {
 	}
-	[CCode (cheader_filename = "dee.h", ref_function = "", unref_function = "")]
+	[CCode (cheader_filename = "dee.h", has_type_id = false, ref_function = "", unref_function = "")]
 	[Compact]
 	public class ModelTag<G> {
 		[CCode (cname = "dee_model_register_tag", simple_generics = true)]
@@ -266,10 +267,10 @@ namespace Dee {
 		public abstract void remove (Dee.ModelIter iter);
 		public void @set (Dee.ModelIter iter, ...);
 		public void set_column_names (string first_column_name, ...);
-		public abstract void set_column_names_full ([CCode (array_length_cname = "num_columns", array_length_pos = 1.1, array_length_type = "guint", array_null_terminated = true)] string[] column_names);
+		public abstract void set_column_names_full ([CCode (array_length = true, array_length_cname = "num_columns", array_length_pos = 1.1, array_length_type = "guint", array_null_terminated = true)] string[] column_names);
 		public abstract void set_row (Dee.ModelIter iter, [CCode (array_length = false)] GLib.Variant[] row_members);
 		public void set_schema (...);
-		public abstract void set_schema_full ([CCode (array_length_cname = "num_columns", array_length_pos = 1.1, array_length_type = "guint", array_null_terminated = true)] string[] column_schemas);
+		public abstract void set_schema_full ([CCode (array_length = true, array_length_cname = "num_columns", array_length_pos = 1.1, array_length_type = "guint", array_null_terminated = true)] string[] column_schemas);
 		public abstract void set_value (Dee.ModelIter iter, uint column, GLib.Variant value);
 		public virtual signal void changeset_finished ();
 		public virtual signal void changeset_started ();
@@ -306,7 +307,7 @@ namespace Dee {
 		public static void register_parser (GLib.Type type, GLib.VariantType vtype, Dee.SerializableParseFunc parse_func);
 		public abstract GLib.Variant serialize ();
 	}
-	[CCode (cheader_filename = "dee.h")]
+	[CCode (cheader_filename = "dee.h", has_type_id = false)]
 	public struct Filter {
 		[CCode (cname = "destroy")]
 		public GLib.DestroyNotify destroy_notify;
