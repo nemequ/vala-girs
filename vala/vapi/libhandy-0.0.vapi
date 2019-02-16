@@ -280,7 +280,8 @@ namespace Hdy {
 		NONE,
 		CROSSFADE,
 		SLIDE,
-		OVER
+		OVER,
+		UNDER
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_LEAFLET_MODE_TRANSITION_TYPE_", type_id = "hdy_leaflet_mode_transition_type_get_type ()")]
 	public enum LeafletModeTransitionType {

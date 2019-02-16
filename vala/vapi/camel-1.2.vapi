@@ -1252,7 +1252,7 @@ namespace Camel {
 		[Version (since = "2.22")]
 		public unowned string preface ();
 		public void push_state (Camel.MimeParserState newstate, string boundary);
-		public ssize_t read ([CCode (array_length = false)] out string[] databuffer, ssize_t len) throws GLib.Error;
+		public ssize_t read ([CCode (array_length = false)] out uint8[] databuffer, ssize_t len) throws GLib.Error;
 		public void scan_from (bool scan_from);
 		public void scan_pre_from (bool scan_pre_from);
 		[Version (since = "2.22")]
@@ -1325,7 +1325,7 @@ namespace Camel {
 		public unowned string get_postface ();
 		[Version (since = "3.12")]
 		public unowned string get_preface ();
-		public virtual void set_boundary (string boundary);
+		public virtual void set_boundary (string? boundary);
 		public void set_postface (string postface);
 		public void set_preface (string preface);
 	}
@@ -2000,13 +2000,13 @@ namespace Camel {
 		public StreamMem ();
 		[Version (since = "2.32")]
 		public unowned GLib.ByteArray get_byte_array ();
-		public void set_buffer ([CCode (array_length_cname = "len", array_length_pos = 1.1, array_length_type = "gsize")] string[] buffer);
-		public void set_byte_array (GLib.ByteArray buffer);
+		public void set_buffer ([CCode (array_length_cname = "len", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] buffer);
+		public void set_byte_array (owned GLib.ByteArray buffer);
 		public void set_secure ();
 		[CCode (has_construct_function = false, type = "CamelStream*")]
-		public StreamMem.with_buffer ([CCode (array_length_cname = "len", array_length_pos = 1.1, array_length_type = "gsize")] string[] buffer);
+		public StreamMem.with_buffer ([CCode (array_length_cname = "len", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] buffer);
 		[CCode (has_construct_function = false, type = "CamelStream*")]
-		public StreamMem.with_byte_array (GLib.ByteArray buffer);
+		public StreamMem.with_byte_array (owned GLib.ByteArray buffer);
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_stream_null_get_type ()")]
 	public class StreamNull : Camel.Stream, GLib.Seekable {

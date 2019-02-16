@@ -882,6 +882,7 @@ namespace GVirConfig {
 		[CCode (has_construct_function = false)]
 		public StorageVolTarget.from_xml (string xml) throws GLib.Error;
 		public void set_compat (string? compat);
+		public void set_features (uint64 features);
 		public void set_format (string format);
 		public void set_permissions (GVirConfig.StoragePermissions? perms);
 	}
@@ -1194,6 +1195,11 @@ namespace GVirConfig {
 		ISCSI,
 		SCSI,
 		MPATH
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_STORAGE_VOL_TARGET_FEATURE_LAZY_", type_id = "gvir_config_storage_vol_target_features_get_type ()")]
+	[Flags]
+	public enum StorageVolTargetFeatures {
+		REFCOUNT
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h")]
 	public static void init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref unowned string[]? argv);

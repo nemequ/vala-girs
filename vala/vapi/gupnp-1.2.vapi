@@ -71,7 +71,7 @@ namespace GUPnP {
 		public GLib.SocketFamily family { get; construct; }
 		public uint port { get; construct; }
 		[Version (since = "1.1.2")]
-		public GLib.SocketFamily uda_version { get; construct; }
+		public GSSDP.UDAVersion uda_version { get; construct; }
 		public GUPnP.WhiteList white_list { get; }
 		public signal void context_available (GUPnP.Context context);
 		public signal void context_unavailable (GUPnP.Context context);
