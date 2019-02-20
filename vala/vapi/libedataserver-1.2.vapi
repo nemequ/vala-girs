@@ -1181,6 +1181,8 @@ namespace E {
 		public unowned string get_resource_query ();
 		[Version (since = "3.8")]
 		public unowned string get_ssl_trust ();
+		[Version (since = "3.32")]
+		public E.TrustPromptResponse get_ssl_trust_response ();
 		public void set_avoid_ifmatch (bool avoid_ifmatch);
 		public void set_calendar_auto_schedule (bool calendar_auto_schedule);
 		[Version (since = "3.30")]
@@ -1192,6 +1194,8 @@ namespace E {
 		public void set_soup_uri (Soup.URI soup_uri);
 		[Version (since = "3.8")]
 		public void set_ssl_trust (string? ssl_trust);
+		[Version (since = "3.32")]
+		public void set_ssl_trust_response (E.TrustPromptResponse response);
 		[Version (since = "3.8")]
 		public void unset_temporary_ssl_trust ();
 		[Version (since = "3.16")]
@@ -1312,6 +1316,8 @@ namespace E {
 		public Soup.RequestHTTP new_request (string method, string? uri) throws GLib.Error;
 		public bool options_sync (string? uri, out GLib.HashTable<void*,void*> out_capabilities, out GLib.HashTable<void*,void*> out_allows, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool post_sync (string? uri, string data, size_t data_length, owned string? out_content_type, owned GLib.ByteArray? out_content, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.32")]
+		public bool post_with_content_type_sync (string? uri, string data, size_t data_length, string? in_content_type, owned string? out_content_type, owned GLib.ByteArray? out_content, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool principal_property_search_sync (string? uri, bool apply_to_principal_collection_set, string? match_ns_uri, string match_property, string match_value, out GLib.SList<E.WebDAVResource> out_principals, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool proppatch_sync (string? uri, E.XmlDocument xml, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool put_data_sync (string uri, string? etag, string content_type, string bytes, size_t length, out string? out_href, out string? out_etag, GLib.Cancellable? cancellable = null) throws GLib.Error;

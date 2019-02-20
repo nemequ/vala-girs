@@ -5373,7 +5373,6 @@ namespace NM {
 		NO_ERRORS
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_802_1X_AUTH_FLAGS_", type_id = "nm_setting_802_1x_auth_flags_get_type ()")]
-	[Flags]
 	[Version (since = "1.8")]
 	public enum Setting8021xAuthFlags {
 		NONE,
@@ -5530,7 +5529,8 @@ namespace NM {
 		ARP,
 		MAGIC,
 		DEFAULT,
-		IGNORE
+		IGNORE,
+		EXCLUSIVE_FLAGS
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_WIRELESS_POWERSAVE_", type_id = "nm_setting_wireless_powersave_get_type ()")]
 	public enum SettingWirelessPowersave {
@@ -5576,6 +5576,7 @@ namespace NM {
 		@4WAY_HANDSHAKE,
 		RFKILL_RELEASE,
 		TCP,
+		ALL,
 		DEFAULT,
 		IGNORE
 	}

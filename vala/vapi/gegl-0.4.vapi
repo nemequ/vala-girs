@@ -321,6 +321,7 @@ namespace Gegl {
 		public int calc_y_for_x (double x, out double y);
 		public void clear ();
 		public double closest_point (double x, double y, out double on_path_x, out double on_path_y, out int node_pos_before);
+		public void dirty ();
 		public void @foreach (Gegl.NodeFunction each_item);
 		public void foreach_flat (Gegl.NodeFunction each_item);
 		public void freeze ();

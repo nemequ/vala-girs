@@ -77,7 +77,6 @@ namespace Gda {
 		public Column ();
 		public Gda.Column copy ();
 		public bool get_allow_null ();
-		public unowned GLib.Value? get_attribute (string attribute);
 		public bool get_auto_increment ();
 		public unowned string get_dbms_type ();
 		public unowned GLib.Value? get_default_value ();
@@ -86,7 +85,6 @@ namespace Gda {
 		public unowned string get_name ();
 		public int get_position ();
 		public void set_allow_null (bool allow);
-		public void set_attribute (string attribute, GLib.Value? value, GLib.DestroyNotify? destroy);
 		public void set_auto_increment (bool is_auto);
 		public void set_dbms_type (string dbms_type);
 		public void set_default_value (GLib.Value? default_value);
@@ -95,7 +93,10 @@ namespace Gda {
 		public void set_name (string name);
 		public void set_position (int position);
 		[NoAccessorMethod]
+		public string desc { owned get; set; }
+		[NoAccessorMethod]
 		public string id { owned get; set; }
+		public string name { get; set; }
 		public virtual signal void g_type_changed (GLib.Type old_type, GLib.Type new_type);
 		public virtual signal void name_changed (string old_name);
 	}
@@ -399,6 +400,19 @@ namespace Gda {
 		[NoAccessorMethod]
 		public bool use_rdn { get; set; }
 	}
+	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_data_model_select_get_type ()")]
+	public class DataModelSelect : GLib.Object, Gda.DataModel {
+		[CCode (has_construct_function = false)]
+		public DataModelSelect (Gda.Connection cnc, Gda.Statement stm, Gda.Set? @params);
+		[CCode (has_construct_function = false)]
+		public DataModelSelect.from_string (Gda.Connection cnc, string sql);
+		public Gda.Set get_parameters ();
+		public bool is_valid ();
+		public void set_parameters (Gda.Set @params);
+		[NoAccessorMethod]
+		public bool valid { get; }
+		public virtual signal void updated ();
+	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_data_pivot_get_type ()")]
 	public class DataPivot : GLib.Object, Gda.DataModel {
 		[CCode (has_construct_function = false)]
@@ -469,10 +483,7 @@ namespace Gda {
 		public virtual signal GLib.Error validate_row_changes (int row, int proxied_row);
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_data_select_get_type ()")]
-	public abstract class DataSelect : GLib.Object, Gda.DataModel {
-		public int advertized_nrows;
-		public int nb_stored_rows;
-		public weak Gda.PStmt prep_stmt;
+	public class DataSelect : GLib.Object, Gda.DataModel {
 		[CCode (has_construct_function = false)]
 		protected DataSelect ();
 		public bool compute_columns_attributes () throws GLib.Error;
@@ -494,16 +505,12 @@ namespace Gda {
 		public unowned Gda.Connection get_connection ();
 		[Version (since = "5.2.0")]
 		public bool prepare_for_offline () throws GLib.Error;
-		[Version (since = "4.2")]
-		public bool rerun () throws GLib.Error;
 		public bool set_modification_statement (Gda.Statement mod_stmt) throws GLib.Error;
 		public bool set_modification_statement_sql (string sql) throws GLib.Error;
 		public bool set_row_selection_condition (Gda.SqlExpr expr) throws GLib.Error;
 		public bool set_row_selection_condition_sql (string sql_where) throws GLib.Error;
 		[NoWrapper]
 		public virtual bool store_all () throws GLib.Error;
-		[NoAccessorMethod]
-		public bool auto_reset { get; set; }
 		public Gda.Connection connection { get; construct; }
 		[NoAccessorMethod]
 		public Gda.Statement delete_stmt { owned get; set; }
@@ -822,7 +829,7 @@ namespace Gda {
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_holder_get_type ()")]
 	public class Holder : GLib.Object, Gda.Lockable {
 		[CCode (has_construct_function = false)]
-		public Holder (GLib.Type type);
+		public Holder (GLib.Type type, string id);
 		[NoWrapper]
 		public virtual void att_changed (string att_name, GLib.Value att_value);
 		public Gda.Holder copy ();
@@ -831,7 +838,6 @@ namespace Gda {
 		[Version (since = "4.2.10")]
 		public void force_invalid_e (owned GLib.Error? error);
 		public string get_alphanum_id ();
-		public unowned GLib.Value? get_attribute (string attribute);
 		public unowned Gda.Holder get_bind ();
 		public unowned GLib.Value? get_default_value ();
 		public GLib.Type get_g_type ();
@@ -843,7 +849,6 @@ namespace Gda {
 		public bool is_valid ();
 		[Version (since = "4.2.10")]
 		public bool is_valid_e () throws GLib.Error;
-		public void set_attribute (string attribute, GLib.Value value, GLib.DestroyNotify destroy);
 		public bool set_bind (Gda.Holder bind_to) throws GLib.Error;
 		public void set_default_value (GLib.Value value);
 		public void set_not_null (bool not_null);
@@ -866,6 +871,8 @@ namespace Gda {
 		public string name { owned get; set; }
 		public bool not_null { get; set; }
 		[NoAccessorMethod]
+		public string plugin { owned get; set; }
+		[NoAccessorMethod]
 		public Gda.Holder simple_bind { owned get; set; }
 		[NoAccessorMethod]
 		public int source_column { get; set; }
@@ -874,7 +881,6 @@ namespace Gda {
 		[NoAccessorMethod]
 		[Version (since = "5.2.0")]
 		public bool validate_changes { get; set; }
-		public signal void attribute_changed (string att_name, GLib.Value att_value);
 		public virtual signal void changed ();
 		public virtual signal void source_changed ();
 		public virtual signal GLib.Error validate_change (GLib.Value new_value);
@@ -1691,6 +1697,9 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public void free ();
 		[CCode (has_construct_function = false)]
+		[Version (since = "6.0")]
+		public Time.from_date_time (GLib.DateTime dt);
+		[CCode (has_construct_function = false)]
 		public Time.from_values (ushort hour, ushort minute, ushort second, ulong fraction, long timezone);
 		[Version (since = "6.0")]
 		public ulong get_fraction ();
@@ -1703,7 +1712,13 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public long get_timezone ();
 		[Version (since = "6.0")]
+		public GLib.TimeZone get_tz ();
+		[Version (since = "6.0")]
 		public void set_fraction (ulong fraction);
+		[Version (since = "6.0")]
+		public void set_from_date_time (GLib.DateTime dt);
+		[Version (since = "6.0")]
+		public void set_from_values (ushort hour, ushort minute, ushort second, ulong fraction, long timezone);
 		[Version (since = "6.0")]
 		public void set_hour (ushort hour);
 		[Version (since = "6.0")]
@@ -1712,7 +1727,15 @@ namespace Gda {
 		public void set_second (ushort second);
 		[Version (since = "6.0")]
 		public void set_timezone (long timezone);
-		[Version (since = "4.2")]
+		[Version (since = "6.0")]
+		public string to_string ();
+		[Version (since = "6.0")]
+		public string to_string_local ();
+		[Version (since = "6.0")]
+		public string to_string_utc ();
+		[Version (since = "6.0")]
+		public void to_timezone (GLib.TimeZone ntz);
+		[Version (deprecated = true, deprecated_since = "6.0", since = "4.2")]
 		public bool valid ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_transaction_status_get_type ()")]
@@ -3015,6 +3038,7 @@ namespace Gda {
 		FILE_EXIST_ERROR,
 		XML_FORMAT_ERROR,
 		TRUNCATED_ERROR,
+		INVALID,
 		OTHER_ERROR;
 		public static GLib.Quark quark ();
 	}

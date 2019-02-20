@@ -44,6 +44,7 @@ namespace Rsvg {
 		public bool get_dimensions_sub (out Rsvg.DimensionData dimension_data, string? id);
 		[Version (since = "2.46")]
 		public bool get_geometry_sub (out Rsvg.Rectangle ink_rect, out Rsvg.Rectangle logical_rect, string? id);
+		public void get_intrinsic_dimensions (bool out_has_width, Rsvg.Length out_width, bool out_has_height, Rsvg.Length out_height, bool out_has_viewbox, Rsvg.Rectangle out_viewbox);
 		[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]
 		public unowned string get_metadata ();
 		public Gdk.Pixbuf? get_pixbuf ();
@@ -116,6 +117,11 @@ namespace Rsvg {
 		public double ex;
 	}
 	[CCode (cheader_filename = "librsvg/rsvg.h", has_type_id = false)]
+	public struct Length {
+		public double length;
+		public Rsvg.Unit unit;
+	}
+	[CCode (cheader_filename = "librsvg/rsvg.h", has_type_id = false)]
 	[Version (deprecated = true, deprecated_since = "2.46.")]
 	public struct PositionData {
 		public int x;
@@ -135,6 +141,18 @@ namespace Rsvg {
 		FLAGS_NONE,
 		FLAG_UNLIMITED,
 		FLAG_KEEP_IMAGE_DATA
+	}
+	[CCode (cheader_filename = "librsvg/rsvg.h", cprefix = "RSVG_UNIT_", has_type_id = false)]
+	public enum Unit {
+		PERCENT,
+		PX,
+		EM,
+		EX,
+		IN,
+		CM,
+		MM,
+		PT,
+		PC
 	}
 	[CCode (cheader_filename = "librsvg/rsvg.h", cprefix = "RSVG_ERROR_")]
 	public errordomain Error {
