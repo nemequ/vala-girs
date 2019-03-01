@@ -1413,8 +1413,6 @@ namespace NM {
 		public const string LAST_SCAN;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_MODE")]
 		public const string MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_P2P_GROUP_OWNER")]
-		public const string P2P_GROUP_OWNER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_P2P_HW_ADDRESS")]
 		public const string P2P_HW_ADDRESS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_P2P_PEERS")]
@@ -1460,17 +1458,13 @@ namespace NM {
 	public class DeviceWifiP2P : NM.Device, GLib.AsyncInitable, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected DeviceWifiP2P ();
-		public bool get_group_owner ();
 		public unowned string get_hw_address ();
 		public unowned NM.WifiP2PPeer get_peer_by_path (string path);
 		public unowned GLib.GenericArray<NM.WifiP2PPeer> get_peers ();
 		public async bool start_find (GLib.Variant? options, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool stop_find (GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool group_owner { get; }
 		public string hw_address { get; }
 		public GLib.GenericArray<NM.WifiP2PPeer> peers { get; }
-		[NoAccessorMethod]
-		public GLib.Variant wfdies { owned get; }
 		public signal void peer_added (GLib.Object peer);
 		public signal void peer_removed (GLib.Object peer);
 	}
@@ -4073,14 +4067,19 @@ namespace NM {
 		public const string PEER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIFI_P2P_SETTING_NAME")]
 		public const string SETTING_NAME;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIFI_P2P_WFD_IES")]
+		public const string WFD_IES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIFI_P2P_WPS_METHOD")]
 		public const string WPS_METHOD;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingWifiP2P ();
 		public unowned string get_peer ();
+		public unowned GLib.Bytes get_wfd_ies ();
 		public NM.SettingWirelessSecurityWpsMethod get_wps_method ();
 		[NoAccessorMethod]
 		public string peer { owned get; set; }
+		[NoAccessorMethod]
+		public GLib.Bytes wfd_ies { owned get; set; }
 		[NoAccessorMethod]
 		public uint wps_method { get; set; }
 	}
@@ -4105,6 +4104,31 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (deprecated = true, deprecated_since = "1.2")]
 		public string network_name { owned get; set; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_wireguard", type_id = "nm_setting_wireguard_get_type ()")]
+	[Version (since = "1.16")]
+	public class SettingWireGuard : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		public SettingWireGuard ();
+		public void append_peer (NM.WireGuardPeer peer);
+		public uint clear_peers ();
+		public uint32 get_fwmark ();
+		public uint16 get_listen_port ();
+		public unowned NM.WireGuardPeer get_peer (uint idx);
+		public unowned NM.WireGuardPeer get_peer_by_public_key (string public_key, out uint out_idx);
+		public uint get_peers_len ();
+		public unowned string get_private_key ();
+		public NM.SettingSecretFlags get_private_key_flags ();
+		public bool remove_peer (uint idx);
+		public void set_peer (NM.WireGuardPeer peer, uint idx);
+		[NoAccessorMethod]
+		public uint fwmark { get; set; }
+		[NoAccessorMethod]
+		public uint listen_port { get; set; }
+		[NoAccessorMethod]
+		public string private_key { owned get; set; }
+		[NoAccessorMethod]
+		public NM.SettingSecretFlags private_key_flags { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_wired_get_type ()")]
 	public class SettingWired : NM.Setting {
@@ -4888,6 +4912,35 @@ namespace NM {
 		public NM.WimaxNspNetworkType network_type { get; }
 		public uint signal_quality { get; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "wireguard_peer", ref_function = "nm_wireguard_peer_ref", type_id = "nm_wireguard_peer_get_type ()", unref_function = "nm_wireguard_peer_unref")]
+	[Compact]
+	[Version (since = "1.16")]
+	public class WireGuardPeer {
+		[CCode (has_construct_function = false)]
+		public WireGuardPeer ();
+		public bool append_allowed_ip (string allowed_ip, bool accept_invalid);
+		public void clear_allowed_ips ();
+		public int cmp (NM.WireGuardPeer? b, NM.SettingCompareFlags compare_flags);
+		public unowned string get_allowed_ip (uint idx, bool? out_is_valid);
+		public uint get_allowed_ips_len ();
+		public unowned string get_endpoint ();
+		public uint16 get_persistent_keepalive ();
+		public unowned string get_preshared_key ();
+		public NM.SettingSecretFlags get_preshared_key_flags ();
+		public unowned string get_public_key ();
+		public bool is_sealed ();
+		public bool is_valid (bool check_non_secrets, bool check_secrets) throws GLib.Error;
+		public NM.WireGuardPeer new_clone (bool with_secrets);
+		public NM.WireGuardPeer @ref ();
+		public bool remove_allowed_ip (uint idx);
+		public void seal ();
+		public void set_endpoint (string endpoint);
+		public void set_persistent_keepalive (uint16 persistent_keepalive);
+		public void set_preshared_key (string? preshared_key);
+		public void set_preshared_key_flags (NM.SettingSecretFlags preshared_key_flags);
+		public void set_public_key (string? public_key);
+		public void unref ();
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_cname = "NMConnectionInterface", type_id = "nm_connection_get_type ()")]
 	public interface Connection : GLib.Object {
 		public void add_setting (owned NM.Setting setting);
@@ -5124,6 +5177,7 @@ namespace NM {
 		CHECKPOINT_ROLLBACK,
 		ENABLE_DISABLE_STATISTICS,
 		ENABLE_DISABLE_CONNECTIVITY_CHECK,
+		WIFI_SCAN,
 		LAST
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_PERMISSION_RESULT_", type_id = "nm_client_permission_result_get_type ()")]
@@ -5529,8 +5583,7 @@ namespace NM {
 		ARP,
 		MAGIC,
 		DEFAULT,
-		IGNORE,
-		EXCLUSIVE_FLAGS
+		IGNORE
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_WIRELESS_POWERSAVE_", type_id = "nm_setting_wireless_powersave_get_type ()")]
 	public enum SettingWirelessPowersave {
@@ -6285,6 +6338,18 @@ namespace NM {
 	public const string SETTING_USER_DATA;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_SETTING_NAME")]
 	public const string SETTING_USER_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_FWMARK")]
+	public const string SETTING_WIREGUARD_FWMARK;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_LISTEN_PORT")]
+	public const string SETTING_WIREGUARD_LISTEN_PORT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PEERS")]
+	public const string SETTING_WIREGUARD_PEERS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PRIVATE_KEY")]
+	public const string SETTING_WIREGUARD_PRIVATE_KEY;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PRIVATE_KEY_FLAGS")]
+	public const string SETTING_WIREGUARD_PRIVATE_KEY_FLAGS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_SETTING_NAME")]
+	public const string SETTING_WIREGUARD_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_CHANNEL")]
 	public const string SETTING_WPAN_CHANNEL;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_CHANNEL_DEFAULT")]
@@ -6339,6 +6404,22 @@ namespace NM {
 	public const string WIFI_P2P_PEER_STRENGTH;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_WFD_IES")]
 	public const string WIFI_P2P_PEER_WFD_IES;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_ALLOWED_IPS")]
+	public const string WIREGUARD_PEER_ATTR_ALLOWED_IPS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_ENDPOINT")]
+	public const string WIREGUARD_PEER_ATTR_ENDPOINT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_PERSISTENT_KEEPALIVE")]
+	public const string WIREGUARD_PEER_ATTR_PERSISTENT_KEEPALIVE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_PRESHARED_KEY")]
+	public const string WIREGUARD_PEER_ATTR_PRESHARED_KEY;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_PRESHARED_KEY_FLAGS")]
+	public const string WIREGUARD_PEER_ATTR_PRESHARED_KEY_FLAGS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_PUBLIC_KEY")]
+	public const string WIREGUARD_PEER_ATTR_PUBLIC_KEY;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PUBLIC_KEY_LEN")]
+	public const int WIREGUARD_PUBLIC_KEY_LEN;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_SYMMETRIC_KEY_LEN")]
+	public const int WIREGUARD_SYMMETRIC_KEY_LEN;
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (since = "1.14")]
 	public static bool ethtool_optname_is_feature (string optname);

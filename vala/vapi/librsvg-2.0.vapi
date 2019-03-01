@@ -80,7 +80,7 @@ namespace Rsvg {
 		public bool write ([CCode (array_length_cname = "count", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] buf) throws GLib.Error;
 		public string base_uri { get; set construct; }
 		[NoAccessorMethod]
-		[Version (deprecated = true, deprecated_since = "2.36")]
+		[Version (deprecated = true, deprecated_since = "2.36.")]
 		public string desc { owned get; }
 		[NoAccessorMethod]
 		public double dpi_x { get; set construct; }
@@ -99,10 +99,10 @@ namespace Rsvg {
 		[Version (deprecated = true, deprecated_since = "2.46.")]
 		public int height { get; }
 		[NoAccessorMethod]
-		[Version (deprecated = true, deprecated_since = "2.36")]
+		[Version (deprecated = true, deprecated_since = "2.36.")]
 		public string metadata { owned get; }
 		[NoAccessorMethod]
-		[Version (deprecated = true, deprecated_since = "2.36")]
+		[Version (deprecated = true, deprecated_since = "2.36.")]
 		public string title { owned get; }
 		[NoAccessorMethod]
 		[Version (deprecated = true, deprecated_since = "2.46.")]

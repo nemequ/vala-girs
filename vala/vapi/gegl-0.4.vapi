@@ -169,6 +169,7 @@ namespace Gegl {
 		public bool equal (Gegl.Matrix3 matrix2);
 		public void identity ();
 		public void invert ();
+		public bool is_affine ();
 		public bool is_identity ();
 		public bool is_scale ();
 		public bool is_translate ();
@@ -221,6 +222,8 @@ namespace Gegl {
 		public void set_property (string property_name, GLib.Value value);
 		public string to_xml (string path_root);
 		public string to_xml_full (Gegl.Node? tail, string path_root);
+		[NoAccessorMethod]
+		public Gegl.CachePolicy cache_policy { get; set construct; }
 		[NoAccessorMethod]
 		public bool dont_cache { get; set construct; }
 		[NoAccessorMethod]
@@ -664,6 +667,15 @@ namespace Gegl {
 		DEFAULT,
 		CACHE,
 		DIRTY
+	}
+	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_cache_policy_get_type ()")]
+	public enum CachePolicy {
+		[CCode (cname = "Auto")]
+		AUTO,
+		[CCode (cname = "Never")]
+		NEVER,
+		[CCode (cname = "Always")]
+		ALWAYS
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_distance_metric_get_type ()")]
 	public enum DistanceMetric {

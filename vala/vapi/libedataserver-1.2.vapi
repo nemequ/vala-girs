@@ -1339,6 +1339,8 @@ namespace E {
 		public void add_attribute_double (string? ns_href, string name, double value);
 		public void add_attribute_int (string? ns_href, string name, int64 value);
 		public void add_attribute_time (string? ns_href, string name, long value);
+		[Version (since = "3.32")]
+		public void add_attribute_time_ical (string? ns_href, string name, long value);
 		public void add_empty_element (string? ns_href, string name);
 		public void end_element ();
 		public string get_content (out size_t out_length);
