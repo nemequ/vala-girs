@@ -1186,7 +1186,8 @@ namespace GMime {
 		CRIT_CONFLICTING_HEADER,
 		CRIT_CONFLICTING_PARAMETER,
 		CRIT_MULTIPART_WITHOUT_BOUNDARY,
-		WARN_INVALID_PARAMETER
+		WARN_INVALID_PARAMETER,
+		WARN_INVALID_ADDRESS_LIST
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_PUBKEY_ALGO_", has_type_id = false)]
 	public enum PubKeyAlgo {

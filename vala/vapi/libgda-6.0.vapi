@@ -389,11 +389,11 @@ namespace Gda {
 		[NoAccessorMethod]
 		public string @base { owned get; construct; }
 		[NoAccessorMethod]
-		public Gda.Connection cnc { owned get; construct; }
-		[NoAccessorMethod]
 		public string filter { owned get; construct; }
 		[NoAccessorMethod]
 		public int scope { get; construct; }
+		[NoAccessorMethod]
+		public bool use_rdn { get; set; }
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_data_model_select_get_type ()")]
 	public class DataModelSelect : GLib.Object, Gda.DataModel {

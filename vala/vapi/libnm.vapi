@@ -4114,8 +4114,10 @@ namespace NM {
 		public uint clear_peers ();
 		public uint32 get_fwmark ();
 		public uint16 get_listen_port ();
+		public uint32 get_mtu ();
 		public unowned NM.WireGuardPeer get_peer (uint idx);
 		public unowned NM.WireGuardPeer get_peer_by_public_key (string public_key, out uint out_idx);
+		public bool get_peer_routes ();
 		public uint get_peers_len ();
 		public unowned string get_private_key ();
 		public NM.SettingSecretFlags get_private_key_flags ();
@@ -4125,6 +4127,10 @@ namespace NM {
 		public uint fwmark { get; set; }
 		[NoAccessorMethod]
 		public uint listen_port { get; set; }
+		[NoAccessorMethod]
+		public uint mtu { get; set; }
+		[NoAccessorMethod]
+		public bool peer_routes { get; set; }
 		[NoAccessorMethod]
 		public string private_key { owned get; set; }
 		[NoAccessorMethod]
@@ -6342,8 +6348,12 @@ namespace NM {
 	public const string SETTING_WIREGUARD_FWMARK;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_LISTEN_PORT")]
 	public const string SETTING_WIREGUARD_LISTEN_PORT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_MTU")]
+	public const string SETTING_WIREGUARD_MTU;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PEERS")]
 	public const string SETTING_WIREGUARD_PEERS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PEER_ROUTES")]
+	public const string SETTING_WIREGUARD_PEER_ROUTES;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PRIVATE_KEY")]
 	public const string SETTING_WIREGUARD_PRIVATE_KEY;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PRIVATE_KEY_FLAGS")]

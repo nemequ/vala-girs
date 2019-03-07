@@ -156,11 +156,11 @@ namespace Secret {
 		public async GLib.Variant prompt (Secret.Prompt prompt, GLib.VariantType? return_type, GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoWrapper]
 		public virtual async GLib.Variant prompt_async (Secret.Prompt prompt, GLib.VariantType return_type, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async GLib.Variant prompt_at_dbus_path (string prompt_path, GLib.VariantType? return_type, GLib.Cancellable? cancellable) throws GLib.Error;
-		public GLib.Variant prompt_at_dbus_path_sync (string prompt_path, GLib.Cancellable? cancellable, GLib.VariantType? return_type) throws GLib.Error;
+		public async GLib.Variant? prompt_at_dbus_path (string prompt_path, GLib.VariantType? return_type, GLib.Cancellable? cancellable) throws GLib.Error;
+		public GLib.Variant? prompt_at_dbus_path_sync (string prompt_path, GLib.Cancellable? cancellable, GLib.VariantType? return_type) throws GLib.Error;
 		public virtual GLib.Variant prompt_sync (Secret.Prompt prompt, GLib.Cancellable? cancellable, GLib.VariantType return_type) throws GLib.Error;
-		public async string read_alias_dbus_path (string alias, GLib.Cancellable? cancellable) throws GLib.Error;
-		public string read_alias_dbus_path_sync (string alias, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async string? read_alias_dbus_path (string alias, GLib.Cancellable? cancellable) throws GLib.Error;
+		public string? read_alias_dbus_path_sync (string alias, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async GLib.List<Secret.Item> search (Secret.Schema? schema, GLib.HashTable<string,string> attributes, Secret.SearchFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool search_for_dbus_paths (Secret.Schema? schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] unlocked, [CCode (array_length = false, array_null_terminated = true)] out string[] locked) throws GLib.Error;
 		public bool search_for_dbus_paths_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] unlocked, [CCode (array_length = false, array_null_terminated = true)] out string[] locked) throws GLib.Error;

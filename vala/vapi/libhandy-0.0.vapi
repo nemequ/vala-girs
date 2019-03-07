@@ -155,13 +155,16 @@ namespace Hdy {
 		public ExpanderRow ();
 		[Version (since = "0.0.6")]
 		public bool get_enable_expansion ();
+		public bool get_expanded ();
 		[Version (since = "0.0.6")]
 		public bool get_show_enable_switch ();
 		[Version (since = "0.0.6")]
 		public void set_enable_expansion (bool enable_expansion);
+		public void set_expanded (bool expanded);
 		[Version (since = "0.0.6")]
 		public void set_show_enable_switch (bool show_enable_switch);
 		public bool enable_expansion { get; set; }
+		public bool expanded { get; set; }
 		public bool show_enable_switch { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_header_group_get_type ()")]
