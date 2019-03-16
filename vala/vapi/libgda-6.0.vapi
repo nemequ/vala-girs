@@ -369,8 +369,6 @@ namespace Gda {
 		[NoAccessorMethod]
 		public Gda.DataModel data_model { owned get; set construct; }
 		[NoAccessorMethod]
-		public Gda.DataModel forced_model { owned get; set; }
-		[NoAccessorMethod]
 		public bool update_model { get; set; }
 		public virtual signal void end_of_data ();
 		public virtual signal void row_changed (int row);
@@ -831,8 +829,6 @@ namespace Gda {
 	public class Holder : GLib.Object, Gda.Lockable {
 		[CCode (has_construct_function = false)]
 		public Holder (GLib.Type type, string id);
-		[NoWrapper]
-		public virtual void att_changed (string att_name, GLib.Value att_value);
 		public Gda.Holder copy ();
 		public static GLib.Quark error_quark ();
 		public void force_invalid ();
@@ -884,6 +880,7 @@ namespace Gda {
 		public bool validate_changes { get; set; }
 		public virtual signal void changed ();
 		public virtual signal void source_changed ();
+		public virtual signal void to_default ();
 		public virtual signal GLib.Error validate_change (GLib.Value new_value);
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gda_meta_context_get_type ()")]
@@ -1387,7 +1384,7 @@ namespace Gda {
 		[Version (since = "4.2")]
 		public Gda.SqlBuilderId add_cond_v (Gda.SqlOperatorType op, [CCode (array_length_cname = "op_ids_size", array_length_pos = 2.1)] Gda.SqlBuilderId[] op_ids);
 		[Version (since = "4.2")]
-		public Gda.SqlBuilderId add_expr_value (Gda.DataHandler? dh, GLib.Value? value);
+		public Gda.SqlBuilderId add_expr_value (GLib.Value? value);
 		[Version (since = "4.2")]
 		public Gda.SqlBuilderId add_field_id (string field_name, string? table_name = null);
 		[Version (since = "4.2")]

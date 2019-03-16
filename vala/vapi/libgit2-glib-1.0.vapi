@@ -570,7 +570,7 @@ namespace Ggit {
 		public bool equal (Ggit.OId b);
 		public void free ();
 		[CCode (has_construct_function = false)]
-		public OId.from_raw (uint8 raw);
+		public OId.from_raw ([CCode (array_length = false, array_null_terminated = true)] uint8[] raw);
 		[CCode (has_construct_function = false)]
 		public OId.from_string (string str);
 		public bool has_prefix (string prefix);
@@ -625,7 +625,9 @@ namespace Ggit {
 	public class PushOptions : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public PushOptions ();
+		public unowned Ggit.RemoteCallbacks? get_callbacks ();
 		public int get_parallelism ();
+		public void set_callbacks (Ggit.RemoteCallbacks callbacks);
 		public void set_parallelism (int parallelism);
 		public int parallelism { get; set construct; }
 	}
@@ -740,6 +742,7 @@ namespace Ggit {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public Ggit.RemoteHead[]? list () throws GLib.Error;
 		public bool update_tips (Ggit.RemoteCallbacks callbacks, bool update_fetch_head, Ggit.RemoteDownloadTagsType tags_type, string? message) throws GLib.Error;
+		public bool upload ([CCode (array_length = false, array_null_terminated = true)] string[]? specs, Ggit.PushOptions push_options) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_remote_callbacks_get_type ()")]
 	public class RemoteCallbacks : GLib.Object {
