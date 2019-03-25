@@ -629,6 +629,7 @@ namespace Ggit {
 		public int get_parallelism ();
 		public void set_callbacks (Ggit.RemoteCallbacks callbacks);
 		public void set_parallelism (int parallelism);
+		public Ggit.RemoteCallbacks callbacks { get; set; }
 		public int parallelism { get; set construct; }
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_rebase_get_type ()")]

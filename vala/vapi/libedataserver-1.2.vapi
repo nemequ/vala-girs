@@ -1620,7 +1620,9 @@ namespace E {
 		CREATION_DATE,
 		LAST_MODIFIED,
 		DESCRIPTION,
-		COLOR
+		COLOR,
+		ONLY_CALENDAR,
+		ONLY_ADDRESSBOOK
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_LOCK_", has_type_id = false)]
 	public enum WebDAVLockScope {
