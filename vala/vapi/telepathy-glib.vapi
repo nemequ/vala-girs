@@ -2089,7 +2089,6 @@ namespace TelepathyGLib {
 	[Version (since = "0.7.3")]
 	public struct DBusPropertiesMixinClass {
 		public TelepathyGLib.DBusPropertiesMixinIfaceImpl interfaces;
-		public static void init (GLib.ObjectClass cls, size_t offset);
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_type_id = false)]
 	[Version (since = "0.7.3")]
@@ -4084,6 +4083,9 @@ namespace TelepathyGLib {
 	public static bool dbus_check_valid_object_path (string path) throws GLib.Error;
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark dbus_errors_quark ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[Version (since = "0.7.3")]
+	public static void dbus_properties_mixin_class_init (GLib.ObjectClass cls, size_t offset);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	[Version (since = "0.21.2")]
 	public static GLib.HashTable<weak string,weak GLib.Value?> dbus_properties_mixin_dup_all (GLib.Object self, string interface_name);

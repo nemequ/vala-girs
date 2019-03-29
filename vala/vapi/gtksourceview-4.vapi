@@ -76,7 +76,7 @@ namespace Gtk {
 		public Gtk.SourceStyleScheme style_scheme { get; set; }
 		public Gtk.SourceUndoManager undo_manager { get; set construct; }
 		[Version (since = "2.12")]
-		public virtual signal void bracket_matched (Gtk.TextIter iter, Gtk.SourceBracketMatchType state);
+		public virtual signal void bracket_matched (Gtk.TextIter? iter, Gtk.SourceBracketMatchType state);
 		public signal void highlight_updated (Gtk.TextIter start, Gtk.TextIter end);
 		[HasEmitter]
 		public virtual signal void redo ();

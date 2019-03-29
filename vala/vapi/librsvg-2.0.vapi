@@ -43,8 +43,8 @@ namespace Rsvg {
 		[Version (deprecated = true, deprecated_since = "2.46.", since = "2.22")]
 		public bool get_dimensions_sub (out Rsvg.DimensionData dimension_data, string? id);
 		[Version (since = "2.46")]
-		public bool get_geometry_sub (out Rsvg.Rectangle ink_rect, out Rsvg.Rectangle logical_rect, string? id);
-		public void get_intrinsic_dimensions (bool out_has_width, Rsvg.Length out_width, bool out_has_height, Rsvg.Length out_height, bool out_has_viewbox, Rsvg.Rectangle out_viewbox);
+		public bool get_geometry_for_element (string? id, Rsvg.Rectangle viewport, out Rsvg.Rectangle out_ink_rect, out Rsvg.Rectangle out_logical_rect) throws GLib.Error;
+		public void get_intrinsic_dimensions (out bool out_has_width, out Rsvg.Length out_width, out bool out_has_height, out Rsvg.Length out_height, out bool out_has_viewbox, out Rsvg.Rectangle out_viewbox);
 		[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]
 		public unowned string get_metadata ();
 		public Gdk.Pixbuf? get_pixbuf ();

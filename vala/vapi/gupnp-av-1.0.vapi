@@ -64,7 +64,7 @@ namespace GUPnP {
 		public string role { get; set; }
 		public Xml.Node* xml_node { get; construct; }
 	}
-	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h", type_id = "gupnp_didl_lite_create_class_get_type ()")]
+	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h", lower_case_csuffix = "didl_lite_create_class", type_id = "gupnp_didl_lite_create_class_get_type ()")]
 	public class DIDLLiteCreateClass : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected DIDLLiteCreateClass ();

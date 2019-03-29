@@ -408,6 +408,40 @@ namespace NM {
 		public bool vpn { get; }
 		public signal void state_changed (uint state, uint reason);
 	}
+	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_bridge_vlan_ref", type_id = "nm_bridge_vlan_get_type ()", unref_function = "nm_bridge_vlan_unref")]
+	[Compact]
+	public class BridgeVlan {
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.18")]
+		public BridgeVlan (uint16 vid);
+		[Version (since = "1.18")]
+		public int cmp (NM.BridgeVlan b);
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.18")]
+		public static NM.BridgeVlan from_str (string str) throws GLib.Error;
+		[Version (since = "1.18")]
+		public uint16 get_vid ();
+		[Version (since = "1.18")]
+		public bool is_pvid ();
+		[Version (since = "1.18")]
+		public bool is_sealed ();
+		[Version (since = "1.18")]
+		public bool is_untagged ();
+		[Version (since = "1.18")]
+		public NM.BridgeVlan new_clone ();
+		[Version (since = "1.18")]
+		public NM.BridgeVlan @ref ();
+		[Version (since = "1.18")]
+		public void seal ();
+		[Version (since = "1.18")]
+		public void set_pvid (bool value);
+		[Version (since = "1.18")]
+		public void set_untagged (bool value);
+		[Version (since = "1.18")]
+		public string to_str () throws GLib.Error;
+		[Version (since = "1.18")]
+		public void unref ();
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_checkpoint_get_type ()")]
 	public class Checkpoint : NM.Object, GLib.AsyncInitable, GLib.Initable {
 		[CCode (has_construct_function = false)]
@@ -1682,6 +1716,96 @@ namespace NM {
 		public void set_prefix (uint prefix);
 		public void unref ();
 	}
+	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_ip_routing_rule_ref", type_id = "nm_ip_routing_rule_get_type ()", unref_function = "nm_ip_routing_rule_unref")]
+	[Compact]
+	public class IPRoutingRule {
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.18")]
+		public IPRoutingRule (int addr_family);
+		[Version (since = "1.18")]
+		public int cmp (NM.IPRoutingRule? other);
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.18")]
+		public static NM.IPRoutingRule from_string (string str, NM.IPRoutingRuleAsStringFlags to_string_flags, GLib.HashTable<void*,void*>? extra_args) throws GLib.Error;
+		[Version (since = "1.18")]
+		public uint8 get_action ();
+		[Version (since = "1.18")]
+		public int get_addr_family ();
+		[Version (since = "1.18")]
+		public uint16 get_destination_port_end ();
+		[Version (since = "1.18")]
+		public uint16 get_destination_port_start ();
+		[Version (since = "1.18")]
+		public unowned string get_from ();
+		[Version (since = "1.18")]
+		public uint8 get_from_len ();
+		[Version (since = "1.18")]
+		public uint32 get_fwmark ();
+		[Version (since = "1.18")]
+		public uint32 get_fwmask ();
+		[Version (since = "1.18")]
+		public unowned string get_iifname ();
+		[Version (since = "1.18")]
+		public bool get_invert ();
+		[Version (since = "1.18")]
+		public uint8 get_ipproto ();
+		[Version (since = "1.18")]
+		public unowned string get_oifname ();
+		[Version (since = "1.18")]
+		public int64 get_priority ();
+		[Version (since = "1.18")]
+		public uint16 get_source_port_end ();
+		[Version (since = "1.18")]
+		public uint16 get_source_port_start ();
+		[Version (since = "1.18")]
+		public uint32 get_table ();
+		[Version (since = "1.18")]
+		public unowned string get_to ();
+		[Version (since = "1.18")]
+		public uint8 get_to_len ();
+		[Version (since = "1.18")]
+		public uint8 get_tos ();
+		[Version (since = "1.18")]
+		public bool is_sealed ();
+		[Version (since = "1.18")]
+		public NM.IPRoutingRule new_clone ();
+		[Version (since = "1.18")]
+		public NM.IPRoutingRule @ref ();
+		[Version (since = "1.18")]
+		public void seal ();
+		[Version (since = "1.18")]
+		public void set_action (uint8 action);
+		[Version (since = "1.18")]
+		public void set_destination_port (uint16 start, uint16 end);
+		[Version (since = "1.18")]
+		public void set_from (string? from, uint8 len);
+		[Version (since = "1.18")]
+		public void set_fwmark (uint32 fwmark, uint32 fwmask);
+		[Version (since = "1.18")]
+		public void set_iifname (string? iifname);
+		[Version (since = "1.18")]
+		public void set_invert (bool invert);
+		[Version (since = "1.18")]
+		public void set_ipproto (uint8 ipproto);
+		[Version (since = "1.18")]
+		public void set_oifname (string? oifname);
+		[Version (since = "1.18")]
+		public void set_priority (int64 priority);
+		[Version (since = "1.18")]
+		public void set_source_port (uint16 start, uint16 end);
+		[Version (since = "1.18")]
+		public void set_table (uint32 table);
+		[Version (since = "1.18")]
+		public void set_to (string? to, uint8 len);
+		[Version (since = "1.18")]
+		public void set_tos (uint8 tos);
+		[Version (since = "1.18")]
+		public string to_string (NM.IPRoutingRuleAsStringFlags to_string_flags, GLib.HashTable<void*,void*>? extra_args) throws GLib.Error;
+		[Version (since = "1.18")]
+		public void unref ();
+		[Version (since = "1.18")]
+		public bool validate () throws GLib.Error;
+	}
 	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_lldp_neighbor_ref", type_id = "nm_lldp_neighbor_get_type ()", unref_function = "nm_lldp_neighbor_unref")]
 	[Compact]
 	public class LldpNeighbor {
@@ -1697,6 +1821,8 @@ namespace NM {
 		public unowned GLib.VariantType get_attr_type (string name);
 		[Version (since = "1.2")]
 		public bool get_attr_uint_value (string name, out uint out_value);
+		[Version (since = "1.18")]
+		public unowned GLib.Variant get_attr_value (string name);
 		[Version (since = "1.2")]
 		public void @ref ();
 		[Version (since = "1.2")]
@@ -2302,14 +2428,26 @@ namespace NM {
 		public const string PORT_PRIORITY;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_PORT_SETTING_NAME")]
 		public const string PORT_SETTING_NAME;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_PORT_VLANS")]
+		public const string PORT_VLANS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_PRIORITY")]
 		public const string PRIORITY;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_STP")]
 		public const string STP;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_VLANS")]
+		public const string VLANS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_VLAN_DEFAULT_PVID")]
+		public const string VLAN_DEFAULT_PVID;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_VLAN_FILTERING")]
+		public const string VLAN_FILTERING;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingBridge ();
+		[Version (since = "1.18")]
+		public void add_vlan (NM.BridgeVlan vlan);
+		[Version (since = "1.18")]
+		public void clear_vlans ();
 		public uint32 get_ageing_time ();
 		public uint16 get_forward_delay ();
 		[Version (since = "1.10")]
@@ -2319,8 +2457,20 @@ namespace NM {
 		public uint16 get_max_age ();
 		[Version (since = "1.2")]
 		public bool get_multicast_snooping ();
+		[Version (since = "1.18")]
+		public uint get_num_vlans ();
 		public uint16 get_priority ();
 		public bool get_stp ();
+		[Version (since = "1.18")]
+		public unowned NM.BridgeVlan get_vlan (uint idx);
+		[Version (since = "1.18")]
+		public uint16 get_vlan_default_pvid ();
+		[Version (since = "1.18")]
+		public bool get_vlan_filtering ();
+		[Version (since = "1.18")]
+		public void remove_vlan (uint idx);
+		[Version (since = "1.18")]
+		public bool remove_vlan_by_vid (uint16 vid);
 		[NoAccessorMethod]
 		public uint ageing_time { get; set construct; }
 		[NoAccessorMethod]
@@ -2342,20 +2492,44 @@ namespace NM {
 		public uint priority { get; set construct; }
 		[NoAccessorMethod]
 		public bool stp { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.18")]
+		public uint vlan_default_pvid { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.18")]
+		public bool vlan_filtering { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.18")]
+		public GLib.GenericArray<NM.BridgeVlan> vlans { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_bridge_port_get_type ()")]
 	public class SettingBridgePort : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingBridgePort ();
+		[Version (since = "1.18")]
+		public void add_vlan (NM.BridgeVlan vlan);
+		[Version (since = "1.18")]
+		public void clear_vlans ();
 		public bool get_hairpin_mode ();
+		[Version (since = "1.18")]
+		public uint get_num_vlans ();
 		public uint16 get_path_cost ();
 		public uint16 get_priority ();
+		[Version (since = "1.18")]
+		public unowned NM.BridgeVlan get_vlan (uint idx);
+		[Version (since = "1.18")]
+		public void remove_vlan (uint idx);
+		[Version (since = "1.18")]
+		public bool remove_vlan_by_vid (uint16 vid);
 		[NoAccessorMethod]
 		public bool hairpin_mode { get; set; }
 		[NoAccessorMethod]
 		public uint path_cost { get; set construct; }
 		[NoAccessorMethod]
 		public uint priority { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "1.18")]
+		public GLib.GenericArray<NM.BridgeVlan> vlans { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_cdma_get_type ()")]
 	public class SettingCdma : NM.Setting {
@@ -2858,6 +3032,8 @@ namespace NM {
 		public const string ROUTE_METRIC;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTE_TABLE")]
 		public const string ROUTE_TABLE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTING_RULES")]
+		public const string ROUTING_RULES;
 		[CCode (has_construct_function = false)]
 		protected SettingIPConfig ();
 		public bool add_address (NM.IPAddress address);
@@ -2866,12 +3042,16 @@ namespace NM {
 		public bool add_dns_option (string dns_option);
 		public bool add_dns_search (string dns_search);
 		public bool add_route (NM.IPRoute route);
+		[Version (since = "1.18")]
+		public void add_routing_rule (NM.IPRoutingRule routing_rule);
 		public void clear_addresses ();
 		public void clear_dns ();
 		[Version (since = "1.2")]
 		public void clear_dns_options (bool is_set);
 		public void clear_dns_searches ();
 		public void clear_routes ();
+		[Version (since = "1.18")]
+		public void clear_routing_rules ();
 		public unowned NM.IPAddress get_address (int idx);
 		[Version (since = "1.2")]
 		public int get_dad_timeout ();
@@ -2897,10 +3077,14 @@ namespace NM {
 		public uint get_num_dns_options ();
 		public uint get_num_dns_searches ();
 		public uint get_num_routes ();
+		[Version (since = "1.18")]
+		public uint get_num_routing_rules ();
 		public unowned NM.IPRoute get_route (int idx);
 		public int64 get_route_metric ();
 		[Version (since = "1.10")]
 		public uint32 get_route_table ();
+		[Version (since = "1.18")]
+		public unowned NM.IPRoutingRule get_routing_rule (uint idx);
 		public bool has_dns_options ();
 		[Version (since = "1.2")]
 		public int next_valid_dns_option (uint idx);
@@ -2916,6 +3100,8 @@ namespace NM {
 		public bool remove_dns_search_by_value (string dns_search);
 		public void remove_route (int idx);
 		public bool remove_route_by_value (NM.IPRoute route);
+		[Version (since = "1.18")]
+		public void remove_routing_rule (uint idx);
 		[NoAccessorMethod]
 		public GLib.GenericArray<NM.IPAddress> addresses { owned get; set; }
 		[NoAccessorMethod]
@@ -4521,6 +4707,7 @@ namespace NM {
 	[Compact]
 	public class SriovVF {
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.14")]
 		public SriovVF (uint index);
 		[Version (since = "1.14")]
 		public bool add_vlan (uint vlan_id);
@@ -5374,6 +5561,15 @@ namespace NM {
 		FREQ_2GHZ,
 		FREQ_5GHZ
 	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_IP_ROUTING_RULE_AS_STRING_FLAGS_", type_id = "nm_ip_routing_rule_as_string_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.18")]
+	public enum IPRoutingRuleAsStringFlags {
+		NONE,
+		AF_INET,
+		AF_INET6,
+		VALIDATE
+	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_IP_TUNNEL_FLAG_", type_id = "nm_ip_tunnel_flags_get_type ()")]
 	[Flags]
 	public enum IPTunnelFlags {
@@ -5960,6 +6156,10 @@ namespace NM {
 	public delegate void VpnIterFunc (string key, string value);
 	[CCode (cheader_filename = "NetworkManager.h", cname = "_NMConnectionForEachSecretFunc", instance_pos = 1.9)]
 	public delegate bool _ConnectionForEachSecretFunc (NM.SettingSecretFlags flags);
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_BRIDGE_VLAN_VID_MAX")]
+	public const int BRIDGE_VLAN_VID_MAX;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_BRIDGE_VLAN_VID_MIN")]
+	public const int BRIDGE_VLAN_VID_MIN;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CHECKPOINT_CREATED")]
 	public const string CHECKPOINT_CREATED;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CHECKPOINT_DEVICES")]
@@ -6190,14 +6390,26 @@ namespace NM {
 	public const string LLDP_ATTR_DESTINATION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_PPVID")]
 	public const string LLDP_ATTR_IEEE_802_1_PPVID;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_PPVIDS")]
+	public const string LLDP_ATTR_IEEE_802_1_PPVIDS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_PPVID_FLAGS")]
 	public const string LLDP_ATTR_IEEE_802_1_PPVID_FLAGS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_PVID")]
 	public const string LLDP_ATTR_IEEE_802_1_PVID;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_VID")]
 	public const string LLDP_ATTR_IEEE_802_1_VID;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_VLANS")]
+	public const string LLDP_ATTR_IEEE_802_1_VLANS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_VLAN_NAME")]
 	public const string LLDP_ATTR_IEEE_802_1_VLAN_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_3_MAC_PHY_CONF")]
+	public const string LLDP_ATTR_IEEE_802_3_MAC_PHY_CONF;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_3_MAX_FRAME_SIZE")]
+	public const string LLDP_ATTR_IEEE_802_3_MAX_FRAME_SIZE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_3_POWER_VIA_MDI")]
+	public const string LLDP_ATTR_IEEE_802_3_POWER_VIA_MDI;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_MANAGEMENT_ADDRESSES")]
+	public const string LLDP_ATTR_MANAGEMENT_ADDRESSES;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_PORT_DESCRIPTION")]
 	public const string LLDP_ATTR_PORT_DESCRIPTION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_PORT_ID")]

@@ -6,22 +6,22 @@ namespace Tracker {
 	public abstract class Decorator : Tracker.Miner, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected Decorator ();
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public void delete_id (int id);
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public static GLib.Quark error_quark ();
 		[CCode (array_length = false, array_null_terminated = true)]
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public unowned string[] get_class_names ();
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public unowned string get_data_source ();
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public uint get_n_items ();
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public async Tracker.DecoratorInfo next (GLib.Cancellable? cancellable) throws GLib.Error;
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public void prepend_id (int id, int class_name_id);
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public void set_priority_rdf_types (string rdf_types);
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
@@ -31,9 +31,9 @@ namespace Tracker {
 		public string data_source { get; construct; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] priority_rdf_types { set; }
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public virtual signal void finished ();
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public virtual signal void items_available ();
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", type_id = "tracker_decorator_fs_get_type ()")]
@@ -47,39 +47,39 @@ namespace Tracker {
 	[Compact]
 	public class DecoratorInfo {
 		[Version (since = "2.0")]
-		public void complete (string sparql);
+		public void complete (owned string sparql);
 		[Version (since = "2.0")]
-		public void complete_error (GLib.Error error);
-		[Version (since = "0.18.")]
+		public void complete_error (owned GLib.Error error);
+		[Version (since = "0.18")]
 		public unowned string get_mimetype ();
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public unowned GLib.Task get_task ();
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public unowned string get_url ();
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public unowned string get_urn ();
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public Tracker.DecoratorInfo @ref ();
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", type_id = "tracker_indexing_tree_get_type ()")]
 	public class IndexingTree : GLib.Object {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.14.0")]
+		[Version (since = "0.14")]
 		public IndexingTree ();
 		public void add (GLib.File directory, Tracker.DirectoryFlags flags);
 		public void add_filter (Tracker.FilterType filter, string glob_string);
 		public void clear_filters (Tracker.FilterType type);
 		public bool file_is_indexable (GLib.File file, GLib.FileType file_type);
-		[Version (since = "1.2.")]
+		[Version (since = "1.2")]
 		public bool file_is_root (GLib.File file);
 		public bool file_matches_filter (Tracker.FilterType type, GLib.File file);
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public Tracker.FilterPolicy get_default_policy (Tracker.FilterType filter);
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public bool get_filter_hidden ();
-		[Version (since = "1.2.")]
+		[Version (since = "1.2")]
 		public unowned GLib.File get_master_root ();
 		public unowned GLib.File get_root (GLib.File file, out Tracker.DirectoryFlags directory_flags);
 		public GLib.List<weak GLib.File> list_roots ();
@@ -87,9 +87,9 @@ namespace Tracker {
 		public bool notify_update (GLib.File file, bool recursive);
 		public bool parent_is_indexable (GLib.File parent, GLib.List<GLib.File> children);
 		public void remove (GLib.File directory);
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public void set_default_policy (Tracker.FilterType filter, Tracker.FilterPolicy policy);
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public void set_filter_hidden (bool filter_hidden);
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.2.2")]
@@ -99,11 +99,11 @@ namespace Tracker {
 		public GLib.File root { owned get; construct; }
 		[Version (since = "1.10")]
 		public virtual signal void child_updated (GLib.File root, GLib.File child);
-		[Version (since = "0.14.0")]
+		[Version (since = "0.14")]
 		public virtual signal void directory_added (GLib.File directory);
-		[Version (since = "0.14.0")]
+		[Version (since = "0.14")]
 		public virtual signal void directory_removed (GLib.File directory);
-		[Version (since = "0.14.0")]
+		[Version (since = "0.14")]
 		public virtual signal void directory_updated (GLib.File directory);
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", type_id = "tracker_miner_get_type ()")]
@@ -143,7 +143,7 @@ namespace Tracker {
 		protected MinerFS ();
 		[Version (since = "0.10")]
 		public void check_file (GLib.File file, int priority, bool check_parents);
-		[Version (since = "1.2.")]
+		[Version (since = "1.2")]
 		public static GLib.Quark error_quark ();
 		[NoWrapper]
 		public virtual bool filter_event (Tracker.MinerFSEventType type, GLib.File file, GLib.File source_file);
@@ -188,9 +188,9 @@ namespace Tracker {
 		protected MinerOnline ();
 		[NoWrapper]
 		public virtual bool connected (Tracker.NetworkType network);
-		[Version (since = "0.18.")]
+		[Version (since = "0.18")]
 		public Tracker.NetworkType get_network_type ();
-		[Version (since = "0.18.0")]
+		[Version (since = "0.18")]
 		public virtual signal void disconnected ();
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", type_id = "tracker_miner_proxy_get_type ()")]
@@ -249,7 +249,7 @@ namespace Tracker {
 		INVALID_COOKIE
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", cprefix = "TRACKER_MINER_FS_ERROR_", has_type_id = false)]
-	[Version (since = "1.2.")]
+	[Version (since = "1.2")]
 	public enum MinerFSError {
 		[CCode (cname = "TRACKER_MINER_FS_ERROR_INIT")]
 		MINER_FS_ERROR_INIT
@@ -272,15 +272,15 @@ namespace Tracker {
 		LAN
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", cname = "TRACKER_MINER_DBUS_INTERFACE")]
-	[Version (since = "0.8.")]
+	[Version (since = "0.8")]
 	public const string MINER_DBUS_INTERFACE;
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", cname = "TRACKER_MINER_DBUS_NAME_PREFIX")]
-	[Version (since = "0.8.")]
+	[Version (since = "0.8")]
 	public const string MINER_DBUS_NAME_PREFIX;
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", cname = "TRACKER_MINER_DBUS_PATH_PREFIX")]
-	[Version (since = "0.8.")]
+	[Version (since = "0.8")]
 	public const string MINER_DBUS_PATH_PREFIX;
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", cname = "TRACKER_MINER_ERROR_DOMAIN")]
-	[Version (since = "0.8.")]
+	[Version (since = "0.8")]
 	public const string MINER_ERROR_DOMAIN;
 }
