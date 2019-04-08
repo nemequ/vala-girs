@@ -613,6 +613,8 @@ namespace MM {
 		public bool disable_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] dup_bearer_paths ();
+		public string dup_carrier_configuration ();
+		public string dup_carrier_configuration_revision ();
 		public string dup_device ();
 		public string dup_device_identifier ();
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -635,6 +637,8 @@ namespace MM {
 		public MM.ModemAccessTechnology get_access_technologies ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_bearer_paths ();
+		public unowned string get_carrier_configuration ();
+		public unowned string get_carrier_configuration_revision ();
 		public bool get_current_bands ([CCode (array_length_cname = "n_bands", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemBand[] bands);
 		public MM.ModemCapability get_current_capabilities ();
 		public bool get_current_modes (out MM.ModemMode allowed, out MM.ModemMode preferred);
@@ -1242,6 +1246,10 @@ namespace MM {
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public abstract string[] bearers { owned get; set; }
+		[NoAccessorMethod]
+		public abstract string carrier_configuration { owned get; set; }
+		[NoAccessorMethod]
+		public abstract string carrier_configuration_revision { owned get; set; }
 		[NoAccessorMethod]
 		public abstract GLib.Variant current_bands { owned get; set; }
 		[NoAccessorMethod]
@@ -2983,6 +2991,10 @@ namespace MM {
 	public const string MODEM_PROPERTY_ACCESSTECHNOLOGIES;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_BEARERS")]
 	public const string MODEM_PROPERTY_BEARERS;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_CARRIERCONFIGURATION")]
+	public const string MODEM_PROPERTY_CARRIERCONFIGURATION;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_CARRIERCONFIGURATIONREVISION")]
+	public const string MODEM_PROPERTY_CARRIERCONFIGURATIONREVISION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_CURRENTBANDS")]
 	public const string MODEM_PROPERTY_CURRENTBANDS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_CURRENTCAPABILITIES")]
