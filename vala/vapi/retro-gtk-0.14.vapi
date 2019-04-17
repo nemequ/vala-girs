@@ -297,4 +297,6 @@ namespace Retro {
 	}
 	[CCode (cheader_filename = "retro-gtk.h")]
 	public static void g_log (Retro.Core sender, string? log_domain, GLib.LogLevelFlags log_level, string message);
+	[CCode (cheader_filename = "retro-gtk.h")]
+	public static GLib.Resource gtk_get_resource ();
 }

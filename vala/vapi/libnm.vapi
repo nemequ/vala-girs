@@ -4774,6 +4774,11 @@ namespace NM {
 		public NM.TCQdisc dup ();
 		[Version (since = "1.12")]
 		public bool equal (NM.TCQdisc other);
+		[Version (since = "1.18")]
+		public unowned GLib.Variant get_attribute (string name);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.18")]
+		public string[] get_attribute_names ();
 		[Version (since = "1.12")]
 		public uint32 get_handle ();
 		[Version (since = "1.12")]
@@ -4782,6 +4787,8 @@ namespace NM {
 		public uint32 get_parent ();
 		[Version (since = "1.12")]
 		public void @ref ();
+		[Version (since = "1.18")]
+		public void set_attribute (string name, GLib.Variant? value);
 		[Version (since = "1.12")]
 		public void set_handle (uint32 handle);
 		[Version (since = "1.12")]

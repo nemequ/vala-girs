@@ -2122,7 +2122,8 @@ namespace MM {
 		GPS_NMEA,
 		CDMA_BS,
 		GPS_UNMANAGED,
-		AGPS;
+		AGPS_MSA,
+		AGPS_MSB;
 		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_LOCK_", type_id = "mm_modem_lock_get_type ()")]

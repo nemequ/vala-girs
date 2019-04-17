@@ -60,4 +60,6 @@ namespace Manette {
 		[CCode (cname = "MANETTE_EVENT_HAT")]
 		EVENT_HAT
 	}
+	[CCode (cheader_filename = "libmanette.h")]
+	public static GLib.Resource get_resource ();
 }

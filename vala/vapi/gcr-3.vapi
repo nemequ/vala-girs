@@ -436,6 +436,14 @@ namespace Gcr {
 	public const int MICRO_VERSION;
 	[CCode (cheader_filename = "gcr/gcr-base.h", cname = "GCR_MINOR_VERSION")]
 	public const int MINOR_VERSION;
+	[CCode (cheader_filename = "gcr/gcr-base.h", cname = "GCR_PURPOSE_CLIENT_AUTH")]
+	public const string PURPOSE_CLIENT_AUTH;
+	[CCode (cheader_filename = "gcr/gcr-base.h", cname = "GCR_PURPOSE_CODE_SIGNING")]
+	public const string PURPOSE_CODE_SIGNING;
+	[CCode (cheader_filename = "gcr/gcr-base.h", cname = "GCR_PURPOSE_EMAIL")]
+	public const string PURPOSE_EMAIL;
+	[CCode (cheader_filename = "gcr/gcr-base.h", cname = "GCR_PURPOSE_SERVER_AUTH")]
+	public const string PURPOSE_SERVER_AUTH;
 	[CCode (cheader_filename = "gcr/gcr-base.h", cname = "GCR_SECRET_EXCHANGE_PROTOCOL_1")]
 	public const string SECRET_EXCHANGE_PROTOCOL_1;
 	[CCode (cheader_filename = "gcr/gcr-base.h", cname = "GCR_UNLOCK_OPTION_ALWAYS")]
@@ -506,4 +514,20 @@ namespace Gcr {
 	public static void pkcs11_set_trust_lookup_uris (string? pkcs11_uris);
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
 	public static void pkcs11_set_trust_store_uri (string? pkcs11_uri);
+	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	public static bool trust_add_pinned_certificate (Gcr.Certificate certificate, string purpose, string peer, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	public static async bool trust_add_pinned_certificate_async (Gcr.Certificate certificate, string purpose, string peer, GLib.Cancellable? cancellable) throws GLib.Error;
+	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	public static bool trust_is_certificate_anchored (Gcr.Certificate certificate, string purpose, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	public static async bool trust_is_certificate_anchored_async (Gcr.Certificate certificate, string purpose, GLib.Cancellable? cancellable) throws GLib.Error;
+	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	public static bool trust_is_certificate_pinned (Gcr.Certificate certificate, string purpose, string peer, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	public static async bool trust_is_certificate_pinned_async (Gcr.Certificate certificate, string purpose, string peer, GLib.Cancellable? cancellable) throws GLib.Error;
+	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	public static bool trust_remove_pinned_certificate (Gcr.Certificate certificate, string purpose, string peer, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	public static async bool trust_remove_pinned_certificate_async (Gcr.Certificate certificate, string purpose, string peer, GLib.Cancellable? cancellable) throws GLib.Error;
 }

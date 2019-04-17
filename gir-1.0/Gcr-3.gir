@@ -2696,6 +2696,28 @@ importer.</doc>
       <source-position filename="gcr-version.h" line="32"/>
       <type name="gint" c:type="gint"/>
     </constant>
+    <constant name="PURPOSE_CLIENT_AUTH" value="1.3.6.1.5.5.7.3.2" c:type="GCR_PURPOSE_CLIENT_AUTH">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="77">The purpose used to verify the client certificate in a TLS connection.</doc>
+      <source-position filename="gcr-trust.h" line="33"/>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="PURPOSE_CODE_SIGNING" value="1.3.6.1.5.5.7.3.3" c:type="GCR_PURPOSE_CODE_SIGNING">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="83">The purpose used to verify certificate used for the signature on signed code.</doc>
+      <source-position filename="gcr-trust.h" line="34"/>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="PURPOSE_EMAIL" value="1.3.6.1.5.5.7.3.4" c:type="GCR_PURPOSE_EMAIL">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="89">The purpose used to verify certificates that are used in email communication
+such as S/MIME.</doc>
+      <source-position filename="gcr-trust.h" line="35"/>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
+    <constant name="PURPOSE_SERVER_AUTH" value="1.3.6.1.5.5.7.3.1" c:type="GCR_PURPOSE_SERVER_AUTH">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="70">The purpose used to verify the server certificate in a TLS connection. This
+is the most common purpose in use.</doc>
+      <source-position filename="gcr-trust.h" line="32"/>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <record name="Parsed" c:type="GcrParsed" glib:type-name="GcrParsed" glib:get-type="gcr_parsed_get_type" c:symbol-prefix="parsed">
       <doc xml:space="preserve" filename="gcr-parser.c" line="72">A parsed item parsed by a #GcrParser.</doc>
       <source-position filename="gcr-parser.h" line="44"/>
@@ -6397,6 +6419,355 @@ allocated; the memory block should be freed with gcr_secure_memory_free()</doc>
         <parameter name="size" transfer-ownership="none">
           <doc xml:space="preserve" filename="gcr-secure-memory.c" line="148">new desired size of the memory block</doc>
           <type name="gsize" c:type="gsize"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="trust_add_pinned_certificate" c:identifier="gcr_trust_add_pinned_certificate" throws="1">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="390">Add a pinned @certificate for connections to @peer for @purpose. A pinned
+certificate overrides all other certificate verification and should be
+used with care.
+
+If the same pinned certificate already exists, then this operation
+does not add another, and succeeds without error.
+
+This call may block, see gcr_trust_add_pinned_certificate_async() for the
+non-blocking version.</doc>
+      <source-position filename="gcr-trust.h" line="53"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve" filename="gcr-trust.c" line="408">%TRUE if the pinned certificate is recorded successfully</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="certificate" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="392">a #GcrCertificate</doc>
+          <type name="Certificate" c:type="GcrCertificate*"/>
+        </parameter>
+        <parameter name="purpose" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="393">the purpose string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="peer" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="394">the peer for this pinned certificate</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="cancellable" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="395">a #GCancellable</doc>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="trust_add_pinned_certificate_async" c:identifier="gcr_trust_add_pinned_certificate_async">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="445">Add a pinned certificate for communication with @peer for @purpose. A pinned
+certificate overrides all other certificate verification and should be used
+with care.
+
+If the same pinned certificate already exists, then this operation
+does not add another, and succeeds without error.
+
+When the operation is finished, callback will be called. You can then call
+gcr_trust_add_pinned_certificate_finish() to get the result of the
+operation.</doc>
+      <source-position filename="gcr-trust.h" line="59"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="certificate" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="447">a #GcrCertificate</doc>
+          <type name="Certificate" c:type="GcrCertificate*"/>
+        </parameter>
+        <parameter name="purpose" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="448">the purpose string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="peer" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="449">the peer for this pinned certificate</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="cancellable" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="450">a #GCancellable</doc>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+        <parameter name="callback" transfer-ownership="none" nullable="1" allow-none="1" scope="async" closure="5">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="451">a #GAsyncReadyCallback to call when the operation completes</doc>
+          <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="452">the data to pass to callback function</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="trust_add_pinned_certificate_finish" c:identifier="gcr_trust_add_pinned_certificate_finish" throws="1">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="490">Finishes an asynchronous operation started by
+gcr_trust_add_pinned_certificate_async().</doc>
+      <source-position filename="gcr-trust.h" line="66"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve" filename="gcr-trust.c" line="498">%TRUE if the pinned certificate is recorded successfully</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="result" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="492">the #GAsyncResult passed to the callback</doc>
+          <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="trust_is_certificate_anchored" c:identifier="gcr_trust_is_certificate_anchored" throws="1">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="741">Check if the @certificate is a trust anchor for the given @purpose. A trust
+anchor is used to verify the signatures on other certificates when verifying
+a certificate chain. Also known as a trusted certificate authority.
+
+This call may block, see gcr_trust_is_certificate_anchored_async() for the
+non-blocking version.
+
+In the case of an error, %FALSE is also returned. Check @error to detect
+if an error occurred.</doc>
+      <source-position filename="gcr-trust.h" line="85"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve" filename="gcr-trust.c" line="758">%TRUE if the certificate is a trust anchor</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="certificate" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="743">a #GcrCertificate to check</doc>
+          <type name="Certificate" c:type="GcrCertificate*"/>
+        </parameter>
+        <parameter name="purpose" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="744">the purpose string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="cancellable" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="745">a #GCancellable</doc>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="trust_is_certificate_anchored_async" c:identifier="gcr_trust_is_certificate_anchored_async">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="794">Check if the @certificate is a trust anchor for the given @purpose. A trust
+anchor is used to verify the signatures on other certificates when verifying
+a certificate chain. Also known as a trusted certificate authority.
+
+When the operation is finished, callback will be called. You can then call
+gcr_trust_is_certificate_anchored_finish() to get the result of the operation.</doc>
+      <source-position filename="gcr-trust.h" line="90"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="certificate" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="796">a #GcrCertificate to check</doc>
+          <type name="Certificate" c:type="GcrCertificate*"/>
+        </parameter>
+        <parameter name="purpose" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="797">the purpose string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="cancellable" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="798">a #GCancellable</doc>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+        <parameter name="callback" transfer-ownership="none" nullable="1" allow-none="1" scope="async" closure="4">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="799">a #GAsyncReadyCallback to call when the operation completes</doc>
+          <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="800">the data to pass to callback function</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="trust_is_certificate_anchored_finish" c:identifier="gcr_trust_is_certificate_anchored_finish" throws="1">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="833">Finishes an asynchronous operation started by
+gcr_trust_is_certificate_anchored_async().
+
+In the case of an error, %FALSE is also returned. Check @error to detect
+if an error occurred.</doc>
+      <source-position filename="gcr-trust.h" line="96"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve" filename="gcr-trust.c" line="844">%TRUE if the certificate is a trust anchor</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="result" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="835">the #GAsyncResult passed to the callback</doc>
+          <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="trust_is_certificate_pinned" c:identifier="gcr_trust_is_certificate_pinned" throws="1">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="174">Check if @certificate is pinned for @purpose to communicate with @peer.
+A pinned certificate overrides all other certificate verification.
+
+This call may block, see gcr_trust_is_certificate_pinned_async() for the
+non-blocking version.
+
+In the case of an error, %FALSE is also returned. Check @error to detect
+if an error occurred.</doc>
+      <source-position filename="gcr-trust.h" line="37"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve" filename="gcr-trust.c" line="191">%TRUE if the certificate is pinned for the host and purpose</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="certificate" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="176">a #GcrCertificate to check</doc>
+          <type name="Certificate" c:type="GcrCertificate*"/>
+        </parameter>
+        <parameter name="purpose" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="177">the purpose string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="peer" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="178">the peer for this pinned</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="cancellable" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="179">a #GCancellable</doc>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="trust_is_certificate_pinned_async" c:identifier="gcr_trust_is_certificate_pinned_async">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="228">Check if @certificate is pinned for @purpose to communicate with @peer. A
+pinned certificate overrides all other certificate verification.
+
+When the operation is finished, callback will be called. You can then call
+gcr_trust_is_certificate_pinned_finish() to get the result of the
+operation.</doc>
+      <source-position filename="gcr-trust.h" line="43"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="certificate" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="230">a #GcrCertificate to check</doc>
+          <type name="Certificate" c:type="GcrCertificate*"/>
+        </parameter>
+        <parameter name="purpose" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="231">the purpose string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="peer" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="232">the peer for this pinned</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="cancellable" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="233">a #GCancellable</doc>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+        <parameter name="callback" transfer-ownership="none" nullable="1" allow-none="1" scope="async" closure="5">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="234">a #GAsyncReadyCallback to call when the operation completes</doc>
+          <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="235">the data to pass to callback function</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="trust_is_certificate_pinned_finish" c:identifier="gcr_trust_is_certificate_pinned_finish" throws="1">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="269">Finishes an asynchronous operation started by
+gcr_trust_is_certificate_pinned_async().
+
+In the case of an error, %FALSE is also returned. Check @error to detect
+if an error occurred.</doc>
+      <source-position filename="gcr-trust.h" line="50"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve" filename="gcr-trust.c" line="280">%TRUE if the certificate is pinned.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="result" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="271">the #GAsyncResult passed to the callback</doc>
+          <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="trust_remove_pinned_certificate" c:identifier="gcr_trust_remove_pinned_certificate" throws="1">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="577">Remove a pinned certificate for communication with @peer for @purpose.
+
+If the same pinned certificate does not exist, or was already removed,
+then this operation succeeds without error.
+
+This call may block, see gcr_trust_remove_pinned_certificate_async() for the
+non-blocking version.</doc>
+      <source-position filename="gcr-trust.h" line="69"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve" filename="gcr-trust.c" line="593">%TRUE if the pinned certificate no longer exists</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="certificate" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="579">a #GcrCertificate</doc>
+          <type name="Certificate" c:type="GcrCertificate*"/>
+        </parameter>
+        <parameter name="purpose" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="580">the purpose string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="peer" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="581">the peer for this pinned certificate</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="cancellable" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="582">a #GCancellable</doc>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="trust_remove_pinned_certificate_async" c:identifier="gcr_trust_remove_pinned_certificate_async">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="630">Remove a pinned certificate for communication with @peer for @purpose.
+
+If the same pinned certificate does not exist, or was already removed,
+then this operation succeeds without error.
+
+When the operation is finished, callback will be called. You can then call
+gcr_trust_remove_pinned_certificate_finish() to get the result of the
+operation.</doc>
+      <source-position filename="gcr-trust.h" line="75"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="certificate" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="632">a #GcrCertificate</doc>
+          <type name="Certificate" c:type="GcrCertificate*"/>
+        </parameter>
+        <parameter name="purpose" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="633">the purpose string</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="peer" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="634">the peer for this pinned certificate</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="cancellable" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="635">a #GCancellable</doc>
+          <type name="Gio.Cancellable" c:type="GCancellable*"/>
+        </parameter>
+        <parameter name="callback" transfer-ownership="none" nullable="1" allow-none="1" scope="async" closure="5">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="636">a #GAsyncReadyCallback to call when the operation completes</doc>
+          <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+        </parameter>
+        <parameter name="user_data" transfer-ownership="none" nullable="1" allow-none="1">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="637">the data to pass to callback function</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="trust_remove_pinned_certificate_finish" c:identifier="gcr_trust_remove_pinned_certificate_finish" throws="1">
+      <doc xml:space="preserve" filename="gcr-trust.c" line="673">Finishes an asynchronous operation started by
+gcr_trust_remove_pinned_certificate_async().</doc>
+      <source-position filename="gcr-trust.h" line="82"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve" filename="gcr-trust.c" line="681">%TRUE if the pinned certificate no longer exists</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="result" transfer-ownership="none">
+          <doc xml:space="preserve" filename="gcr-trust.c" line="675">the #GAsyncResult passed to the callback</doc>
+          <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
         </parameter>
       </parameters>
     </function>
