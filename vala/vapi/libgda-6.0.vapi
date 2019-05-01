@@ -1213,7 +1213,6 @@ namespace Gda {
 		public Gda.SqlParser create_parser (Gda.Connection? cnc);
 		public static GLib.Quark error_quark ();
 		public string escape_string (Gda.Connection? cnc, string str);
-		public string find_file (string inst_dir, string filename);
 		public unowned Gda.DataHandler get_data_handler_dbms (Gda.Connection? cnc, string for_type);
 		public unowned Gda.DataHandler get_data_handler_g_type (Gda.Connection? cnc, GLib.Type for_type);
 		public unowned string? get_default_dbms_type (Gda.Connection? cnc, GLib.Type type);
@@ -1227,7 +1226,6 @@ namespace Gda {
 		[Version (since = "5.2")]
 		public unowned Gda.DataHandler handler_use_default (GLib.Type type);
 		public unowned Gda.SqlParser internal_get_parser ();
-		public static string load_file_contents (string inst_dir, string data_dir, string filename);
 		[Version (since = "6.0")]
 		public static string load_resource_contents (string prov_name, string resource);
 		public bool perform_operation (Gda.Connection? cnc, Gda.ServerOperation op) throws GLib.Error;
@@ -1791,8 +1789,6 @@ namespace Gda {
 	public class Time {
 		[CCode (has_construct_function = false)]
 		public Time ();
-		[Version (since = "5.2")]
-		public void change_timezone (long ntz);
 		public Gda.Time copy ();
 		[Version (since = "6.0")]
 		public void free ();
@@ -1816,17 +1812,11 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public void set_fraction (ulong fraction);
 		[Version (since = "6.0")]
-		public void set_from_date_time (GLib.DateTime dt);
-		[Version (since = "6.0")]
-		public void set_from_values (ushort hour, ushort minute, ushort second, ulong fraction, long timezone);
-		[Version (since = "6.0")]
 		public void set_hour (ushort hour);
 		[Version (since = "6.0")]
 		public void set_minute (ushort minute);
 		[Version (since = "6.0")]
 		public void set_second (ushort second);
-		[Version (since = "6.0")]
-		public void set_timezone (long timezone);
 		[Version (since = "6.0")]
 		public string to_string ();
 		[Version (since = "6.0")]
@@ -1834,7 +1824,8 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public string to_string_utc ();
 		[Version (since = "6.0")]
-		public void to_timezone (GLib.TimeZone ntz);
+		public Gda.Time to_timezone (GLib.TimeZone ntz);
+		public Gda.Time to_utc ();
 		[Version (deprecated = true, deprecated_since = "6.0", since = "4.2")]
 		public bool valid ();
 	}
@@ -2088,7 +2079,7 @@ namespace Gda {
 	public interface DataHandler : GLib.Object {
 		public abstract bool accepts_g_type (GLib.Type type);
 		[Version (since = "4.2.3")]
-		public static unowned Gda.DataHandler get_default (GLib.Type for_type);
+		public static Gda.DataHandler get_default (GLib.Type for_type);
 		public abstract unowned string get_descr ();
 		public abstract GLib.Value? get_sane_init_value (GLib.Type type);
 		public abstract string get_sql_from_value (GLib.Value? value);
@@ -2733,7 +2724,8 @@ namespace Gda {
 	public enum HolderError {
 		STRING_CONVERSION_ERROR,
 		VALUE_TYPE_ERROR,
-		VALUE_NULL_ERROR
+		VALUE_NULL_ERROR,
+		VALUE_CHANGE_ERROR
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_META_DB_", has_type_id = false)]
 	public enum MetaDbObjectType {
@@ -3261,7 +3253,7 @@ namespace Gda {
 	public static Gda.SqlExpr compute_unique_table_row_condition_with_cnc (Gda.Connection? cnc, Gda.SqlStatementSelect stsel, Gda.MetaTable mtable, bool require_pk) throws GLib.Error;
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "4.2.3")]
-	public static unowned Gda.DataHandler data_handler_get_default (GLib.Type for_type);
+	public static Gda.DataHandler data_handler_get_default (GLib.Type for_type);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static GLib.DateTime date_time_copy (GLib.DateTime ts);
 	[CCode (cheader_filename = "libgda/libgda.h")]
@@ -3284,15 +3276,15 @@ namespace Gda {
 	[Version (since = "5.2")]
 	public static bool parse_formatted_date (GLib.Date gdate, string value, GLib.DateDMY first, GLib.DateDMY second, GLib.DateDMY third, char sep);
 	[CCode (cheader_filename = "libgda/libgda.h")]
-	[Version (since = "5.2")]
-	public static bool parse_formatted_time (Gda.Time timegda, string value, char sep);
+	[Version (since = "6.0")]
+	public static Gda.Time parse_formatted_time (string value, char sep);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "5.2")]
 	public static GLib.DateTime? parse_formatted_timestamp (string value, GLib.DateDMY first, GLib.DateDMY second, GLib.DateDMY third, char sep);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static bool parse_iso8601_date (GLib.Date gdate, string value);
 	[CCode (cheader_filename = "libgda/libgda.h")]
-	public static bool parse_iso8601_time (Gda.Time timegda, string value);
+	public static Gda.Time parse_iso8601_time (string value);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static GLib.DateTime parse_iso8601_timestamp (string value);
 	[CCode (cheader_filename = "libgda/libgda.h")]

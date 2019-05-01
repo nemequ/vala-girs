@@ -266,6 +266,60 @@ namespace Hdy {
 		public unowned GLib.Value? get_value ();
 		public GLib.Value value { get; construct; }
 	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_view_switcher_get_type ()")]
+	public class ViewSwitcher : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.0.10")]
+		public ViewSwitcher ();
+		[Version (since = "0.0.10")]
+		public Gtk.IconSize get_icon_size ();
+		[Version (since = "0.0.10")]
+		public Hdy.ViewSwitcherPolicy get_policy ();
+		[Version (since = "0.0.10")]
+		public unowned Gtk.Stack? get_stack ();
+		[Version (since = "0.0.10")]
+		public void set_icon_size (Gtk.IconSize icon_size);
+		[Version (since = "0.0.10")]
+		public void set_policy (Hdy.ViewSwitcherPolicy policy);
+		[Version (since = "0.0.10")]
+		public void set_stack (Gtk.Stack? stack);
+		[Version (since = "0.0.10")]
+		public int icon_size { get; set; }
+		[Version (since = "0.0.10")]
+		public Hdy.ViewSwitcherPolicy policy { get; set; }
+		[Version (since = "0.0.10")]
+		public Gtk.Stack stack { get; set; }
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_view_switcher_bar_get_type ()")]
+	public class ViewSwitcherBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.0.10")]
+		public ViewSwitcherBar ();
+		[Version (since = "0.0.10")]
+		public Gtk.IconSize get_icon_size ();
+		[Version (since = "0.0.10")]
+		public Hdy.ViewSwitcherPolicy get_policy ();
+		[Version (since = "0.0.10")]
+		public bool get_reveal ();
+		[Version (since = "0.0.10")]
+		public unowned Gtk.Stack? get_stack ();
+		[Version (since = "0.0.10")]
+		public void set_icon_size (Gtk.IconSize icon_size);
+		[Version (since = "0.0.10")]
+		public void set_policy (Hdy.ViewSwitcherPolicy policy);
+		[Version (since = "0.0.10")]
+		public void set_reveal (bool reveal);
+		[Version (since = "0.0.10")]
+		public void set_stack (Gtk.Stack? stack);
+		[Version (since = "0.0.10")]
+		public int icon_size { get; set; }
+		[Version (since = "0.0.10")]
+		public Hdy.ViewSwitcherPolicy policy { get; set; }
+		[Version (since = "0.0.10")]
+		public bool reveal { get; set; }
+		[Version (since = "0.0.10")]
+		public Gtk.Stack stack { get; set; }
+	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_ARROWS_DIRECTION_", type_id = "hdy_arrows_direction_get_type ()")]
 	public enum ArrowsDirection {
 		UP,
@@ -290,6 +344,12 @@ namespace Hdy {
 	public enum LeafletModeTransitionType {
 		NONE,
 		SLIDE
+	}
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_VIEW_SWITCHER_POLICY_", type_id = "hdy_view_switcher_policy_get_type ()")]
+	public enum ViewSwitcherPolicy {
+		AUTO,
+		NARROW,
+		WIDE
 	}
 	[CCode (cheader_filename = "handy.h", instance_pos = 1.9)]
 	public delegate string ComboRowGetEnumValueNameFunc (Hdy.EnumValueObject value);

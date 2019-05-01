@@ -220,6 +220,7 @@ namespace Gegl {
 		public unowned Gegl.Node remove_child (Gegl.Node child);
 		public void set_passthrough (bool passthrough);
 		public void set_property (string property_name, GLib.Value value);
+		public void set_time (double time);
 		public string to_xml (string path_root);
 		public string to_xml_full (Gegl.Node? tail, string path_root);
 		[NoAccessorMethod]

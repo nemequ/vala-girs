@@ -23,7 +23,7 @@ namespace Dazzle {
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_application_get_type ()")]
 	public class Application : Gtk.Application, GLib.ActionGroup, GLib.ActionMap {
 		[CCode (has_construct_function = false)]
-		protected Application ();
+		public Application (string application_id, GLib.ApplicationFlags flags);
 		public virtual void add_resources (string resource_path);
 		public unowned GLib.Menu get_menu_by_id (string menu_id);
 		public unowned Dazzle.MenuManager get_menu_manager ();
@@ -67,9 +67,11 @@ namespace Dazzle {
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_bolding_label_get_type ()")]
 	public class BoldingLabel : Gtk.Label, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
-		protected BoldingLabel ();
+		public BoldingLabel (string str, bool bold);
 		public void set_bold (bool bold);
 		public void set_weight (Pango.Weight weight);
+		[CCode (has_construct_function = false)]
+		public BoldingLabel.with_mnemonic (string str, bool bold);
 		public bool bold { set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_box_get_type ()")]
@@ -327,10 +329,13 @@ namespace Dazzle {
 	public class DockWidget : Dazzle.Bin, Atk.Implementor, Dazzle.DockItem, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public DockWidget ();
+		public void set_gicon (GLib.Icon gicon);
 		public void set_icon_name (string icon_name);
 		public void set_title (string title);
 		[NoAccessorMethod]
 		public bool can_close { get; set; }
+		[NoAccessorMethod]
+		public GLib.Icon gicon { owned get; set; }
 		[NoAccessorMethod]
 		public string icon_name { owned get; set; }
 		[NoAccessorMethod]
@@ -589,8 +594,8 @@ namespace Dazzle {
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_list_box_row_get_type ()")]
 	public abstract class ListBoxRow : Gtk.ListBoxRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
-		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		public ListBoxRow ();
+		[CCode (has_construct_function = false)]
+		protected ListBoxRow ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_list_model_filter_get_type ()")]
 	public class ListModelFilter : GLib.Object, GLib.ListModel {
@@ -1239,7 +1244,7 @@ namespace Dazzle {
 		[CCode (has_construct_function = false)]
 		[Version (since = "3.32")]
 		public ShortcutTooltip ();
-		[Version (since = "3.320")]
+		[Version (since = "3.32")]
 		public unowned string? get_accel ();
 		[Version (since = "3.32")]
 		public unowned string? get_command_id ();
@@ -1444,18 +1449,33 @@ namespace Dazzle {
 		[HasEmitter]
 		public virtual signal string suggest_suffix (string typed_text);
 	}
+	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_suggestion_button_get_type ()")]
+	public class SuggestionButton : Gtk.Stack, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public SuggestionButton ();
+		[Version (since = "3.34")]
+		public unowned Gtk.Button get_button ();
+		[Version (since = "3.34")]
+		public unowned Dazzle.SuggestionEntry get_entry ();
+		public Gtk.Button button { get; }
+		public Dazzle.SuggestionEntry entry { get; }
+	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_suggestion_entry_get_type ()")]
 	public class SuggestionEntry : Gtk.Entry, Atk.Implementor, Gtk.Buildable, Gtk.CellEditable, Gtk.Editable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public SuggestionEntry ();
 		public void default_position_func (Gdk.Rectangle area, bool is_absolute, void* user_data);
 		public bool get_activate_on_single_click ();
+		[Version (since = "3.34")]
+		public bool get_compact ();
 		public unowned GLib.ListModel? get_model ();
 		[Version (since = "3.32")]
 		public unowned Gtk.Widget get_popover ();
 		public unowned Dazzle.Suggestion? get_suggestion ();
 		public unowned string get_typed_text ();
 		public void set_activate_on_single_click (bool activate_on_single_click);
+		[Version (since = "3.34")]
+		public void set_compact (bool compact);
 		public void set_model (GLib.ListModel model);
 		[Version (since = "3.26")]
 		public void set_position_func (owned Dazzle.SuggestionPositionFunc? func);
@@ -1463,10 +1483,13 @@ namespace Dazzle {
 		public void window_position_func (Gdk.Rectangle area, bool is_absolute, void* user_data);
 		[Version (since = "3.30")]
 		public bool activate_on_single_click { get; set; }
+		[Version (since = "3.34")]
+		public bool compact { get; set; }
 		public GLib.ListModel model { get; set; }
 		[Version (since = "3.30")]
 		public Dazzle.Suggestion suggestion { get; set; }
 		public string typed_text { get; }
+		public signal void action (string object, string p0, string p1);
 		public signal void activate_suggestion ();
 		[HasEmitter]
 		public virtual signal void hide_suggestions ();
@@ -1512,11 +1535,13 @@ namespace Dazzle {
 		public signal void suggestion_activated (Dazzle.Suggestion object);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_suggestion_row_get_type ()")]
-	public class SuggestionRow : Dazzle.ListBoxRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
+	public class SuggestionRow : Dazzle.ListBoxRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public SuggestionRow ();
 		public unowned Dazzle.Suggestion get_suggestion ();
 		public void set_suggestion (Dazzle.Suggestion suggestion);
+		[NoAccessorMethod]
+		public Gtk.Orientation orientation { get; set; }
 		public Dazzle.Suggestion suggestion { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_tab_get_type ()")]
@@ -1533,6 +1558,7 @@ namespace Dazzle {
 		public void set_active (bool active);
 		public void set_can_close (bool can_close);
 		public void set_edge (Gtk.PositionType edge);
+		public void set_gicon (GLib.Icon gicon);
 		public void set_icon_name (string icon_name);
 		public void set_style (Dazzle.TabStyle style);
 		public void set_title (string title);
@@ -1774,6 +1800,8 @@ namespace Dazzle {
 		public abstract bool minimize (Dazzle.DockItem child, ref Gtk.PositionType position);
 		public void present ();
 		public abstract void present_child (Dazzle.DockItem child);
+		[Version (since = "3.34")]
+		public abstract GLib.Icon? ref_gicon ();
 		public abstract void release (Dazzle.DockItem child);
 		public abstract void set_child_visible (Dazzle.DockItem child, bool child_visible);
 		public abstract void set_manager (Dazzle.DockManager? manager);

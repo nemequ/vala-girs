@@ -3766,6 +3766,9 @@ namespace Camel {
 	[Version (since = "2.26")]
 	public static string utf8_make_valid (string text);
 	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.34")]
+	public static string utf8_make_valid_len (string text, ssize_t text_len);
+	[CCode (cheader_filename = "camel/camel.h")]
 	public static void utf8_putc (ref uint8 ptr, uint32 c);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static string utf8_ucs2 (string ptr);

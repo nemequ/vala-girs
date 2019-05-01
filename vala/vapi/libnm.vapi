@@ -413,14 +413,14 @@ namespace NM {
 	public class BridgeVlan {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.18")]
-		public BridgeVlan (uint16 vid);
+		public BridgeVlan (uint16 vid_start, uint16 vid_end);
 		[Version (since = "1.18")]
 		public int cmp (NM.BridgeVlan b);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.18")]
 		public static NM.BridgeVlan from_str (string str) throws GLib.Error;
 		[Version (since = "1.18")]
-		public uint16 get_vid ();
+		public bool get_vid_range (uint16 vid_start, uint16 vid_end);
 		[Version (since = "1.18")]
 		public bool is_pvid ();
 		[Version (since = "1.18")]
@@ -2470,7 +2470,7 @@ namespace NM {
 		[Version (since = "1.18")]
 		public void remove_vlan (uint idx);
 		[Version (since = "1.18")]
-		public bool remove_vlan_by_vid (uint16 vid);
+		public bool remove_vlan_by_vid (uint16 vid_start, uint16 vid_end);
 		[NoAccessorMethod]
 		public uint ageing_time { get; set construct; }
 		[NoAccessorMethod]
@@ -2520,7 +2520,7 @@ namespace NM {
 		[Version (since = "1.18")]
 		public void remove_vlan (uint idx);
 		[Version (since = "1.18")]
-		public bool remove_vlan_by_vid (uint16 vid);
+		public bool remove_vlan_by_vid (uint16 vid_start, uint16 vid_end);
 		[NoAccessorMethod]
 		public bool hairpin_mode { get; set; }
 		[NoAccessorMethod]
@@ -4778,7 +4778,7 @@ namespace NM {
 		public unowned GLib.Variant get_attribute (string name);
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "1.18")]
-		public string[] get_attribute_names ();
+		public (unowned string)[] get_attribute_names ();
 		[Version (since = "1.12")]
 		public uint32 get_handle ();
 		[Version (since = "1.12")]

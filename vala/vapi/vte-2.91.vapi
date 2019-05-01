@@ -299,6 +299,8 @@ namespace Vte {
 		NO_WTMP,
 		NO_HELPER,
 		NO_FALLBACK,
+		NO_SESSION,
+		NO_CTTY,
 		DEFAULT
 	}
 	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_TEXT_BLINK_", type_id = "vte_text_blink_mode_get_type ()")]

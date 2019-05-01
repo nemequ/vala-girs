@@ -5,6 +5,8 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_annotated_commit_ref", type_id = "ggit_annotated_commit_get_type ()", unref_function = "ggit_annotated_commit_unref")]
 	[Compact]
 	public class AnnotatedCommit {
+		[CCode (has_construct_function = false)]
+		public AnnotatedCommit.from_ref (Ggit.Repository repository, Ggit.Ref @ref) throws GLib.Error;
 		public Ggit.OId? get_id ();
 		public unowned Ggit.AnnotatedCommit? @ref ();
 		public void unref ();
@@ -78,6 +80,7 @@ namespace Ggit {
 		public Ggit.Ref? get_upstream () throws GLib.Error;
 		public bool is_head () throws GLib.Error;
 		public Ggit.Branch? move (string new_branch_name, Ggit.CreateFlags flags) throws GLib.Error;
+		public void set_upstream (string upstream_branch_name) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_branch_enumerator_ref", type_id = "ggit_branch_enumerator_get_type ()", unref_function = "ggit_branch_enumerator_unref")]
 	[Compact]
@@ -625,11 +628,12 @@ namespace Ggit {
 	public class PushOptions : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public PushOptions ();
-		public unowned Ggit.RemoteCallbacks? get_callbacks ();
 		public int get_parallelism ();
-		public void set_callbacks (Ggit.RemoteCallbacks callbacks);
+		public unowned Ggit.RemoteCallbacks? get_remote_callbacks ();
 		public void set_parallelism (int parallelism);
-		public Ggit.RemoteCallbacks callbacks { get; set; }
+		public void set_remote_callbacks (Ggit.RemoteCallbacks callbacks);
+		[NoAccessorMethod]
+		public Ggit.RemoteCallbacks callbacks { owned get; set; }
 		public int parallelism { get; set construct; }
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_rebase_get_type ()")]
@@ -742,6 +746,7 @@ namespace Ggit {
 		public unowned string? get_url ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public Ggit.RemoteHead[]? list () throws GLib.Error;
+		public bool push ([CCode (array_length = false, array_null_terminated = true)] string[]? specs, Ggit.PushOptions push_options) throws GLib.Error;
 		public bool update_tips (Ggit.RemoteCallbacks callbacks, bool update_fetch_head, Ggit.RemoteDownloadTagsType tags_type, string? message) throws GLib.Error;
 		public bool upload ([CCode (array_length = false, array_null_terminated = true)] string[]? specs, Ggit.PushOptions push_options) throws GLib.Error;
 	}
@@ -835,6 +840,8 @@ namespace Ggit {
 		public Ggit.Submodule? lookup_submodule (string name) throws GLib.Error;
 		public Ggit.Tag? lookup_tag (Ggit.OId oid) throws GLib.Error;
 		public Ggit.Tree? lookup_tree (Ggit.OId oid) throws GLib.Error;
+		public void merge ([CCode (array_length_cname = "their_heads_length", array_length_pos = 1.5, array_length_type = "gsize")] Ggit.AnnotatedCommit[] their_heads, Ggit.MergeOptions merge_opts, Ggit.CheckoutOptions checkout_opts) throws GLib.Error;
+		public Ggit.OId? merge_base (Ggit.OId oid_one, Ggit.OId oid_two) throws GLib.Error;
 		public Ggit.Index? merge_commits (Ggit.Commit our_commit, Ggit.Commit their_commit, Ggit.MergeOptions merge_options) throws GLib.Error;
 		public Ggit.Index? merge_trees (Ggit.Tree ancestor_tree, Ggit.Tree our_tree, Ggit.Tree their_tree, Ggit.MergeOptions merge_options) throws GLib.Error;
 		public bool note_foreach (string? notes_ref, Ggit.NoteCallback callback) throws GLib.Error;
@@ -1413,7 +1420,7 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", instance_pos = 2.9)]
 	public delegate int DiffHunkCallback (Ggit.DiffDelta delta, Ggit.DiffHunk hunk);
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", instance_pos = 3.9)]
-	public delegate int DiffLineCallback (Ggit.DiffDelta delta, Ggit.DiffHunk hunk, Ggit.DiffLine line);
+	public delegate int DiffLineCallback (Ggit.DiffDelta delta, Ggit.DiffHunk? hunk, Ggit.DiffLine line);
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", instance_pos = 4.9)]
 	public delegate int DiffSimilarityMetricBufferSignatureCallback (Ggit.DiffFile file, string buf, size_t buflen, void* @out);
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", instance_pos = 3.9)]
