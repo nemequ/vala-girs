@@ -1769,7 +1769,7 @@ namespace Gda {
 		public string to_sql_extended (Gda.Connection? cnc, Gda.Set? @params, Gda.StatementSqlFlag flags, out GLib.SList<weak Gda.Holder>? params_used) throws GLib.Error;
 		public string to_sql_real (Gda.SqlRenderingContext context) throws GLib.Error;
 		[NoAccessorMethod]
-		public void* structure { get; set; }
+		public Gda.SqlStatement structure { owned get; set; }
 		public virtual signal void checked (Gda.Connection cnc, bool checked);
 		public virtual signal void reset ();
 	}

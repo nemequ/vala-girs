@@ -436,6 +436,8 @@ namespace Gegl {
 		[NoAccessorMethod]
 		public bool swap_writing { get; }
 		[NoAccessorMethod]
+		public uint64 tile_alloc_total { get; }
+		[NoAccessorMethod]
 		public int tile_cache_hits { get; }
 		[NoAccessorMethod]
 		public int tile_cache_misses { get; }
@@ -739,7 +741,8 @@ namespace Gegl {
 	public enum SerializeFlag {
 		TRIM_DEFAULTS,
 		VERSION,
-		INDENT
+		INDENT,
+		BAKE_ANIM
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_SPLIT_STRATEGY_", has_type_id = false)]
 	public enum SplitStrategy {

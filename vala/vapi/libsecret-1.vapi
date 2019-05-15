@@ -36,6 +36,7 @@ namespace Secret {
 		public bool set_label_sync (string label, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoAccessorMethod]
 		public uint64 created { get; set; }
+		public Secret.CollectionFlags flags { get; construct; }
 		[NoAccessorMethod]
 		public string label { owned get; set; }
 		public bool locked { get; }
@@ -79,6 +80,7 @@ namespace Secret {
 		public GLib.HashTable<string,string> attributes { owned get; set; }
 		[NoAccessorMethod]
 		public uint64 created { get; set; }
+		public Secret.ItemFlags flags { get; construct; }
 		[NoAccessorMethod]
 		public string label { owned get; set; }
 		public bool locked { get; }
@@ -175,6 +177,7 @@ namespace Secret {
 		public async int unlock_dbus_paths (string paths, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] unlocked) throws GLib.Error;
 		public int unlock_dbus_paths_sync (string paths, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] unlocked) throws GLib.Error;
 		public int unlock_sync (GLib.List<GLib.DBusProxy> objects, GLib.Cancellable? cancellable, out GLib.List<GLib.DBusProxy> unlocked) throws GLib.Error;
+		public Secret.ServiceFlags flags { get; construct; }
 	}
 	[CCode (cheader_filename = "libsecret/secret.h", ref_function = "secret_value_ref", type_id = "secret_value_get_type ()", unref_function = "secret_value_unref")]
 	[Compact]
@@ -190,19 +193,18 @@ namespace Secret {
 		public Secret.Value @ref ();
 		public void unref ();
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_COLLECTION_CREATE_", has_type_id = false)]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_COLLECTION_CREATE_", type_id = "secret_collection_create_flags_get_type ()")]
 	[Flags]
 	public enum CollectionCreateFlags {
-		[CCode (cname = "SECRET_COLLECTION_CREATE_NONE")]
-		COLLECTION_CREATE_NONE
+		NONE
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_COLLECTION_", has_type_id = false)]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_COLLECTION_", type_id = "secret_collection_flags_get_type ()")]
 	[Flags]
 	public enum CollectionFlags {
 		NONE,
 		LOAD_ITEMS
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ERROR_", has_type_id = false)]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ERROR_", type_id = "secret_error_get_type ()")]
 	public enum Error {
 		PROTOCOL,
 		IS_LOCKED,
@@ -210,37 +212,37 @@ namespace Secret {
 		ALREADY_EXISTS;
 		public static GLib.Quark get_quark ();
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ITEM_CREATE_", has_type_id = false)]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ITEM_CREATE_", type_id = "secret_item_create_flags_get_type ()")]
 	[Flags]
 	public enum ItemCreateFlags {
 		NONE,
 		REPLACE
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ITEM_", has_type_id = false)]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ITEM_", type_id = "secret_item_flags_get_type ()")]
 	[Flags]
 	public enum ItemFlags {
 		NONE,
 		LOAD_SECRET
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SCHEMA_ATTRIBUTE_", has_type_id = false)]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SCHEMA_ATTRIBUTE_", type_id = "secret_schema_attribute_type_get_type ()")]
 	public enum SchemaAttributeType {
 		STRING,
 		INTEGER,
 		BOOLEAN
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SCHEMA_", has_type_id = false)]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SCHEMA_", type_id = "secret_schema_flags_get_type ()")]
 	[Flags]
 	public enum SchemaFlags {
 		NONE,
 		DONT_MATCH_NAME
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SCHEMA_TYPE_", has_type_id = false)]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SCHEMA_TYPE_", type_id = "secret_schema_type_get_type ()")]
 	[Version (since = "0.18.6")]
 	public enum SchemaType {
 		NOTE,
 		COMPAT_NETWORK
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SEARCH_", has_type_id = false)]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SEARCH_", type_id = "secret_search_flags_get_type ()")]
 	[Flags]
 	public enum SearchFlags {
 		NONE,
@@ -248,7 +250,7 @@ namespace Secret {
 		UNLOCK,
 		LOAD_SECRETS
 	}
-	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SERVICE_", has_type_id = false)]
+	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_SERVICE_", type_id = "secret_service_flags_get_type ()")]
 	[Flags]
 	public enum ServiceFlags {
 		NONE,

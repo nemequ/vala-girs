@@ -1807,6 +1807,8 @@ namespace Dazzle {
 		public abstract void set_manager (Dazzle.DockManager? manager);
 		public abstract void update_visibility ();
 		public virtual signal void manager_set (Dazzle.DockManager old_manager);
+		[HasEmitter]
+		public virtual signal void needs_attention ();
 		public virtual signal void presented ();
 	}
 	[CCode (cheader_filename = "dazzle.h", lower_case_csuffix = "graph_view_renderer", type_cname = "DzlGraphRendererInterface", type_id = "dzl_graph_view_renderer_get_type ()")]
