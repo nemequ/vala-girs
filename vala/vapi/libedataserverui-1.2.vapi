@@ -8,7 +8,7 @@ namespace E {
 		[CCode (has_construct_function = false, type = "GtkCellRenderer*")]
 		public CellRendererColor ();
 		[NoAccessorMethod]
-		public Gdk.RGBA rgba { get; set; }
+		public Gdk.RGBA rgba { owned get; set; }
 	}
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", type_id = "e_credentials_prompter_get_type ()")]
 	[Version (since = "3.16")]
@@ -63,13 +63,16 @@ namespace E {
 	[Version (since = "3.30")]
 	public class RemindersWidget : Gtk.Grid, Atk.Implementor, E.Extensible, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false)]
-		protected RemindersWidget ();
+		public RemindersWidget (ECal.ReminderWatcher watcher);
 		public unowned GLib.Settings get_settings ();
 		public unowned Gtk.TreeView get_tree_view ();
+		public unowned ECal.ReminderWatcher get_watcher ();
 		public bool is_empty ();
 		public void report_error (string? prefix, GLib.Error? error);
 		[NoAccessorMethod]
 		public bool empty { get; }
+		public ECal.ReminderWatcher watcher { get; construct; }
+		public virtual signal bool activated (ECal.ReminderData rd);
 		public virtual signal void changed ();
 	}
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", cprefix = "E_CREDENTIALS_PROMPTER_PROMPT_FLAG_", has_type_id = false)]

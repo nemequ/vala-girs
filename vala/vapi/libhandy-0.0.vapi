@@ -243,6 +243,33 @@ namespace Hdy {
 		public bool search_mode_enabled { get; set; }
 		public bool show_close_button { get; set construct; }
 	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_squeezer_get_type ()")]
+	public class Squeezer : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false)]
+		public Squeezer ();
+		public bool get_child_enabled (Gtk.Widget child);
+		[Version (since = "0.0.10")]
+		public bool get_homogeneous ();
+		[Version (since = "0.0.10")]
+		public bool get_interpolate_size ();
+		public uint get_transition_duration ();
+		public bool get_transition_running ();
+		public Hdy.SqueezerTransitionType get_transition_type ();
+		public unowned Gtk.Widget? get_visible_child ();
+		public void set_child_enabled (Gtk.Widget child, bool enabled);
+		[Version (since = "0.0.10")]
+		public void set_homogeneous (bool homogeneous);
+		[Version (since = "0.0.10")]
+		public void set_interpolate_size (bool interpolate_size);
+		public void set_transition_duration (uint duration);
+		public void set_transition_type (Hdy.SqueezerTransitionType transition);
+		public bool homogeneous { get; set; }
+		public bool interpolate_size { get; set; }
+		public uint transition_duration { get; set; }
+		public bool transition_running { get; }
+		public Hdy.SqueezerTransitionType transition_type { get; set; }
+		public Gtk.Widget visible_child { get; }
+	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_title_bar_get_type ()")]
 	public class TitleBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
@@ -274,17 +301,23 @@ namespace Hdy {
 		[Version (since = "0.0.10")]
 		public Gtk.IconSize get_icon_size ();
 		[Version (since = "0.0.10")]
+		public Pango.EllipsizeMode get_narrow_ellipsize ();
+		[Version (since = "0.0.10")]
 		public Hdy.ViewSwitcherPolicy get_policy ();
 		[Version (since = "0.0.10")]
 		public unowned Gtk.Stack? get_stack ();
 		[Version (since = "0.0.10")]
 		public void set_icon_size (Gtk.IconSize icon_size);
 		[Version (since = "0.0.10")]
+		public void set_narrow_ellipsize (Pango.EllipsizeMode mode);
+		[Version (since = "0.0.10")]
 		public void set_policy (Hdy.ViewSwitcherPolicy policy);
 		[Version (since = "0.0.10")]
 		public void set_stack (Gtk.Stack? stack);
 		[Version (since = "0.0.10")]
 		public int icon_size { get; set; }
+		[Version (since = "0.0.10")]
+		public Pango.EllipsizeMode narrow_ellipsize { get; set; }
 		[Version (since = "0.0.10")]
 		public Hdy.ViewSwitcherPolicy policy { get; set; }
 		[Version (since = "0.0.10")]
@@ -344,6 +377,11 @@ namespace Hdy {
 	public enum LeafletModeTransitionType {
 		NONE,
 		SLIDE
+	}
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_SQUEEZER_TRANSITION_TYPE_", type_id = "hdy_squeezer_transition_type_get_type ()")]
+	public enum SqueezerTransitionType {
+		NONE,
+		CROSSFADE
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_VIEW_SWITCHER_POLICY_", type_id = "hdy_view_switcher_policy_get_type ()")]
 	public enum ViewSwitcherPolicy {

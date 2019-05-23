@@ -632,7 +632,7 @@ namespace GData {
 		public string billing_information { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "0.7.0")]
-		public GLib.Date birthday { get; set; }
+		public GLib.Date birthday { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "0.7.0")]
 		public bool birthday_has_year { get; set; }

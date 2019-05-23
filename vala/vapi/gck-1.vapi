@@ -35,7 +35,7 @@ namespace Gck {
 		[CCode (has_construct_function = false)]
 		public Attribute.ulong (global::ulong attr_type, global::ulong value);
 	}
-	[CCode (cheader_filename = "gck/gck.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gck_attributes_get_type ()")]
+	[CCode (cheader_filename = "gck/gck.h", ref_function = "gck_attributes_ref", type_id = "gck_attributes_get_type ()", unref_function = "gck_attributes_unref")]
 	[Compact]
 	public class Attributes {
 		[CCode (has_construct_function = false)]
@@ -52,7 +52,7 @@ namespace Gck {
 		public Gck.Attributes @ref ();
 		public Gck.Attributes ref_sink ();
 		public string to_string ();
-		public static void unref (void* attrs);
+		public void unref ();
 	}
 	[CCode (cheader_filename = "gck/gck.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gck_builder_get_type ()")]
 	[Compact]
@@ -62,7 +62,7 @@ namespace Gck {
 		public void add_all (Gck.Attributes attrs);
 		public void add_attribute (Gck.Attribute attr);
 		public void add_boolean (ulong attr_type, bool value);
-		public void add_data (ulong attr_type, [CCode (array_length_cname = "length", array_length_pos = 2.1, array_length_type = "gsize")] uint8[] value);
+		public void add_data (ulong attr_type, [CCode (array_length_cname = "length", array_length_pos = 2.1, array_length_type = "gsize")] uint8[]? value);
 		public void add_date (ulong attr_type, GLib.Date value);
 		public void add_empty (ulong attr_type);
 		public void add_invalid (ulong attr_type);
@@ -82,14 +82,14 @@ namespace Gck {
 		public Gck.Builder @ref ();
 		public void set_all (Gck.Attributes attrs);
 		public void set_boolean (ulong attr_type, bool value);
-		public void set_data (ulong attr_type, [CCode (array_length_cname = "length", array_length_pos = 2.1, array_length_type = "gsize")] uint8[] value);
+		public void set_data (ulong attr_type, [CCode (array_length_cname = "length", array_length_pos = 2.1, array_length_type = "gsize")] uint8[]? value);
 		public void set_date (ulong attr_type, GLib.Date value);
 		public void set_empty (ulong attr_type);
 		public void set_invalid (ulong attr_type);
 		public void set_string (ulong attr_type, string value);
 		public void set_ulong (ulong attr_type, ulong value);
 		public Gck.Attributes steal ();
-		public void take_data (ulong attr_type, owned uint8 value, size_t length);
+		public void take_data (ulong attr_type, [CCode (array_length_cname = "length", array_length_pos = 2.1, array_length_type = "gsize")] owned uint8[]? value);
 		public static void unref (void* builder);
 	}
 	[CCode (cheader_filename = "gck/gck.h", type_id = "gck_enumerator_get_type ()")]

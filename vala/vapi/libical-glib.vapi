@@ -34,17 +34,12 @@ namespace ICal {
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_array_get_type ()")]
 	public class Array : ICal.Object {
 		[CCode (has_construct_function = false)]
-		[Version (since = "1.0")]
-		public Array (int element_size, int increment_size);
-		[Version (since = "1.0")]
-		public void append (GLib.Object element);
+		protected Array ();
 		[CCode (cname = "i_cal_timezone_array_append_from_vtimezone")]
 		[Version (since = "1.0")]
 		public void append_timezone_from_vtimezone (ICal.Component child);
 		[Version (since = "1.0")]
 		public ICal.Array copy ();
-		[Version (since = "1.0")]
-		public unowned GLib.Object? element_at (int position);
 		[Version (since = "1.0")]
 		public void remove_element_at (int position);
 		[Version (since = "1.0")]

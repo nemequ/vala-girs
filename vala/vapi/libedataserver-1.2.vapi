@@ -18,8 +18,7 @@ namespace E {
 		public bool check_refresh_supported ();
 		[Version (since = "3.16")]
 		public string dup_bus_name ();
-		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
-		public static GLib.Error error_create (E.ClientError code, string custom_msg);
+		public static GLib.Error error_create (E.ClientError code, string? custom_msg);
 		public static GLib.Quark error_quark ();
 		public static unowned string error_to_string (E.ClientError code);
 		public virtual async bool get_backend_property (string prop_name, GLib.Cancellable? cancellable, out string prop_value) throws GLib.Error;
@@ -1451,6 +1450,15 @@ namespace E {
 		OTHER_ERROR,
 		NOT_OPENED,
 		OUT_OF_SYNC
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_CONFLICT_RESOLUTION_", type_id = "e_conflict_resolution_get_type ()")]
+	[Version (since = "3.26")]
+	public enum ConflictResolution {
+		FAIL,
+		USE_NEWER,
+		KEEP_SERVER,
+		KEEP_LOCAL,
+		WRITE_COPY
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_MDN_RESPONSE_POLICY_", type_id = "e_mdn_response_policy_get_type ()")]
 	[Version (since = "3.6")]

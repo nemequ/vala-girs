@@ -204,11 +204,11 @@ namespace Soup {
 		public void set_generic_auth_callback (owned Soup.AuthDomainGenericAuthCallback auth_callback);
 		public bool try_generic_auth_callback (Soup.Message msg, string username);
 		[NoAccessorMethod]
-		public Soup.AuthDomainFilter filter { owned get; set; }
+		public Soup.AuthDomainFilter filter { get; set; }
 		[NoAccessorMethod]
 		public void* filter_data { get; set; }
 		[NoAccessorMethod]
-		public Soup.AuthDomainGenericAuthCallback generic_auth_callback { owned get; set; }
+		public Soup.AuthDomainGenericAuthCallback generic_auth_callback { get; set; }
 		[NoAccessorMethod]
 		public void* generic_auth_data { get; set; }
 		[NoAccessorMethod]
@@ -221,7 +221,7 @@ namespace Soup {
 		public AuthDomainBasic (string optname1, ...);
 		public void set_auth_callback (owned Soup.AuthDomainBasicAuthCallback callback);
 		[NoAccessorMethod]
-		public Soup.AuthDomainBasicAuthCallback auth_callback { owned get; set; }
+		public Soup.AuthDomainBasicAuthCallback auth_callback { get; set; }
 		[NoAccessorMethod]
 		public void* auth_data { get; set; }
 	}
@@ -232,7 +232,7 @@ namespace Soup {
 		public static string encode_password (string username, string realm, string password);
 		public void set_auth_callback (owned Soup.AuthDomainDigestAuthCallback callback);
 		[NoAccessorMethod]
-		public Soup.AuthDomainDigestAuthCallback auth_callback { owned get; set; }
+		public Soup.AuthDomainDigestAuthCallback auth_callback { get; set; }
 		[NoAccessorMethod]
 		public void* auth_data { get; set; }
 	}
@@ -400,6 +400,8 @@ namespace Soup {
 		public CookieJar ();
 		[Version (since = "2.26")]
 		public void add_cookie (owned Soup.Cookie cookie);
+		[Version (since = "2.68")]
+		public void add_cookie_full (owned Soup.Cookie cookie, Soup.URI? uri, Soup.URI? first_party);
 		[Version (since = "2.40")]
 		public void add_cookie_with_first_party (Soup.URI first_party, owned Soup.Cookie cookie);
 		[Version (since = "2.26")]
@@ -489,6 +491,53 @@ namespace Soup {
 		public time_t to_time_t ();
 		[Version (since = "2.24")]
 		public GLib.TimeVal to_timeval ();
+	}
+	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_hsts_enforcer_get_type ()")]
+	public class HSTSEnforcer : GLib.Object, Soup.SessionFeature {
+		[CCode (has_construct_function = false)]
+		[Version (since = "2.68")]
+		public HSTSEnforcer ();
+		[Version (since = "2.68")]
+		public virtual bool has_valid_policy (string domain);
+		[Version (since = "2.68")]
+		public virtual bool is_persistent ();
+		[Version (since = "2.68")]
+		public void set_policy (Soup.HSTSPolicy policy);
+		[Version (since = "2.68")]
+		public void set_session_policy (string domain, bool include_subdomains);
+		public virtual signal void changed (Soup.HSTSPolicy old_policy, Soup.HSTSPolicy new_policy);
+	}
+	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_hsts_enforcer_db_get_type ()")]
+	public class HSTSEnforcerDB : Soup.HSTSEnforcer, Soup.SessionFeature {
+		[CCode (has_construct_function = false, type = "SoupHSTSEnforcer*")]
+		[Version (since = "2.68")]
+		public HSTSEnforcerDB (string filename);
+		[NoAccessorMethod]
+		public string filename { owned get; construct; }
+	}
+	[CCode (cheader_filename = "libsoup/soup.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "soup_hsts_policy_get_type ()")]
+	[Compact]
+	[Version (since = "2.68")]
+	public class HSTSPolicy {
+		public weak string domain;
+		public weak Soup.Date expires;
+		public bool include_subdomains;
+		public ulong max_age;
+		[CCode (has_construct_function = false)]
+		public HSTSPolicy (string domain, ulong max_age, bool include_subdomains);
+		public Soup.HSTSPolicy copy ();
+		public bool equal (Soup.HSTSPolicy policy2);
+		public void free ();
+		[CCode (has_construct_function = false)]
+		public HSTSPolicy.from_response (Soup.Message msg);
+		[CCode (has_construct_function = false)]
+		public HSTSPolicy.full (string domain, ulong max_age, Soup.Date expires, bool include_subdomains);
+		public unowned string get_domain ();
+		public bool includes_subdomains ();
+		public bool is_expired ();
+		public bool is_session_policy ();
+		[CCode (has_construct_function = false)]
+		public HSTSPolicy.session_policy (string domain, bool include_subdomains);
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_logger_get_type ()")]
 	public class Logger : GLib.Object, Soup.SessionFeature {
@@ -1656,6 +1705,10 @@ namespace Soup {
 	[CCode (cheader_filename = "libsoup/soup.h", cname = "SOUP_FORM_MIME_TYPE_URLENCODED")]
 	[Version (since = "2.26")]
 	public const string FORM_MIME_TYPE_URLENCODED;
+	[CCode (cheader_filename = "libsoup/soup.h", cname = "SOUP_HSTS_ENFORCER_DB_FILENAME")]
+	public const string HSTS_ENFORCER_DB_FILENAME;
+	[CCode (cheader_filename = "libsoup/soup.h", cname = "SOUP_HSTS_POLICY_MAX_AGE_PAST")]
+	public const int HSTS_POLICY_MAX_AGE_PAST;
 	[CCode (cheader_filename = "libsoup/soup.h", cname = "SOUP_LOGGER_LEVEL")]
 	[Version (since = "2.56")]
 	public const string LOGGER_LEVEL;

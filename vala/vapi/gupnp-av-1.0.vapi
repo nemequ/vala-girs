@@ -189,20 +189,20 @@ namespace GUPnP {
 		public string author { get; set; }
 		public string creator { get; set; }
 		public string date { get; set; }
-		public Xml.Ns* dc_namespace { get; construct; }
+		public Xml.Ns* dc_namespace { owned get; construct; }
 		public string description { get; set; }
 		public GUPnP.OCMFlags dlna_managed { get; set; }
-		public Xml.Ns* dlna_namespace { get; construct; }
+		public Xml.Ns* dlna_namespace { owned get; construct; }
 		public string genre { get; set; }
 		public string id { get; set; }
 		public string parent_id { get; set; }
-		public Xml.Ns* pv_namespace { get; construct; }
+		public Xml.Ns* pv_namespace { owned get; construct; }
 		public bool restricted { get; set; }
 		public string title { get; set; }
 		public int track_number { get; set; }
 		public uint update_id { get; set; }
 		public string upnp_class { get; set; }
-		public Xml.Ns* upnp_namespace { get; construct; }
+		public Xml.Ns* upnp_namespace { owned get; construct; }
 		public string write_status { get; set; }
 		public Xml.Node* xml_node { get; construct; }
 	}
@@ -273,13 +273,13 @@ namespace GUPnP {
 		public int bits_per_sample { get; set; }
 		public int64 cleartext_size { get; set; }
 		public int color_depth { get; set; }
-		public Xml.Ns* dlna_namespace { get; construct; }
+		public Xml.Ns* dlna_namespace { owned get; construct; }
 		public long duration { get; set; }
 		public int height { get; set; }
 		public string import_uri { get; set; }
 		public string protection { get; set; }
 		public GUPnP.ProtocolInfo protocol_info { get; set; }
-		public Xml.Ns* pv_namespace { get; construct; }
+		public Xml.Ns* pv_namespace { owned get; construct; }
 		public int sample_freq { get; set; }
 		public long size { get; set; }
 		public int64 size64 { get; set; }

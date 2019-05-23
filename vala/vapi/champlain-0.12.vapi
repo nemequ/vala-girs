@@ -160,7 +160,7 @@ namespace Champlain {
 		[CCode (has_construct_function = false, type = "ClutterActor*")]
 		public Label.with_text (string text, string? font, Clutter.Color? text_color, Clutter.Color? label_color);
 		public Pango.Alignment alignment { get; set; }
-		public Clutter.Color color { get; set; }
+		public Clutter.Color color { owned get; set; }
 		public bool draw_background { get; set; }
 		[Version (since = "0.12.10")]
 		public bool draw_shadow { get; set; }
@@ -169,7 +169,7 @@ namespace Champlain {
 		public Clutter.Actor image { get; set; }
 		public bool single_line_mode { get; set; }
 		public string text { get; set; }
-		public Clutter.Color text_color { get; set; }
+		public Clutter.Color text_color { owned get; set; }
 		public bool use_markup { get; set; }
 		public bool wrap { get; set; }
 		public Pango.WrapMode wrap_mode { get; set; }
@@ -439,9 +439,9 @@ namespace Champlain {
 		public void set_visible (bool value);
 		public bool closed { get; set; }
 		public bool fill { get; set; }
-		public Clutter.Color fill_color { get; set; }
+		public Clutter.Color fill_color { owned get; set; }
 		public bool stroke { get; set; }
-		public Clutter.Color stroke_color { get; set; }
+		public Clutter.Color stroke_color { owned get; set; }
 		public double stroke_width { get; set; }
 		public bool visible { get; set; }
 	}
@@ -456,7 +456,7 @@ namespace Champlain {
 		public double get_size ();
 		public void set_color (Clutter.Color? color);
 		public void set_size (double size);
-		public Clutter.Color color { get; set; }
+		public Clutter.Color color { owned get; set; }
 		public double size { get; set; }
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_renderer_get_type ()")]

@@ -141,7 +141,7 @@ namespace Gtk {
 		[NoAccessorMethod]
 		public Gtk.SourceCompletion completion { owned get; construct; }
 		[NoAccessorMethod]
-		public Gtk.TextIter iter { get; set; }
+		public Gtk.TextIter iter { owned get; set; }
 		public virtual signal void cancelled ();
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_completion_info_get_type ()")]
@@ -440,7 +440,7 @@ namespace Gtk {
 		public void set_visible (bool visible);
 		public Gtk.SourceGutterRendererAlignmentMode alignment_mode { get; set construct; }
 		[NoAccessorMethod]
-		public Gdk.RGBA background_rgba { get; set; }
+		public Gdk.RGBA background_rgba { owned get; set; }
 		[NoAccessorMethod]
 		public bool background_set { get; set construct; }
 		public int size { get; set construct; }
@@ -593,7 +593,7 @@ namespace Gtk {
 		[Version (deprecated = true, deprecated_since = "3.10")]
 		public void set_stock_id (string stock_id);
 		[NoAccessorMethod]
-		public Gdk.RGBA background { get; set; }
+		public Gdk.RGBA background { owned get; set; }
 		public GLib.Icon gicon { get; set; }
 		public string icon_name { get; set; }
 		public Gdk.Pixbuf pixbuf { get; set; }

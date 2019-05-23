@@ -188,11 +188,11 @@ online, "FALSE" at all other times.  See also e_client_is_online().</doc>
               deprecated-version="3.8">
       <doc xml:space="preserve"
            filename="e-client.h"
-           line="365">The "opened" property is "TRUE" when the client is fully opened,
+           line="369">The "opened" property is "TRUE" when the client is fully opened,
 "FALSE" at all other times.</doc>
       <doc-deprecated xml:space="preserve">Clients don't need to care if they're fully opened
                  anymore.  This property will always return %TRUE.</doc-deprecated>
-      <source-position filename="e-client.h" line="375"/>
+      <source-position filename="e-client.h" line="379"/>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="CLIENT_BACKEND_PROPERTY_OPENING"
@@ -203,11 +203,11 @@ online, "FALSE" at all other times.  See also e_client_is_online().</doc>
               deprecated-version="3.8">
       <doc xml:space="preserve"
            filename="e-client.h"
-           line="378">The "opening" property is "TRUE" when the client is in the process of
+           line="382">The "opening" property is "TRUE" when the client is in the process of
 opening, "FALSE" at all other times.</doc>
       <doc-deprecated xml:space="preserve">Clients don't need to care if they're fully opened
                  anymore.  This property will always return %FALSE.</doc-deprecated>
-      <source-position filename="e-client.h" line="388"/>
+      <source-position filename="e-client.h" line="392"/>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="CLIENT_BACKEND_PROPERTY_READONLY"
@@ -245,39 +245,79 @@ last time the revision was observed.</doc>
            glib:type-struct="ClientClass">
       <doc xml:space="preserve"
            filename="e-client.h"
-           line="175">Contains only private data that should be read and manipulated using the
+           line="179">Contains only private data that should be read and manipulated using the
 functions below.</doc>
-      <source-position filename="e-client.h" line="305"/>
+      <source-position filename="e-client.h" line="309"/>
       <function name="error_create"
                 c:identifier="e_client_error_create"
-                version="3.2"
-                deprecated="1"
-                deprecated-version="3.8">
-        <doc-deprecated xml:space="preserve">Just use the #GError API directly.</doc-deprecated>
-        <source-position filename="e-client.h" line="391"/>
+                version="3.2">
+        <source-position filename="e-client.h" line="173"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="196">a new #GError containing an E_CLIENT_ERROR of the given
-@code. If the @custom_msg is NULL, then the error message is
-the one returned from e_client_error_to_string() for the @code,
-otherwise the given message is used.
-
-Returned pointer should be freed with g_error_free().</doc>
+               line="195">a new #GError containing an #E_CLIENT_ERROR of the given
+   @code. If the @custom_msg is NULL, then the error message is the one returned
+   from e_client_error_to_string() for the @code, otherwise the given message is used.
+   Returned pointer should be freed with g_error_free().</doc>
           <type name="GLib.Error" c:type="GError*"/>
         </return-value>
         <parameters>
           <parameter name="code" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="193">an #EClientError code to create</doc>
+                 line="192">an #EClientError code to create</doc>
             <type name="ClientError" c:type="EClientError"/>
           </parameter>
-          <parameter name="custom_msg" transfer-ownership="none">
+          <parameter name="custom_msg"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="194">custom message to use for the error; can be %NULL</doc>
+                 line="193">custom message to use for the error; can be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="error_create_fmt"
+                c:identifier="e_client_error_create_fmt"
+                version="3.34"
+                introspectable="0">
+        <doc xml:space="preserve"
+             filename="e-client.c"
+             line="212">Similar as e_client_error_create(), only here, instead of custom_msg,
+is used a printf() format to create a custom message for the error.</doc>
+        <source-position filename="e-client.h" line="175"/>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="e-client.c"
+               line="221">a newly allocated #GError, which should be
+  freed with g_error_free(), when no longer needed.
+  The #GError has set the custom message, or the default message for
+  @code, when @format is %NULL.</doc>
+          <type name="GLib.Error" c:type="GError*"/>
+        </return-value>
+        <parameters>
+          <parameter name="code" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="e-client.c"
+                 line="214">an #EClientError</doc>
+            <type name="ClientError" c:type="EClientError"/>
+          </parameter>
+          <parameter name="format"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="e-client.c"
+                 line="215">message format, or %NULL to use the default message for the @code</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="e-client.c"
+                 line="216">arguments for the format</doc>
+            <varargs/>
           </parameter>
         </parameters>
       </function>
@@ -291,19 +331,19 @@ Returned pointer should be freed with g_error_free().</doc>
                 version="3.2">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="125">Get localized human readable description of the given error code.</doc>
-        <source-position filename="e-client.h" line="173"/>
+             line="124">Get localized human readable description of the given error code.</doc>
+        <source-position filename="e-client.h" line="172"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="131">Localized human readable description of the given error code</doc>
+               line="130">Localized human readable description of the given error code</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <parameter name="code" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="127">an #EClientError error code</doc>
+                 line="126">an #EClientError error code</doc>
             <type name="ClientError" c:type="EClientError"/>
           </parameter>
         </parameters>
@@ -315,13 +355,13 @@ Returned pointer should be freed with g_error_free().</doc>
                 deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2205">Copies a #GSList of #GObject&lt;!-- --&gt;s to the end of @copy_to.</doc>
+             line="2230">Copies a #GSList of #GObject&lt;!-- --&gt;s to the end of @copy_to.</doc>
         <doc-deprecated xml:space="preserve">Use e_util_copy_object_slist() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="466"/>
+        <source-position filename="e-client.h" line="468"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="2212">New head of @copy_to.
+               line="2237">New head of @copy_to.
 The returned pointer can be freed with e_client_util_free_object_slist().</doc>
           <type name="GLib.SList" c:type="GSList*">
             <type name="GObject.Object"/>
@@ -334,7 +374,7 @@ The returned pointer can be freed with e_client_util_free_object_slist().</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2207">Where to copy; may be %NULL</doc>
+                 line="2232">Where to copy; may be %NULL</doc>
             <type name="GLib.SList" c:type="GSList*">
               <type name="GObject.Object"/>
             </type>
@@ -342,7 +382,7 @@ The returned pointer can be freed with e_client_util_free_object_slist().</doc>
           <parameter name="objects" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2208">#GSList of #GObject&lt;!-- --&gt;s to be copied</doc>
+                 line="2233">#GSList of #GObject&lt;!-- --&gt;s to be copied</doc>
             <type name="GLib.SList" c:type="const GSList*">
               <type name="GObject.Object"/>
             </type>
@@ -356,13 +396,13 @@ The returned pointer can be freed with e_client_util_free_object_slist().</doc>
                 deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2184">Copies the #GSList of strings to the end of @copy_to.</doc>
+             line="2209">Copies the #GSList of strings to the end of @copy_to.</doc>
         <doc-deprecated xml:space="preserve">Use e_util_copy_string_slist() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="464"/>
+        <source-position filename="e-client.h" line="466"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="2191">New head of @copy_to.
+               line="2216">New head of @copy_to.
 The returned pointer can be freed with e_client_util_free_string_slist().</doc>
           <type name="GLib.SList" c:type="GSList*">
             <type name="utf8"/>
@@ -375,7 +415,7 @@ The returned pointer can be freed with e_client_util_free_string_slist().</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2186">Where to copy; may be %NULL</doc>
+                 line="2211">Where to copy; may be %NULL</doc>
             <type name="GLib.SList" c:type="GSList*">
               <type name="utf8"/>
             </type>
@@ -383,7 +423,7 @@ The returned pointer can be freed with e_client_util_free_string_slist().</doc>
           <parameter name="strings" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2187">#GSList of strings to be copied</doc>
+                 line="2212">#GSList of strings to be copied</doc>
             <type name="GLib.SList" c:type="const GSList*">
               <type name="utf8"/>
             </type>
@@ -397,10 +437,10 @@ The returned pointer can be freed with e_client_util_free_string_slist().</doc>
                 deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2242">Calls g_object_unref() on each member of @objects and then frees @objects
+             line="2267">Calls g_object_unref() on each member of @objects and then frees @objects
 itself.</doc>
         <doc-deprecated xml:space="preserve">Use g_slist_free_full() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="469"/>
+        <source-position filename="e-client.h" line="471"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -408,7 +448,7 @@ itself.</doc>
           <parameter name="objects" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2244">a #GSList of #GObject&lt;!-- --&gt;s</doc>
+                 line="2269">a #GSList of #GObject&lt;!-- --&gt;s</doc>
             <type name="GLib.SList" c:type="GSList*">
               <type name="GObject.Object"/>
             </type>
@@ -422,9 +462,9 @@ itself.</doc>
                 deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2226">Frees memory previously allocated by e_client_util_strv_to_slist().</doc>
+             line="2251">Frees memory previously allocated by e_client_util_strv_to_slist().</doc>
         <doc-deprecated xml:space="preserve">Use g_slist_free_full() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="468"/>
+        <source-position filename="e-client.h" line="470"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -432,7 +472,7 @@ itself.</doc>
           <parameter name="strings" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2228">a #GSList of strings (gchar *)</doc>
+                 line="2253">a #GSList of strings (gchar *)</doc>
             <type name="GLib.SList" c:type="GSList*">
               <type name="utf8"/>
             </type>
@@ -444,12 +484,12 @@ itself.</doc>
                 version="3.2">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2259">Parses comma-separated list of values into #GSList.</doc>
-        <source-position filename="e-client.h" line="361"/>
+             line="2284">Parses comma-separated list of values into #GSList.</doc>
+        <source-position filename="e-client.h" line="365"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="2265">Newly allocated #GSList of
+               line="2290">Newly allocated #GSList of
 newly allocated strings corresponding to values parsed from @strings.
 Free the returned pointer with e_client_util_free_string_slist().</doc>
           <type name="GLib.SList" c:type="GSList*">
@@ -460,7 +500,7 @@ Free the returned pointer with e_client_util_free_string_slist().</doc>
           <parameter name="strings" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2261">string of comma-separated values</doc>
+                 line="2286">string of comma-separated values</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -472,13 +512,13 @@ Free the returned pointer with e_client_util_free_string_slist().</doc>
                 deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2141">Convert a list of strings into a %NULL-terminated array of strings.</doc>
+             line="2166">Convert a list of strings into a %NULL-terminated array of strings.</doc>
         <doc-deprecated xml:space="preserve">Use e_util_slist_to_strv() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="462"/>
+        <source-position filename="e-client.h" line="464"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="2147">Newly allocated %NULL-terminated array of strings.
+               line="2172">Newly allocated %NULL-terminated array of strings.
 The returned pointer should be freed with g_strfreev().
 
 Note: Paired function for this is e_client_util_strv_to_slist().</doc>
@@ -490,7 +530,7 @@ Note: Paired function for this is e_client_util_strv_to_slist().</doc>
           <parameter name="strings" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2143">a #GSList of strings (const gchar *)</doc>
+                 line="2168">a #GSList of strings (const gchar *)</doc>
             <type name="GLib.SList" c:type="const GSList*">
               <type name="utf8"/>
             </type>
@@ -504,13 +544,13 @@ Note: Paired function for this is e_client_util_strv_to_slist().</doc>
                 deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2162">Convert a %NULL-terminated array of strings to a list of strings.</doc>
+             line="2187">Convert a %NULL-terminated array of strings to a list of strings.</doc>
         <doc-deprecated xml:space="preserve">Use e_util_strv_to_slist() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="463"/>
+        <source-position filename="e-client.h" line="465"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="2168">Newly allocated #GSList of
+               line="2193">Newly allocated #GSList of
 newly allocated strings. The returned pointer should be freed with
 e_client_util_free_string_slist().
 
@@ -523,7 +563,7 @@ Note: Paired function for this is e_client_util_slist_to_strv().</doc>
           <parameter name="strv" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2164">a %NULL-terminated array of strings (const gchar *)</doc>
+                 line="2189">a %NULL-terminated array of strings (const gchar *)</doc>
             <type name="utf8" c:type="const gchar* const*"/>
           </parameter>
         </parameters>
@@ -535,7 +575,7 @@ Note: Paired function for this is e_client_util_slist_to_strv().</doc>
                 deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2330">The function takes a @dbus_error and tries to find a match in @known_errors
+             line="2355">The function takes a @dbus_error and tries to find a match in @known_errors
 for it, if it is a G_IO_ERROR, G_IO_ERROR_DBUS_ERROR. If it is anything else
 then the @dbus_error is moved to @client_error.
 
@@ -546,11 +586,11 @@ is returned and the @client_error is left without change. Otherwise, the
 result in E_CLIENT_ERROR, E_CLIENT_ERROR_OTHER_ERROR if none of @known_error
 matches.</doc>
         <doc-deprecated xml:space="preserve">This function is no longer used.</doc-deprecated>
-        <source-position filename="e-client.h" line="490"/>
+        <source-position filename="e-client.h" line="492"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="2350">Whether was @dbus_error processed into @client_error.
+               line="2375">Whether was @dbus_error processed into @client_error.
 
 Note: The @dbus_error is automatically freed if returned %TRUE.</doc>
           <type name="gboolean" c:type="gboolean"/>
@@ -559,7 +599,7 @@ Note: The @dbus_error is automatically freed if returned %TRUE.</doc>
           <parameter name="dbus_error" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2332">DBus #GError to unwrap</doc>
+                 line="2357">DBus #GError to unwrap</doc>
             <type name="GLib.Error" c:type="GError*"/>
           </parameter>
           <parameter name="client_error"
@@ -568,37 +608,37 @@ Note: The @dbus_error is automatically freed if returned %TRUE.</doc>
                      transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2333">Resulting #GError; can be %NULL</doc>
+                 line="2358">Resulting #GError; can be %NULL</doc>
             <type name="GLib.Error" c:type="GError**"/>
           </parameter>
           <parameter name="known_errors" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2334">List of known errors against which try to match</doc>
+                 line="2359">List of known errors against which try to match</doc>
             <type name="ClientErrorsList" c:type="const EClientErrorsList*"/>
           </parameter>
           <parameter name="known_errors_count" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2335">How many items are stored in @known_errors</doc>
+                 line="2360">How many items are stored in @known_errors</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="known_errors_domain" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2336">Error domain for @known_errors</doc>
+                 line="2361">Error domain for @known_errors</doc>
             <type name="GLib.Quark" c:type="GQuark"/>
           </parameter>
           <parameter name="fail_when_none_matched" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2337">Whether to fail when none of @known_errors matches</doc>
+                 line="2362">Whether to fail when none of @known_errors matches</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
       </function>
       <virtual-method name="backend_died">
-        <source-position filename="e-client.h" line="300"/>
+        <source-position filename="e-client.h" line="304"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -609,7 +649,7 @@ Note: The @dbus_error is automatically freed if returned %TRUE.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="backend_error">
-        <source-position filename="e-client.h" line="298"/>
+        <source-position filename="e-client.h" line="302"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -623,7 +663,7 @@ Note: The @dbus_error is automatically freed if returned %TRUE.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="backend_property_changed">
-        <source-position filename="e-client.h" line="301"/>
+        <source-position filename="e-client.h" line="305"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -644,10 +684,10 @@ Note: The @dbus_error is automatically freed if returned %TRUE.</doc>
                       version="3.2">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1353">Queries @client's backend for a property of name @prop_name.
+             line="1380">Queries @client's backend for a property of name @prop_name.
 The call is finished by e_client_get_backend_property_finish()
 from the @callback.</doc>
-        <source-position filename="e-client.h" line="222"/>
+        <source-position filename="e-client.h" line="226"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -655,13 +695,13 @@ from the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1355">an #EClient</doc>
+                 line="1382">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="prop_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1356">property name, whose value to retrieve; cannot be %NULL</doc>
+                 line="1383">property name, whose value to retrieve; cannot be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
@@ -670,7 +710,7 @@ from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1357">a #GCancellable; can be %NULL</doc>
+                 line="1384">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -681,7 +721,7 @@ from the @callback.</doc>
                      closure="3">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1358">callback to call when a result is ready</doc>
+                 line="1385">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -691,7 +731,7 @@ from the @callback.</doc>
                      closure="3">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1359">user data for the @callback</doc>
+                 line="1386">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -702,25 +742,25 @@ from the @callback.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1388">Finishes previous call of e_client_get_backend_property().</doc>
-        <source-position filename="e-client.h" line="227"/>
+             line="1415">Finishes previous call of e_client_get_backend_property().</doc>
+        <source-position filename="e-client.h" line="231"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1397">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1424">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1390">an #EClient</doc>
+                 line="1417">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1391">a #GAsyncResult</doc>
+                 line="1418">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
           <parameter name="prop_value"
@@ -729,7 +769,7 @@ from the @callback.</doc>
                      transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1392">Retrieved backend property value; cannot be %NULL</doc>
+                 line="1419">Retrieved backend property value; cannot be %NULL</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
         </parameters>
@@ -740,25 +780,25 @@ from the @callback.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1420">Queries @client's backend for a property of name @prop_name.</doc>
-        <source-position filename="e-client.h" line="232"/>
+             line="1447">Queries @client's backend for a property of name @prop_name.</doc>
+        <source-position filename="e-client.h" line="236"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1430">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1457">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1422">an #EClient</doc>
+                 line="1449">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="prop_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1423">property name, whose value to retrieve; cannot be %NULL</doc>
+                 line="1450">property name, whose value to retrieve; cannot be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="prop_value"
@@ -767,7 +807,7 @@ from the @callback.</doc>
                      transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1424">Retrieved backend property value; cannot be %NULL</doc>
+                 line="1451">Retrieved backend property value; cannot be %NULL</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
           <parameter name="cancellable"
@@ -776,13 +816,13 @@ from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1425">a #GCancellable; can be %NULL</doc>
+                 line="1452">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </virtual-method>
       <virtual-method name="get_dbus_proxy" introspectable="0">
-        <source-position filename="e-client.h" line="198"/>
+        <source-position filename="e-client.h" line="202"/>
         <return-value>
           <type name="Gio.DBusProxy" c:type="GDBusProxy*"/>
         </return-value>
@@ -799,13 +839,13 @@ from the @callback.</doc>
                       deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1567">Opens the @client, making it ready for queries and other operations.
+             line="1594">Opens the @client, making it ready for queries and other operations.
 The call is finished by e_client_open_finish() from the @callback.</doc>
         <doc-deprecated xml:space="preserve">Use e_book_client_connect() and
                  e_book_client_connect_finish() or
                  e_cal_client_connect() and
                  e_cal_client_connect_finish() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="257"/>
+        <source-position filename="e-client.h" line="261"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -813,14 +853,13 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1569">an #EClient</doc>
+                 line="1596">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="only_if_exists" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1570">if %TRUE, fail if this book doesn't already exist,
-                 otherwise create it first</doc>
+                 line="1597">this parameter is not used anymore</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
           <parameter name="cancellable"
@@ -829,7 +868,7 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1572">a #GCancellable; can be %NULL</doc>
+                 line="1598">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -840,7 +879,7 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
                      closure="3">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1573">callback to call when a result is ready</doc>
+                 line="1599">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -850,7 +889,7 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
                      closure="3">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1574">user data for the @callback</doc>
+                 line="1600">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -863,29 +902,29 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1605">Finishes previous call of e_client_open().</doc>
+             line="1631">Finishes previous call of e_client_open().</doc>
         <doc-deprecated xml:space="preserve">Use e_book_client_connect() and
                  e_book_client_connect_finish() or
                  e_cal_client_connect() and
                  e_cal_client_connect_finish() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="262"/>
+        <source-position filename="e-client.h" line="266"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1613">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1639">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1607">an #EClient</doc>
+                 line="1633">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1608">a #GAsyncResult</doc>
+                 line="1634">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -898,28 +937,27 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1638">Opens the @client, making it ready for queries and other operations.</doc>
+             line="1664">Opens the @client, making it ready for queries and other operations.</doc>
         <doc-deprecated xml:space="preserve">Use e_book_client_connect_sync() or
                  e_cal_client_connect_sync() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="265"/>
+        <source-position filename="e-client.h" line="269"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1648">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1673">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1640">an #EClient</doc>
+                 line="1666">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="only_if_exists" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1641">if %TRUE, fail if this book doesn't already exist,
-                 otherwise create it first</doc>
+                 line="1667">this parameter is not used anymore</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
           <parameter name="cancellable"
@@ -928,13 +966,13 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1643">a #GCancellable; can be %NULL</doc>
+                 line="1668">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </virtual-method>
       <virtual-method name="opened">
-        <source-position filename="e-client.h" line="296"/>
+        <source-position filename="e-client.h" line="300"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -950,12 +988,12 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
       <virtual-method name="refresh" invoker="refresh" version="3.2">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1762">Initiates refresh on the @client. Finishing the method doesn't mean
+             line="1787">Initiates refresh on the @client. Finishing the method doesn't mean
 that the refresh is done, backend only notifies whether it started
 refreshing or not. Use e_client_check_refresh_supported() to check
 whether the backend supports this method.
 The call is finished by e_client_refresh_finish() from the @callback.</doc>
-        <source-position filename="e-client.h" line="281"/>
+        <source-position filename="e-client.h" line="285"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -963,7 +1001,7 @@ The call is finished by e_client_refresh_finish() from the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1764">an #EClient</doc>
+                 line="1789">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -972,7 +1010,7 @@ The call is finished by e_client_refresh_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1765">a #GCancellable; can be %NULL</doc>
+                 line="1790">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -983,7 +1021,7 @@ The call is finished by e_client_refresh_finish() from the @callback.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1766">callback to call when a result is ready</doc>
+                 line="1791">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -993,7 +1031,7 @@ The call is finished by e_client_refresh_finish() from the @callback.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1767">user data for the @callback</doc>
+                 line="1792">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -1004,25 +1042,25 @@ The call is finished by e_client_refresh_finish() from the @callback.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1795">Finishes previous call of e_client_refresh().</doc>
-        <source-position filename="e-client.h" line="285"/>
+             line="1820">Finishes previous call of e_client_refresh().</doc>
+        <source-position filename="e-client.h" line="289"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1803">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1828">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1797">an #EClient</doc>
+                 line="1822">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1798">a #GAsyncResult</doc>
+                 line="1823">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -1033,22 +1071,22 @@ The call is finished by e_client_refresh_finish() from the @callback.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1823">Initiates refresh on the @client. Finishing the method doesn't mean
+             line="1848">Initiates refresh on the @client. Finishing the method doesn't mean
 that the refresh is done, backend only notifies whether it started
 refreshing or not. Use e_client_check_refresh_supported() to check
 whether the backend supports this method.</doc>
-        <source-position filename="e-client.h" line="288"/>
+        <source-position filename="e-client.h" line="292"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1834">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1859">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1825">an #EClient</doc>
+                 line="1850">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -1057,7 +1095,7 @@ whether the backend supports this method.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1826">a #GCancellable; can be %NULL</doc>
+                 line="1851">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -1069,11 +1107,11 @@ whether the backend supports this method.</doc>
                       deprecated-version="3.6">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1670">Removes the backing data for this #EClient. For example, with the file
+             line="1695">Removes the backing data for this #EClient. For example, with the file
 backend this deletes the database file. You cannot get it back!
 The call is finished by e_client_remove_finish() from the @callback.</doc>
         <doc-deprecated xml:space="preserve">Use e_source_remove() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="270"/>
+        <source-position filename="e-client.h" line="274"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1081,7 +1119,7 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1672">an #EClient</doc>
+                 line="1697">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -1090,7 +1128,7 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1673">a #GCancellable; can be %NULL</doc>
+                 line="1698">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -1101,7 +1139,7 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1674">callback to call when a result is ready</doc>
+                 line="1699">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -1111,7 +1149,7 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1675">user data for the @callback</doc>
+                 line="1700">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -1124,26 +1162,26 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1703">Finishes previous call of e_client_remove().</doc>
+             line="1728">Finishes previous call of e_client_remove().</doc>
         <doc-deprecated xml:space="preserve">Use e_source_remove_finish() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="274"/>
+        <source-position filename="e-client.h" line="278"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1711">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1736">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1705">an #EClient</doc>
+                 line="1730">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1706">a #GAsyncResult</doc>
+                 line="1731">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -1156,21 +1194,21 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1733">Removes the backing data for this #EClient. For example, with the file
+             line="1758">Removes the backing data for this #EClient. For example, with the file
 backend this deletes the database file. You cannot get it back!</doc>
         <doc-deprecated xml:space="preserve">Use e_source_remove_sync() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="277"/>
+        <source-position filename="e-client.h" line="281"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1742">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1767">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1735">an #EClient</doc>
+                 line="1760">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -1179,7 +1217,7 @@ backend this deletes the database file. You cannot get it back!</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1736">a #GCancellable; can be %NULL</doc>
+                 line="1761">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -1191,14 +1229,14 @@ backend this deletes the database file. You cannot get it back!</doc>
                       deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1231">Initiates retrieval of capabilities on the @client. This is usually
+             line="1258">Initiates retrieval of capabilities on the @client. This is usually
 required only once, after the @client is opened. The returned value
 is cached and any subsequent call of e_client_get_capabilities() and
 e_client_check_capability() is using the cached value.
 The call is finished by e_client_retrieve_capabilities_finish()
 from the @callback.</doc>
         <doc-deprecated xml:space="preserve">Use e_client_get_capabilities() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="206"/>
+        <source-position filename="e-client.h" line="210"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1206,7 +1244,7 @@ from the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1233">an #EClient</doc>
+                 line="1260">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -1215,7 +1253,7 @@ from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1234">a #GCancellable; can be %NULL</doc>
+                 line="1261">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -1226,7 +1264,7 @@ from the @callback.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1235">callback to call when a result is ready</doc>
+                 line="1262">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -1236,7 +1274,7 @@ from the @callback.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1236">user data for the @callback</doc>
+                 line="1263">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -1249,28 +1287,28 @@ from the @callback.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1267">Finishes previous call of e_client_retrieve_capabilities().
+             line="1294">Finishes previous call of e_client_retrieve_capabilities().
 Returned value of @capabilities should be freed with g_free(),
 when no longer needed.</doc>
         <doc-deprecated xml:space="preserve">Use e_client_get_capabilities() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="211"/>
+        <source-position filename="e-client.h" line="215"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1278">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1305">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1269">an #EClient</doc>
+                 line="1296">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1270">a #GAsyncResult</doc>
+                 line="1297">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
           <parameter name="capabilities"
@@ -1279,7 +1317,7 @@ when no longer needed.</doc>
                      transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1271">Comma-separated list of capabilities of the @client</doc>
+                 line="1298">Comma-separated list of capabilities of the @client</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
         </parameters>
@@ -1292,24 +1330,24 @@ when no longer needed.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1309">Initiates retrieval of capabilities on the @client. This is usually
+             line="1336">Initiates retrieval of capabilities on the @client. This is usually
 required only once, after the @client is opened. The returned value
 is cached and any subsequent call of e_client_get_capabilities() and
 e_client_check_capability() is using the cached value. Returned value
 of @capabilities should be freed with g_free(), when no longer needed.</doc>
         <doc-deprecated xml:space="preserve">Use e_client_get_capabilities() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="216"/>
+        <source-position filename="e-client.h" line="220"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1322">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1349">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1311">an #EClient</doc>
+                 line="1338">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="capabilities"
@@ -1318,7 +1356,7 @@ of @capabilities should be freed with g_free(), when no longer needed.</doc>
                      transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1312">Comma-separated list of capabilities of the @client</doc>
+                 line="1339">Comma-separated list of capabilities of the @client</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
           <parameter name="cancellable"
@@ -1327,7 +1365,7 @@ of @capabilities should be freed with g_free(), when no longer needed.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1313">a #GCancellable; can be %NULL</doc>
+                 line="1340">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -1338,22 +1376,22 @@ of @capabilities should be freed with g_free(), when no longer needed.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2030">Retrieves @client properties to match server-side values, without waiting
+             line="2055">Retrieves @client properties to match server-side values, without waiting
 for the D-Bus property change notifications delivery.
 
 If an error occurs, the function sets @error and returns %FALSE.</doc>
-        <source-position filename="e-client.h" line="291"/>
+        <source-position filename="e-client.h" line="295"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="2041">%TRUE on success, %FALSE on error</doc>
+               line="2066">%TRUE on success, %FALSE on error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2032">an #EClient</doc>
+                 line="2057">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -1362,7 +1400,7 @@ If an error occurs, the function sets @error and returns %FALSE.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2033">optional #GCancellable object, or %NULL</doc>
+                 line="2058">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -1374,12 +1412,12 @@ If an error occurs, the function sets @error and returns %FALSE.</doc>
                       deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1455">Sets @client's backend property of name @prop_name
+             line="1482">Sets @client's backend property of name @prop_name
 to value @prop_value. The call is finished
 by e_client_set_backend_property_finish() from the @callback.</doc>
         <doc-deprecated xml:space="preserve">Clients cannot set backend properties.  Any attempt
                  will fail with an %E_CLIENT_ERROR_NOT_SUPPORTED error.</doc-deprecated>
-        <source-position filename="e-client.h" line="240"/>
+        <source-position filename="e-client.h" line="244"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1387,19 +1425,19 @@ by e_client_set_backend_property_finish() from the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1457">an #EClient</doc>
+                 line="1484">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="prop_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1458">property name, whose value to change; cannot be %NULL</doc>
+                 line="1485">property name, whose value to change; cannot be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="prop_value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1459">property value, to set; cannot be %NULL</doc>
+                 line="1486">property value, to set; cannot be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
@@ -1408,7 +1446,7 @@ by e_client_set_backend_property_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1460">a #GCancellable; can be %NULL</doc>
+                 line="1487">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -1419,7 +1457,7 @@ by e_client_set_backend_property_finish() from the @callback.</doc>
                      closure="4">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1461">callback to call when a result is ready</doc>
+                 line="1488">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -1429,7 +1467,7 @@ by e_client_set_backend_property_finish() from the @callback.</doc>
                      closure="4">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1462">user data for the @callback</doc>
+                 line="1489">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -1442,27 +1480,27 @@ by e_client_set_backend_property_finish() from the @callback.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1497">Finishes previous call of e_client_set_backend_property().</doc>
+             line="1524">Finishes previous call of e_client_set_backend_property().</doc>
         <doc-deprecated xml:space="preserve">Clients cannot set backend properties.  Any attempt
                  will fail with an %E_CLIENT_ERROR_NOT_SUPPORTED error.</doc-deprecated>
-        <source-position filename="e-client.h" line="246"/>
+        <source-position filename="e-client.h" line="250"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1505">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1532">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1499">an #EClient</doc>
+                 line="1526">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1500">a #GAsyncResult</doc>
+                 line="1527">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -1475,34 +1513,34 @@ by e_client_set_backend_property_finish() from the @callback.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1528">Sets @client's backend property of name @prop_name
+             line="1555">Sets @client's backend property of name @prop_name
 to value @prop_value.</doc>
         <doc-deprecated xml:space="preserve">Clients cannot set backend properties.  Any attempt
                  will fail with an %E_CLIENT_ERROR_NOT_SUPPORTED error.</doc-deprecated>
-        <source-position filename="e-client.h" line="250"/>
+        <source-position filename="e-client.h" line="254"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1539">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1566">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1530">an #EClient</doc>
+                 line="1557">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="prop_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1531">property name, whose value to change; cannot be %NULL</doc>
+                 line="1558">property name, whose value to change; cannot be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="prop_value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1532">property value, to set; cannot be %NULL</doc>
+                 line="1559">property value, to set; cannot be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
@@ -1511,7 +1549,7 @@ to value @prop_value.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1533">a #GCancellable; can be %NULL</doc>
+                 line="1560">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -1524,10 +1562,10 @@ to value @prop_value.</doc>
                       throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2296">Unwraps D-Bus error to local error. @dbus_error is automatically freed.
+             line="2321">Unwraps D-Bus error to local error. @dbus_error is automatically freed.
 @dbus_erorr and @out_error can point to the same variable.</doc>
         <doc-deprecated xml:space="preserve">Use g_dbus_error_strip_remote_error() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="201"/>
+        <source-position filename="e-client.h" line="205"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1535,13 +1573,13 @@ to value @prop_value.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2298">an #EClient</doc>
+                 line="2323">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="dbus_error" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2299">a #GError returned bu D-Bus</doc>
+                 line="2324">a #GError returned bu D-Bus</doc>
             <type name="GLib.Error" c:type="GError*"/>
           </parameter>
         </parameters>
@@ -1553,9 +1591,9 @@ to value @prop_value.</doc>
               deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1215">Cancels all pending operations started on @client.</doc>
+             line="1242">Cancels all pending operations started on @client.</doc>
         <doc-deprecated xml:space="preserve">The function no longer does anything.</doc-deprecated>
-        <source-position filename="e-client.h" line="394"/>
+        <source-position filename="e-client.h" line="396"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1563,7 +1601,7 @@ to value @prop_value.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1217">an #EClient</doc>
+                 line="1244">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
         </parameters>
@@ -1573,26 +1611,26 @@ to value @prop_value.</doc>
               version="3.2">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1037">Check if backend supports particular capability.
+             line="1064">Check if backend supports particular capability.
 To get all capabilities use e_client_get_capabilities().</doc>
-        <source-position filename="e-client.h" line="312"/>
+        <source-position filename="e-client.h" line="316"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1045">#GSList of const strings of capabilities</doc>
+               line="1072">#GSList of const strings of capabilities</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1039">an #EClient</doc>
+                 line="1066">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="capability" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1040">a capability</doc>
+                 line="1067">a capability</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -1602,20 +1640,20 @@ To get all capabilities use e_client_get_capabilities().</doc>
               version="3.2">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1076">Checks whether a client supports explicit refreshing
+             line="1103">Checks whether a client supports explicit refreshing
 (see e_client_refresh()).</doc>
-        <source-position filename="e-client.h" line="314"/>
+        <source-position filename="e-client.h" line="318"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1083">TRUE if the client supports refreshing, FALSE otherwise.</doc>
+               line="1110">TRUE if the client supports refreshing, FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1078">A client.</doc>
+                 line="1105">A client.</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
         </parameters>
@@ -1625,13 +1663,13 @@ To get all capabilities use e_client_get_capabilities().</doc>
               version="3.16">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2425">Returns a D-Bus bus name that will be used to connect the
+             line="2450">Returns a D-Bus bus name that will be used to connect the
 client to the backend subprocess.</doc>
-        <source-position filename="e-client.h" line="470"/>
+        <source-position filename="e-client.h" line="472"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="2432">a newly-allocated string representing a D-Bus bus
+               line="2457">a newly-allocated string representing a D-Bus bus
          name that will be used to connect the client to
          the backend subprocess. The string should be
          freed by the caller using g_free().</doc>
@@ -1641,7 +1679,7 @@ client to the backend subprocess.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2427">an #EClient</doc>
+                 line="2452">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
         </parameters>
@@ -1651,10 +1689,10 @@ client to the backend subprocess.</doc>
               version="3.2">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1353">Queries @client's backend for a property of name @prop_name.
+             line="1380">Queries @client's backend for a property of name @prop_name.
 The call is finished by e_client_get_backend_property_finish()
 from the @callback.</doc>
-        <source-position filename="e-client.h" line="319"/>
+        <source-position filename="e-client.h" line="323"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1662,13 +1700,13 @@ from the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1355">an #EClient</doc>
+                 line="1382">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="prop_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1356">property name, whose value to retrieve; cannot be %NULL</doc>
+                 line="1383">property name, whose value to retrieve; cannot be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
@@ -1677,7 +1715,7 @@ from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1357">a #GCancellable; can be %NULL</doc>
+                 line="1384">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -1688,7 +1726,7 @@ from the @callback.</doc>
                      closure="3">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1358">callback to call when a result is ready</doc>
+                 line="1385">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -1697,7 +1735,7 @@ from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1359">user data for the @callback</doc>
+                 line="1386">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -1708,25 +1746,25 @@ from the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1388">Finishes previous call of e_client_get_backend_property().</doc>
-        <source-position filename="e-client.h" line="324"/>
+             line="1415">Finishes previous call of e_client_get_backend_property().</doc>
+        <source-position filename="e-client.h" line="328"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1397">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1424">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1390">an #EClient</doc>
+                 line="1417">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1391">a #GAsyncResult</doc>
+                 line="1418">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
           <parameter name="prop_value"
@@ -1735,7 +1773,7 @@ from the @callback.</doc>
                      transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1392">Retrieved backend property value; cannot be %NULL</doc>
+                 line="1419">Retrieved backend property value; cannot be %NULL</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
         </parameters>
@@ -1746,25 +1784,25 @@ from the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1420">Queries @client's backend for a property of name @prop_name.</doc>
-        <source-position filename="e-client.h" line="329"/>
+             line="1447">Queries @client's backend for a property of name @prop_name.</doc>
+        <source-position filename="e-client.h" line="333"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1430">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1457">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1422">an #EClient</doc>
+                 line="1449">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="prop_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1423">property name, whose value to retrieve; cannot be %NULL</doc>
+                 line="1450">property name, whose value to retrieve; cannot be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="prop_value"
@@ -1773,7 +1811,7 @@ from the @callback.</doc>
                      transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1424">Retrieved backend property value; cannot be %NULL</doc>
+                 line="1451">Retrieved backend property value; cannot be %NULL</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
           <parameter name="cancellable"
@@ -1782,7 +1820,7 @@ from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1425">a #GCancellable; can be %NULL</doc>
+                 line="1452">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -1792,14 +1830,14 @@ from the @callback.</doc>
               version="3.2">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="992">Get list of strings with capabilities advertised by a backend.
+             line="1019">Get list of strings with capabilities advertised by a backend.
 This list, together with inner strings, is owned by the @client.
 To check for individual capabilities use e_client_check_capability().</doc>
-        <source-position filename="e-client.h" line="310"/>
+        <source-position filename="e-client.h" line="314"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1000">#GSList of const strings
+               line="1027">#GSList of const strings
          of capabilities</doc>
           <type name="GLib.SList" c:type="const GSList*">
             <type name="utf8"/>
@@ -1809,7 +1847,7 @@ To check for individual capabilities use e_client_check_capability().</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="994">an #EClient</doc>
+                 line="1021">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
         </parameters>
@@ -1819,19 +1857,19 @@ To check for individual capabilities use e_client_check_capability().</doc>
               version="3.2">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="956">Get the #ESource that this client has assigned.</doc>
-        <source-position filename="e-client.h" line="309"/>
+             line="983">Get the #ESource that this client has assigned.</doc>
+        <source-position filename="e-client.h" line="313"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="962">The source.</doc>
+               line="989">The source.</doc>
           <type name="Source" c:type="ESource*"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="958">an #EClient</doc>
+                 line="985">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
         </parameters>
@@ -1839,19 +1877,19 @@ To check for individual capabilities use e_client_check_capability().</doc>
       <method name="is_online" c:identifier="e_client_is_online" version="3.2">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1150">Check if this @client is connected.</doc>
-        <source-position filename="e-client.h" line="317"/>
+             line="1177">Check if this @client is connected.</doc>
+        <source-position filename="e-client.h" line="321"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1156">%TRUE if this @client is connected, otherwise %FALSE.</doc>
+               line="1183">%TRUE if this @client is connected, otherwise %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1152">an #EClient</doc>
+                 line="1179">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
         </parameters>
@@ -1863,25 +1901,25 @@ To check for individual capabilities use e_client_check_capability().</doc>
               deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1190">Check if this @client is fully opened. This includes
+             line="1217">Check if this @client is fully opened. This includes
 everything from e_client_open() call up to the authentication,
 if required by a backend. Client cannot do any other operation
 during the opening phase except of authenticate or cancel it.
 Every other operation results in an %E_CLIENT_ERROR_BUSY error.</doc>
         <doc-deprecated xml:space="preserve">Clients don't need to care if they're fully opened
                  anymore.  This function always returns %TRUE.</doc-deprecated>
-        <source-position filename="e-client.h" line="393"/>
+        <source-position filename="e-client.h" line="395"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1200">always %TRUE</doc>
+               line="1227">always %TRUE</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1192">an #EClient</doc>
+                 line="1219">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
         </parameters>
@@ -1891,19 +1929,19 @@ Every other operation results in an %E_CLIENT_ERROR_BUSY error.</doc>
               version="3.2">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1113">Check if this @client is read-only.</doc>
-        <source-position filename="e-client.h" line="316"/>
+             line="1140">Check if this @client is read-only.</doc>
+        <source-position filename="e-client.h" line="320"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1119">%TRUE if this @client is read-only, otherwise %FALSE.</doc>
+               line="1146">%TRUE if this @client is read-only, otherwise %FALSE.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1115">an #EClient</doc>
+                 line="1142">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
         </parameters>
@@ -1915,13 +1953,13 @@ Every other operation results in an %E_CLIENT_ERROR_BUSY error.</doc>
               deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1567">Opens the @client, making it ready for queries and other operations.
+             line="1594">Opens the @client, making it ready for queries and other operations.
 The call is finished by e_client_open_finish() from the @callback.</doc>
         <doc-deprecated xml:space="preserve">Use e_book_client_connect() and
                  e_book_client_connect_finish() or
                  e_cal_client_connect() and
                  e_cal_client_connect_finish() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="428"/>
+        <source-position filename="e-client.h" line="430"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -1929,14 +1967,13 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1569">an #EClient</doc>
+                 line="1596">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="only_if_exists" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1570">if %TRUE, fail if this book doesn't already exist,
-                 otherwise create it first</doc>
+                 line="1597">this parameter is not used anymore</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
           <parameter name="cancellable"
@@ -1945,7 +1982,7 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1572">a #GCancellable; can be %NULL</doc>
+                 line="1598">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -1956,7 +1993,7 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
                      closure="3">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1573">callback to call when a result is ready</doc>
+                 line="1599">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -1965,7 +2002,7 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1574">user data for the @callback</doc>
+                 line="1600">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -1978,29 +2015,29 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1605">Finishes previous call of e_client_open().</doc>
+             line="1631">Finishes previous call of e_client_open().</doc>
         <doc-deprecated xml:space="preserve">Use e_book_client_connect() and
                  e_book_client_connect_finish() or
                  e_cal_client_connect() and
                  e_cal_client_connect_finish() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="433"/>
+        <source-position filename="e-client.h" line="435"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1613">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1639">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1607">an #EClient</doc>
+                 line="1633">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1608">a #GAsyncResult</doc>
+                 line="1634">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -2013,28 +2050,27 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1638">Opens the @client, making it ready for queries and other operations.</doc>
+             line="1664">Opens the @client, making it ready for queries and other operations.</doc>
         <doc-deprecated xml:space="preserve">Use e_book_client_connect_sync() or
                  e_cal_client_connect_sync() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="436"/>
+        <source-position filename="e-client.h" line="438"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1648">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1673">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1640">an #EClient</doc>
+                 line="1666">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="only_if_exists" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1641">if %TRUE, fail if this book doesn't already exist,
-                 otherwise create it first</doc>
+                 line="1667">this parameter is not used anymore</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
           <parameter name="cancellable"
@@ -2043,7 +2079,7 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1643">a #GCancellable; can be %NULL</doc>
+                 line="1668">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -2053,23 +2089,23 @@ The call is finished by e_client_open_finish() from the @callback.</doc>
               version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1015">Returns the #GMainContext on which event sources for @client are to
+             line="1042">Returns the #GMainContext on which event sources for @client are to
 be attached.
 
 The returned #GMainContext is referenced for thread-safety and must be
 unreferenced with g_main_context_unref() when finished with it.</doc>
-        <source-position filename="e-client.h" line="311"/>
+        <source-position filename="e-client.h" line="315"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1025">a #GMainContext</doc>
+               line="1052">a #GMainContext</doc>
           <type name="GLib.MainContext" c:type="GMainContext*"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1017">an #EClient</doc>
+                 line="1044">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
         </parameters>
@@ -2077,12 +2113,12 @@ unreferenced with g_main_context_unref() when finished with it.</doc>
       <method name="refresh" c:identifier="e_client_refresh" version="3.2">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1762">Initiates refresh on the @client. Finishing the method doesn't mean
+             line="1787">Initiates refresh on the @client. Finishing the method doesn't mean
 that the refresh is done, backend only notifies whether it started
 refreshing or not. Use e_client_check_refresh_supported() to check
 whether the backend supports this method.
 The call is finished by e_client_refresh_finish() from the @callback.</doc>
-        <source-position filename="e-client.h" line="336"/>
+        <source-position filename="e-client.h" line="340"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2090,7 +2126,7 @@ The call is finished by e_client_refresh_finish() from the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1764">an #EClient</doc>
+                 line="1789">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -2099,7 +2135,7 @@ The call is finished by e_client_refresh_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1765">a #GCancellable; can be %NULL</doc>
+                 line="1790">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -2110,7 +2146,7 @@ The call is finished by e_client_refresh_finish() from the @callback.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1766">callback to call when a result is ready</doc>
+                 line="1791">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -2119,7 +2155,7 @@ The call is finished by e_client_refresh_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1767">user data for the @callback</doc>
+                 line="1792">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -2130,25 +2166,25 @@ The call is finished by e_client_refresh_finish() from the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1795">Finishes previous call of e_client_refresh().</doc>
-        <source-position filename="e-client.h" line="340"/>
+             line="1820">Finishes previous call of e_client_refresh().</doc>
+        <source-position filename="e-client.h" line="344"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1803">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1828">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1797">an #EClient</doc>
+                 line="1822">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1798">a #GAsyncResult</doc>
+                 line="1823">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -2159,22 +2195,22 @@ The call is finished by e_client_refresh_finish() from the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1823">Initiates refresh on the @client. Finishing the method doesn't mean
+             line="1848">Initiates refresh on the @client. Finishing the method doesn't mean
 that the refresh is done, backend only notifies whether it started
 refreshing or not. Use e_client_check_refresh_supported() to check
 whether the backend supports this method.</doc>
-        <source-position filename="e-client.h" line="343"/>
+        <source-position filename="e-client.h" line="347"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1834">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1859">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1825">an #EClient</doc>
+                 line="1850">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -2183,7 +2219,7 @@ whether the backend supports this method.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1826">a #GCancellable; can be %NULL</doc>
+                 line="1851">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -2195,11 +2231,11 @@ whether the backend supports this method.</doc>
               deprecated-version="3.6">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1670">Removes the backing data for this #EClient. For example, with the file
+             line="1695">Removes the backing data for this #EClient. For example, with the file
 backend this deletes the database file. You cannot get it back!
 The call is finished by e_client_remove_finish() from the @callback.</doc>
         <doc-deprecated xml:space="preserve">Use e_source_remove() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="440"/>
+        <source-position filename="e-client.h" line="442"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2207,7 +2243,7 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1672">an #EClient</doc>
+                 line="1697">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -2216,7 +2252,7 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1673">a #GCancellable; can be %NULL</doc>
+                 line="1698">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -2227,7 +2263,7 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1674">callback to call when a result is ready</doc>
+                 line="1699">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -2236,7 +2272,7 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1675">user data for the @callback</doc>
+                 line="1700">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -2249,26 +2285,26 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1703">Finishes previous call of e_client_remove().</doc>
+             line="1728">Finishes previous call of e_client_remove().</doc>
         <doc-deprecated xml:space="preserve">Use e_source_remove_finish() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="444"/>
+        <source-position filename="e-client.h" line="446"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1711">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1736">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1705">an #EClient</doc>
+                 line="1730">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1706">a #GAsyncResult</doc>
+                 line="1731">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -2281,21 +2317,21 @@ The call is finished by e_client_remove_finish() from the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1733">Removes the backing data for this #EClient. For example, with the file
+             line="1758">Removes the backing data for this #EClient. For example, with the file
 backend this deletes the database file. You cannot get it back!</doc>
         <doc-deprecated xml:space="preserve">Use e_source_remove_sync() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="447"/>
+        <source-position filename="e-client.h" line="449"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1742">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1767">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1735">an #EClient</doc>
+                 line="1760">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -2304,7 +2340,7 @@ backend this deletes the database file. You cannot get it back!</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1736">a #GCancellable; can be %NULL</doc>
+                 line="1761">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -2316,14 +2352,14 @@ backend this deletes the database file. You cannot get it back!</doc>
               deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1231">Initiates retrieval of capabilities on the @client. This is usually
+             line="1258">Initiates retrieval of capabilities on the @client. This is usually
 required only once, after the @client is opened. The returned value
 is cached and any subsequent call of e_client_get_capabilities() and
 e_client_check_capability() is using the cached value.
 The call is finished by e_client_retrieve_capabilities_finish()
 from the @callback.</doc>
         <doc-deprecated xml:space="preserve">Use e_client_get_capabilities() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="398"/>
+        <source-position filename="e-client.h" line="400"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2331,7 +2367,7 @@ from the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1233">an #EClient</doc>
+                 line="1260">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -2340,7 +2376,7 @@ from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1234">a #GCancellable; can be %NULL</doc>
+                 line="1261">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -2351,7 +2387,7 @@ from the @callback.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1235">callback to call when a result is ready</doc>
+                 line="1262">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -2360,7 +2396,7 @@ from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1236">user data for the @callback</doc>
+                 line="1263">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -2373,28 +2409,28 @@ from the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1267">Finishes previous call of e_client_retrieve_capabilities().
+             line="1294">Finishes previous call of e_client_retrieve_capabilities().
 Returned value of @capabilities should be freed with g_free(),
 when no longer needed.</doc>
         <doc-deprecated xml:space="preserve">Use e_client_get_capabilities() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="402"/>
+        <source-position filename="e-client.h" line="404"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1278">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1305">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1269">an #EClient</doc>
+                 line="1296">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1270">a #GAsyncResult</doc>
+                 line="1297">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
           <parameter name="capabilities"
@@ -2403,7 +2439,7 @@ when no longer needed.</doc>
                      transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1271">Comma-separated list of capabilities of the @client</doc>
+                 line="1298">Comma-separated list of capabilities of the @client</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
         </parameters>
@@ -2416,24 +2452,24 @@ when no longer needed.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1309">Initiates retrieval of capabilities on the @client. This is usually
+             line="1336">Initiates retrieval of capabilities on the @client. This is usually
 required only once, after the @client is opened. The returned value
 is cached and any subsequent call of e_client_get_capabilities() and
 e_client_check_capability() is using the cached value. Returned value
 of @capabilities should be freed with g_free(), when no longer needed.</doc>
         <doc-deprecated xml:space="preserve">Use e_client_get_capabilities() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="407"/>
+        <source-position filename="e-client.h" line="409"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1322">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1349">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1311">an #EClient</doc>
+                 line="1338">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="capabilities"
@@ -2442,7 +2478,7 @@ of @capabilities should be freed with g_free(), when no longer needed.</doc>
                      transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1312">Comma-separated list of capabilities of the @client</doc>
+                 line="1339">Comma-separated list of capabilities of the @client</doc>
             <type name="utf8" c:type="gchar**"/>
           </parameter>
           <parameter name="cancellable"
@@ -2451,7 +2487,7 @@ of @capabilities should be freed with g_free(), when no longer needed.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1313">a #GCancellable; can be %NULL</doc>
+                 line="1340">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -2461,12 +2497,12 @@ of @capabilities should be freed with g_free(), when no longer needed.</doc>
               version="3.16">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2079">Asynchronously retrieves @client properties to match server-side values,
+             line="2104">Asynchronously retrieves @client properties to match server-side values,
 without waiting for the D-Bus property change notifications delivery.
 
 When the operation is finished, @callback will be called. You can then
 call e_client_retrieve_properties_finish() to get the result of the operation.</doc>
-        <source-position filename="e-client.h" line="454"/>
+        <source-position filename="e-client.h" line="456"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2474,7 +2510,7 @@ call e_client_retrieve_properties_finish() to get the result of the operation.</
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2081">an #EClient</doc>
+                 line="2106">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -2483,7 +2519,7 @@ call e_client_retrieve_properties_finish() to get the result of the operation.</
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2082">optional #GCancellable object, or %NULL</doc>
+                 line="2107">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -2494,7 +2530,7 @@ call e_client_retrieve_properties_finish() to get the result of the operation.</
                      closure="2">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2083">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+                 line="2108">a #GAsyncReadyCallback to call when the request is satisfied</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -2503,7 +2539,7 @@ call e_client_retrieve_properties_finish() to get the result of the operation.</
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2084">data to pass to the callback function</doc>
+                 line="2109">data to pass to the callback function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -2514,27 +2550,27 @@ call e_client_retrieve_properties_finish() to get the result of the operation.</
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2112">Finishes the operation started with e_client_retrieve_properties().
+             line="2137">Finishes the operation started with e_client_retrieve_properties().
 
 If an error occurs, the function sets @error and returns %FALSE.</doc>
-        <source-position filename="e-client.h" line="458"/>
+        <source-position filename="e-client.h" line="460"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="2122">%TRUE on success, %FALSE on error</doc>
+               line="2147">%TRUE on success, %FALSE on error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2114">an #EClient</doc>
+                 line="2139">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2115">a #GAsyncResult</doc>
+                 line="2140">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -2545,22 +2581,22 @@ If an error occurs, the function sets @error and returns %FALSE.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2030">Retrieves @client properties to match server-side values, without waiting
+             line="2055">Retrieves @client properties to match server-side values, without waiting
 for the D-Bus property change notifications delivery.
 
 If an error occurs, the function sets @error and returns %FALSE.</doc>
-        <source-position filename="e-client.h" line="450"/>
+        <source-position filename="e-client.h" line="452"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="2041">%TRUE on success, %FALSE on error</doc>
+               line="2066">%TRUE on success, %FALSE on error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2032">an #EClient</doc>
+                 line="2057">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -2569,7 +2605,7 @@ If an error occurs, the function sets @error and returns %FALSE.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2033">optional #GCancellable object, or %NULL</doc>
+                 line="2058">optional #GCancellable object, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -2581,12 +2617,12 @@ If an error occurs, the function sets @error and returns %FALSE.</doc>
               deprecated-version="3.8">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1455">Sets @client's backend property of name @prop_name
+             line="1482">Sets @client's backend property of name @prop_name
 to value @prop_value. The call is finished
 by e_client_set_backend_property_finish() from the @callback.</doc>
         <doc-deprecated xml:space="preserve">Clients cannot set backend properties.  Any attempt
                  will fail with an %E_CLIENT_ERROR_NOT_SUPPORTED error.</doc-deprecated>
-        <source-position filename="e-client.h" line="412"/>
+        <source-position filename="e-client.h" line="414"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2594,19 +2630,19 @@ by e_client_set_backend_property_finish() from the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1457">an #EClient</doc>
+                 line="1484">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="prop_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1458">property name, whose value to change; cannot be %NULL</doc>
+                 line="1485">property name, whose value to change; cannot be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="prop_value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1459">property value, to set; cannot be %NULL</doc>
+                 line="1486">property value, to set; cannot be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
@@ -2615,7 +2651,7 @@ by e_client_set_backend_property_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1460">a #GCancellable; can be %NULL</doc>
+                 line="1487">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -2626,7 +2662,7 @@ by e_client_set_backend_property_finish() from the @callback.</doc>
                      closure="4">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1461">callback to call when a result is ready</doc>
+                 line="1488">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -2635,7 +2671,7 @@ by e_client_set_backend_property_finish() from the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1462">user data for the @callback</doc>
+                 line="1489">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -2648,27 +2684,27 @@ by e_client_set_backend_property_finish() from the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1497">Finishes previous call of e_client_set_backend_property().</doc>
+             line="1524">Finishes previous call of e_client_set_backend_property().</doc>
         <doc-deprecated xml:space="preserve">Clients cannot set backend properties.  Any attempt
                  will fail with an %E_CLIENT_ERROR_NOT_SUPPORTED error.</doc-deprecated>
-        <source-position filename="e-client.h" line="418"/>
+        <source-position filename="e-client.h" line="420"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1505">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1532">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1499">an #EClient</doc>
+                 line="1526">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1500">a #GAsyncResult</doc>
+                 line="1527">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -2681,34 +2717,34 @@ by e_client_set_backend_property_finish() from the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1528">Sets @client's backend property of name @prop_name
+             line="1555">Sets @client's backend property of name @prop_name
 to value @prop_value.</doc>
         <doc-deprecated xml:space="preserve">Clients cannot set backend properties.  Any attempt
                  will fail with an %E_CLIENT_ERROR_NOT_SUPPORTED error.</doc-deprecated>
-        <source-position filename="e-client.h" line="422"/>
+        <source-position filename="e-client.h" line="424"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1539">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1566">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1530">an #EClient</doc>
+                 line="1557">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="prop_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1531">property name, whose value to change; cannot be %NULL</doc>
+                 line="1558">property name, whose value to change; cannot be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="prop_value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1532">property value, to set; cannot be %NULL</doc>
+                 line="1559">property value, to set; cannot be %NULL</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
@@ -2717,7 +2753,7 @@ to value @prop_value.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1533">a #GCancellable; can be %NULL</doc>
+                 line="1560">a #GCancellable; can be %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -2727,9 +2763,9 @@ to value @prop_value.</doc>
               version="3.16">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2447">Sets a D-Bus bus name that will be used to connect the client
+             line="2472">Sets a D-Bus bus name that will be used to connect the client
 to the backend subprocess.</doc>
-        <source-position filename="e-client.h" line="471"/>
+        <source-position filename="e-client.h" line="473"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2737,13 +2773,13 @@ to the backend subprocess.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2449">an #EClient</doc>
+                 line="2474">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="bus_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2450">a string representing a D-Bus bus name</doc>
+                 line="2475">a string representing a D-Bus bus name</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -2756,10 +2792,10 @@ to the backend subprocess.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="2296">Unwraps D-Bus error to local error. @dbus_error is automatically freed.
+             line="2321">Unwraps D-Bus error to local error. @dbus_error is automatically freed.
 @dbus_erorr and @out_error can point to the same variable.</doc>
         <doc-deprecated xml:space="preserve">Use g_dbus_error_strip_remote_error() instead.</doc-deprecated>
-        <source-position filename="e-client.h" line="395"/>
+        <source-position filename="e-client.h" line="397"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2767,13 +2803,13 @@ to the backend subprocess.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2298">an #EClient</doc>
+                 line="2323">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="dbus_error" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2299">a #GError returned bu D-Bus</doc>
+                 line="2324">a #GError returned bu D-Bus</doc>
             <type name="GLib.Error" c:type="GError*"/>
           </parameter>
         </parameters>
@@ -2783,12 +2819,12 @@ to the backend subprocess.</doc>
               version="3.16">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1872">Asynchronously waits until the @client is connected (according
+             line="1897">Asynchronously waits until the @client is connected (according
 to @ESource::connection-status property), but not longer than @timeout_seconds.
 
 The call is finished by e_client_wait_for_connected_finish() from
 the @callback.</doc>
-        <source-position filename="e-client.h" line="347"/>
+        <source-position filename="e-client.h" line="351"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2796,13 +2832,13 @@ the @callback.</doc>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1874">an #EClient</doc>
+                 line="1899">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="timeout_seconds" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1875">a timeout for the wait, in seconds</doc>
+                 line="1900">a timeout for the wait, in seconds</doc>
             <type name="guint32" c:type="guint32"/>
           </parameter>
           <parameter name="cancellable"
@@ -2811,7 +2847,7 @@ the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1876">a #GCancellable; or %NULL</doc>
+                 line="1901">a #GCancellable; or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -2822,7 +2858,7 @@ the @callback.</doc>
                      closure="3">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1877">callback to call when a result is ready</doc>
+                 line="1902">callback to call when a result is ready</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -2831,7 +2867,7 @@ the @callback.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1878">user data for the @callback</doc>
+                 line="1903">user data for the @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -2842,25 +2878,25 @@ the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1908">Finishes previous call of e_client_wait_for_connected().</doc>
-        <source-position filename="e-client.h" line="352"/>
+             line="1933">Finishes previous call of e_client_wait_for_connected().</doc>
+        <source-position filename="e-client.h" line="356"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1916">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1941">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1910">an #EClient</doc>
+                 line="1935">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1911">a #GAsyncResult</doc>
+                 line="1936">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -2871,30 +2907,30 @@ the @callback.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="1955">Synchronously waits until the @client is connected (according
+             line="1980">Synchronously waits until the @client is connected (according
 to @ESource::connection-status property), but not longer than @timeout_seconds.
 
 Note: This also calls e_client_retrieve_properties_sync() on success, to have
   up-to-date property values on the client side, without a delay due
   to property change notifcations delivery through D-Bus.</doc>
-        <source-position filename="e-client.h" line="356"/>
+        <source-position filename="e-client.h" line="360"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="e-client.c"
-               line="1969">%TRUE if successful, %FALSE otherwise.</doc>
+               line="1994">%TRUE if successful, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1957">an #EClient</doc>
+                 line="1982">an #EClient</doc>
             <type name="Client" c:type="EClient*"/>
           </instance-parameter>
           <parameter name="timeout_seconds" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1958">a timeout for the wait, in seconds</doc>
+                 line="1983">a timeout for the wait, in seconds</doc>
             <type name="guint32" c:type="guint32"/>
           </parameter>
           <parameter name="cancellable"
@@ -2903,7 +2939,7 @@ Note: This also calls e_client_retrieve_properties_sync() on success, to have
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1959">a #GCancellable; or %NULL</doc>
+                 line="1984">a #GCancellable; or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -2911,20 +2947,20 @@ Note: This also calls e_client_retrieve_properties_sync() on success, to have
       <property name="capabilities" transfer-ownership="none">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="798">The capabilities of this client</doc>
+             line="825">The capabilities of this client</doc>
         <type name="gpointer" c:type="gpointer"/>
       </property>
       <property name="main-context" transfer-ownership="none">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="814">The main loop context in which notifications for
+             line="841">The main loop context in which notifications for
 this client will be delivered.</doc>
         <type name="GLib.MainContext"/>
       </property>
       <property name="online" writable="1" transfer-ownership="none">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="832">Whether this client's backing data is online.</doc>
+             line="859">Whether this client's backing data is online.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="opened"
@@ -2933,7 +2969,7 @@ this client will be delivered.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="849">Whether this client is open and ready to use.</doc>
+             line="876">Whether this client is open and ready to use.</doc>
         <doc-deprecated xml:space="preserve">This property is no longer relevant and
 will always be %TRUE after successfully creating any concrete
 type of #EClient.</doc-deprecated>
@@ -2942,7 +2978,7 @@ type of #EClient.</doc-deprecated>
       <property name="readonly" transfer-ownership="none">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="869">Whether this client's backing data is readonly.</doc>
+             line="896">Whether this client's backing data is readonly.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="source"
@@ -2951,7 +2987,7 @@ type of #EClient.</doc-deprecated>
                 transfer-ownership="none">
         <doc xml:space="preserve"
              filename="e-client.c"
-             line="885">The #ESource for which this client was created.</doc>
+             line="912">The #ESource for which this client was created.</doc>
         <type name="Source"/>
       </property>
       <field name="parent" readable="0" private="1">
@@ -3002,13 +3038,13 @@ type of #EClient.</doc-deprecated>
     <record name="ClientClass"
             c:type="EClientClass"
             glib:is-gtype-struct-for="Client">
-      <source-position filename="e-client.h" line="305"/>
+      <source-position filename="e-client.h" line="309"/>
       <field name="parent" readable="0" private="1">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
       <field name="get_dbus_proxy" introspectable="0">
         <callback name="get_dbus_proxy" introspectable="0">
-          <source-position filename="e-client.h" line="198"/>
+          <source-position filename="e-client.h" line="202"/>
           <return-value>
             <type name="Gio.DBusProxy" c:type="GDBusProxy*"/>
           </return-value>
@@ -3021,7 +3057,7 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="unwrap_dbus_error">
         <callback name="unwrap_dbus_error" throws="1">
-          <source-position filename="e-client.h" line="201"/>
+          <source-position filename="e-client.h" line="205"/>
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -3029,13 +3065,13 @@ type of #EClient.</doc-deprecated>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="2298">an #EClient</doc>
+                   line="2323">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="dbus_error" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="2299">a #GError returned bu D-Bus</doc>
+                   line="2324">a #GError returned bu D-Bus</doc>
               <type name="GLib.Error" c:type="GError*"/>
             </parameter>
           </parameters>
@@ -3043,7 +3079,7 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="retrieve_capabilities">
         <callback name="retrieve_capabilities">
-          <source-position filename="e-client.h" line="206"/>
+          <source-position filename="e-client.h" line="210"/>
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -3051,7 +3087,7 @@ type of #EClient.</doc-deprecated>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1233">an #EClient</doc>
+                   line="1260">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="cancellable"
@@ -3060,7 +3096,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1234">a #GCancellable; can be %NULL</doc>
+                   line="1261">a #GCancellable; can be %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
             <parameter name="callback"
@@ -3071,7 +3107,7 @@ type of #EClient.</doc-deprecated>
                        closure="3">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1235">callback to call when a result is ready</doc>
+                   line="1262">callback to call when a result is ready</doc>
               <type name="Gio.AsyncReadyCallback"
                     c:type="GAsyncReadyCallback"/>
             </parameter>
@@ -3082,7 +3118,7 @@ type of #EClient.</doc-deprecated>
                        closure="3">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1236">user data for the @callback</doc>
+                   line="1263">user data for the @callback</doc>
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3090,24 +3126,24 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="retrieve_capabilities_finish">
         <callback name="retrieve_capabilities_finish" throws="1">
-          <source-position filename="e-client.h" line="211"/>
+          <source-position filename="e-client.h" line="215"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1278">%TRUE if successful, %FALSE otherwise.</doc>
+                 line="1305">%TRUE if successful, %FALSE otherwise.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1269">an #EClient</doc>
+                   line="1296">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="result" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1270">a #GAsyncResult</doc>
+                   line="1297">a #GAsyncResult</doc>
               <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
             </parameter>
             <parameter name="capabilities"
@@ -3116,7 +3152,7 @@ type of #EClient.</doc-deprecated>
                        transfer-ownership="full">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1271">Comma-separated list of capabilities of the @client</doc>
+                   line="1298">Comma-separated list of capabilities of the @client</doc>
               <type name="utf8" c:type="gchar**"/>
             </parameter>
           </parameters>
@@ -3124,18 +3160,18 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="retrieve_capabilities_sync">
         <callback name="retrieve_capabilities_sync" throws="1">
-          <source-position filename="e-client.h" line="216"/>
+          <source-position filename="e-client.h" line="220"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1322">%TRUE if successful, %FALSE otherwise.</doc>
+                 line="1349">%TRUE if successful, %FALSE otherwise.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1311">an #EClient</doc>
+                   line="1338">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="capabilities"
@@ -3144,7 +3180,7 @@ type of #EClient.</doc-deprecated>
                        transfer-ownership="full">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1312">Comma-separated list of capabilities of the @client</doc>
+                   line="1339">Comma-separated list of capabilities of the @client</doc>
               <type name="utf8" c:type="gchar**"/>
             </parameter>
             <parameter name="cancellable"
@@ -3153,7 +3189,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1313">a #GCancellable; can be %NULL</doc>
+                   line="1340">a #GCancellable; can be %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
           </parameters>
@@ -3161,7 +3197,7 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="get_backend_property">
         <callback name="get_backend_property">
-          <source-position filename="e-client.h" line="222"/>
+          <source-position filename="e-client.h" line="226"/>
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -3169,13 +3205,13 @@ type of #EClient.</doc-deprecated>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1355">an #EClient</doc>
+                   line="1382">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="prop_name" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1356">property name, whose value to retrieve; cannot be %NULL</doc>
+                   line="1383">property name, whose value to retrieve; cannot be %NULL</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="cancellable"
@@ -3184,7 +3220,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1357">a #GCancellable; can be %NULL</doc>
+                   line="1384">a #GCancellable; can be %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
             <parameter name="callback"
@@ -3195,7 +3231,7 @@ type of #EClient.</doc-deprecated>
                        closure="4">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1358">callback to call when a result is ready</doc>
+                   line="1385">callback to call when a result is ready</doc>
               <type name="Gio.AsyncReadyCallback"
                     c:type="GAsyncReadyCallback"/>
             </parameter>
@@ -3206,7 +3242,7 @@ type of #EClient.</doc-deprecated>
                        closure="4">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1359">user data for the @callback</doc>
+                   line="1386">user data for the @callback</doc>
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3214,24 +3250,24 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="get_backend_property_finish">
         <callback name="get_backend_property_finish" throws="1">
-          <source-position filename="e-client.h" line="227"/>
+          <source-position filename="e-client.h" line="231"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1397">%TRUE if successful, %FALSE otherwise.</doc>
+                 line="1424">%TRUE if successful, %FALSE otherwise.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1390">an #EClient</doc>
+                   line="1417">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="result" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1391">a #GAsyncResult</doc>
+                   line="1418">a #GAsyncResult</doc>
               <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
             </parameter>
             <parameter name="prop_value"
@@ -3240,7 +3276,7 @@ type of #EClient.</doc-deprecated>
                        transfer-ownership="full">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1392">Retrieved backend property value; cannot be %NULL</doc>
+                   line="1419">Retrieved backend property value; cannot be %NULL</doc>
               <type name="utf8" c:type="gchar**"/>
             </parameter>
           </parameters>
@@ -3248,24 +3284,24 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="get_backend_property_sync">
         <callback name="get_backend_property_sync" throws="1">
-          <source-position filename="e-client.h" line="232"/>
+          <source-position filename="e-client.h" line="236"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1430">%TRUE if successful, %FALSE otherwise.</doc>
+                 line="1457">%TRUE if successful, %FALSE otherwise.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1422">an #EClient</doc>
+                   line="1449">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="prop_name" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1423">property name, whose value to retrieve; cannot be %NULL</doc>
+                   line="1450">property name, whose value to retrieve; cannot be %NULL</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="prop_value"
@@ -3274,7 +3310,7 @@ type of #EClient.</doc-deprecated>
                        transfer-ownership="full">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1424">Retrieved backend property value; cannot be %NULL</doc>
+                   line="1451">Retrieved backend property value; cannot be %NULL</doc>
               <type name="utf8" c:type="gchar**"/>
             </parameter>
             <parameter name="cancellable"
@@ -3283,7 +3319,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1425">a #GCancellable; can be %NULL</doc>
+                   line="1452">a #GCancellable; can be %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
           </parameters>
@@ -3291,7 +3327,7 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="set_backend_property">
         <callback name="set_backend_property">
-          <source-position filename="e-client.h" line="240"/>
+          <source-position filename="e-client.h" line="244"/>
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -3299,19 +3335,19 @@ type of #EClient.</doc-deprecated>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1457">an #EClient</doc>
+                   line="1484">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="prop_name" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1458">property name, whose value to change; cannot be %NULL</doc>
+                   line="1485">property name, whose value to change; cannot be %NULL</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="prop_value" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1459">property value, to set; cannot be %NULL</doc>
+                   line="1486">property value, to set; cannot be %NULL</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="cancellable"
@@ -3320,7 +3356,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1460">a #GCancellable; can be %NULL</doc>
+                   line="1487">a #GCancellable; can be %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
             <parameter name="callback"
@@ -3331,7 +3367,7 @@ type of #EClient.</doc-deprecated>
                        closure="5">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1461">callback to call when a result is ready</doc>
+                   line="1488">callback to call when a result is ready</doc>
               <type name="Gio.AsyncReadyCallback"
                     c:type="GAsyncReadyCallback"/>
             </parameter>
@@ -3342,7 +3378,7 @@ type of #EClient.</doc-deprecated>
                        closure="5">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1462">user data for the @callback</doc>
+                   line="1489">user data for the @callback</doc>
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3350,24 +3386,24 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="set_backend_property_finish">
         <callback name="set_backend_property_finish" throws="1">
-          <source-position filename="e-client.h" line="246"/>
+          <source-position filename="e-client.h" line="250"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1505">%TRUE if successful, %FALSE otherwise.</doc>
+                 line="1532">%TRUE if successful, %FALSE otherwise.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1499">an #EClient</doc>
+                   line="1526">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="result" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1500">a #GAsyncResult</doc>
+                   line="1527">a #GAsyncResult</doc>
               <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
             </parameter>
           </parameters>
@@ -3375,30 +3411,30 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="set_backend_property_sync">
         <callback name="set_backend_property_sync" throws="1">
-          <source-position filename="e-client.h" line="250"/>
+          <source-position filename="e-client.h" line="254"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1539">%TRUE if successful, %FALSE otherwise.</doc>
+                 line="1566">%TRUE if successful, %FALSE otherwise.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1530">an #EClient</doc>
+                   line="1557">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="prop_name" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1531">property name, whose value to change; cannot be %NULL</doc>
+                   line="1558">property name, whose value to change; cannot be %NULL</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="prop_value" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1532">property value, to set; cannot be %NULL</doc>
+                   line="1559">property value, to set; cannot be %NULL</doc>
               <type name="utf8" c:type="const gchar*"/>
             </parameter>
             <parameter name="cancellable"
@@ -3407,7 +3443,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1533">a #GCancellable; can be %NULL</doc>
+                   line="1560">a #GCancellable; can be %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
           </parameters>
@@ -3415,7 +3451,7 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="open">
         <callback name="open">
-          <source-position filename="e-client.h" line="257"/>
+          <source-position filename="e-client.h" line="261"/>
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -3423,14 +3459,13 @@ type of #EClient.</doc-deprecated>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1569">an #EClient</doc>
+                   line="1596">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="only_if_exists" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1570">if %TRUE, fail if this book doesn't already exist,
-                 otherwise create it first</doc>
+                   line="1597">this parameter is not used anymore</doc>
               <type name="gboolean" c:type="gboolean"/>
             </parameter>
             <parameter name="cancellable"
@@ -3439,7 +3474,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1572">a #GCancellable; can be %NULL</doc>
+                   line="1598">a #GCancellable; can be %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
             <parameter name="callback"
@@ -3450,7 +3485,7 @@ type of #EClient.</doc-deprecated>
                        closure="4">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1573">callback to call when a result is ready</doc>
+                   line="1599">callback to call when a result is ready</doc>
               <type name="Gio.AsyncReadyCallback"
                     c:type="GAsyncReadyCallback"/>
             </parameter>
@@ -3461,7 +3496,7 @@ type of #EClient.</doc-deprecated>
                        closure="4">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1574">user data for the @callback</doc>
+                   line="1600">user data for the @callback</doc>
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3469,24 +3504,24 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="open_finish">
         <callback name="open_finish" throws="1">
-          <source-position filename="e-client.h" line="262"/>
+          <source-position filename="e-client.h" line="266"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1613">%TRUE if successful, %FALSE otherwise.</doc>
+                 line="1639">%TRUE if successful, %FALSE otherwise.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1607">an #EClient</doc>
+                   line="1633">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="result" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1608">a #GAsyncResult</doc>
+                   line="1634">a #GAsyncResult</doc>
               <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
             </parameter>
           </parameters>
@@ -3494,25 +3529,24 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="open_sync">
         <callback name="open_sync" throws="1">
-          <source-position filename="e-client.h" line="265"/>
+          <source-position filename="e-client.h" line="269"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1648">%TRUE if successful, %FALSE otherwise.</doc>
+                 line="1673">%TRUE if successful, %FALSE otherwise.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1640">an #EClient</doc>
+                   line="1666">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="only_if_exists" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1641">if %TRUE, fail if this book doesn't already exist,
-                 otherwise create it first</doc>
+                   line="1667">this parameter is not used anymore</doc>
               <type name="gboolean" c:type="gboolean"/>
             </parameter>
             <parameter name="cancellable"
@@ -3521,7 +3555,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1643">a #GCancellable; can be %NULL</doc>
+                   line="1668">a #GCancellable; can be %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
           </parameters>
@@ -3529,7 +3563,7 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="remove">
         <callback name="remove">
-          <source-position filename="e-client.h" line="270"/>
+          <source-position filename="e-client.h" line="274"/>
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -3537,7 +3571,7 @@ type of #EClient.</doc-deprecated>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1672">an #EClient</doc>
+                   line="1697">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="cancellable"
@@ -3546,7 +3580,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1673">a #GCancellable; can be %NULL</doc>
+                   line="1698">a #GCancellable; can be %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
             <parameter name="callback"
@@ -3557,7 +3591,7 @@ type of #EClient.</doc-deprecated>
                        closure="3">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1674">callback to call when a result is ready</doc>
+                   line="1699">callback to call when a result is ready</doc>
               <type name="Gio.AsyncReadyCallback"
                     c:type="GAsyncReadyCallback"/>
             </parameter>
@@ -3568,7 +3602,7 @@ type of #EClient.</doc-deprecated>
                        closure="3">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1675">user data for the @callback</doc>
+                   line="1700">user data for the @callback</doc>
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3576,24 +3610,24 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="remove_finish">
         <callback name="remove_finish" throws="1">
-          <source-position filename="e-client.h" line="274"/>
+          <source-position filename="e-client.h" line="278"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1711">%TRUE if successful, %FALSE otherwise.</doc>
+                 line="1736">%TRUE if successful, %FALSE otherwise.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1705">an #EClient</doc>
+                   line="1730">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="result" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1706">a #GAsyncResult</doc>
+                   line="1731">a #GAsyncResult</doc>
               <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
             </parameter>
           </parameters>
@@ -3601,18 +3635,18 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="remove_sync">
         <callback name="remove_sync" throws="1">
-          <source-position filename="e-client.h" line="277"/>
+          <source-position filename="e-client.h" line="281"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1742">%TRUE if successful, %FALSE otherwise.</doc>
+                 line="1767">%TRUE if successful, %FALSE otherwise.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1735">an #EClient</doc>
+                   line="1760">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="cancellable"
@@ -3621,7 +3655,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1736">a #GCancellable; can be %NULL</doc>
+                   line="1761">a #GCancellable; can be %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
           </parameters>
@@ -3629,7 +3663,7 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="refresh">
         <callback name="refresh">
-          <source-position filename="e-client.h" line="281"/>
+          <source-position filename="e-client.h" line="285"/>
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -3637,7 +3671,7 @@ type of #EClient.</doc-deprecated>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1764">an #EClient</doc>
+                   line="1789">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="cancellable"
@@ -3646,7 +3680,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1765">a #GCancellable; can be %NULL</doc>
+                   line="1790">a #GCancellable; can be %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
             <parameter name="callback"
@@ -3657,7 +3691,7 @@ type of #EClient.</doc-deprecated>
                        closure="3">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1766">callback to call when a result is ready</doc>
+                   line="1791">callback to call when a result is ready</doc>
               <type name="Gio.AsyncReadyCallback"
                     c:type="GAsyncReadyCallback"/>
             </parameter>
@@ -3668,7 +3702,7 @@ type of #EClient.</doc-deprecated>
                        closure="3">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1767">user data for the @callback</doc>
+                   line="1792">user data for the @callback</doc>
               <type name="gpointer" c:type="gpointer"/>
             </parameter>
           </parameters>
@@ -3676,24 +3710,24 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="refresh_finish">
         <callback name="refresh_finish" throws="1">
-          <source-position filename="e-client.h" line="285"/>
+          <source-position filename="e-client.h" line="289"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1803">%TRUE if successful, %FALSE otherwise.</doc>
+                 line="1828">%TRUE if successful, %FALSE otherwise.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1797">an #EClient</doc>
+                   line="1822">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="result" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1798">a #GAsyncResult</doc>
+                   line="1823">a #GAsyncResult</doc>
               <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
             </parameter>
           </parameters>
@@ -3701,18 +3735,18 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="refresh_sync">
         <callback name="refresh_sync" throws="1">
-          <source-position filename="e-client.h" line="288"/>
+          <source-position filename="e-client.h" line="292"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="1834">%TRUE if successful, %FALSE otherwise.</doc>
+                 line="1859">%TRUE if successful, %FALSE otherwise.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1825">an #EClient</doc>
+                   line="1850">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="cancellable"
@@ -3721,7 +3755,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="1826">a #GCancellable; can be %NULL</doc>
+                   line="1851">a #GCancellable; can be %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
           </parameters>
@@ -3729,18 +3763,18 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="retrieve_properties_sync">
         <callback name="retrieve_properties_sync" throws="1">
-          <source-position filename="e-client.h" line="291"/>
+          <source-position filename="e-client.h" line="295"/>
           <return-value transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="e-client.c"
-                 line="2041">%TRUE on success, %FALSE on error</doc>
+                 line="2066">%TRUE on success, %FALSE on error</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="client" transfer-ownership="none">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="2032">an #EClient</doc>
+                   line="2057">an #EClient</doc>
               <type name="Client" c:type="EClient*"/>
             </parameter>
             <parameter name="cancellable"
@@ -3749,7 +3783,7 @@ type of #EClient.</doc-deprecated>
                        allow-none="1">
               <doc xml:space="preserve"
                    filename="e-client.c"
-                   line="2033">optional #GCancellable object, or %NULL</doc>
+                   line="2058">optional #GCancellable object, or %NULL</doc>
               <type name="Gio.Cancellable" c:type="GCancellable*"/>
             </parameter>
           </parameters>
@@ -3757,7 +3791,7 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="opened">
         <callback name="opened">
-          <source-position filename="e-client.h" line="296"/>
+          <source-position filename="e-client.h" line="300"/>
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -3773,7 +3807,7 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="backend_error">
         <callback name="backend_error">
-          <source-position filename="e-client.h" line="298"/>
+          <source-position filename="e-client.h" line="302"/>
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -3789,7 +3823,7 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="backend_died">
         <callback name="backend_died">
-          <source-position filename="e-client.h" line="300"/>
+          <source-position filename="e-client.h" line="304"/>
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -3802,7 +3836,7 @@ type of #EClient.</doc-deprecated>
       </field>
       <field name="backend_property_changed">
         <callback name="backend_property_changed">
-          <source-position filename="e-client.h" line="301"/>
+          <source-position filename="e-client.h" line="305"/>
           <return-value transfer-ownership="none">
             <type name="none" c:type="void"/>
           </return-value>
@@ -3823,159 +3857,159 @@ type of #EClient.</doc-deprecated>
     <enumeration name="ClientError" version="3.2" c:type="EClientError">
       <doc xml:space="preserve"
            filename="e-client.h"
-           line="119">Error codes for #EClient operations.</doc>
-      <source-position filename="e-client.h" line="171"/>
+           line="117">Error codes for #EClient operations.</doc>
+      <source-position filename="e-client.h" line="169"/>
       <member name="invalid_arg"
               value="0"
               c:identifier="E_CLIENT_ERROR_INVALID_ARG">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="121">Invalid argument was used</doc>
+             line="119">Invalid argument was used</doc>
       </member>
       <member name="busy" value="1" c:identifier="E_CLIENT_ERROR_BUSY">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="122">The client is busy</doc>
+             line="120">The client is busy</doc>
       </member>
       <member name="source_not_loaded"
               value="2"
               c:identifier="E_CLIENT_ERROR_SOURCE_NOT_LOADED">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="123">The source is not loaded</doc>
+             line="121">The source is not loaded</doc>
       </member>
       <member name="source_already_loaded"
               value="3"
               c:identifier="E_CLIENT_ERROR_SOURCE_ALREADY_LOADED">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="124">The source is already loaded</doc>
+             line="122">The source is already loaded</doc>
       </member>
       <member name="authentication_failed"
               value="4"
               c:identifier="E_CLIENT_ERROR_AUTHENTICATION_FAILED">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="125">Authentication failed</doc>
+             line="123">Authentication failed</doc>
       </member>
       <member name="authentication_required"
               value="5"
               c:identifier="E_CLIENT_ERROR_AUTHENTICATION_REQUIRED">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="126">Authentication required</doc>
+             line="124">Authentication required</doc>
       </member>
       <member name="repository_offline"
               value="6"
               c:identifier="E_CLIENT_ERROR_REPOSITORY_OFFLINE">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="127">The repository (client) is offline</doc>
+             line="125">The repository (client) is offline</doc>
       </member>
       <member name="offline_unavailable"
               value="7"
               c:identifier="E_CLIENT_ERROR_OFFLINE_UNAVAILABLE">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="128">The operation is unavailable in offline mode</doc>
+             line="126">The operation is unavailable in offline mode</doc>
       </member>
       <member name="permission_denied"
               value="8"
               c:identifier="E_CLIENT_ERROR_PERMISSION_DENIED">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="129">Permission denied for the operation</doc>
+             line="127">Permission denied for the operation</doc>
       </member>
       <member name="cancelled"
               value="9"
               c:identifier="E_CLIENT_ERROR_CANCELLED">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="130">The operation was cancelled</doc>
+             line="128">The operation was cancelled</doc>
       </member>
       <member name="could_not_cancel"
               value="10"
               c:identifier="E_CLIENT_ERROR_COULD_NOT_CANCEL">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="131">The operation cannot be cancelled</doc>
+             line="129">The operation cannot be cancelled</doc>
       </member>
       <member name="not_supported"
               value="11"
               c:identifier="E_CLIENT_ERROR_NOT_SUPPORTED">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="132">The operation is not supported</doc>
+             line="130">The operation is not supported</doc>
       </member>
       <member name="tls_not_available"
               value="12"
               c:identifier="E_CLIENT_ERROR_TLS_NOT_AVAILABLE">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="133">TLS is not available</doc>
+             line="131">TLS is not available</doc>
       </member>
       <member name="unsupported_authentication_method"
               value="13"
               c:identifier="E_CLIENT_ERROR_UNSUPPORTED_AUTHENTICATION_METHOD">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="134">Requested authentication method is not supported</doc>
+             line="132">Requested authentication method is not supported</doc>
       </member>
       <member name="search_size_limit_exceeded"
               value="14"
               c:identifier="E_CLIENT_ERROR_SEARCH_SIZE_LIMIT_EXCEEDED">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="135">Search size limit exceeded</doc>
+             line="133">Search size limit exceeded</doc>
       </member>
       <member name="search_time_limit_exceeded"
               value="15"
               c:identifier="E_CLIENT_ERROR_SEARCH_TIME_LIMIT_EXCEEDED">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="136">Search time limit exceeded</doc>
+             line="134">Search time limit exceeded</doc>
       </member>
       <member name="invalid_query"
               value="16"
               c:identifier="E_CLIENT_ERROR_INVALID_QUERY">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="137">The query was invalid</doc>
+             line="135">The query was invalid</doc>
       </member>
       <member name="query_refused"
               value="17"
               c:identifier="E_CLIENT_ERROR_QUERY_REFUSED">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="138">The query was refused by the server side</doc>
+             line="136">The query was refused by the server side</doc>
       </member>
       <member name="dbus_error"
               value="18"
               c:identifier="E_CLIENT_ERROR_DBUS_ERROR">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="139">A D-Bus error occurred</doc>
+             line="137">A D-Bus error occurred</doc>
       </member>
       <member name="other_error"
               value="19"
               c:identifier="E_CLIENT_ERROR_OTHER_ERROR">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="140">Other error</doc>
+             line="138">Other error</doc>
       </member>
       <member name="not_opened"
               value="20"
               c:identifier="E_CLIENT_ERROR_NOT_OPENED">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="141">The client is not opened</doc>
+             line="139">The client is not opened</doc>
       </member>
       <member name="out_of_sync"
               value="21"
               c:identifier="E_CLIENT_ERROR_OUT_OF_SYNC">
         <doc xml:space="preserve"
              filename="e-client.h"
-             line="142">The clien tis out of sync</doc>
+             line="140">The client is out of sync with the server</doc>
       </member>
     </enumeration>
     <record name="ClientErrorsList"
@@ -3984,7 +4018,7 @@ type of #EClient.</doc-deprecated>
             deprecated="1"
             deprecated-version="3.8">
       <doc-deprecated xml:space="preserve">This structure is no longer used.</doc-deprecated>
-      <source-position filename="e-client.h" line="488"/>
+      <source-position filename="e-client.h" line="490"/>
       <field name="name" readable="0" private="1">
         <type name="utf8" c:type="const gchar*"/>
       </field>
@@ -3993,7 +4027,7 @@ type of #EClient.</doc-deprecated>
       </field>
     </record>
     <record name="ClientPrivate" c:type="EClientPrivate" disguised="1">
-      <source-position filename="e-client.h" line="185"/>
+      <source-position filename="e-client.h" line="189"/>
     </record>
     <record name="Collator"
             c:type="ECollator"
@@ -4364,6 +4398,57 @@ If the reference count reaches 0 then the collator is freed</doc>
              line="48">A malformed locale name was given to e_collator_new()</doc>
       </member>
     </enumeration>
+    <enumeration name="ConflictResolution"
+                 version="3.26"
+                 glib:type-name="EConflictResolution"
+                 glib:get-type="e_conflict_resolution_get_type"
+                 c:type="EConflictResolution">
+      <doc xml:space="preserve"
+           filename="e-source-enums.h"
+           line="292">Defines what to do when a conflict between the locally stored and
+remotely stored object versions happen during object modify or remove.</doc>
+      <member name="fail"
+              value="0"
+              c:identifier="E_CONFLICT_RESOLUTION_FAIL"
+              glib:nick="fail">
+        <doc xml:space="preserve"
+             filename="e-source-enums.h"
+             line="294">Fail when a write-conflict occurs.</doc>
+      </member>
+      <member name="use_newer"
+              value="1"
+              c:identifier="E_CONFLICT_RESOLUTION_USE_NEWER"
+              glib:nick="use-newer">
+        <doc xml:space="preserve"
+             filename="e-source-enums.h"
+             line="295">Use newer version of the object,
+   which can be either the server version or the local version of it.</doc>
+      </member>
+      <member name="keep_server"
+              value="2"
+              c:identifier="E_CONFLICT_RESOLUTION_KEEP_SERVER"
+              glib:nick="keep-server">
+        <doc xml:space="preserve"
+             filename="e-source-enums.h"
+             line="297">Keep server object on conflict.</doc>
+      </member>
+      <member name="keep_local"
+              value="3"
+              c:identifier="E_CONFLICT_RESOLUTION_KEEP_LOCAL"
+              glib:nick="keep-local">
+        <doc xml:space="preserve"
+             filename="e-source-enums.h"
+             line="298">Write local version of the object on conflict.</doc>
+      </member>
+      <member name="write_copy"
+              value="4"
+              c:identifier="E_CONFLICT_RESOLUTION_WRITE_COPY"
+              glib:nick="write-copy">
+        <doc xml:space="preserve"
+             filename="e-source-enums.h"
+             line="299">Create a new copy of the object on conflict.</doc>
+      </member>
+    </enumeration>
     <constant name="DEBUG_LOG_DOMAIN_CAL_QUERIES"
               value="CalQueries"
               c:type="E_DEBUG_LOG_DOMAIN_CAL_QUERIES"
@@ -4395,7 +4480,7 @@ time.</doc>
       <source-position filename="eds-version.h" line="32"/>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="EDS_MICRO_VERSION" value="2" c:type="EDS_MICRO_VERSION">
+    <constant name="EDS_MICRO_VERSION" value="3" c:type="EDS_MICRO_VERSION">
       <doc xml:space="preserve"
            filename="eds-version.h"
            line="44">The micro version number of the Evolution-Data-Server library.  Like

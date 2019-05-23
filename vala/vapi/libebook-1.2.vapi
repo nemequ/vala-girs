@@ -8,12 +8,12 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public BookClient (E.Source source) throws GLib.Error;
-		public async bool add_contact (E.Contact contact, GLib.Cancellable? cancellable, out string out_added_uid) throws GLib.Error;
-		public bool add_contact_sync (E.Contact contact, out string out_added_uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool add_contact (E.Contact contact, uint32 opflags, GLib.Cancellable? cancellable, out string out_added_uid) throws GLib.Error;
+		public bool add_contact_sync (E.Contact contact, uint32 opflags, out string out_added_uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.4")]
-		public async bool add_contacts (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable, out GLib.SList<string> out_added_uids) throws GLib.Error;
+		public async bool add_contacts (GLib.SList<E.Contact> contacts, uint32 opflags, GLib.Cancellable? cancellable, out GLib.SList<string> out_added_uids) throws GLib.Error;
 		[Version (since = "3.4")]
-		public bool add_contacts_sync (GLib.SList<E.Contact> contacts, out GLib.SList<string> out_added_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool add_contacts_sync (GLib.SList<E.Contact> contacts, uint32 opflags, out GLib.SList<string> out_added_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.8")]
 		public static async E.BookClient connect (E.Source source, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.12")]
@@ -38,18 +38,18 @@ namespace E {
 		public async bool get_view (string sexp, GLib.Cancellable? cancellable, out E.BookClientView out_view) throws GLib.Error;
 		public bool get_view_sync (string sexp, out E.BookClientView out_view, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static bool is_self (E.Contact contact);
-		public async bool modify_contact (E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool modify_contact_sync (E.Contact contact, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool modify_contact (E.Contact contact, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool modify_contact_sync (E.Contact contact, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.4")]
-		public async bool modify_contacts (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool modify_contacts (GLib.SList<E.Contact> contacts, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.4")]
-		public bool modify_contacts_sync (GLib.SList<E.Contact> contacts, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool remove_contact (E.Contact contact, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async bool remove_contact_by_uid (string uid, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool remove_contact_by_uid_sync (string uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public bool remove_contact_sync (E.Contact contact, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool remove_contacts (GLib.SList<string> uids, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool remove_contacts_sync (GLib.SList<string> uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool modify_contacts_sync (GLib.SList<E.Contact> contacts, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool remove_contact (E.Contact contact, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool remove_contact_by_uid (string uid, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool remove_contact_by_uid_sync (string uid, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool remove_contact_sync (E.Contact contact, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool remove_contacts (GLib.SList<string> uids, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool remove_contacts_sync (GLib.SList<string> uids, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool set_self (E.Contact contact) throws GLib.Error;
 		[Version (since = "3.12")]
 		public string locale { get; }
@@ -190,9 +190,6 @@ namespace E {
 		NO_SPACE,
 		NOT_SUPPORTED
 	}
-	[CCode (cheader_filename = "libebook/libebook.h", cname = "BOOK_BACKEND_PROPERTY_SUPPORTED_AUTH_METHODS")]
-	[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
-	public const string BOOK_BACKEND_PROPERTY_SUPPORTED_AUTH_METHODS;
 	[CCode (cheader_filename = "libebook/libebook.h")]
 	public static GLib.Quark book_error_quark ();
 	[CCode (cheader_filename = "libebook/libebook.h")]

@@ -569,7 +569,7 @@ namespace E {
 		public E.BookChangeType change_type;
 		public weak E.Contact contact;
 	}
-	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CHANGE_CARD_", type_id = "e_book_change_type_get_type ()")]
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CHANGE_CARD_", has_type_id = false)]
 	[Version (deprecated = true, deprecated_since = "3.2")]
 	public enum BookChangeType {
 		ADDED,
@@ -610,6 +610,17 @@ namespace E {
 		PHONE,
 		SORT_KEY
 	}
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_OPERATION_FLAG_", type_id = "e_book_operation_flags_get_type ()")]
+	[Flags]
+	[Version (since = "3.34")]
+	public enum BookOperationFlags {
+		NONE,
+		CONFLICT_FAIL,
+		CONFLICT_USE_NEWER,
+		CONFLICT_KEEP_SERVER,
+		CONFLICT_KEEP_LOCAL,
+		CONFLICT_WRITE_COPY
+	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_QUERY_", has_type_id = false)]
 	public enum BookQueryTest {
 		IS,
@@ -623,7 +634,7 @@ namespace E {
 		REGEX_RAW,
 		LAST
 	}
-	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_VIEW_", type_id = "e_book_view_status_get_type ()")]
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_VIEW_", has_type_id = false)]
 	[Version (deprecated = true, deprecated_since = "3.2")]
 	public enum BookViewStatus {
 		STATUS_OK,
@@ -787,36 +798,6 @@ namespace E {
 		INLINED,
 		URI
 	}
-	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_DATA_BOOK_STATUS_", type_id = "e_data_book_status_get_type ()")]
-	[Version (since = "3.6")]
-	public enum DataBookStatus {
-		SUCCESS,
-		BUSY,
-		REPOSITORY_OFFLINE,
-		PERMISSION_DENIED,
-		CONTACT_NOT_FOUND,
-		CONTACTID_ALREADY_EXISTS,
-		AUTHENTICATION_FAILED,
-		AUTHENTICATION_REQUIRED,
-		UNSUPPORTED_FIELD,
-		UNSUPPORTED_AUTHENTICATION_METHOD,
-		TLS_NOT_AVAILABLE,
-		NO_SUCH_BOOK,
-		BOOK_REMOVED,
-		OFFLINE_UNAVAILABLE,
-		SEARCH_SIZE_LIMIT_EXCEEDED,
-		SEARCH_TIME_LIMIT_EXCEEDED,
-		INVALID_QUERY,
-		QUERY_REFUSED,
-		COULD_NOT_CANCEL,
-		OTHER_ERROR,
-		INVALID_SERVER_VERSION,
-		NO_SPACE,
-		INVALID_ARG,
-		NOT_SUPPORTED,
-		NOT_OPENED,
-		OUT_OF_SYNC
-	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_PHONE_NUMBER_COUNTRY_FROM_", has_type_id = false)]
 	[Version (since = "3.8")]
 	public enum PhoneNumberCountrySource {
@@ -853,7 +834,6 @@ namespace E {
 		CONTACT_ID_ALREADY_EXISTS,
 		NO_SUCH_SOURCE,
 		NO_SPACE;
-		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public GLib.Error create (string custom_msg);
 		public static GLib.Quark quark ();
 		public unowned string to_string ();
@@ -870,13 +850,13 @@ namespace E {
 		TOO_LONG;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS")]
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "E_BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS")]
 	[Version (since = "3.2")]
 	public const string BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS;
-	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "BOOK_BACKEND_PROPERTY_REVISION")]
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "E_BOOK_BACKEND_PROPERTY_REVISION")]
 	[Version (since = "3.4")]
 	public const string BOOK_BACKEND_PROPERTY_REVISION;
-	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS")]
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "E_BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS")]
 	[Version (since = "3.2")]
 	public const string BOOK_BACKEND_PROPERTY_SUPPORTED_FIELDS;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_ADR")]
@@ -1036,4 +1016,10 @@ namespace E {
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "E_VCARD_21_VALID_PROPERTIES")]
 	[Version (since = "3.4")]
 	public const string VCARD_21_VALID_PROPERTIES;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (since = "3.34")]
+	public static uint32 book_util_conflict_resolution_to_operation_flags (E.ConflictResolution conflict_resolution);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (since = "3.34")]
+	public static E.ConflictResolution book_util_operation_flags_to_conflict_resolution (uint32 flags);
 }

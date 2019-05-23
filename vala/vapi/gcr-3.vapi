@@ -206,7 +206,7 @@ namespace Gcr {
 		[NoAccessorMethod]
 		public abstract string description { owned get; }
 		[NoAccessorMethod]
-		public abstract GLib.Date expiry { get; }
+		public abstract GLib.Date expiry { owned get; }
 		[NoAccessorMethod]
 		public abstract GLib.Icon icon { owned get; }
 		[NoAccessorMethod]
