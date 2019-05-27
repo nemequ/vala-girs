@@ -97,7 +97,7 @@ namespace ICal {
 		public ICal.CompIter begin_component (ICal.ComponentKind kind);
 		[Version (since = "1.0")]
 		public int check_restrictions ();
-		[Version (since = "1.0")]
+		[Version (since = "3.1")]
 		public ICal.Component clone ();
 		[Version (since = "1.0")]
 		public void convert_errors ();
@@ -391,7 +391,7 @@ namespace ICal {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Parameter.charset (string v);
-		[Version (since = "1.0")]
+		[Version (since = "3.1")]
 		public ICal.Parameter clone ();
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
@@ -835,7 +835,7 @@ namespace ICal {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Property.@class (ICal.Property_Class v);
-		[Version (since = "1.0")]
+		[Version (since = "3.1")]
 		public ICal.Property clone ();
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
@@ -2057,7 +2057,7 @@ namespace ICal {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Value.@class (ICal.Property_Class v);
-		[Version (since = "1.0")]
+		[Version (since = "3.1")]
 		public ICal.Value clone ();
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]

@@ -25,6 +25,8 @@ namespace GVir {
 		public GVirConfig.Capabilities get_capabilities () throws GLib.Error;
 		public async GVirConfig.Capabilities get_capabilities_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public GVir.Domain get_domain (string uuid);
+		public GVirConfig.DomainCapabilities get_domain_capabilities (string? emulatorbin, string? arch, string? machine, string? virttype, uint flags) throws GLib.Error;
+		public async GVirConfig.DomainCapabilities get_domain_capabilities_async (string? emulatorbin, string? arch, string? machine, string? virttype, uint flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.List<GVir.Domain> get_domains ();
 		public string get_hypervisor_name () throws GLib.Error;
 		public GVir.Interface get_interface (string name);

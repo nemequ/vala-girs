@@ -143,10 +143,14 @@ namespace E {
 	public class BookBackendSExp : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public BookBackendSExp (string text);
+		[Version (since = "3.34")]
+		public void @lock ();
 		public bool match_contact (E.Contact contact);
 		public bool match_vcard (string vcard);
 		[Version (since = "3.8")]
 		public unowned string text ();
+		[Version (since = "3.34")]
+		public void @unlock ();
 	}
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", type_id = "e_book_backend_sync_get_type ()")]
 	public class BookBackendSync : E.BookBackend {

@@ -164,9 +164,13 @@ namespace E {
 		public CalBackendSExp (string text);
 		[Version (since = "2.32")]
 		public bool evaluate_occur_times (long start, long end);
+		[Version (since = "3.34")]
+		public void @lock ();
 		public bool match_comp (ECal.Component comp, ECal.TimezoneCache cache);
 		public bool match_object (string object, ECal.TimezoneCache cache);
 		public unowned string text ();
+		[Version (since = "3.34")]
+		public void @unlock ();
 	}
 	[CCode (cheader_filename = "libedata-cal/libedata-cal.h", type_id = "e_cal_backend_sync_get_type ()")]
 	public class CalBackendSync : E.CalBackend, ECal.TimezoneCache {

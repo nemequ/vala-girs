@@ -177,6 +177,20 @@ namespace GVirConfig {
 		public void set_bus (uint16 bus);
 		public void set_port (string port);
 	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_capabilities_get_type ()")]
+	public class DomainCapabilities : GVirConfig.Object {
+		[CCode (has_construct_function = false)]
+		public DomainCapabilities ();
+		[CCode (has_construct_function = false)]
+		public DomainCapabilities.from_xml (string xml) throws GLib.Error;
+		public GVirConfig.DomainCapabilitiesOs get_os ();
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_capabilities_os_get_type ()")]
+	public class DomainCapabilitiesOs : GVirConfig.Object {
+		[CCode (has_construct_function = false)]
+		protected DomainCapabilitiesOs ();
+		public virtual GLib.List<GVirConfig.DomainOsFirmware> get_firmwares ();
+	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_channel_get_type ()")]
 	public class DomainChannel : GVirConfig.DomainChardev {
 		[CCode (has_construct_function = false)]
@@ -563,6 +577,7 @@ namespace GVirConfig {
 		public void set_arch (string arch);
 		public void set_boot_devices (GLib.List<GVirConfig.DomainOsBootDevice> boot_devices);
 		public void set_cmdline (string? cmdline);
+		public void set_firmware (GVirConfig.DomainOsFirmware firmware);
 		public void set_init (string? init);
 		public void set_kernel (string? kernel);
 		public void set_loader (string? loader);
@@ -1099,6 +1114,11 @@ namespace GVirConfig {
 		HD,
 		CDROM,
 		NETWORK
+	}
+	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_OS_FIRMWARE_", type_id = "gvir_config_domain_os_firmware_get_type ()")]
+	public enum DomainOsFirmware {
+		BIOS,
+		EFI
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_OS_SMBIOS_MODE_", type_id = "gvir_config_domain_os_sm_bios_mode_get_type ()")]
 	public enum DomainOsSmBiosMode {
