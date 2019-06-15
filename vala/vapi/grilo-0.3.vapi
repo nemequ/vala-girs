@@ -284,7 +284,7 @@ namespace Grl {
 		[Version (since = "0.2.3")]
 		public unowned string get_keyword_nth (uint index);
 		[Version (since = "0.3.0")]
-		public GLib.DateTime get_last_played ();
+		public unowned GLib.DateTime get_last_played ();
 		[Version (since = "0.1.4")]
 		public int get_last_position ();
 		[Version (since = "0.1.6")]
@@ -301,6 +301,10 @@ namespace Grl {
 		public unowned string get_mb_artist_id_nth (uint index);
 		[Version (since = "0.3.0")]
 		public unowned string get_mb_recording_id ();
+		[Version (since = "0.3.8")]
+		public unowned string get_mb_release_group_id ();
+		[Version (since = "0.3.8")]
+		public unowned string get_mb_release_id ();
 		[Version (since = "0.3.0")]
 		public unowned string get_mb_track_id ();
 		[Version (since = "0.3.0")]
@@ -452,6 +456,10 @@ namespace Grl {
 		public void set_mb_artist_id (string mb_artist_id);
 		[Version (since = "0.3.0")]
 		public void set_mb_recording_id (string mb_recording_id);
+		[Version (since = "0.3.8")]
+		public void set_mb_release_group_id (string mb_release_group_id);
+		[Version (since = "0.3.8")]
+		public void set_mb_release_id (string mb_release_id);
 		[Version (since = "0.3.0")]
 		public void set_mb_track_id (string mb_track_id);
 		[Version (since = "0.1.4")]
@@ -950,6 +958,10 @@ namespace Grl {
 		public static Grl.KeyID MB_ARTIST_ID;
 		[CCode (cname = "GRL_METADATA_KEY_MB_RECORDING_ID")]
 		public static Grl.KeyID MB_RECORDING_ID;
+		[CCode (cname = "GRL_METADATA_KEY_MB_RELEASE_ID")]
+		public static Grl.KeyID MB_RELEASE_ID;
+		[CCode (cname = "GRL_METADATA_KEY_MB_RELEASE_GROUP_ID")]
+		public static Grl.KeyID MB_RELEASE_GROUP_ID;
 		[CCode (cname = "GRL_METADATA_KEY_AUDIO_TRACK")]
 		public static Grl.KeyID AUDIO_TRACK;
 		[CCode (cname = "GRL_METADATA_KEY_ALBUM_DISC_NUMBER")]
@@ -1264,6 +1276,10 @@ namespace Grl {
 	public const int METADATA_KEY_MB_ARTIST_ID;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_MB_RECORDING_ID")]
 	public const int METADATA_KEY_MB_RECORDING_ID;
+	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_MB_RELEASE_GROUP_ID")]
+	public const int METADATA_KEY_MB_RELEASE_GROUP_ID;
+	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_MB_RELEASE_ID")]
+	public const int METADATA_KEY_MB_RELEASE_ID;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_MB_TRACK_ID")]
 	public const int METADATA_KEY_MB_TRACK_ID;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_METADATA_KEY_MIME")]

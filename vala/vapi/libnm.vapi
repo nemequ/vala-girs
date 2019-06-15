@@ -121,7 +121,7 @@ namespace NM {
 		[Version (since = "1.6")]
 		public static bool is_json_object (string str) throws GLib.Error;
 		[CCode (cheader_filename = "NetworkManager.h")]
-		public static bool is_uuid (string str);
+		public static bool is_uuid (string? str);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool is_valid_iface_name (string name) throws GLib.Error;
 		[CCode (cheader_filename = "NetworkManager.h")]
@@ -1229,16 +1229,34 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_modem_get_type ()")]
 	public class DeviceModem : NM.Device, GLib.AsyncInitable, GLib.Initable {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MODEM_APN")]
+		public const string APN;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MODEM_CURRENT_CAPABILITIES")]
 		public const string CURRENT_CAPABILITIES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MODEM_DEVICE_ID")]
+		public const string DEVICE_ID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MODEM_MODEM_CAPABILITIES")]
 		public const string MODEM_CAPABILITIES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MODEM_OPERATOR_CODE")]
+		public const string OPERATOR_CODE;
 		[CCode (has_construct_function = false)]
 		protected DeviceModem ();
+		[Version (since = "1.20")]
+		public unowned string get_apn ();
 		public NM.DeviceModemCapabilities get_current_capabilities ();
+		[Version (since = "1.20")]
+		public unowned string get_device_id ();
 		public NM.DeviceModemCapabilities get_modem_capabilities ();
+		[Version (since = "1.20")]
+		public unowned string get_operator_code ();
+		[Version (since = "1.20")]
+		public string apn { get; }
 		public NM.DeviceModemCapabilities current_capabilities { get; }
+		[Version (since = "1.20")]
+		public string device_id { get; }
 		public NM.DeviceModemCapabilities modem_capabilities { get; }
+		[Version (since = "1.20")]
+		public string operator_code { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_olpc_mesh_get_type ()")]
 	public class DeviceOlpcMesh : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -1927,6 +1945,8 @@ namespace NM {
 		public unowned GLib.VariantType get_dbus_property_type (string property_name);
 		public unowned string get_name ();
 		public bool get_secret_flags (string secret_name, NM.SettingSecretFlags out_flags) throws GLib.Error;
+		[NoWrapper]
+		public virtual bool init_from_dbus (GLib.HashTable<void*,void*> keys, GLib.Variant setting_dict, GLib.Variant connection_dict, uint parse_flags) throws GLib.Error;
 		public static GLib.Type lookup_type (string name);
 		public bool set_secret_flags (string secret_name, NM.SettingSecretFlags flags) throws GLib.Error;
 		public string to_string ();
@@ -2827,6 +2847,9 @@ namespace NM {
 		public SettingEthtool ();
 		public void clear_features ();
 		public NM.Ternary get_feature (string optname);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.20")]
+		public (unowned string)[] get_optnames (out uint out_length);
 		public void set_feature (string optname, NM.Ternary value);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_generic_get_type ()")]
@@ -2959,6 +2982,8 @@ namespace NM {
 		public const string METHOD_AUTO;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_DHCP")]
 		public const string METHOD_DHCP;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_DISABLED")]
+		public const string METHOD_DISABLED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_IGNORE")]
 		public const string METHOD_IGNORE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_LINK_LOCAL")]
@@ -3428,6 +3453,17 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
 		public bool stp_enable { get; set construct; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_dpdk_get_type ()")]
+	public class SettingOvsDpdk : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.20")]
+		public SettingOvsDpdk ();
+		[Version (since = "1.20")]
+		public unowned string get_devargs ();
+		[NoAccessorMethod]
+		[Version (since = "1.20")]
+		public string devargs { owned get; set construct; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_interface_get_type ()")]
 	public class SettingOvsInterface : NM.Setting {
@@ -6527,6 +6563,10 @@ namespace NM {
 	public const string SETTING_OVS_BRIDGE_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_STP_ENABLE")]
 	public const string SETTING_OVS_BRIDGE_STP_ENABLE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_DEVARGS")]
+	public const string SETTING_OVS_DPDK_DEVARGS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_SETTING_NAME")]
+	public const string SETTING_OVS_DPDK_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_INTERFACE_SETTING_NAME")]
 	public const string SETTING_OVS_INTERFACE_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_INTERFACE_TYPE")]
@@ -6654,8 +6694,8 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_SYMMETRIC_KEY_LEN")]
 	public const int WIREGUARD_SYMMETRIC_KEY_LEN;
 	[CCode (cheader_filename = "NetworkManager.h")]
-	[Version (since = "1.14")]
-	public static bool ethtool_optname_is_feature (string optname);
+	[Version (since = "1.20")]
+	public static bool ethtool_optname_is_feature (string? optname);
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (since = "1.4")]
 	public static NM.VpnEditorPlugin vpn_editor_plugin_load (string plugin_name, string check_service) throws GLib.Error;

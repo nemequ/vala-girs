@@ -3,7 +3,7 @@
 [CCode (cprefix = "Hdy", gir_namespace = "Handy", gir_version = "0.0", lower_case_cprefix = "hdy_")]
 namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_action_row_get_type ()")]
-	public class ActionRow : Gtk.ListBoxRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
+	public class ActionRow : Hdy.PreferencesRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.0.6")]
 		public ActionRow ();
@@ -82,12 +82,20 @@ namespace Hdy {
 		public unowned GLib.ListModel? get_model ();
 		[Version (since = "0.0.7")]
 		public int get_selected_index ();
+		[Version (since = "0.0.10")]
+		public bool get_use_subtitle ();
 		[Version (since = "0.0.6")]
 		public void set_for_enum (GLib.Type enum_type, owned Hdy.ComboRowGetEnumValueNameFunc? get_name_func);
+		[Version (since = "0.0.10")]
+		public void set_get_name_func (owned Hdy.ComboRowGetNameFunc? get_name_func);
 		[Version (since = "0.0.7")]
 		public void set_selected_index (int selected_index);
+		[Version (since = "0.0.10")]
+		public void set_use_subtitle (bool use_subtitle);
 		[Version (since = "0.0.7")]
 		public int selected_index { get; set; }
+		[Version (since = "0.0.10")]
+		public bool use_subtitle { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_dialer_get_type ()")]
 	public class Dialer : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -167,6 +175,72 @@ namespace Hdy {
 		public bool expanded { get; set; }
 		public bool show_enable_switch { get; set; }
 	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_header_bar_get_type ()")]
+	public class HeaderBar : Gtk.Container, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "0.0.10")]
+		public HeaderBar ();
+		[Version (since = "0.0.10")]
+		public Hdy.CenteringPolicy get_centering_policy ();
+		[Version (since = "0.0.10")]
+		public unowned Gtk.Widget? get_custom_title ();
+		[Version (since = "0.0.10")]
+		public unowned string get_decoration_layout ();
+		[Version (since = "0.0.10")]
+		public bool get_has_subtitle ();
+		[Version (since = "0.0.10")]
+		public bool get_interpolate_size ();
+		[Version (since = "0.0.10")]
+		public bool get_show_close_button ();
+		[Version (since = "0.0.10")]
+		public unowned string? get_subtitle ();
+		[Version (since = "0.0.10")]
+		public unowned string? get_title ();
+		[Version (since = "0.0.10")]
+		public uint get_transition_duration ();
+		[Version (since = "0.0.10")]
+		public bool get_transition_running ();
+		[Version (since = "0.0.10")]
+		public void pack_end (Gtk.Widget child);
+		[Version (since = "0.0.10")]
+		public void pack_start (Gtk.Widget child);
+		[Version (since = "0.0.10")]
+		public void set_centering_policy (Hdy.CenteringPolicy centering_policy);
+		[Version (since = "0.0.10")]
+		public void set_custom_title (Gtk.Widget? title_widget);
+		[Version (since = "0.0.10")]
+		public void set_decoration_layout (string? layout);
+		[Version (since = "0.0.10")]
+		public void set_has_subtitle (bool setting);
+		[Version (since = "0.0.10")]
+		public void set_interpolate_size (bool interpolate_size);
+		[Version (since = "0.0.10")]
+		public void set_show_close_button (bool setting);
+		[Version (since = "0.0.10")]
+		public void set_subtitle (string? subtitle);
+		[Version (since = "0.0.10")]
+		public void set_title (string? title);
+		[Version (since = "0.0.10")]
+		public void set_transition_duration (uint duration);
+		public Hdy.CenteringPolicy centering_policy { get; set; }
+		public Gtk.Widget custom_title { get; set; }
+		[Version (since = "0.0.10")]
+		public string decoration_layout { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "0.0.10")]
+		public bool decoration_layout_set { get; set; }
+		[Version (since = "0.0.10")]
+		public bool has_subtitle { get; set; }
+		public bool interpolate_size { get; set; }
+		[Version (since = "0.0.10")]
+		public bool show_close_button { get; set; }
+		[NoAccessorMethod]
+		public int spacing { get; set; }
+		public string subtitle { get; set; }
+		public string title { get; set; }
+		public uint transition_duration { get; set; }
+		public bool transition_running { get; }
+	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_header_group_get_type ()")]
 	public class HeaderGroup : GLib.Object, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
@@ -221,6 +295,66 @@ namespace Hdy {
 		public bool vhomogeneous_unfolded { get; set; }
 		public Gtk.Widget visible_child { get; set; }
 		public string visible_child_name { get; set; }
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_group_get_type ()")]
+	public class PreferencesGroup : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.0.10")]
+		public PreferencesGroup ();
+		[Version (since = "0.0.10")]
+		public unowned string get_description ();
+		[Version (since = "0.0.10")]
+		public unowned string get_title ();
+		[Version (since = "0.0.10")]
+		public void set_description (string description);
+		[Version (since = "0.0.10")]
+		public void set_title (string title);
+		[Version (since = "0.0.10")]
+		public string description { get; set; }
+		[Version (since = "0.0.10")]
+		public string title { get; set; }
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_page_get_type ()")]
+	public class PreferencesPage : Gtk.ScrolledWindow, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.0.10")]
+		public PreferencesPage ();
+		[Version (since = "0.0.10")]
+		public unowned string? get_icon_name ();
+		[Version (since = "0.0.10")]
+		public unowned string? get_title ();
+		[Version (since = "0.0.10")]
+		public void set_icon_name (string? icon_name);
+		[Version (since = "0.0.10")]
+		public void set_title (string? title);
+		[Version (since = "0.0.10")]
+		public string icon_name { get; set; }
+		[Version (since = "0.0.10")]
+		public string title { get; set; }
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_row_get_type ()")]
+	public class PreferencesRow : Gtk.ListBoxRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.0.10")]
+		public PreferencesRow ();
+		[Version (since = "0.0.10")]
+		public unowned string? get_title ();
+		[Version (since = "0.0.10")]
+		public bool get_use_underline ();
+		[Version (since = "0.0.10")]
+		public void set_title (string? title);
+		[Version (since = "0.0.10")]
+		public void set_use_underline (bool use_underline);
+		[Version (since = "0.0.10")]
+		public string title { get; set; }
+		[Version (since = "0.0.10")]
+		public bool use_underline { get; set; }
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_window_get_type ()")]
+	public class PreferencesWindow : Gtk.Window, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.0.10")]
+		public PreferencesWindow ();
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_search_bar_get_type ()")]
 	public class SearchBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -359,6 +493,11 @@ namespace Hdy {
 		DOWN,
 		LEFT,
 		RIGHT
+	}
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_CENTERING_POLICY_", type_id = "hdy_centering_policy_get_type ()")]
+	public enum CenteringPolicy {
+		LOOSE,
+		STRICT
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_FOLD_", type_id = "hdy_fold_get_type ()")]
 	public enum Fold {

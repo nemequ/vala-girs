@@ -1198,6 +1198,8 @@ namespace Camel {
 		public string build_mbox_from ();
 		public void dump (int body);
 		public void encode_8bit_parts ();
+		[Version (since = "3.34")]
+		public void foreach_part ();
 		public long get_date (out int offset);
 		public long get_date_received (out int offset);
 		public unowned Camel.InternetAddress? get_from ();
@@ -3307,6 +3309,9 @@ namespace Camel {
 	public delegate void FilterSystemBeepFunc (Camel.FilterDriver driver);
 	[CCode (cheader_filename = "camel/camel.h", instance_pos = 2.9)]
 	public delegate void ForeachInfoData (Camel.VeeMessageInfoData mi_data, Camel.Folder subfolder);
+	[CCode (cheader_filename = "camel/camel.h", instance_pos = 3.9)]
+	[Version (since = "3.34")]
+	public delegate bool ForeachPartFunc (Camel.MimeMessage message, Camel.MimePart part, Camel.MimePart? parent_part);
 	[CCode (cheader_filename = "camel/camel.h", instance_pos = 2.9)]
 	public delegate string IndexNorm (Camel.Index index, string word);
 	[CCode (cheader_filename = "camel/camel.h", has_target = false)]

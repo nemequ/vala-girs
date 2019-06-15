@@ -261,6 +261,12 @@ namespace Secret {
 	public const string COLLECTION_DEFAULT;
 	[CCode (cheader_filename = "libsecret/secret.h", cname = "SECRET_COLLECTION_SESSION")]
 	public const string COLLECTION_SESSION;
+	[CCode (cheader_filename = "libsecret/secret.h", cname = "SECRET_MAJOR_VERSION")]
+	public const int MAJOR_VERSION;
+	[CCode (cheader_filename = "libsecret/secret.h", cname = "SECRET_MICRO_VERSION")]
+	public const int MICRO_VERSION;
+	[CCode (cheader_filename = "libsecret/secret.h", cname = "SECRET_MINOR_VERSION")]
+	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static GLib.HashTable<string,string> attributes_build (Secret.Schema schema, ...);
 	[CCode (cheader_filename = "libsecret/secret.h")]

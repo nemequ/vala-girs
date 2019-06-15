@@ -82,6 +82,7 @@ namespace Vte {
 		public bool get_input_enabled ();
 		public bool get_mouse_autohide ();
 		public unowned Vte.Pty get_pty ();
+		[Version (deprecated = true, deprecated_since = "0.58")]
 		public bool get_rewrap_on_resize ();
 		public long get_row_count ();
 		[Version (since = "0.52")]
@@ -167,6 +168,7 @@ namespace Vte {
 		public void set_input_enabled (bool enabled);
 		public void set_mouse_autohide (bool setting);
 		public void set_pty (Vte.Pty? pty);
+		[Version (deprecated = true, deprecated_since = "0.58")]
 		public void set_rewrap_on_resize (bool rewrap);
 		public void set_scroll_on_keystroke (bool scroll);
 		public void set_scroll_on_output (bool scroll);
@@ -217,6 +219,7 @@ namespace Vte {
 		[NoAccessorMethod]
 		public bool pointer_autohide { get; set; }
 		public Vte.Pty pty { get; set; }
+		[Version (deprecated = true, deprecated_since = "0.58")]
 		public bool rewrap_on_resize { get; set; }
 		public bool scroll_on_keystroke { get; set; }
 		public bool scroll_on_output { get; set; }

@@ -670,10 +670,15 @@ namespace E {
 	public class SourceLocal : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceLocal ();
-		public GLib.File dup_custom_file ();
-		public unowned GLib.File get_custom_file ();
-		public void set_custom_file (GLib.File custom_file);
+		public GLib.File? dup_custom_file ();
+		public unowned GLib.File? get_custom_file ();
+		[Version (since = "3.34")]
+		public bool get_writable ();
+		public void set_custom_file (GLib.File? custom_file);
+		[Version (since = "3.34")]
+		public void set_writable (bool writable);
 		public GLib.File custom_file { get; set construct; }
+		public bool writable { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mdn_get_type ()")]
 	[Version (since = "3.6")]
@@ -1613,7 +1618,8 @@ namespace E {
 		EVENTS,
 		MEMOS,
 		TASKS,
-		CALENDAR_AUTO_SCHEDULE
+		CALENDAR_AUTO_SCHEDULE,
+		SUBSCRIBED_ICALENDAR
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_LIST_", has_type_id = false)]
 	[Flags]
@@ -1672,7 +1678,8 @@ namespace E {
 		CALENDAR,
 		PRINCIPAL,
 		COLLECTION,
-		RESOURCE
+		RESOURCE,
+		SUBSCRIBED_ICALENDAR
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_RESOURCE_SUPPORTS_", has_type_id = false)]
 	[Flags]
