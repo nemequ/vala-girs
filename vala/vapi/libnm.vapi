@@ -5439,7 +5439,8 @@ namespace NM {
 	public enum ConnectionSerializationFlags {
 		ALL,
 		NO_SECRETS,
-		ONLY_SECRETS
+		ONLY_SECRETS,
+		WITH_SECRETS_AGENT_OWNED
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CONNECTIVITY_", type_id = "nm_connectivity_state_get_type ()")]
 	public enum ConnectivityState {

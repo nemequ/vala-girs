@@ -279,6 +279,8 @@ namespace Ggit {
 		protected Diff ();
 		public static void blob_to_buffer (Ggit.Blob? old_blob, string? old_as_path, [CCode (array_length_cname = "buffer_len", array_length_pos = 3.5, array_length_type = "gssize")] uint8[]? buffer, string? buffer_as_path, Ggit.DiffOptions? diff_options, [CCode (delegate_target_pos = 9.1)] Ggit.DiffFileCallback? file_cb, [CCode (delegate_target_pos = 9.1)] Ggit.DiffBinaryCallback? binary_cb, [CCode (delegate_target_pos = 9.1)] Ggit.DiffHunkCallback? hunk_cb, Ggit.DiffLineCallback? line_cb) throws GLib.Error;
 		public static void blobs (Ggit.Blob? old_blob, string? old_as_path, Ggit.Blob? new_blob, string? new_as_path, Ggit.DiffOptions? diff_options, [CCode (delegate_target_pos = 9.1)] Ggit.DiffFileCallback? file_cb, [CCode (delegate_target_pos = 9.1)] Ggit.DiffBinaryCallback? binary_cb, [CCode (delegate_target_pos = 9.1)] Ggit.DiffHunkCallback? hunk_cb, Ggit.DiffLineCallback? line_cb) throws GLib.Error;
+		[CCode (has_construct_function = false)]
+		public Diff.buffers ([CCode (array_length_cname = "buffer1_len", array_length_pos = 1.5, array_length_type = "gssize")] uint8[]? buffer1, string? buffer1_as_path, [CCode (array_length_cname = "buffer2_len", array_length_pos = 3.5, array_length_type = "gssize")] uint8[]? buffer2, string? buffer2_as_path, Ggit.DiffOptions? diff_options) throws GLib.Error;
 		public bool find_similar (Ggit.DiffFindOptions? options) throws GLib.Error;
 		public void @foreach ([CCode (delegate_target_pos = 4.1)] Ggit.DiffFileCallback? file_cb, [CCode (delegate_target_pos = 4.1)] Ggit.DiffBinaryCallback? binary_cb, [CCode (delegate_target_pos = 4.1)] Ggit.DiffHunkCallback? hunk_cb, Ggit.DiffLineCallback? line_cb) throws GLib.Error;
 		public string? format_email (Ggit.DiffFormatEmailOptions options) throws GLib.Error;
@@ -853,12 +855,16 @@ namespace Ggit {
 		public bool references_foreach (Ggit.ReferencesCallback callback) throws GLib.Error;
 		public bool references_foreach_name (Ggit.ReferencesNameCallback callback) throws GLib.Error;
 		public bool remove_note (string? notes_ref, Ggit.Signature author, Ggit.Signature committer, Ggit.OId id) throws GLib.Error;
+		public bool remove_remote (string name) throws GLib.Error;
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[]? rename_remote (string name, string new_name) throws GLib.Error;
 		public void reset (Ggit.Object target, Ggit.ResetType reset_type, Ggit.CheckoutOptions checkout_options) throws GLib.Error;
 		public void reset_default (Ggit.Object? target, [CCode (array_length = false, array_null_terminated = true)] string[] pathspecs) throws GLib.Error;
 		public bool revert (Ggit.Commit commit, Ggit.RevertOptions options) throws GLib.Error;
 		public Ggit.Object? revparse (string spec) throws GLib.Error;
 		public Ggit.OId? save_stash (Ggit.Signature stasher, string message, Ggit.StashFlags flags) throws GLib.Error;
 		public bool set_head (string ref_name) throws GLib.Error;
+		public bool set_remote_url (string remote, string url) throws GLib.Error;
 		public void set_submodule_fetch_recurse (string name, Ggit.SubmoduleRecurse fetch_recurse_submodules) throws GLib.Error;
 		public void set_submodule_ignore (string name, Ggit.SubmoduleIgnore ignore) throws GLib.Error;
 		public void set_submodule_update (string name, Ggit.SubmoduleUpdate update) throws GLib.Error;

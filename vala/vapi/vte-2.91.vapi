@@ -70,6 +70,10 @@ namespace Vte {
 		public Vte.CursorBlinkMode get_cursor_blink_mode ();
 		public void get_cursor_position (out long column, out long row);
 		public Vte.CursorShape get_cursor_shape ();
+		[Version (since = "0.58")]
+		public bool get_enable_bidi ();
+		[Version (since = "0.58")]
+		public bool get_enable_shaping ();
 		[Version (deprecated = true, deprecated_since = "0.54")]
 		public unowned string? get_encoding ();
 		public unowned Pango.FontDescription get_font ();
@@ -159,6 +163,10 @@ namespace Vte {
 		public void set_cursor_shape (Vte.CursorShape shape);
 		public void set_default_colors ();
 		public void set_delete_binding (Vte.EraseBinding binding);
+		[Version (since = "0.58")]
+		public void set_enable_bidi (bool enable_bidi);
+		[Version (since = "0.58")]
+		public void set_enable_shaping (bool enable_shaping);
 		[Version (deprecated = true, deprecated_since = "0.54")]
 		public bool set_encoding (string? codeset) throws GLib.Error;
 		public void set_font (Pango.FontDescription? font_desc);
@@ -204,6 +212,10 @@ namespace Vte {
 		public Vte.CursorShape cursor_shape { get; set; }
 		[NoAccessorMethod]
 		public Vte.EraseBinding delete_binding { get; set; }
+		[Version (since = "0.58")]
+		public bool enable_bidi { get; set; }
+		[Version (since = "0.58")]
+		public bool enable_shaping { get; set; }
 		[NoAccessorMethod]
 		[Version (deprecated = true, deprecated_since = "0.54")]
 		public string encoding { owned get; set; }

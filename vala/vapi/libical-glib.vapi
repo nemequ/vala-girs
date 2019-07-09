@@ -1987,9 +1987,9 @@ namespace ICal {
 		[Version (since = "2.0")]
 		public static string get_tznames_from_vtimezone (ICal.Component component);
 		[Version (since = "1.0")]
-		public int get_utc_offset (out ICal.Time? tt, out int is_daylight);
+		public int get_utc_offset (ICal.Time? tt, out int is_daylight);
 		[Version (since = "1.0")]
-		public int get_utc_offset_of_utc_time (out ICal.Time tt, out int is_daylight);
+		public int get_utc_offset_of_utc_time (ICal.Time tt, out int is_daylight);
 		[Version (since = "1.0")]
 		public static unowned ICal.Timezone get_utc_timezone ();
 		[Version (since = "1.0")]
