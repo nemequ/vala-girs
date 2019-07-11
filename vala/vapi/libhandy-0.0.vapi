@@ -147,6 +147,10 @@ namespace Hdy {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.7")]
 		public Dialog (Gtk.Window parent);
+		[Version (since = "0.0.11")]
+		public bool get_narrow ();
+		[Version (since = "0.0.11")]
+		public bool narrow { get; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_enum_value_object_get_type ()")]
 	public class EnumValueObject : GLib.Object {
