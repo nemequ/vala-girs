@@ -101,18 +101,25 @@ namespace MM {
 		protected Call ();
 		public async bool accept (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool accept_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool deflect (string number, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool deflect_sync (string number, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public string dup_audio_port ();
 		public string dup_number ();
 		public string dup_path ();
 		public MM.CallAudioFormat get_audio_format ();
 		public unowned string get_audio_port ();
 		public MM.CallDirection get_direction ();
+		public bool get_multiparty ();
 		public unowned string get_number ();
 		public unowned string get_path ();
 		public MM.CallState get_state ();
 		public MM.CallStateReason get_state_reason ();
 		public async bool hangup (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool hangup_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool join_multiparty (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool join_multiparty_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool leave_multiparty (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool leave_multiparty_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public unowned MM.CallAudioFormat peek_audio_format ();
 		public async bool send_dtmf (string dtmf, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool send_dtmf_sync (string dtmf, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -906,14 +913,38 @@ namespace MM {
 	public class ModemVoice : MM.GdbusModemVoiceProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModemVoice {
 		[CCode (has_construct_function = false)]
 		protected ModemVoice ();
+		[Version (since = "1.12")]
+		public async bool call_waiting_query (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public bool call_waiting_query_sync (GLib.Cancellable? cancellable, bool status) throws GLib.Error;
+		[Version (since = "1.12")]
+		public async bool call_waiting_setup (bool enable, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public bool call_waiting_setup_sync (bool enable, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async MM.Call create_call (MM.CallProperties properties, GLib.Cancellable? cancellable) throws GLib.Error;
 		public MM.Call create_call_sync (MM.CallProperties properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool delete_call (string call, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool delete_call_sync (string call, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public string dup_path ();
 		public unowned string get_path ();
+		[Version (since = "1.12")]
+		public async bool hangup_all (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public bool hangup_all_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.12")]
+		public async bool hangup_and_accept (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public bool hangup_and_accept_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.12")]
+		public async bool hold_and_accept (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public bool hold_and_accept_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async GLib.List<MM.Call> list_calls (GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.List<MM.Call> list_calls_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.12")]
+		public async bool transfer (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
+		public bool transfer_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_network_timezone_get_type ()")]
 	public class NetworkTimezone : GLib.Object {
@@ -1594,16 +1625,35 @@ namespace MM {
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusModemVoice", type_id = "mm_gdbus_modem_voice_get_type ()")]
 	public interface GdbusModemVoice : GLib.Object {
 		[CCode (async_result_pos = 2.1)]
+		public async bool call_call_waiting_query (GLib.Cancellable? cancellable, out bool out_status) throws GLib.Error;
+		public bool call_call_waiting_query_sync (out bool out_status, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_call_waiting_setup (bool arg_enable, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_call_waiting_setup_sync (bool arg_enable, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (async_result_pos = 2.1)]
 		public async bool call_create_call (GLib.Variant arg_properties, GLib.Cancellable? cancellable, out string out_path) throws GLib.Error;
 		public bool call_create_call_sync (GLib.Variant arg_properties, out string out_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_delete_call (string arg_path, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_delete_call_sync (string arg_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_hangup_all (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_hangup_all_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_hangup_and_accept (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_hangup_and_accept_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_hold_and_accept (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_hold_and_accept_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (async_result_pos = 2.1)]
 		public async bool call_list_calls (GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] out_result) throws GLib.Error;
 		public bool call_list_calls_sync ([CCode (array_length = false, array_null_terminated = true)] out string[] out_result, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_transfer (GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_transfer_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void complete_call_waiting_query (owned GLib.DBusMethodInvocation invocation, bool status);
+		public void complete_call_waiting_setup (owned GLib.DBusMethodInvocation invocation);
 		public void complete_create_call (owned GLib.DBusMethodInvocation invocation, string path);
 		public void complete_delete_call (owned GLib.DBusMethodInvocation invocation);
+		public void complete_hangup_all (owned GLib.DBusMethodInvocation invocation);
+		public void complete_hangup_and_accept (owned GLib.DBusMethodInvocation invocation);
+		public void complete_hold_and_accept (owned GLib.DBusMethodInvocation invocation);
 		public void complete_list_calls (owned GLib.DBusMethodInvocation invocation, string result);
+		public void complete_transfer (owned GLib.DBusMethodInvocation invocation);
 		public void emit_call_added (string arg_path);
 		public void emit_call_deleted (string arg_path);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
@@ -1613,9 +1663,15 @@ namespace MM {
 		public abstract string[] calls { owned get; set; }
 		public virtual signal void call_added (string arg_path);
 		public virtual signal void call_deleted (string arg_path);
+		public virtual signal bool handle_call_waiting_query (GLib.DBusMethodInvocation invocation);
+		public virtual signal bool handle_call_waiting_setup (GLib.DBusMethodInvocation invocation, bool arg_enable);
 		public virtual signal bool handle_create_call (GLib.DBusMethodInvocation invocation, GLib.Variant arg_properties);
 		public virtual signal bool handle_delete_call (GLib.DBusMethodInvocation invocation, string arg_path);
+		public virtual signal bool handle_hangup_all (GLib.DBusMethodInvocation invocation);
+		public virtual signal bool handle_hangup_and_accept (GLib.DBusMethodInvocation invocation);
+		public virtual signal bool handle_hold_and_accept (GLib.DBusMethodInvocation invocation);
 		public virtual signal bool handle_list_calls (GLib.DBusMethodInvocation invocation);
+		public virtual signal bool handle_transfer (GLib.DBusMethodInvocation invocation);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusObject", type_id = "mm_gdbus_object_get_type ()")]
 	public interface GdbusObject : GLib.DBusObject, GLib.Object {
@@ -1835,7 +1891,9 @@ namespace MM {
 		TERMINATED,
 		REFUSED_OR_BUSY,
 		ERROR,
-		AUDIO_SETUP_FAILED;
+		AUDIO_SETUP_FAILED,
+		TRANSFERRED,
+		DEFLECTED;
 		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_FIRMWARE_IMAGE_TYPE_", type_id = "mm_firmware_image_type_get_type ()")]
@@ -2760,8 +2818,14 @@ namespace MM {
 	public const string BEARER_PROPERTY_SUSPENDED;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_ACCEPT")]
 	public const string CALL_METHOD_ACCEPT;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_DEFLECT")]
+	public const string CALL_METHOD_DEFLECT;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_HANGUP")]
 	public const string CALL_METHOD_HANGUP;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_JOINMULTIPARTY")]
+	public const string CALL_METHOD_JOINMULTIPARTY;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_LEAVEMULTIPARTY")]
+	public const string CALL_METHOD_LEAVEMULTIPARTY;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_SENDDTMF")]
 	public const string CALL_METHOD_SENDDTMF;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_METHOD_START")]
@@ -2772,6 +2836,8 @@ namespace MM {
 	public const string CALL_PROPERTY_AUDIOPORT;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_PROPERTY_DIRECTION")]
 	public const string CALL_PROPERTY_DIRECTION;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_PROPERTY_MULTIPARTY")]
+	public const string CALL_PROPERTY_MULTIPARTY;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_PROPERTY_NUMBER")]
 	public const string CALL_PROPERTY_NUMBER;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_CALL_PROPERTY_STATE")]
@@ -3074,12 +3140,24 @@ namespace MM {
 	public const string MODEM_TIME_PROPERTY_NETWORKTIMEZONE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_TIME_SIGNAL_NETWORKTIMECHANGED")]
 	public const string MODEM_TIME_SIGNAL_NETWORKTIMECHANGED;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_METHOD_CALLWAITINGQUERY")]
+	public const string MODEM_VOICE_METHOD_CALLWAITINGQUERY;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_METHOD_CALLWAITINGSETUP")]
+	public const string MODEM_VOICE_METHOD_CALLWAITINGSETUP;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_METHOD_CREATECALL")]
 	public const string MODEM_VOICE_METHOD_CREATECALL;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_METHOD_DELETECALL")]
 	public const string MODEM_VOICE_METHOD_DELETECALL;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_METHOD_HANGUPALL")]
+	public const string MODEM_VOICE_METHOD_HANGUPALL;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_METHOD_HANGUPANDACCEPT")]
+	public const string MODEM_VOICE_METHOD_HANGUPANDACCEPT;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_METHOD_HOLDANDACCEPT")]
+	public const string MODEM_VOICE_METHOD_HOLDANDACCEPT;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_METHOD_LISTCALLS")]
 	public const string MODEM_VOICE_METHOD_LISTCALLS;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_METHOD_TRANSFER")]
+	public const string MODEM_VOICE_METHOD_TRANSFER;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_PROPERTY_CALLS")]
 	public const string MODEM_VOICE_PROPERTY_CALLS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_SIGNAL_CALLADDED")]

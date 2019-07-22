@@ -1775,6 +1775,8 @@ namespace NM {
 		public uint16 get_source_port_end ();
 		[Version (since = "1.18")]
 		public uint16 get_source_port_start ();
+		[Version (since = "1.20")]
+		public int32 get_suppress_prefixlength ();
 		[Version (since = "1.18")]
 		public uint32 get_table ();
 		[Version (since = "1.18")]
@@ -1811,6 +1813,8 @@ namespace NM {
 		public void set_priority (int64 priority);
 		[Version (since = "1.18")]
 		public void set_source_port (uint16 start, uint16 end);
+		[Version (since = "1.20")]
+		public void set_suppress_prefixlength (int32 suppress_prefixlength);
 		[Version (since = "1.18")]
 		public void set_table (uint32 table);
 		[Version (since = "1.18")]
@@ -2639,6 +2643,8 @@ namespace NM {
 		public const string TYPE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_UUID")]
 		public const string UUID;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_WAIT_DEVICE_TIMEOUT")]
+		public const string WAIT_DEVICE_TIMEOUT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_ZONE")]
 		public const string ZONE;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
@@ -2678,6 +2684,8 @@ namespace NM {
 		public unowned string get_stable_id ();
 		public uint64 get_timestamp ();
 		public unowned string get_uuid ();
+		[Version (since = "1.20")]
+		public int32 get_wait_device_timeout ();
 		public unowned string get_zone ();
 		public bool is_slave_type (string type);
 		public bool permissions_user_allowed (string uname);
@@ -2739,6 +2747,9 @@ namespace NM {
 		public string type { owned get; set; }
 		[NoAccessorMethod]
 		public string uuid { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.20")]
+		public int wait_device_timeout { get; set; }
 		[NoAccessorMethod]
 		public string zone { owned get; set construct; }
 	}

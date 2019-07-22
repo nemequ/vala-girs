@@ -412,6 +412,8 @@ namespace Gegl {
 		[CCode (has_construct_function = false)]
 		protected Stats ();
 		[NoAccessorMethod]
+		public int active_threads { get; }
+		[NoAccessorMethod]
 		public uint64 scratch_total { get; }
 		[NoAccessorMethod]
 		public bool swap_busy { get; }

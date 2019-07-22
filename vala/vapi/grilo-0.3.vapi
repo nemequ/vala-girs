@@ -293,7 +293,7 @@ namespace Grl {
 		public unowned string get_lyrics ();
 		[Version (since = "0.3.0")]
 		public unowned string get_lyrics_nth (uint index);
-		[Version (since = "0.3.0")]
+		[Version (deprecated = true, deprecated_since = "0.3.8", since = "0.3.0")]
 		public unowned string get_mb_album_id ();
 		[Version (since = "0.3.0")]
 		public unowned string get_mb_artist_id ();
@@ -450,7 +450,7 @@ namespace Grl {
 		public void set_license (string license);
 		[Version (since = "0.3.0")]
 		public void set_lyrics (string lyrics);
-		[Version (since = "0.3.0")]
+		[Version (deprecated = true, deprecated_since = "0.3.8", since = "0.3.0")]
 		public void set_mb_album_id (string mb_album_id);
 		[Version (since = "0.3.0")]
 		public void set_mb_artist_id (string mb_artist_id);
