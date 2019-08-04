@@ -2920,7 +2920,7 @@ any of the return pointers can be omitted.</doc>
       <method name="set_rgba" c:identifier="gegl_color_set_rgba">
         <doc xml:space="preserve"
              filename="property-types/gegl-color.h"
-             line="104">Retrieves the current set color as linear light non premultipled RGBA data</doc>
+             line="104">Set color as linear light non premultipled RGBA data</doc>
         <source-position filename="property-types/gegl-color.h" line="114"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -3414,13 +3414,13 @@ Returns the number of points for the coordinates in the curve.</doc>
     <constant name="FLOAT_EPSILON"
               value="0.000010"
               c:type="GEGL_FLOAT_EPSILON">
-      <source-position filename="buffer/gegl-rectangle.h" line="249"/>
+      <source-position filename="buffer/gegl-rectangle.h" line="335"/>
       <type name="gdouble" c:type="gdouble"/>
     </constant>
     <function-macro name="FLOAT_EQUAL"
                     c:identifier="GEGL_FLOAT_EQUAL"
                     introspectable="0">
-      <source-position filename="buffer/gegl-rectangle.h" line="251"/>
+      <source-position filename="buffer/gegl-rectangle.h" line="337"/>
       <parameters>
         <parameter name="v1">
         </parameter>
@@ -3431,7 +3431,7 @@ Returns the number of points for the coordinates in the curve.</doc>
     <function-macro name="FLOAT_IS_ZERO"
                     c:identifier="GEGL_FLOAT_IS_ZERO"
                     introspectable="0">
-      <source-position filename="buffer/gegl-rectangle.h" line="250"/>
+      <source-position filename="buffer/gegl-rectangle.h" line="336"/>
       <parameters>
         <parameter name="value">
         </parameter>
@@ -7835,16 +7835,29 @@ numbers</doc>
           </parameter>
         </parameters>
       </constructor>
-      <method name="bounding_box" c:identifier="gegl_rectangle_bounding_box">
+      <method name="align" c:identifier="gegl_rectangle_align">
         <doc xml:space="preserve"
              filename="buffer/gegl-rectangle.h"
-             line="159">Computes the bounding box of the rectangles @source1 and @source2 and stores the
-resulting bounding box in @destination.
+             line="159">Aligns @rectangle to a regular tile grid, of which @tile is a representative
+tile, and stores the result in @destination.
 
-@destination may point to the same object as @source1 or @source2.</doc>
-        <source-position filename="buffer/gegl-rectangle.h" line="170"/>
+@alignment can be one of:
+
+  GEGL_RECTANGLE_ALIGNMENT_SUBSET:  Calculate the biggest aligned rectangle
+  contained in @rectangle.
+
+  GEGL_RECTANGLE_ALIGNMENT_SUPERSET:  Calculate the smallest aligned
+  rectangle containing @rectangle.
+
+  GEGL_RECTANGLE_ALIGNMENT_NEAREST:  Calculate the nearest aligned rectangle
+  to @rectangle.
+
+@destination may point to the same object as @rectangle or @tile.
+
+Returns TRUE if the result is not empty.</doc>
+        <source-position filename="buffer/gegl-rectangle.h" line="184"/>
         <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
+          <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="destination" transfer-ownership="none">
@@ -7853,16 +7866,97 @@ resulting bounding box in @destination.
                  line="161">a #GeglRectangle</doc>
             <type name="Rectangle" c:type="GeglRectangle*"/>
           </instance-parameter>
-          <parameter name="source1" transfer-ownership="none">
+          <parameter name="rectangle" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="buffer/gegl-rectangle.h"
                  line="162">a #GeglRectangle</doc>
             <type name="Rectangle" c:type="const GeglRectangle*"/>
           </parameter>
-          <parameter name="source2" transfer-ownership="none">
+          <parameter name="tile" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="buffer/gegl-rectangle.h"
                  line="163">a #GeglRectangle</doc>
+            <type name="Rectangle" c:type="const GeglRectangle*"/>
+          </parameter>
+          <parameter name="alignment" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="buffer/gegl-rectangle.h"
+                 line="164">a #GeglRectangleAlignment value</doc>
+            <type name="RectangleAlignment" c:type="GeglRectangleAlignment"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="align_to_buffer"
+              c:identifier="gegl_rectangle_align_to_buffer">
+        <doc xml:space="preserve"
+             filename="buffer/gegl-rectangle.h"
+             line="189">Aligns @rectangle to the tile grid of @buffer, and stores the result in
+@destination.
+
+@alignment has the same meaning as for gegl_rectangle_align().
+
+@destination may point to the same object as @rectangle.
+
+Returns TRUE if the result is not empty.</doc>
+        <source-position filename="buffer/gegl-rectangle.h" line="205"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="destination" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="buffer/gegl-rectangle.h"
+                 line="191">a #GeglRectangle</doc>
+            <type name="Rectangle" c:type="GeglRectangle*"/>
+          </instance-parameter>
+          <parameter name="rectangle" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="buffer/gegl-rectangle.h"
+                 line="192">a #GeglRectangle</doc>
+            <type name="Rectangle" c:type="const GeglRectangle*"/>
+          </parameter>
+          <parameter name="buffer" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="buffer/gegl-rectangle.h"
+                 line="193">a #GeglBuffer</doc>
+            <type name="Buffer" c:type="GeglBuffer*"/>
+          </parameter>
+          <parameter name="alignment" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="buffer/gegl-rectangle.h"
+                 line="194">a #GeglRectangleAlignment value</doc>
+            <type name="RectangleAlignment" c:type="GeglRectangleAlignment"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="bounding_box" c:identifier="gegl_rectangle_bounding_box">
+        <doc xml:space="preserve"
+             filename="buffer/gegl-rectangle.h"
+             line="210">Computes the bounding box of the rectangles @source1 and @source2 and stores the
+resulting bounding box in @destination.
+
+@destination may point to the same object as @source1 or @source2.</doc>
+        <source-position filename="buffer/gegl-rectangle.h" line="221"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="destination" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="buffer/gegl-rectangle.h"
+                 line="212">a #GeglRectangle</doc>
+            <type name="Rectangle" c:type="GeglRectangle*"/>
+          </instance-parameter>
+          <parameter name="source1" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="buffer/gegl-rectangle.h"
+                 line="213">a #GeglRectangle</doc>
+            <type name="Rectangle" c:type="const GeglRectangle*"/>
+          </parameter>
+          <parameter name="source2" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="buffer/gegl-rectangle.h"
+                 line="214">a #GeglRectangle</doc>
             <type name="Rectangle" c:type="const GeglRectangle*"/>
           </parameter>
         </parameters>
@@ -7870,10 +7964,10 @@ resulting bounding box in @destination.
       <method name="contains" c:identifier="gegl_rectangle_contains">
         <doc xml:space="preserve"
              filename="buffer/gegl-rectangle.h"
-             line="210">Checks if the #GeglRectangle @child is fully contained within @parent.
+             line="296">Checks if the #GeglRectangle @child is fully contained within @parent.
 
 Returns TRUE if the @child is fully contained in @parent.</doc>
-        <source-position filename="buffer/gegl-rectangle.h" line="219"/>
+        <source-position filename="buffer/gegl-rectangle.h" line="305"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -7881,13 +7975,13 @@ Returns TRUE if the @child is fully contained in @parent.</doc>
           <instance-parameter name="parent" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="buffer/gegl-rectangle.h"
-                 line="212">a #GeglRectangle</doc>
+                 line="298">a #GeglRectangle</doc>
             <type name="Rectangle" c:type="const GeglRectangle*"/>
           </instance-parameter>
           <parameter name="child" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="buffer/gegl-rectangle.h"
-                 line="213">a #GeglRectangle</doc>
+                 line="299">a #GeglRectangle</doc>
             <type name="Rectangle" c:type="const GeglRectangle*"/>
           </parameter>
         </parameters>
@@ -7921,8 +8015,8 @@ Returns TRUE if the @child is fully contained in @parent.</doc>
       <method name="dump" c:identifier="gegl_rectangle_dump">
         <doc xml:space="preserve"
              filename="buffer/gegl-rectangle.h"
-             line="238">For debugging purposes, not stable API.</doc>
-        <source-position filename="buffer/gegl-rectangle.h" line="244"/>
+             line="324">For debugging purposes, not stable API.</doc>
+        <source-position filename="buffer/gegl-rectangle.h" line="330"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7930,7 +8024,7 @@ Returns TRUE if the @child is fully contained in @parent.</doc>
           <instance-parameter name="rectangle" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="buffer/gegl-rectangle.h"
-                 line="240">A GeglRectangle.</doc>
+                 line="326">A GeglRectangle.</doc>
             <type name="Rectangle" c:type="const GeglRectangle*"/>
           </instance-parameter>
         </parameters>
@@ -8026,14 +8120,14 @@ Returns TRUE if @rectangle and @x,@y @width x @height are equal.</doc>
       <method name="intersect" c:identifier="gegl_rectangle_intersect">
         <doc xml:space="preserve"
              filename="buffer/gegl-rectangle.h"
-             line="174">Calculates the intersection of two rectangles. If the rectangles do not
+             line="225">Calculates the intersection of two rectangles. If the rectangles do not
 intersect, dest's width and height are set to 0 and its x and y values
 are undefined.
 
 @dest may point to the same object as @src1 or @src2.
 
 Returns TRUE if the rectangles intersect.</doc>
-        <source-position filename="buffer/gegl-rectangle.h" line="188"/>
+        <source-position filename="buffer/gegl-rectangle.h" line="239"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -8041,19 +8135,19 @@ Returns TRUE if the rectangles intersect.</doc>
           <instance-parameter name="dest" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="buffer/gegl-rectangle.h"
-                 line="176">return location for the intersection of @src1 and @src2, or NULL.</doc>
+                 line="227">return location for the intersection of @src1 and @src2, or NULL.</doc>
             <type name="Rectangle" c:type="GeglRectangle*"/>
           </instance-parameter>
           <parameter name="src1" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="buffer/gegl-rectangle.h"
-                 line="177">a #GeglRectangle</doc>
+                 line="228">a #GeglRectangle</doc>
             <type name="Rectangle" c:type="const GeglRectangle*"/>
           </parameter>
           <parameter name="src2" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="buffer/gegl-rectangle.h"
-                 line="178">a #GeglRectangle</doc>
+                 line="229">a #GeglRectangle</doc>
             <type name="Rectangle" c:type="const GeglRectangle*"/>
           </parameter>
         </parameters>
@@ -8081,9 +8175,9 @@ Returns TRUE if the width or height of @rectangle is 0.</doc>
               c:identifier="gegl_rectangle_is_infinite_plane">
         <doc xml:space="preserve"
              filename="buffer/gegl-rectangle.h"
-             line="229">Returns TRUE if the GeglRectangle represents an infininte plane,
+             line="315">Returns TRUE if the GeglRectangle represents an infininte plane,
 FALSE otherwise.</doc>
-        <source-position filename="buffer/gegl-rectangle.h" line="236"/>
+        <source-position filename="buffer/gegl-rectangle.h" line="322"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -8091,7 +8185,7 @@ FALSE otherwise.</doc>
           <instance-parameter name="rectangle" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="buffer/gegl-rectangle.h"
-                 line="231">A GeglRectangle.</doc>
+                 line="317">A GeglRectangle.</doc>
             <type name="Rectangle" c:type="const GeglRectangle*"/>
           </instance-parameter>
         </parameters>
@@ -8137,17 +8231,34 @@ FALSE otherwise.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="subtract" c:identifier="gegl_rectangle_subtract">
+        <source-position filename="buffer/gegl-rectangle.h" line="256"/>
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="destination" transfer-ownership="none">
+            <type name="Rectangle" c:type="GeglRectangle*"/>
+          </instance-parameter>
+          <parameter name="minuend" transfer-ownership="none">
+            <type name="Rectangle" c:type="const GeglRectangle*"/>
+          </parameter>
+          <parameter name="subtrahend" transfer-ownership="none">
+            <type name="Rectangle" c:type="const GeglRectangle*"/>
+          </parameter>
+        </parameters>
+      </method>
       <method name="subtract_bounding_box"
               c:identifier="gegl_rectangle_subtract_bounding_box">
         <doc xml:space="preserve"
              filename="buffer/gegl-rectangle.h"
-             line="192">Computes the bounding box of the area formed by subtracting @subtrahend
+             line="260">Computes the bounding box of the area formed by subtracting @subtrahend
 from @minuend, and stores the result in @destination.
 
 @destination may point to the same object as @minuend or @subtrahend.
 
 Returns TRUE if the result is not empty.</doc>
-        <source-position filename="buffer/gegl-rectangle.h" line="206"/>
+        <source-position filename="buffer/gegl-rectangle.h" line="274"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -8155,19 +8266,54 @@ Returns TRUE if the result is not empty.</doc>
           <instance-parameter name="destination" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="buffer/gegl-rectangle.h"
-                 line="194">a #GeglRectangle</doc>
+                 line="262">a #GeglRectangle</doc>
             <type name="Rectangle" c:type="GeglRectangle*"/>
           </instance-parameter>
           <parameter name="minuend" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="buffer/gegl-rectangle.h"
-                 line="195">a #GeglRectangle</doc>
+                 line="263">a #GeglRectangle</doc>
             <type name="Rectangle" c:type="const GeglRectangle*"/>
           </parameter>
           <parameter name="subtrahend" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="buffer/gegl-rectangle.h"
-                 line="196">a #GeglRectangle</doc>
+                 line="264">a #GeglRectangle</doc>
+            <type name="Rectangle" c:type="const GeglRectangle*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="xor" c:identifier="gegl_rectangle_xor">
+        <doc xml:space="preserve"
+             filename="buffer/gegl-rectangle.h"
+             line="278">Computes the symmetric difference of the rectangles @source1 and @source2,
+and stores the resulting rectangles in @destination.  Between 0 and 4
+disjoint rectangles may be produced.
+
+@destination may contain @rectangle1 or @rectangle2.
+
+Returns the number of resulting rectangles.</doc>
+        <source-position filename="buffer/gegl-rectangle.h" line="292"/>
+        <return-value transfer-ownership="none">
+          <type name="gint" c:type="gint"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="destination" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="buffer/gegl-rectangle.h"
+                 line="280">an array of 4 #GeglRectangle elements</doc>
+            <type name="Rectangle" c:type="GeglRectangle*"/>
+          </instance-parameter>
+          <parameter name="source1" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="buffer/gegl-rectangle.h"
+                 line="281">a #GeglRectangle</doc>
+            <type name="Rectangle" c:type="const GeglRectangle*"/>
+          </parameter>
+          <parameter name="source2" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="buffer/gegl-rectangle.h"
+                 line="282">a #GeglRectangle</doc>
             <type name="Rectangle" c:type="const GeglRectangle*"/>
           </parameter>
         </parameters>
@@ -8176,13 +8322,30 @@ Returns TRUE if the result is not empty.</doc>
                 c:identifier="gegl_rectangle_infinite_plane">
         <doc xml:space="preserve"
              filename="buffer/gegl-rectangle.h"
-             line="222">Returns a GeglRectangle that represents an infininte plane.</doc>
-        <source-position filename="buffer/gegl-rectangle.h" line="227"/>
+             line="308">Returns a GeglRectangle that represents an infininte plane.</doc>
+        <source-position filename="buffer/gegl-rectangle.h" line="313"/>
         <return-value transfer-ownership="full">
           <type name="Rectangle" c:type="GeglRectangle"/>
         </return-value>
       </function>
     </record>
+    <enumeration name="RectangleAlignment"
+                 glib:type-name="GeglRectangleAlignment"
+                 glib:get-type="gegl_rectangle_alignment_get_type"
+                 c:type="GeglRectangleAlignment">
+      <member name="subset" value="0" c:identifier="Subset" glib:nick="subset">
+      </member>
+      <member name="superset"
+              value="1"
+              c:identifier="Superset"
+              glib:nick="superset">
+      </member>
+      <member name="nesrest"
+              value="2"
+              c:identifier="Nesrest"
+              glib:nick="nesrest">
+      </member>
+    </enumeration>
     <function-macro name="STATS" c:identifier="GEGL_STATS" introspectable="0">
       <source-position filename="gegl-types.h" line="61"/>
       <parameters>
@@ -8364,6 +8527,9 @@ additional NaN / inifinity checks on passed in coordinates.</doc>
            glib:type-name="GeglStats"
            glib:get-type="gegl_stats_get_type">
       <property name="active-threads" transfer-ownership="none">
+        <type name="gint" c:type="gint"/>
+      </property>
+      <property name="assigned-threads" transfer-ownership="none">
         <type name="gint" c:type="gint"/>
       </property>
       <property name="scratch-total" transfer-ownership="none">
@@ -9121,6 +9287,17 @@ If @preserve_data is FALSE, the tile contents are unspecified.</doc>
           </parameter>
         </parameters>
       </method>
+      <method name="lock" c:identifier="gegl_tile_handler_lock">
+        <source-position filename="buffer/gegl-tile-handler.h" line="155"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="handler" transfer-ownership="none">
+            <type name="TileHandler" c:type="GeglTileHandler*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
       <method name="set_source" c:identifier="gegl_tile_handler_set_source">
         <source-position filename="buffer/gegl-tile-handler.h" line="63"/>
         <return-value transfer-ownership="none">
@@ -9133,6 +9310,17 @@ If @preserve_data is FALSE, the tile contents are unspecified.</doc>
           <parameter name="source" transfer-ownership="none">
             <type name="TileSource" c:type="GeglTileSource*"/>
           </parameter>
+        </parameters>
+      </method>
+      <method name="unlock" c:identifier="gegl_tile_handler_unlock">
+        <source-position filename="buffer/gegl-tile-handler.h" line="156"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="handler" transfer-ownership="none">
+            <type name="TileHandler" c:type="GeglTileHandler*"/>
+          </instance-parameter>
         </parameters>
       </method>
       <property name="source"
@@ -10955,8 +11143,8 @@ sub-ranges on different threads.</doc>
               moved-to="Rectangle.infinite_plane">
       <doc xml:space="preserve"
            filename="buffer/gegl-rectangle.h"
-           line="222">Returns a GeglRectangle that represents an infininte plane.</doc>
-      <source-position filename="buffer/gegl-rectangle.h" line="227"/>
+           line="308">Returns a GeglRectangle that represents an infininte plane.</doc>
+      <source-position filename="buffer/gegl-rectangle.h" line="313"/>
       <return-value transfer-ownership="full">
         <type name="Rectangle" c:type="GeglRectangle"/>
       </return-value>

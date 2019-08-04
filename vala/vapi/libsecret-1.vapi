@@ -45,7 +45,7 @@ namespace Secret {
 		public Secret.Service service { get; construct; }
 	}
 	[CCode (cheader_filename = "libsecret/secret.h", type_id = "secret_item_get_type ()")]
-	public class Item : GLib.DBusProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable {
+	public class Item : GLib.DBusProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, Secret.Retrievable {
 		[CCode (has_construct_function = false)]
 		protected Item ();
 		public static async Secret.Item create (Secret.Collection collection, Secret.Schema? schema, GLib.HashTable<string,string> attributes, string label, Secret.Value value, Secret.ItemCreateFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -76,16 +76,8 @@ namespace Secret {
 		public bool set_label_sync (string label, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool set_secret (Secret.Value value, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool set_secret_sync (Secret.Value value, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[NoAccessorMethod]
-		public GLib.HashTable<string,string> attributes { owned get; set; }
-		[NoAccessorMethod]
-		public uint64 created { get; set; }
 		public Secret.ItemFlags flags { get; construct; }
-		[NoAccessorMethod]
-		public string label { owned get; set; }
 		public bool locked { get; }
-		[NoAccessorMethod]
-		public uint64 modified { get; set; }
 		public Secret.Service service { get; construct; }
 	}
 	[CCode (cheader_filename = "libsecret/secret.h", type_id = "secret_prompt_get_type ()")]
@@ -192,6 +184,26 @@ namespace Secret {
 		public unowned string? get_text ();
 		public Secret.Value @ref ();
 		public void unref ();
+		[Version (since = "0.19.0")]
+		public string unref_to_password (size_t length);
+	}
+	[CCode (cheader_filename = "libsecret/secret.h", type_cname = "SecretRetrievableInterface", type_id = "secret_retrievable_get_type ()")]
+	[Version (since = "0.19.0")]
+	public interface Retrievable : GLib.Object {
+		public GLib.HashTable<string,string> get_attributes ();
+		public uint64 get_created ();
+		public string get_label ();
+		public uint64 get_modified ();
+		public abstract async Secret.Value? retrieve_secret (GLib.Cancellable? cancellable) throws GLib.Error;
+		public Secret.Value? retrieve_secret_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[NoAccessorMethod]
+		public abstract GLib.HashTable<string,string> attributes { owned get; set; }
+		[NoAccessorMethod]
+		public abstract uint64 created { get; set; }
+		[NoAccessorMethod]
+		public abstract string label { owned get; set; }
+		[NoAccessorMethod]
+		public abstract uint64 modified { get; set; }
 	}
 	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_COLLECTION_CREATE_", type_id = "secret_collection_create_flags_get_type ()")]
 	[Flags]
@@ -279,25 +291,40 @@ namespace Secret {
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static bool password_clear_sync (Secret.Schema schema, GLib.Cancellable? cancellable = null, ...) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h", finish_name = "secret_password_clear_finish")]
-	public static async bool password_clearv (Secret.Schema schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable) throws GLib.Error;
+	public static async bool password_clearv (Secret.Schema? schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
-	public static bool password_clearv_sync (Secret.Schema schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	public static bool password_clearv_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static async string password_lookup (Secret.Schema schema, GLib.Cancellable? cancellable, ...) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static string password_lookup_sync (Secret.Schema schema, GLib.Cancellable? cancellable = null, ...) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h", finish_name = "secret_password_lookup_finish")]
-	public static async string password_lookupv (Secret.Schema schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable) throws GLib.Error;
+	public static async string password_lookupv (Secret.Schema? schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
-	public static string password_lookupv_sync (Secret.Schema schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	public static string password_lookupv_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "libsecret/secret.h")]
+	[Version (since = "0.19.0")]
+	public static GLib.List<Secret.Retrievable> password_search_finish (GLib.AsyncResult result) throws GLib.Error;
+	[CCode (cheader_filename = "libsecret/secret.h")]
+	[Version (since = "0.19.0")]
+	public static async void password_searchv (Secret.Schema? schema, GLib.HashTable<string,string> attributes, Secret.SearchFlags flags, GLib.Cancellable? cancellable);
+	[CCode (cheader_filename = "libsecret/secret.h")]
+	[Version (since = "0.19.0")]
+	public static GLib.List<Secret.Retrievable> password_searchv_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, Secret.SearchFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static async bool password_store (Secret.Schema schema, string? collection, string label, string password, GLib.Cancellable? cancellable, ...) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static bool password_store_sync (Secret.Schema schema, string? collection, string label, string password, GLib.Cancellable? cancellable = null, ...) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h", finish_name = "secret_password_store_finish")]
-	public static async bool password_storev (Secret.Schema schema, GLib.HashTable<string,string> attributes, string? collection, string label, string password, GLib.Cancellable? cancellable) throws GLib.Error;
+	public static async bool password_storev (Secret.Schema? schema, GLib.HashTable<string,string> attributes, string? collection, string label, string password, GLib.Cancellable? cancellable) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
-	public static bool password_storev_sync (Secret.Schema schema, GLib.HashTable<string,string> attributes, string? collection, string label, string password, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[Version (since = "0.19.0")]
+	public static async void password_storev_binary (Secret.Schema? schema, GLib.HashTable<string,string> attributes, string? collection, string label, Secret.Value value, GLib.Cancellable? cancellable);
+	[CCode (cheader_filename = "libsecret/secret.h")]
+	[Version (since = "0.19.0")]
+	public static bool password_storev_binary_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, string? collection, string label, Secret.Value value, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "libsecret/secret.h")]
+	public static bool password_storev_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, string? collection, string label, string password, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static void password_wipe (string? password);
 }

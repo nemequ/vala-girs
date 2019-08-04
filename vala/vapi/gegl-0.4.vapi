@@ -387,6 +387,8 @@ namespace Gegl {
 		public int y;
 		[CCode (has_construct_function = false)]
 		public Rectangle (int x, int y, uint width, uint height);
+		public bool align (Gegl.Rectangle rectangle, Gegl.Rectangle tile, Gegl.RectangleAlignment alignment);
+		public bool align_to_buffer (Gegl.Rectangle rectangle, Gegl.Buffer buffer, Gegl.RectangleAlignment alignment);
 		public void bounding_box (Gegl.Rectangle source1, Gegl.Rectangle source2);
 		public bool contains (Gegl.Rectangle child);
 		public void copy (Gegl.Rectangle source);
@@ -399,7 +401,9 @@ namespace Gegl {
 		public bool is_empty ();
 		public bool is_infinite_plane ();
 		public void @set (int x, int y, uint width, uint height);
+		public int subtract (Gegl.Rectangle minuend, Gegl.Rectangle subtrahend);
 		public bool subtract_bounding_box (Gegl.Rectangle minuend, Gegl.Rectangle subtrahend);
+		public int xor (Gegl.Rectangle source1, Gegl.Rectangle source2);
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	[Compact]
@@ -413,6 +417,8 @@ namespace Gegl {
 		protected Stats ();
 		[NoAccessorMethod]
 		public int active_threads { get; }
+		[NoAccessorMethod]
+		public int assigned_threads { get; }
 		[NoAccessorMethod]
 		public uint64 scratch_total { get; }
 		[NoAccessorMethod]
@@ -485,7 +491,9 @@ namespace Gegl {
 		protected TileHandler ();
 		public void damage_rect (Gegl.Rectangle rect);
 		public void damage_tile (int x, int y, int z, uint64 damage);
+		public void @lock ();
 		public void set_source (Gegl.TileSource source);
+		public void @unlock ();
 		[NoAccessorMethod]
 		public GLib.Object source { owned get; set construct; }
 	}
@@ -724,6 +732,15 @@ namespace Gegl {
 	public enum PadType {
 		OUTPUT,
 		INPUT
+	}
+	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_rectangle_alignment_get_type ()")]
+	public enum RectangleAlignment {
+		[CCode (cname = "Subset")]
+		SUBSET,
+		[CCode (cname = "Superset")]
+		SUPERSET,
+		[CCode (cname = "Nesrest")]
+		NESREST
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_sampler_type_get_type ()")]
 	public enum SamplerType {

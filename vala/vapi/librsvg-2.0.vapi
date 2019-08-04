@@ -43,7 +43,9 @@ namespace Rsvg {
 		[Version (deprecated = true, deprecated_since = "2.46.", since = "2.22")]
 		public bool get_dimensions_sub (out Rsvg.DimensionData dimension_data, string? id);
 		[Version (since = "2.46")]
-		public bool get_geometry_for_element (string? id, Rsvg.Rectangle viewport, out Rsvg.Rectangle out_ink_rect, out Rsvg.Rectangle out_logical_rect) throws GLib.Error;
+		public bool get_geometry_for_element (string? id, out Rsvg.Rectangle out_ink_rect, out Rsvg.Rectangle out_logical_rect) throws GLib.Error;
+		[Version (since = "2.46")]
+		public bool get_geometry_for_layer (string? id, Rsvg.Rectangle viewport, out Rsvg.Rectangle out_ink_rect, out Rsvg.Rectangle out_logical_rect) throws GLib.Error;
 		[Version (since = "2.46")]
 		public void get_intrinsic_dimensions (out bool out_has_width, out Rsvg.Length out_width, out bool out_has_height, out Rsvg.Length out_height, out bool out_has_viewbox, out Rsvg.Rectangle out_viewbox);
 		[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]
@@ -64,6 +66,12 @@ namespace Rsvg {
 		public bool render_cairo (Cairo.Context cr);
 		[Version (since = "2.14")]
 		public bool render_cairo_sub (Cairo.Context cr, string? id);
+		[Version (since = "2.46")]
+		public bool render_document (Cairo.Context cr, Rsvg.Rectangle viewport) throws GLib.Error;
+		[Version (since = "2.46")]
+		public bool render_element (Cairo.Context cr, string? id, Rsvg.Rectangle element_viewport) throws GLib.Error;
+		[Version (since = "2.46")]
+		public bool render_layer (Cairo.Context cr, string? id, Rsvg.Rectangle viewport) throws GLib.Error;
 		[Version (since = "2.32")]
 		public void set_base_gfile (GLib.File base_file);
 		[Version (since = "2.9")]

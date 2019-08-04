@@ -74,7 +74,7 @@ namespace NM {
 		public static bool hwaddr_valid (string asc, ssize_t length);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (deprecated = true, deprecated_since = "1.6")]
-		public static bool iface_valid_name (string name);
+		public static bool iface_valid_name (string? name);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.GenericArray<NM.IPAddress> ip4_addresses_from_variant (GLib.Variant value, out string out_gateway);
 		[CCode (cheader_filename = "NetworkManager.h")]
@@ -123,7 +123,7 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool is_uuid (string? str);
 		[CCode (cheader_filename = "NetworkManager.h")]
-		public static bool is_valid_iface_name (string name) throws GLib.Error;
+		public static bool is_valid_iface_name (string? name) throws GLib.Error;
 		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.8")]
 		public static GLib.HashTable<string,GLib.Variant> parse_variant_attributes (string string, char attr_separator, char key_value_separator, bool ignore_unknown, NM.VariantAttributeSpec spec) throws GLib.Error;
@@ -537,6 +537,8 @@ namespace NM {
 		[Version (since = "1.16")]
 		public async NM.ActiveConnection add_and_activate_connection2 (NM.Connection? partial, NM.Device device, string? specific_object, GLib.Variant options, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async NM.ActiveConnection add_and_activate_connection_async (NM.Connection? partial, NM.Device device, string? specific_object, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.20")]
+		public async NM.RemoteConnection add_connection2 (GLib.Variant settings, NM.SettingsAddConnection2Flags flags, GLib.Variant? args, bool ignore_out_result, GLib.Cancellable? cancellable, out GLib.Variant out_result) throws GLib.Error;
 		public async NM.RemoteConnection add_connection_async (NM.Connection connection, bool save_to_disk, GLib.Cancellable? cancellable) throws GLib.Error;
 		public NM.ConnectivityState check_connectivity (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async NM.ConnectivityState check_connectivity_async (GLib.Cancellable? cancellable) throws GLib.Error;
@@ -552,6 +554,8 @@ namespace NM {
 		public bool connectivity_check_get_available ();
 		[Version (since = "1.10")]
 		public bool connectivity_check_get_enabled ();
+		[Version (since = "1.20")]
+		public unowned string connectivity_check_get_uri ();
 		[Version (since = "1.10")]
 		public void connectivity_check_set_enabled (bool enabled);
 		public bool deactivate_connection (NM.ActiveConnection active, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -3444,6 +3448,8 @@ namespace NM {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.10")]
 		public SettingOvsBridge ();
+		[Version (since = "1.20")]
+		public unowned string get_datapath_type ();
 		[Version (since = "1.10")]
 		public unowned string get_fail_mode ();
 		[Version (since = "1.10")]
@@ -3452,6 +3458,9 @@ namespace NM {
 		public bool get_rstp_enable ();
 		[Version (since = "1.10")]
 		public bool get_stp_enable ();
+		[NoAccessorMethod]
+		[Version (since = "1.20")]
+		public string datapath_type { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
 		public string fail_mode { owned get; set construct; }
@@ -4349,6 +4358,10 @@ namespace NM {
 		public void append_peer (NM.WireGuardPeer peer);
 		public uint clear_peers ();
 		public uint32 get_fwmark ();
+		[Version (since = "1.20")]
+		public NM.Ternary get_ip4_auto_default_route ();
+		[Version (since = "1.20")]
+		public NM.Ternary get_ip6_auto_default_route ();
 		public uint16 get_listen_port ();
 		public uint32 get_mtu ();
 		public unowned NM.WireGuardPeer get_peer (uint idx);
@@ -4361,6 +4374,12 @@ namespace NM {
 		public void set_peer (NM.WireGuardPeer peer, uint idx);
 		[NoAccessorMethod]
 		public uint fwmark { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.20")]
+		public NM.Ternary ip4_auto_default_route { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.20")]
+		public NM.Ternary ip6_auto_default_route { get; set; }
 		[NoAccessorMethod]
 		public uint listen_port { get; set; }
 		[NoAccessorMethod]
@@ -4498,6 +4517,8 @@ namespace NM {
 		public const string MODE_AP;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MODE_INFRA")]
 		public const string MODE_INFRA;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MODE_MESH")]
+		public const string MODE_MESH;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MTU")]
 		public const string MTU;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_POWERSAVE")]
@@ -5345,7 +5366,8 @@ namespace NM {
 		UNKNOWN,
 		ADHOC,
 		INFRA,
-		AP
+		AP,
+		MESH
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_ACTIVATION_STATE_FLAG_", type_id = "nm_activation_state_flags_get_type ()")]
 	[Flags]
@@ -5614,7 +5636,8 @@ namespace NM {
 		ADHOC,
 		FREQ_VALID,
 		FREQ_2GHZ,
-		FREQ_5GHZ
+		FREQ_5GHZ,
+		MESH
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_IP_ROUTING_RULE_AS_STRING_FLAGS_", type_id = "nm_ip_routing_rule_as_string_flags_get_type ()")]
 	[Flags]
@@ -5894,6 +5917,15 @@ namespace NM {
 		DEFAULT,
 		IGNORE
 	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTINGS_ADD_CONNECTION2_FLAG_", type_id = "nm_settings_add_connection2_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.20")]
+	public enum SettingsAddConnection2Flags {
+		NONE,
+		TO_DISK,
+		IN_MEMORY,
+		BLOCK_AUTOCONNECT
+	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTINGS_CONNECTION_FLAG_", type_id = "nm_settings_connection_flags_get_type ()")]
 	[Flags]
 	[Version (since = "1.12")]
@@ -5913,7 +5945,8 @@ namespace NM {
 		IN_MEMORY_DETACHED,
 		IN_MEMORY_ONLY,
 		VOLATILE,
-		BLOCK_AUTOCONNECT
+		BLOCK_AUTOCONNECT,
+		NO_REAPPLY
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SRIOV_VF_VLAN_PROTOCOL_802_", type_id = "nm_sriov_vf_vlan_protocol_get_type ()")]
 	[Version (since = "1.14")]
@@ -6565,6 +6598,8 @@ namespace NM {
 	public const string SETTING_MATCH_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_NAME")]
 	public const string SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_DATAPATH_TYPE")]
+	public const string SETTING_OVS_BRIDGE_DATAPATH_TYPE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_FAIL_MODE")]
 	public const string SETTING_OVS_BRIDGE_FAIL_MODE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_MCAST_SNOOPING_ENABLE")]
@@ -6621,6 +6656,10 @@ namespace NM {
 	public const string SETTING_USER_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_FWMARK")]
 	public const string SETTING_WIREGUARD_FWMARK;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_IP4_AUTO_DEFAULT_ROUTE")]
+	public const string SETTING_WIREGUARD_IP4_AUTO_DEFAULT_ROUTE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_IP6_AUTO_DEFAULT_ROUTE")]
+	public const string SETTING_WIREGUARD_IP6_AUTO_DEFAULT_ROUTE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_LISTEN_PORT")]
 	public const string SETTING_WIREGUARD_LISTEN_PORT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_MTU")]
