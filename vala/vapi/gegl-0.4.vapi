@@ -53,6 +53,7 @@ namespace Gegl {
 		public void save (string path, Gegl.Rectangle roi);
 		public bool set_abyss (Gegl.Rectangle abyss);
 		public void set_color (Gegl.Rectangle rect, Gegl.Color color);
+		public void set_color_from_pixel (Gegl.Rectangle rect, void* pixel, Babl.Object pixel_format);
 		public bool set_extent (Gegl.Rectangle extent);
 		public void set_pattern (Gegl.Rectangle rect, Gegl.Buffer pattern, int x_offset, int y_offset);
 		public long signal_connect (string detailed_signal, [CCode (scope = "async")] GLib.Callback c_handler);
@@ -107,6 +108,7 @@ namespace Gegl {
 		public Gegl.Color duplicate ();
 		[CCode (array_length_pos = 1.1)]
 		public double[] get_components (GLib.Value format);
+		public unowned Babl.Object? get_format ();
 		public void get_rgba (out double red, out double green, out double blue, out double alpha);
 		public void set_components (GLib.Value format, [CCode (array_length_cname = "components_length", array_length_pos = 2.1)] double[] components);
 		public void set_rgba (double red, double green, double blue, double alpha);
@@ -291,6 +293,11 @@ namespace Gegl {
 		[CCode (has_construct_function = false)]
 		protected ParamFilePath ();
 	}
+	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_format_get_type ()")]
+	public class ParamFormat : GLib.ParamSpecPointer {
+		[CCode (has_construct_function = false)]
+		protected ParamFormat ();
+	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_int_get_type ()")]
 	public class ParamInt : GLib.ParamSpecInt {
 		[CCode (has_construct_function = false)]
@@ -350,6 +357,7 @@ namespace Gegl {
 	public class Processor : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Processor ();
+		public Gegl.Buffer get_buffer ();
 		public void set_level (int level);
 		public void set_rectangle (Gegl.Rectangle rectangle);
 		public void set_scale (double scale);
@@ -553,6 +561,7 @@ namespace Gegl {
 		[CCode (cname = "gegl_param_spec_enum_exclude_value")]
 		public void exclude_value (global::int value);
 		public static GLib.ParamSpec file_path (global::string name, global::string nick, global::string blurb, bool no_validate, bool null_ok, global::string default_value, GLib.ParamFlags flags);
+		public static GLib.ParamSpec format (global::string name, global::string nick, global::string blurb, GLib.ParamFlags flags);
 		public static unowned global::string get_property_key (GLib.ParamSpec pspec, global::string key_name);
 		public static GLib.ParamSpec int (global::string name, global::string nick, global::string blurb, global::int minimum, global::int maximum, global::int default_value, global::int ui_minimum, global::int ui_maximum, global::double ui_gamma, GLib.ParamFlags flags);
 		public static GLib.ParamSpec path (global::string name, global::string nick, global::string blurb, Gegl.Path default_path, GLib.ParamFlags flags);
@@ -578,6 +587,10 @@ namespace Gegl {
 		public weak GLib.ParamSpecString parent_instance;
 		public uint no_validate;
 		public uint null_ok;
+	}
+	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
+	public struct ParamSpecFormat {
+		public weak GLib.ParamSpecPointer parent_instance;
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	public struct ParamSpecInt {
@@ -739,8 +752,8 @@ namespace Gegl {
 		SUBSET,
 		[CCode (cname = "Superset")]
 		SUPERSET,
-		[CCode (cname = "Nesrest")]
-		NESREST
+		[CCode (cname = "Nearest")]
+		NEAREST
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_sampler_type_get_type ()")]
 	public enum SamplerType {
@@ -935,6 +948,8 @@ namespace Gegl {
 	[CCode (cheader_filename = "gegl.h", cname = "GEGL_PARAM_NO_VALIDATE")]
 	public const int PARAM_NO_VALIDATE;
 	[CCode (cheader_filename = "gegl.h")]
+	public static unowned Babl.Object? babl_variant (Babl.Object format, Gegl.BablVariant variant);
+	[CCode (cheader_filename = "gegl.h")]
 	public static void cl_disable ();
 	[CCode (cheader_filename = "gegl.h")]
 	public static bool cl_init () throws GLib.Error;
@@ -961,7 +976,7 @@ namespace Gegl {
 	[CCode (cheader_filename = "gegl.h")]
 	public static bool has_operation (string operation_type);
 	[CCode (cheader_filename = "gegl.h")]
-	public static void init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref unowned string[]? argv);
+	public static void init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref string[]? argv);
 	[CCode (cheader_filename = "gegl.h")]
 	public static bool is_main_thread ();
 	[CCode (array_length_pos = 0.1, array_length_type = "guint", cheader_filename = "gegl.h")]

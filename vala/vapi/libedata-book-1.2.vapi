@@ -21,6 +21,10 @@ namespace E {
 		public string dup_cache_dir ();
 		[Version (since = "3.12")]
 		public string dup_locale ();
+		[Version (since = "3.34")]
+		public bool foreach_view ();
+		[Version (since = "3.34")]
+		public void foreach_view_notify_progress (bool only_completed_views, int percent, string? message);
 		[Version (since = "3.10")]
 		public string get_backend_property (string prop_name);
 		[Version (since = "2.32")]
@@ -426,7 +430,6 @@ namespace E {
 	public class DataBookView : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		public DataBookView (E.BookBackend backend, E.BookBackendSExp sexp, GLib.DBusConnection connection, string object_path) throws GLib.Error;
-		public unowned E.BookBackend get_backend ();
 		[Version (since = "3.8")]
 		public unowned GLib.DBusConnection get_connection ();
 		public unowned GLib.HashTable<string,int>? get_fields_of_interest ();
@@ -436,6 +439,8 @@ namespace E {
 		public unowned string get_object_path ();
 		[Version (since = "3.8")]
 		public unowned E.BookBackendSExp get_sexp ();
+		[Version (since = "3.34")]
+		public bool is_completed ();
 		public void notify_complete (GLib.Error error);
 		[Version (since = "3.2")]
 		public void notify_progress (uint percent, string message);
@@ -443,7 +448,10 @@ namespace E {
 		public void notify_update (E.Contact contact);
 		public void notify_update_prefiltered_vcard (string id, string vcard);
 		public void notify_update_vcard (string id, string vcard);
-		public E.BookBackend backend { get; construct; }
+		[Version (since = "3.34")]
+		public E.BookBackend? ref_backend ();
+		[NoAccessorMethod]
+		public E.BookBackend backend { owned get; construct; }
 		public GLib.DBusConnection connection { get; construct; }
 		public string object_path { get; construct; }
 		public E.BookBackendSExp sexp { get; construct; }
@@ -536,6 +544,9 @@ namespace E {
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", instance_pos = 1.9)]
 	[Version (since = "3.26")]
 	public delegate void BookBackendCustomOpFunc (E.BookBackend book_backend, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "libedata-book/libedata-book.h", instance_pos = 2.9)]
+	[Version (since = "3.34")]
+	public delegate bool BookBackendForeachViewFunc (E.BookBackend backend, E.DataBookView view);
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", instance_pos = 7.9)]
 	[Version (since = "3.26")]
 	public delegate bool BookCacheSearchFunc (E.BookCache book_cache, string uid, string revision, string object, string extra, uint32 custom_flags, E.OfflineState offline_state);

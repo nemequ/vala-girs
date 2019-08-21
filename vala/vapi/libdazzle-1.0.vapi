@@ -1112,6 +1112,9 @@ namespace Dazzle {
 		public unowned Dazzle.ShortcutContext? get_context_for_phase (Dazzle.ShortcutPhase phase);
 		public unowned Dazzle.ShortcutChord? get_current_chord ();
 		public unowned Dazzle.ShortcutManager get_manager ();
+		[Version (since = "3.34")]
+		public unowned Gtk.Widget get_widget ();
+		public void remove_accel (string accel, Dazzle.ShortcutPhase phase);
 		[Version (since = "3.26")]
 		public void set_context_by_name (string? name);
 		public void set_manager (Dazzle.ShortcutManager? manager);
@@ -1119,8 +1122,7 @@ namespace Dazzle {
 		public Dazzle.ShortcutContext context { get; }
 		public Dazzle.ShortcutChord current_chord { get; }
 		public Dazzle.ShortcutManager manager { get; set; }
-		[NoAccessorMethod]
-		public Gtk.Widget widget { owned get; construct; }
+		public Gtk.Widget widget { get; construct; }
 		public signal void reset ();
 		public signal void set_context_named (string name);
 	}

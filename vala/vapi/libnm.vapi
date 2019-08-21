@@ -2998,6 +2998,7 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_DHCP")]
 		public const string METHOD_DHCP;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_DISABLED")]
+		[Version (since = "1.20")]
 		public const string METHOD_DISABLED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_IGNORE")]
 		public const string METHOD_IGNORE;
@@ -4518,6 +4519,7 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MODE_INFRA")]
 		public const string MODE_INFRA;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MODE_MESH")]
+		[Version (since = "1.20")]
 		public const string MODE_MESH;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MTU")]
 		public const string MTU;
@@ -5711,6 +5713,7 @@ namespace NM {
 		NO_ERRORS
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_802_1X_AUTH_FLAGS_", type_id = "nm_setting_802_1x_auth_flags_get_type ()")]
+	[Flags]
 	[Version (since = "1.8")]
 	public enum Setting8021xAuthFlags {
 		NONE,

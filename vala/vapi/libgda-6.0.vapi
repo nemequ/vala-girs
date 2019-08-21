@@ -980,9 +980,9 @@ namespace Gda {
 		public bool complement_default () throws GLib.Error;
 		public bool complement_depend (Gda.MetaDbObject dbo) throws GLib.Error;
 		public bool complement_schema (GLib.Value? catalog, GLib.Value? schema) throws GLib.Error;
-		public string dump_as_graph (Gda.MetaGraphInfo info) throws GLib.Error;
+		public string? dump_as_graph (Gda.MetaGraphInfo info) throws GLib.Error;
 		public static GLib.Quark error_quark ();
-		public GLib.SList<weak Gda.MetaDbObject?> get_all_db_objects ();
+		public GLib.SList<weak Gda.MetaDbObject?>? get_all_db_objects ();
 		public unowned Gda.MetaDbObject? get_db_object (GLib.Value? catalog, GLib.Value? schema, GLib.Value name);
 		public unowned Gda.MetaTableColumn? get_table_column (Gda.MetaTable table, GLib.Value col_name);
 		public bool load_from_xml_file (string? catalog, string? schema, string xml_spec_file) throws GLib.Error;
@@ -1206,7 +1206,7 @@ namespace Gda {
 		public void free ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_server_provider_get_type ()")]
-	public abstract class ServerProvider : GLib.Object {
+	public abstract class ServerProvider : GLib.Object, Gda.Lockable {
 		[CCode (has_construct_function = false)]
 		protected ServerProvider ();
 		public Gda.ServerOperation? create_operation (Gda.Connection? cnc, Gda.ServerOperationType type, Gda.Set? options) throws GLib.Error;

@@ -245,6 +245,7 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		protected DataFactory ();
 		public void backend_closed (E.Backend backend);
+		public void backend_closed_by_sender (E.Backend backend, string sender);
 		[NoWrapper]
 		public virtual void complete_open (GLib.DBusMethodInvocation invocation, string object_path, string bus_name, string extension_name);
 		[Version (since = "3.16")]

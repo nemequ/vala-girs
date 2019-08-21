@@ -24,6 +24,10 @@ namespace E {
 		public bool discard_alarm_sync (string uid, string rid, string alarm_uid, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.10")]
 		public string dup_cache_dir ();
+		[Version (since = "3.34")]
+		public bool foreach_view ();
+		[Version (since = "3.34")]
+		public void foreach_view_notify_progress (bool only_completed_views, int percent, string? message);
 		[Version (since = "3.10")]
 		public async bool get_attachment_uris (string uid, string rid, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
@@ -394,8 +398,6 @@ namespace E {
 		public DataCalView (void* backend, void* sexp, GLib.DBusConnection connection, string object_path) throws GLib.Error;
 		[Version (since = "3.4")]
 		public bool component_matches (ECal.Component component);
-		[Version (since = "3.8")]
-		public void* get_backend ();
 		[Version (since = "3.4")]
 		public string get_component_string (ECal.Component component);
 		[Version (since = "3.8")]
@@ -427,7 +429,10 @@ namespace E {
 		public void notify_objects_removed_1 (ECal.ComponentId id);
 		public void notify_progress (int percent, string message);
 		public bool object_matches (string object);
-		public E.CalBackend backend { get; construct; }
+		[Version (since = "3.34")]
+		public E.CalBackend? ref_backend ();
+		[NoAccessorMethod]
+		public E.CalBackend backend { owned get; construct; }
 		public GLib.DBusConnection connection { get; construct; }
 		public string object_path { get; construct; }
 		public E.CalBackendSExp sexp { get; construct; }
@@ -451,6 +456,9 @@ namespace E {
 	[CCode (cheader_filename = "libedata-cal/libedata-cal.h", instance_pos = 1.9)]
 	[Version (since = "3.26")]
 	public delegate void CalBackendCustomOpFunc (E.CalBackend cal_backend, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "libedata-cal/libedata-cal.h", instance_pos = 2.9)]
+	[Version (since = "3.34")]
+	public delegate bool CalBackendForeachViewFunc (E.CalBackend backend, E.DataCalView view);
 	[CCode (cheader_filename = "libedata-cal/libedata-cal.h", instance_pos = 8.9)]
 	[Version (since = "3.26")]
 	public delegate bool CalCacheSearchFunc (E.CalCache cal_cache, string uid, string? rid, string revision, string object, string extra, uint32 custom_flags, E.OfflineState offline_state);
