@@ -233,6 +233,8 @@ namespace E {
 		public bool get_components_in_range_as_strings (long range_start, long range_end, out GLib.SList<string> out_icalstrings, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_ids_with_extra (string extra, out GLib.SList<ECal.ComponentId> out_ids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public GLib.SList<E.CalCacheOfflineChange> get_offline_changes (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.34")]
+		public E.OfflineState get_offline_state (string uid, string? rid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool list_timezones (out GLib.List<weak ICal.Timezone> out_timezones, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool put_component (ECal.Component component, string? extra, uint32 custom_flags, E.CacheOfflineFlag offline_flag, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool put_components (GLib.SList<ECal.Component> components, GLib.SList<string>? extras, GLib.SList<uint32>? custom_flags, E.CacheOfflineFlag offline_flag, GLib.Cancellable? cancellable = null) throws GLib.Error;

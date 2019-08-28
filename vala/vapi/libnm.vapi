@@ -5639,7 +5639,8 @@ namespace NM {
 		FREQ_VALID,
 		FREQ_2GHZ,
 		FREQ_5GHZ,
-		MESH
+		MESH,
+		IBSS_RSN
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_IP_ROUTING_RULE_AS_STRING_FLAGS_", type_id = "nm_ip_routing_rule_as_string_flags_get_type ()")]
 	[Flags]

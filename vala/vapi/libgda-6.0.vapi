@@ -22,6 +22,7 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public Binary ();
 		public Gda.Binary copy ();
+		[DestroysInstance]
 		public void free ();
 		[Version (since = "6.0")]
 		public void* get_data ();
@@ -41,6 +42,7 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public Blob ();
 		public Gda.Blob copy ();
+		[DestroysInstance]
 		public void free ();
 		[Version (since = "6.0")]
 		public unowned Gda.Binary get_binary ();
@@ -1003,6 +1005,7 @@ namespace Gda {
 		[Version (since = "5.0.2")]
 		public Numeric ();
 		public Gda.Numeric copy ();
+		[DestroysInstance]
 		public void free ();
 		[Version (since = "5.0.2")]
 		public double get_double ();

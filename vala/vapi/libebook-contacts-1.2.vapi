@@ -533,6 +533,7 @@ namespace E {
 		public void add_value (string value);
 		public void add_value_decoded (string value, int len);
 		public E.VCardAttribute copy ();
+		[DestroysInstance]
 		public void free ();
 		public unowned string? get_group ();
 		public unowned string get_name ();
@@ -558,6 +559,7 @@ namespace E {
 		public VCardAttributeParam (string name);
 		public void add_value (string value);
 		public E.VCardAttributeParam copy ();
+		[DestroysInstance]
 		public void free ();
 		public unowned string get_name ();
 		public unowned GLib.List<string> get_values ();

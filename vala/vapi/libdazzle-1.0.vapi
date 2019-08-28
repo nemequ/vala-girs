@@ -565,6 +565,7 @@ namespace Dazzle {
 		public bool extract_index (size_t index_, void* result);
 		public void insert_vals (void* data, uint len);
 		public Dazzle.Heap @ref ();
+		[DestroysInstance]
 		public void unref ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_joined_menu_get_type ()")]

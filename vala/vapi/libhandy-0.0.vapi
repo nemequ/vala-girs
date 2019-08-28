@@ -300,6 +300,66 @@ namespace Hdy {
 		public Gtk.Widget visible_child { get; set; }
 		public string visible_child_name { get; set; }
 	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_paginator_get_type ()")]
+	public class Paginator : Gtk.EventBox, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.0.11")]
+		public Paginator ();
+		[Version (since = "0.0.11")]
+		public uint get_animation_duration ();
+		[Version (since = "0.0.11")]
+		public bool get_center_content ();
+		[Version (since = "0.0.11")]
+		public uint get_indicator_spacing ();
+		[Version (since = "0.0.11")]
+		public Hdy.PaginatorIndicatorStyle get_indicator_style ();
+		[Version (since = "0.0.11")]
+		public bool get_interactive ();
+		[Version (since = "0.0.11")]
+		public uint get_n_pages ();
+		[Version (since = "0.0.11")]
+		public double get_position ();
+		[Version (since = "0.0.11")]
+		public uint get_spacing ();
+		[Version (since = "0.0.11")]
+		public void insert (Gtk.Widget child, int position);
+		[Version (since = "0.0.11")]
+		public void prepend (Gtk.Widget child);
+		[Version (since = "0.0.11")]
+		public void reorder (Gtk.Widget child, int position);
+		[Version (since = "0.0.11")]
+		public void scroll_to (Gtk.Widget widget);
+		[Version (since = "0.0.11")]
+		public void scroll_to_full (Gtk.Widget widget, int64 duration);
+		[Version (since = "0.0.11")]
+		public void set_animation_duration (uint duration);
+		[Version (since = "0.0.11")]
+		public void set_center_content (bool center_content);
+		[Version (since = "0.0.11")]
+		public void set_indicator_spacing (uint spacing);
+		[Version (since = "0.0.11")]
+		public void set_indicator_style (Hdy.PaginatorIndicatorStyle style);
+		[Version (since = "0.0.11")]
+		public void set_interactive (bool interactive);
+		[Version (since = "0.0.11")]
+		public void set_spacing (uint spacing);
+		[Version (since = "0.0.11")]
+		public uint animation_duration { get; set; }
+		[Version (since = "0.0.11")]
+		public bool center_content { get; set; }
+		[Version (since = "0.0.11")]
+		public uint indicator_spacing { get; set; }
+		[Version (since = "0.0.11")]
+		public Hdy.PaginatorIndicatorStyle indicator_style { get; set; }
+		[Version (since = "0.0.11")]
+		public bool interactive { get; set; }
+		[Version (since = "0.0.11")]
+		public uint n_pages { get; }
+		[Version (since = "0.0.11")]
+		public double position { get; }
+		[Version (since = "0.0.11")]
+		public uint spacing { get; set; }
+	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_group_get_type ()")]
 	public class PreferencesGroup : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false)]
@@ -521,6 +581,12 @@ namespace Hdy {
 		NONE,
 		SLIDE
 	}
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_PAGINATOR_INDICATOR_STYLE_", type_id = "hdy_paginator_indicator_style_get_type ()")]
+	public enum PaginatorIndicatorStyle {
+		NONE,
+		DOTS,
+		LINES
+	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_SQUEEZER_TRANSITION_TYPE_", type_id = "hdy_squeezer_transition_type_get_type ()")]
 	public enum SqueezerTransitionType {
 		NONE,
@@ -537,8 +603,14 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", instance_pos = 1.9)]
 	public delegate string ComboRowGetNameFunc (GLib.Object item);
 	[CCode (cheader_filename = "handy.h")]
+	[Version (since = "0.0.11")]
+	public static double ease_out_cubic (double t);
+	[CCode (cheader_filename = "handy.h")]
 	[Version (since = "0.0.6")]
 	public static string enum_value_row_name (Hdy.EnumValueObject value, void* user_data);
+	[CCode (cheader_filename = "handy.h")]
+	[Version (since = "0.0.11")]
+	public static bool get_enable_animations (Gtk.Widget widget);
 	[CCode (cheader_filename = "handy.h")]
 	public static bool init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref unowned string[]? argv);
 	[CCode (cheader_filename = "handy.h")]

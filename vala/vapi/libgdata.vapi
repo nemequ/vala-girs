@@ -756,11 +756,11 @@ namespace GData {
 	public abstract class DocumentsEntry : GData.Entry, GData.AccessHandler {
 		[CCode (has_construct_function = false)]
 		protected DocumentsEntry ();
-		[Version (since = "0.18.0")]
+		[Version (since = "0.17.11")]
 		public bool add_documents_property (GData.DocumentsProperty property);
 		[Version (deprecated = true, deprecated_since = "0.11.0", since = "0.4.0")]
 		public unowned string get_document_id ();
-		[Version (since = "0.18.0")]
+		[Version (since = "0.17.11")]
 		public unowned GLib.List<GData.DocumentsProperty> get_document_properties ();
 		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.4.0")]
 		public int64 get_edited ();
@@ -773,7 +773,7 @@ namespace GData {
 		public int64 get_quota_used ();
 		[Version (since = "0.11.0")]
 		public unowned string get_resource_id ();
-		[Version (since = "0.18.0")]
+		[Version (since = "0.17.11")]
 		public bool remove_documents_property (GData.DocumentsProperty property);
 		public void set_writers_can_invite (bool writers_can_invite);
 		[Version (deprecated = true, deprecated_since = "0.11.0", since = "0.4.0")]
@@ -829,7 +829,7 @@ namespace GData {
 		public DocumentsPresentation (string? id);
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_documents_property_get_type ()")]
-	[Version (since = "0.18.0")]
+	[Version (since = "0.17.11")]
 	public class DocumentsProperty : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
 		public DocumentsProperty (string key);
@@ -1192,6 +1192,7 @@ namespace GData {
 		public GLib.GenericArray<weak string> list_properties ();
 		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public GData.FreebaseTopicObject @ref ();
+		[DestroysInstance]
 		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public void unref ();
 	}
@@ -1255,6 +1256,7 @@ namespace GData {
 		public bool is_image ();
 		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public GData.FreebaseTopicValue @ref ();
+		[DestroysInstance]
 		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public void unref ();
 	}
@@ -3011,10 +3013,10 @@ namespace GData {
 	[Version (since = "0.13.1")]
 	public const string DOCUMENTS_DRAWING_SVG;
 	[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_DOCUMENTS_PROPERTY_VISIBILITY_PRIVATE")]
-	[Version (since = "0.18.0")]
+	[Version (since = "0.17.11")]
 	public const string DOCUMENTS_PROPERTY_VISIBILITY_PRIVATE;
 	[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_DOCUMENTS_PROPERTY_VISIBILITY_PUBLIC")]
-	[Version (since = "0.18.0")]
+	[Version (since = "0.17.11")]
 	public const string DOCUMENTS_PROPERTY_VISIBILITY_PUBLIC;
 	[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_GCONTACT_CALENDAR_FREE_BUSY")]
 	[Version (since = "0.7.0")]

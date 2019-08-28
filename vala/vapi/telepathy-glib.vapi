@@ -1684,6 +1684,7 @@ namespace TelepathyGLib {
 		public bool can_set_on_self ();
 		[Version (since = "0.23.1")]
 		public TelepathyGLib.PresenceStatusSpec copy ();
+		[DestroysInstance]
 		[Version (since = "0.23.1")]
 		public void free ();
 		[Version (since = "0.23.1")]

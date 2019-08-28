@@ -113,7 +113,7 @@ namespace Grl {
 		[Version (since = "0.2.12")]
 		public void add_int64 (Grl.KeyID key, int64 intvalue);
 		[Version (since = "0.1.10")]
-		public void add_related_keys (Grl.RelatedKeys relkeys);
+		public void add_related_keys (owned Grl.RelatedKeys relkeys);
 		[Version (since = "0.1.10")]
 		public void add_string (Grl.KeyID key, string strvalue);
 		[Version (since = "0.1.10")]

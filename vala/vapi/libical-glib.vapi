@@ -737,6 +737,7 @@ namespace ICal {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Parser ();
+		[DestroysInstance]
 		[Version (since = "1.0")]
 		public ICal.Component? add_line (string? str);
 		[Version (since = "1.0")]
