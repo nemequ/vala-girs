@@ -738,8 +738,8 @@ namespace Gda {
 	[CCode (cheader_filename = "libgda/libgda.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gda_default_get_type ()")]
 	[Compact]
 	public class Default {
-		public static string escape_string (string string);
-		public static string unescape_string (string string);
+		public static string? escape_string (string string);
+		public static string? unescape_string (string string);
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gda_diff_get_type ()")]
 	[Compact]
@@ -1767,7 +1767,7 @@ namespace Gda {
 		public bool is_useless ();
 		public bool normalize (Gda.Connection cnc) throws GLib.Error;
 		[Version (since = "4.2")]
-		public Gda.SqlStatement rewrite_for_default_values (Gda.Set @params, bool remove) throws GLib.Error;
+		public Gda.SqlStatement? rewrite_for_default_values (Gda.Set @params, bool remove) throws GLib.Error;
 		public string serialize ();
 		public string to_sql_extended (Gda.Connection? cnc, Gda.Set? @params, Gda.StatementSqlFlag flags, out GLib.SList<weak Gda.Holder>? params_used) throws GLib.Error;
 		public string to_sql_real (Gda.SqlRenderingContext context) throws GLib.Error;
@@ -3242,18 +3242,18 @@ namespace Gda {
 	[CCode (cheader_filename = "libgda/libgda.h", cname = "GDA_TIMEZONE_INVALID")]
 	public const int TIMEZONE_INVALID;
 	[CCode (cheader_filename = "libgda/libgda.h")]
-	public static string alphanum_to_text (string text);
+	public static string? alphanum_to_text (string text);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "libgda/libgda.h")]
 	public static string[]? completion_list_get (Gda.Connection cnc, string sql, int start, int end);
 	[CCode (cheader_filename = "libgda/libgda.h")]
-	public static bool compute_dml_statements (Gda.Connection cnc, Gda.Statement select_stmt, bool require_pk, owned Gda.Statement? insert_stmt, owned Gda.Statement? update_stmt, owned Gda.Statement? delete_stmt) throws GLib.Error;
+	public static bool compute_dml_statements (Gda.Connection cnc, Gda.Statement select_stmt, bool require_pk, out Gda.Statement? insert_stmt, out Gda.Statement? update_stmt, out Gda.Statement? delete_stmt) throws GLib.Error;
 	[CCode (cheader_filename = "libgda/libgda.h")]
-	public static Gda.SqlStatement compute_select_statement_from_update (Gda.Statement update_stmt) throws GLib.Error;
+	public static Gda.SqlStatement? compute_select_statement_from_update (Gda.Statement update_stmt) throws GLib.Error;
 	[CCode (cheader_filename = "libgda/libgda.h")]
-	public static Gda.SqlExpr compute_unique_table_row_condition (Gda.SqlStatementSelect stsel, Gda.MetaTable mtable, bool require_pk) throws GLib.Error;
+	public static Gda.SqlExpr? compute_unique_table_row_condition (Gda.SqlStatementSelect stsel, Gda.MetaTable mtable, bool require_pk) throws GLib.Error;
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "4.0.3")]
-	public static Gda.SqlExpr compute_unique_table_row_condition_with_cnc (Gda.Connection? cnc, Gda.SqlStatementSelect stsel, Gda.MetaTable mtable, bool require_pk) throws GLib.Error;
+	public static Gda.SqlExpr? compute_unique_table_row_condition_with_cnc (Gda.Connection? cnc, Gda.SqlStatementSelect stsel, Gda.MetaTable mtable, bool require_pk) throws GLib.Error;
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "4.2.3")]
 	public static Gda.DataHandler data_handler_get_default (GLib.Type for_type);
@@ -3292,14 +3292,14 @@ namespace Gda {
 	public static GLib.DateTime parse_iso8601_timestamp (string value);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "4.2.9")]
-	public static Gda.SqlStatement rewrite_sql_statement_for_null_parameters (owned Gda.SqlStatement sqlst, Gda.Set @params, bool? out_modified) throws GLib.Error;
+	public static Gda.SqlStatement? rewrite_sql_statement_for_null_parameters (owned Gda.SqlStatement sqlst, Gda.Set @params, out bool out_modified) throws GLib.Error;
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "4.2.9")]
-	public static bool rewrite_statement_for_null_parameters (Gda.Statement stmt, Gda.Set @params, owned Gda.Statement? out_stmt) throws GLib.Error;
+	public static bool rewrite_statement_for_null_parameters (Gda.Statement stmt, Gda.Set @params, out Gda.Statement? out_stmt) throws GLib.Error;
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static bool rfc1738_decode (string string);
 	[CCode (cheader_filename = "libgda/libgda.h")]
-	public static string rfc1738_encode (string string);
+	public static string? rfc1738_encode (string string);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static Gda.Statement select_alter_select_for_empty (Gda.Statement stmt) throws GLib.Error;
 	[CCode (cheader_filename = "libgda/libgda.h")]
@@ -3310,7 +3310,7 @@ namespace Gda {
 	public static string sql_identifier_prepare_for_compare (string str);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "4.0.3")]
-	public static string sql_identifier_quote (string id, Gda.Connection? cnc, Gda.ServerProvider? prov, bool meta_store_convention, bool force_quotes);
+	public static string? sql_identifier_quote (string id, Gda.Connection? cnc, Gda.ServerProvider? prov, bool meta_store_convention, bool force_quotes);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "libgda/libgda.h")]
 	public static string[]? sql_identifier_split (string id);
 	[CCode (cheader_filename = "libgda/libgda.h")]
@@ -3325,9 +3325,9 @@ namespace Gda {
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static bool utility_data_model_dump_data_to_xml (Gda.DataModel model, [CCode (type = "xmlNodePtr")] Xml.Node* parent, [CCode (array_length_cname = "nb_cols", array_length_pos = 3.5)] int[]? cols, [CCode (array_length_cname = "nb_rows", array_length_pos = 4.5)] int[]? rows, bool use_col_ids);
 	[CCode (cheader_filename = "libgda/libgda.h")]
-	public static unowned string utility_data_model_find_column_description (Gda.DataSelect model, string field_name);
+	public static unowned string? utility_data_model_find_column_description (Gda.DataSelect model, string field_name);
 	[CCode (cheader_filename = "libgda/libgda.h")]
-	public static bool utility_holder_load_attributes (Gda.Holder holder, [CCode (type = "xmlNodePtr")] Xml.Node* node, GLib.SList<Gda.DataModel> sources) throws GLib.Error;
+	public static bool utility_holder_load_attributes (Gda.Holder holder, [CCode (type = "xmlNodePtr")] Xml.Node* node, GLib.SList<Gda.DataModel>? sources) throws GLib.Error;
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static int value_compare (GLib.Value value1, GLib.Value value2);
 	[CCode (cheader_filename = "libgda/libgda.h")]

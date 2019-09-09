@@ -5,10 +5,15 @@ namespace Osinfo {
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_avatar_format_get_type ()")]
 	public class AvatarFormat : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.2.8")]
 		public AvatarFormat ();
+		[Version (since = "0.2.2")]
 		public bool get_alpha ();
+		[Version (since = "0.2.2")]
 		public int get_height ();
+		[Version (since = "0.2.2")]
 		public GLib.List<weak string> get_mime_types ();
+		[Version (since = "0.2.2")]
 		public int get_width ();
 		public bool alpha { get; }
 		public int height { get; }
@@ -18,34 +23,45 @@ namespace Osinfo {
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_datamap_get_type ()")]
 	public class Datamap : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.2.3")]
 		public Datamap (string id);
+		[Version (since = "0.2.3")]
 		public void insert (string inval, string outval);
+		[Version (since = "0.2.3")]
 		public unowned string lookup (string inval);
+		[Version (since = "0.2.3")]
 		public unowned string reverse_lookup (string outval);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "datamaplist", type_id = "osinfo_datamaplist_get_type ()")]
 	public class DatamapList : Osinfo.List {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.2.3")]
 		public DatamapList ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_db_get_type ()")]
 	public class Db : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Db ();
+		[Version (since = "0.2.3")]
 		public void add_datamap (Osinfo.Datamap datamap);
 		public void add_deployment (Osinfo.Deployment deployment);
 		public void add_device (Osinfo.Device device);
+		[Version (since = "0.2.0")]
 		public void add_install_script (Osinfo.InstallScript script);
 		public void add_os (Osinfo.Os os);
 		public void add_platform (Osinfo.Platform platform);
 		public unowned Osinfo.Deployment find_deployment (Osinfo.Os os, Osinfo.Platform platform);
+		[Version (since = "0.2.3")]
 		public unowned Osinfo.Datamap get_datamap (string id);
+		[Version (since = "0.2.3")]
 		public Osinfo.DatamapList get_datamap_list ();
 		public unowned Osinfo.Deployment get_deployment (string id);
 		public Osinfo.DeploymentList get_deployment_list ();
 		public unowned Osinfo.Device get_device (string id);
 		public Osinfo.DeviceList get_device_list ();
+		[Version (since = "0.2.0")]
 		public unowned Osinfo.InstallScript get_install_script (string id);
+		[Version (since = "0.2.0")]
 		public Osinfo.InstallScriptList get_install_script_list ();
 		public unowned Osinfo.Os get_os (string id);
 		public Osinfo.OsList get_os_list ();
@@ -53,8 +69,12 @@ namespace Osinfo {
 		public Osinfo.PlatformList get_platform_list ();
 		[Version (deprecated = true, deprecated_since = "0.2.3")]
 		public unowned Osinfo.Os guess_os_from_media (Osinfo.Media media, out unowned Osinfo.Media matched_media);
+		[Version (deprecated = true, deprecated_since = "1.6.0")]
 		public unowned Osinfo.Os guess_os_from_tree (Osinfo.Tree tree, out unowned Osinfo.Tree matched_tree);
+		[Version (since = "0.2.3")]
 		public bool identify_media (Osinfo.Media media);
+		[Version (since = "1.6.0")]
+		public bool identify_tree (Osinfo.Tree tree);
 		public Osinfo.OsList unique_values_for_os_relationship (Osinfo.ProductRelationship relshp);
 		public Osinfo.PlatformList unique_values_for_platform_relationship (Osinfo.ProductRelationship relshp);
 		public GLib.List<weak string> unique_values_for_property_in_deployment (string propName);
@@ -98,6 +118,7 @@ namespace Osinfo {
 		public unowned string get_name ();
 		public unowned string get_product ();
 		public unowned string get_product_id ();
+		[Version (since = "0.2.1")]
 		public unowned string get_subsystem ();
 		public unowned string get_vendor ();
 		public unowned string get_vendor_id ();
@@ -106,16 +127,23 @@ namespace Osinfo {
 	public class DeviceDriver : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
 		protected DeviceDriver ();
+		[Version (since = "0.2.2")]
 		public unowned string get_architecture ();
+		[Version (since = "0.2.2")]
 		public unowned Osinfo.DeviceList get_devices ();
+		[Version (since = "0.2.2")]
 		public GLib.List<weak string> get_files ();
+		[Version (since = "0.2.2")]
 		public unowned string get_location ();
+		[Version (since = "0.2.2")]
 		public bool get_pre_installable ();
+		[Version (since = "0.2.6")]
 		public bool get_signed ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "device_driverlist", type_id = "osinfo_device_driverlist_get_type ()")]
 	public class DeviceDriverList : Osinfo.List {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.2.2")]
 		public DeviceDriverList ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "devicelink", type_id = "osinfo_devicelink_get_type ()")]
@@ -169,15 +197,23 @@ namespace Osinfo {
 		public unowned string get_id ();
 		public GLib.List<weak string> get_param_keys ();
 		public unowned string get_param_value (string key);
+		[Version (since = "0.2.0")]
 		public bool get_param_value_boolean (string key);
+		[Version (since = "0.2.1")]
 		public bool get_param_value_boolean_with_default (string key, bool default_value);
+		[Version (since = "0.2.2")]
 		public int get_param_value_enum (string key, GLib.Type enum_type, int default_value);
+		[Version (since = "0.2.1")]
 		public int64 get_param_value_int64 (string key);
+		[Version (since = "0.2.1")]
 		public int64 get_param_value_int64_with_default (string key, int64 default_value);
 		public GLib.List<weak string> get_param_value_list (string key);
 		public void set_param (string key, string value);
+		[Version (since = "0.2.0")]
 		public void set_param_boolean (string key, bool value);
+		[Version (since = "0.2.2")]
 		public void set_param_enum (string key, int value, GLib.Type enum_type);
+		[Version (since = "0.2.1")]
 		public void set_param_int64 (string key, int64 value);
 		[NoAccessorMethod]
 		public string id { owned get; set construct; }
@@ -197,10 +233,20 @@ namespace Osinfo {
 	public class Image : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
 		public Image (string id, string architecture, string format);
+		[Version (since = "1.3.0")]
 		public unowned string get_architecture ();
+		[Version (since = "1.3.0")]
 		public bool get_cloud_init ();
+		[Version (since = "1.3.0")]
 		public unowned string get_format ();
+		[Version (since = "1.5.0")]
+		public Osinfo.Os get_os ();
+		[Version (since = "1.5.0")]
+		public Osinfo.OsVariantList get_os_variants ();
+		[Version (since = "1.3.0")]
 		public unowned string get_url ();
+		[Version (since = "1.5.0")]
+		public void set_os (Osinfo.Os os);
 		[NoAccessorMethod]
 		public string architecture { owned get; set; }
 		[NoAccessorMethod]
@@ -211,69 +257,123 @@ namespace Osinfo {
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "imagelist", type_id = "osinfo_imagelist_get_type ()")]
 	public class ImageList : Osinfo.List {
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.3.0")]
 		public ImageList ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_install_config_get_type ()")]
 	public class InstallConfig : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.2.0")]
 		public InstallConfig (string id);
+		[Version (since = "0.2.0")]
 		public unowned string get_admin_password ();
+		[Version (since = "0.2.2")]
 		public unowned string get_avatar_disk ();
+		[Version (since = "0.2.2")]
 		public unowned string get_avatar_location ();
+		[Version (since = "0.2.6")]
 		public bool get_driver_signing ();
+		[Version (since = "0.2.8")]
 		public unowned string get_hardware_arch ();
+		[Version (since = "0.2.8")]
 		public unowned string get_hostname ();
+		[Version (since = "1.5.0")]
 		public unowned string get_installation_url ();
+		[Version (since = "0.2.0")]
 		public unowned string get_l10n_keyboard ();
+		[Version (since = "0.2.0")]
 		public unowned string get_l10n_language ();
+		[Version (since = "0.2.0")]
 		public unowned string get_l10n_timezone ();
+		[Version (since = "0.2.2")]
 		public unowned string get_post_install_drivers_disk ();
+		[Version (since = "0.2.2")]
 		public unowned string get_post_install_drivers_location ();
+		[Version (since = "0.2.2")]
 		public unowned string get_pre_install_drivers_disk ();
+		[Version (since = "0.2.2")]
 		public unowned string get_pre_install_drivers_location ();
+		[Version (since = "0.2.8")]
 		public unowned string get_reg_login ();
+		[Version (since = "0.2.8")]
 		public unowned string get_reg_password ();
+		[Version (since = "0.2.8")]
 		public unowned string get_reg_product_key ();
+		[Version (since = "0.2.2")]
 		public unowned string get_script_disk ();
+		[Version (since = "0.2.2")]
 		public unowned string get_target_disk ();
+		[Version (since = "0.2.0")]
 		public bool get_user_administrator ();
+		[Version (since = "0.2.0")]
 		public bool get_user_autologin ();
+		[Version (since = "0.2.0")]
 		public unowned string get_user_login ();
+		[Version (since = "0.2.0")]
 		public unowned string get_user_password ();
+		[Version (since = "0.2.0")]
 		public unowned string get_user_realname ();
+		[Version (since = "0.2.0")]
 		public void set_admin_password (string password);
+		[Version (since = "0.2.2")]
 		public void set_avatar_disk (string disk);
+		[Version (since = "0.2.2")]
 		public void set_avatar_location (string location);
+		[Version (since = "0.2.6")]
 		public void set_driver_signing (bool signing);
+		[Version (since = "0.2.0")]
 		public void set_hardware_arch (string arch);
+		[Version (since = "0.2.0")]
 		public void set_hostname (string hostname);
+		[Version (since = "1.5.0")]
 		public void set_installation_url (string url);
+		[Version (since = "0.2.0")]
 		public void set_l10n_keyboard (string keyboard);
+		[Version (since = "0.2.0")]
 		public void set_l10n_language (string language);
+		[Version (since = "0.2.0")]
 		public void set_l10n_timezone (string timezone);
+		[Version (since = "0.2.2")]
 		public void set_post_install_drivers_disk (string disk);
+		[Version (since = "0.2.2")]
 		public void set_post_install_drivers_location (string location);
 		public void set_pre_install_drivers_disk (string disk);
+		[Version (since = "0.2.2")]
 		public void set_pre_install_drivers_location (string location);
+		[Version (since = "0.2.0")]
 		public void set_reg_login (string name);
+		[Version (since = "0.2.0")]
 		public void set_reg_password (string password);
 		public void set_reg_product_key (string key);
+		[Version (since = "0.2.2")]
 		public void set_script_disk (string disk);
+		[Version (since = "0.2.2")]
 		public void set_target_disk (string disk);
+		[Version (since = "0.2.0")]
 		public void set_user_administrator (bool admin);
+		[Version (since = "0.2.0")]
 		public void set_user_autologin (bool autologin);
+		[Version (since = "0.2.0")]
 		public void set_user_login (string username);
+		[Version (since = "0.2.0")]
 		public void set_user_password (string password);
+		[Version (since = "0.2.0")]
 		public void set_user_realname (string name);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_install_config_param_get_type ()")]
 	public class InstallConfigParam : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.2.0")]
 		public InstallConfigParam (string name);
+		[Version (since = "0.2.0")]
 		public unowned string get_name ();
+		[Version (since = "0.2.0")]
 		public Osinfo.InstallConfigParamPolicy get_policy ();
+		[Version (since = "0.2.1")]
 		public bool is_optional ();
+		[Version (since = "0.2.1")]
 		public bool is_required ();
+		[Version (since = "0.2.8")]
 		public void set_value_map (Osinfo.Datamap datamap);
 		public string name { get; construct; }
 		public Osinfo.InstallConfigParamPolicy policy { get; }
@@ -283,6 +383,7 @@ namespace Osinfo {
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "install_config_paramlist", type_id = "osinfo_install_config_paramlist_get_type ()")]
 	public class InstallConfigParamList : Osinfo.List {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.2.3")]
 		public InstallConfigParamList ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_install_script_get_type ()")]
@@ -290,47 +391,89 @@ namespace Osinfo {
 		[CCode (has_construct_function = false)]
 		public InstallScript (string id);
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.2.0")]
 		public InstallScript.data (string id, string profile, string templateData);
+		[Version (since = "0.2.0")]
 		public string generate (Osinfo.Os os, Osinfo.InstallConfig config, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.2.0")]
 		public async string generate_async (Osinfo.Os os, Osinfo.InstallConfig config, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.2.7")]
 		public string generate_command_line (Osinfo.Os os, Osinfo.InstallConfig config);
+		[Version (since = "0.2.12")]
 		public string generate_command_line_for_media (Osinfo.Media media, Osinfo.InstallConfig config);
+		public string generate_command_line_for_tree (Osinfo.Tree tree, Osinfo.InstallConfig config);
 		[Version (since = "0.2.12")]
 		public string generate_for_media (Osinfo.Media media, Osinfo.InstallConfig config, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "0.2.12")]
 		public async string generate_for_media_async (Osinfo.Media media, Osinfo.InstallConfig config, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.6.0")]
+		public string generate_for_tree (Osinfo.Tree tree, Osinfo.InstallConfig config, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.6.0")]
+		public async string generate_for_tree_async (Osinfo.Tree tree, Osinfo.InstallConfig config, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.2.0")]
 		public GLib.File generate_output (Osinfo.Os os, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.2.0")]
 		public async GLib.File generate_output_async (Osinfo.Os os, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "0.2.12")]
 		public GLib.File generate_output_for_media (Osinfo.Media media, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "0.2.12")]
 		public async GLib.File generate_output_for_media_async (Osinfo.Media media, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.6.0")]
+		public GLib.File generate_output_for_tree (Osinfo.Tree tree, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.6.0")]
+		public async GLib.File generate_output_for_tree_async (Osinfo.Tree tree, Osinfo.InstallConfig config, GLib.File output_dir, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.2.2")]
 		public unowned Osinfo.AvatarFormat get_avatar_format ();
+		[Version (since = "0.2.2")]
 		public bool get_can_post_install_drivers ();
+		[Version (since = "0.2.2")]
 		public bool get_can_pre_install_drivers ();
+		[Version (since = "0.2.1")]
 		public Osinfo.InstallConfigParam get_config_param (string name);
+		[Version (since = "0.2.0")]
 		public GLib.List<weak Osinfo.InstallScript> get_config_param_list ();
+		[Version (since = "0.2.3")]
 		public unowned Osinfo.InstallConfigParamList get_config_params ();
+		[Version (since = "0.2.1")]
 		public unowned string get_expected_filename ();
+		[Version (since = "0.2.10")]
 		public Osinfo.InstallScriptInjectionMethod get_injection_methods ();
+		[Version (since = "1.3.0")]
 		public Osinfo.InstallScriptInstallationSource get_installation_source ();
+		[Version (since = "0.2.11")]
 		public bool get_needs_internet ();
+		[Version (since = "0.2.0")]
 		public unowned string get_output_filename ();
+		[Version (since = "0.2.8")]
 		public unowned string get_output_prefix ();
+		[Version (since = "0.2.2")]
 		public Osinfo.PathFormat get_path_format ();
+		[Version (since = "0.2.6")]
 		public Osinfo.DeviceDriverSigningReq get_post_install_drivers_signing_req ();
+		[Version (since = "0.2.6")]
 		public Osinfo.DeviceDriverSigningReq get_pre_install_drivers_signing_req ();
+		[Version (since = "1.3.0")]
 		public Osinfo.InstallScriptInjectionMethod get_preferred_injection_method ();
+		[Version (since = "0.2.2")]
 		public unowned string get_product_key_format ();
+		[Version (since = "0.2.0")]
 		public unowned string get_profile ();
+		[Version (since = "0.2.0")]
 		public unowned string get_template_data ();
+		[Version (since = "0.2.0")]
 		public unowned string get_template_uri ();
+		[Version (since = "0.2.0")]
 		public bool has_config_param (Osinfo.InstallConfigParam config_param);
+		[Version (since = "0.2.0")]
 		public bool has_config_param_name (string name);
-		public void set_installation_source (Osinfo.InstallScriptInstallationSource installer);
+		[Version (since = "1.3.0")]
+		public void set_installation_source (Osinfo.InstallScriptInstallationSource source);
+		[Version (since = "0.2.0")]
 		public void set_output_prefix (string prefix);
+		[Version (since = "1.3.0")]
 		public void set_preferred_injection_method (Osinfo.InstallScriptInjectionMethod method);
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.2.0")]
 		public InstallScript.uri (string id, string profile, string templateUri);
 		public Osinfo.AvatarFormat avatar_format { get; }
 		public Osinfo.InstallScriptInstallationSource installation_source { get; }
@@ -344,14 +487,15 @@ namespace Osinfo {
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "install_scriptlist", type_id = "osinfo_install_scriptlist_get_type ()")]
 	public class InstallScriptList : Osinfo.List {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.2.0")]
 		public InstallScriptList ();
-		[Version (deprecated = true, deprecated_since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2", since = "0.2.0")]
 		public Osinfo.InstallScriptList new_copy ();
-		[Version (deprecated = true, deprecated_since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2", since = "0.2.0")]
 		public Osinfo.InstallScriptList new_filtered (Osinfo.Filter filter);
-		[Version (deprecated = true, deprecated_since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2", since = "0.2.0")]
 		public Osinfo.InstallScriptList new_intersection (Osinfo.InstallScriptList sourceTwo);
-		[Version (deprecated = true, deprecated_since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2", since = "0.2.0")]
 		public Osinfo.InstallScriptList new_union (Osinfo.InstallScriptList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_list_get_type ()")]
@@ -368,9 +512,13 @@ namespace Osinfo {
 		public GLib.List<weak Osinfo.Entity> get_elements ();
 		public int get_length ();
 		public unowned Osinfo.Entity get_nth (int idx);
+		[Version (since = "0.2.2")]
 		public Osinfo.List new_copy ();
+		[Version (since = "0.2.2")]
 		public Osinfo.List new_filtered (Osinfo.Filter filter);
+		[Version (since = "0.2.2")]
 		public Osinfo.List new_intersection (Osinfo.List sourceTwo);
+		[Version (since = "0.2.2")]
 		public Osinfo.List new_union (Osinfo.List sourceTwo);
 		public GLib.Type element_type { get; construct; }
 	}
@@ -380,36 +528,55 @@ namespace Osinfo {
 		public Loader ();
 		public unowned Osinfo.Db get_db ();
 		public void process_default_path () throws GLib.Error;
+		[Version (since = "0.2.8")]
 		public void process_local_path () throws GLib.Error;
 		public void process_path (string path) throws GLib.Error;
+		[Version (since = "0.2.8")]
 		public void process_system_path () throws GLib.Error;
 		public void process_uri (string uri) throws GLib.Error;
+		[Version (since = "0.2.8")]
 		public void process_user_path () throws GLib.Error;
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_media_get_type ()")]
 	public class Media : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
 		public Media (string id, string architecture);
-		public void add_install_script (Osinfo.InstallScript install_script);
+		[Version (since = "1.4.0")]
+		public void add_install_script (Osinfo.InstallScript script);
 		public static Osinfo.Media create_from_location (string location, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static async Osinfo.Media create_from_location_async (string location, int priority, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.6.0")]
+		public static Osinfo.Media create_from_location_with_flags (string location, GLib.Cancellable? cancellable, uint flags) throws GLib.Error;
+		[Version (since = "1.6.0")]
+		public static async Osinfo.Media create_from_location_with_flags_async (string location, int priority, GLib.Cancellable? cancellable, uint flags) throws GLib.Error;
 		public unowned string get_application_id ();
 		public unowned string get_architecture ();
+		[Version (since = "0.2.13")]
 		public bool get_eject_after_install ();
 		public unowned string get_initrd_path ();
+		[Version (since = "1.4.0")]
 		public Osinfo.InstallScriptList get_install_script_list ();
+		[Version (since = "0.0.3")]
 		public bool get_installer ();
+		[Version (since = "0.2.1")]
 		public int get_installer_reboots ();
 		public unowned string get_kernel_path ();
+		[Version (since = "0.2.3")]
 		public GLib.List<weak string> get_languages ();
+		[Version (since = "0.0.3")]
 		public bool get_live ();
+		[Version (since = "0.2.3")]
 		public Osinfo.Os get_os ();
+		[Version (since = "0.2.9")]
 		public Osinfo.OsVariantList get_os_variants ();
 		public unowned string get_publisher_id ();
 		public unowned string get_system_id ();
 		public unowned string get_url ();
 		public unowned string get_volume_id ();
 		public int64 get_volume_size ();
+		[Version (since = "1.6.0")]
+		public bool is_bootable ();
+		[Version (since = "1.3.0")]
 		public bool supports_installer_script ();
 		[NoAccessorMethod]
 		public string application_id { owned get; set; }
@@ -461,37 +628,56 @@ namespace Osinfo {
 		[CCode (has_construct_function = false)]
 		public Os (string id);
 		public unowned Osinfo.DeviceLink add_device (Osinfo.Device dev);
+		[Version (since = "0.2.2")]
 		public void add_device_driver (Osinfo.DeviceDriver driver);
+		[Version (since = "1.3.0")]
 		public void add_image (Osinfo.Image image);
+		[Version (since = "0.2.0")]
 		public void add_install_script (Osinfo.InstallScript script);
+		[Version (since = "1.3.0")]
 		public void add_maximum_resources (Osinfo.Resources resources);
 		public void add_media (Osinfo.Media media);
 		public void add_minimum_resources (Osinfo.Resources resources);
+		[Version (since = "1.3.0")]
 		public void add_network_install_resources (Osinfo.Resources resources);
 		public void add_recommended_resources (Osinfo.Resources resources);
 		public void add_tree (Osinfo.Tree tree);
+		[Version (since = "0.2.9")]
 		public void add_variant (Osinfo.OsVariant variant);
+		[Version (since = "0.2.0")]
 		public unowned Osinfo.InstallScript find_install_script (string profile);
+		[Version (since = "1.3.0")]
 		public Osinfo.DeviceLinkList get_all_device_links (Osinfo.Filter? filter);
+		[Version (since = "0.0.5")]
 		public Osinfo.DeviceList get_all_devices (Osinfo.Filter? filter);
+		[Version (since = "0.2.2")]
 		public unowned Osinfo.DeviceDriverList get_device_drivers ();
 		public Osinfo.DeviceLinkList get_device_links (Osinfo.Filter? filter);
 		public Osinfo.DeviceList get_devices (Osinfo.Filter? filter);
+		[Version (since = "0.0.6")]
 		public Osinfo.DeviceList get_devices_by_property (string property, string value, bool inherited);
 		public unowned string get_distro ();
 		public unowned string get_family ();
+		[Version (since = "1.3.0")]
 		public Osinfo.ImageList get_image_list ();
+		[Version (since = "0.2.0")]
 		public Osinfo.InstallScriptList get_install_script_list ();
+		public unowned string get_kernel_url_argument ();
+		[Version (since = "1.3.0")]
 		public Osinfo.ResourcesList get_maximum_resources ();
 		public Osinfo.MediaList get_media_list ();
 		public Osinfo.ResourcesList get_minimum_resources ();
+		[Version (since = "1.3.0")]
 		public Osinfo.ResourcesList get_network_install_resources ();
 		public Osinfo.ResourcesList get_recommended_resources ();
+		[Version (since = "0.2.9")]
 		public Osinfo.ReleaseStatus get_release_status ();
 		public Osinfo.TreeList get_tree_list ();
+		[Version (since = "0.2.9")]
 		public Osinfo.OsVariantList get_variant_list ();
 		public string distro { get; }
 		public string family { get; }
+		public string kernel_url_argument { get; }
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "oslist", type_id = "osinfo_oslist_get_type ()")]
 	public class OsList : Osinfo.ProductList {
@@ -509,7 +695,9 @@ namespace Osinfo {
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_os_variant_get_type ()")]
 	public class OsVariant : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.2.9")]
 		public OsVariant (string id);
+		[Version (since = "0.2.9")]
 		public unowned string get_name ();
 		[NoAccessorMethod]
 		public string name { owned get; set; }
@@ -517,6 +705,7 @@ namespace Osinfo {
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "os_variantlist", type_id = "osinfo_os_variantlist_get_type ()")]
 	public class OsVariantList : Osinfo.List {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.2.9")]
 		public OsVariantList ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_platform_get_type ()")]
@@ -524,6 +713,7 @@ namespace Osinfo {
 		[CCode (has_construct_function = false)]
 		public Platform (string id);
 		public unowned Osinfo.DeviceLink add_device (Osinfo.Device dev);
+		[Version (since = "0.2.7")]
 		public Osinfo.DeviceList get_all_devices (Osinfo.Filter? filter);
 		public Osinfo.DeviceLinkList get_device_links (Osinfo.Filter? filter);
 		public Osinfo.DeviceList get_devices (Osinfo.Filter? filter);
@@ -547,14 +737,20 @@ namespace Osinfo {
 		protected Product ();
 		public void add_related (Osinfo.ProductRelationship relshp, Osinfo.Product otherproduct);
 		public unowned string get_codename ();
+		[Version (since = "0.2.8")]
 		public GLib.Date? get_eol_date ();
+		[Version (since = "0.2.8")]
 		public unowned string get_eol_date_string ();
 		public unowned string get_logo ();
 		public unowned string get_name ();
 		public Osinfo.ProductList get_related (Osinfo.ProductRelationship relshp);
+		[Version (since = "0.2.8")]
 		public GLib.Date? get_release_date ();
+		[Version (since = "0.2.8")]
 		public unowned string get_release_date_string ();
 		public unowned string get_short_id ();
+		[Version (since = "1.5.0")]
+		public GLib.List<weak string> get_short_id_list ();
 		public unowned string get_vendor ();
 		public unowned string get_version ();
 		public string codename { get; }
@@ -622,21 +818,37 @@ namespace Osinfo {
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_tree_get_type ()")]
 	public class Tree : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.0")]
 		public Tree (string id, string architecture);
+		[Version (since = "0.1.0")]
 		public static Osinfo.Tree create_from_location (string location, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public static async Osinfo.Tree create_from_location_async (string location, int priority, GLib.Cancellable? cancellable) throws GLib.Error;
-		public static GLib.Quark error_quark ();
+		[Version (since = "1.7.0")]
+		public static Osinfo.Tree create_from_treeinfo (string treeinfo, string location) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public unowned string get_architecture ();
+		[Version (since = "0.1.0")]
 		public unowned string get_boot_iso_path ();
+		[Version (since = "0.1.0")]
 		public unowned string get_initrd_path ();
+		[Version (since = "0.1.0")]
 		public unowned string get_kernel_path ();
+		[Version (since = "1.5.0")]
+		public Osinfo.Os get_os ();
+		[Version (since = "1.5.0")]
+		public Osinfo.OsVariantList get_os_variants ();
+		[Version (since = "0.1.0")]
 		public unowned string get_treeinfo_arch ();
+		[Version (since = "0.1.0")]
 		public unowned string get_treeinfo_family ();
+		[Version (since = "0.1.0")]
 		public unowned string get_treeinfo_variant ();
+		[Version (since = "0.1.0")]
 		public unowned string get_treeinfo_version ();
 		public unowned string get_url ();
-		[NoAccessorMethod]
-		public string application_id { owned get; set; }
+		[Version (since = "1.5.0")]
+		public void set_os (Osinfo.Os os);
 		[NoAccessorMethod]
 		public string architecture { owned get; set; }
 		[NoAccessorMethod]
@@ -647,35 +859,41 @@ namespace Osinfo {
 		public string initrd_path { owned get; set; }
 		[NoAccessorMethod]
 		public string kernel_path { owned get; set; }
+		public Osinfo.Os os { owned get; set; }
 		[NoAccessorMethod]
-		public string publisher_id { owned get; set; }
+		public string treeinfo_arch { owned get; set; }
 		[NoAccessorMethod]
-		public string system_id { owned get; set; }
+		public string treeinfo_family { owned get; set; }
+		[NoAccessorMethod]
+		public string treeinfo_variant { owned get; set; }
+		[NoAccessorMethod]
+		public string treeinfo_version { owned get; set; }
 		[NoAccessorMethod]
 		public string url { owned get; set; }
-		[NoAccessorMethod]
-		public string volume_id { owned get; set; }
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "treelist", type_id = "osinfo_treelist_get_type ()")]
 	public class TreeList : Osinfo.List {
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.1.0")]
 		public TreeList ();
-		[Version (deprecated = true, deprecated_since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2", since = "0.1.0")]
 		public Osinfo.TreeList new_copy ();
-		[Version (deprecated = true, deprecated_since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2", since = "0.1.0")]
 		public Osinfo.TreeList new_filtered (Osinfo.Filter filter);
-		[Version (deprecated = true, deprecated_since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2", since = "0.1.0")]
 		public Osinfo.TreeList new_intersection (Osinfo.TreeList sourceTwo);
-		[Version (deprecated = true, deprecated_since = "0.2.2")]
+		[Version (deprecated = true, deprecated_since = "0.2.2", since = "0.1.0")]
 		public Osinfo.TreeList new_union (Osinfo.TreeList sourceTwo);
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_DEVICE_DRIVER_SIGNING_REQ_", type_id = "osinfo_device_driver_signing_req_get_type ()")]
+	[Version (since = "0.2.6")]
 	public enum DeviceDriverSigningReq {
 		NONE,
 		STRICT,
 		WARN
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_CONFIG_PARAM_POLICY_", type_id = "osinfo_install_config_param_policy_get_type ()")]
+	[Version (since = "0.2.2")]
 	public enum InstallConfigParamPolicy {
 		NONE,
 		REQUIRED,
@@ -683,6 +901,7 @@ namespace Osinfo {
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_SCRIPT_INJECTION_METHOD_", type_id = "osinfo_install_script_injection_method_get_type ()")]
 	[Flags]
+	[Version (since = "0.2.10")]
 	public enum InstallScriptInjectionMethod {
 		CDROM,
 		DISK,
@@ -691,9 +910,16 @@ namespace Osinfo {
 		WEB
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_INSTALL_SCRIPT_INSTALLATION_SOURCE_", type_id = "osinfo_install_script_installation_source_get_type ()")]
+	[Version (since = "1.3.0")]
 	public enum InstallScriptInstallationSource {
 		MEDIA,
 		NETWORK
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_DETECT_REQUIRE_", type_id = "osinfo_media_detect_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.6.0")]
+	public enum MediaDetectFlags {
+		BOOTABLE
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_PATH_FORMAT_", type_id = "osinfo_path_format_get_type ()")]
 	public enum PathFormat {
@@ -707,6 +933,7 @@ namespace Osinfo {
 		CLONES
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_RELEASE_STATUS_", type_id = "osinfo_release_status_get_type ()")]
+	[Version (since = "1.4.0")]
 	public enum ReleaseStatus {
 		RELEASED,
 		SNAPSHOT,
@@ -721,6 +948,14 @@ namespace Osinfo {
 		INSUFFICIENT_METADATA,
 		NOT_BOOTABLE,
 		NO_DIRECTORY_RECORD_EXTENT;
+		public static GLib.Quark quark ();
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_TREE_ERROR_")]
+	[Version (since = "1.6.0")]
+	public errordomain TreeError {
+		NO_TREEINFO,
+		NOT_SUPPORTED_PROTOCOL;
+		[Version (since = "0.1.0")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_ARCHITECTURE_ALL")]
@@ -777,6 +1012,8 @@ namespace Osinfo {
 	public const string IMAGE_PROP_FORMAT;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_IMAGE_PROP_URL")]
 	public const string IMAGE_PROP_URL;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_IMAGE_PROP_VARIANT")]
+	public const string IMAGE_PROP_VARIANT;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PARAM_PROP_DATAMAP")]
 	public const string INSTALL_CONFIG_PARAM_PROP_DATAMAP;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_INSTALL_CONFIG_PARAM_PROP_NAME")]
@@ -873,6 +1110,8 @@ namespace Osinfo {
 	public const string MEDIA_PROP_APPLICATION_ID;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_ARCHITECTURE")]
 	public const string MEDIA_PROP_ARCHITECTURE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_BOOTABLE")]
+	public const string MEDIA_PROP_BOOTABLE;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_EJECT_AFTER_INSTALL")]
 	public const string MEDIA_PROP_EJECT_AFTER_INSTALL;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MEDIA_PROP_INITRD")]
@@ -915,6 +1154,8 @@ namespace Osinfo {
 	public const string OS_PROP_DISTRO;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_FAMILY")]
 	public const string OS_PROP_FAMILY;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_KERNEL_URL_ARGUMENT")]
+	public const string OS_PROP_KERNEL_URL_ARGUMENT;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_RELEASE_STATUS")]
 	public const string OS_PROP_RELEASE_STATUS;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_VARIANT_PROP_NAME")]
@@ -965,6 +1206,9 @@ namespace Osinfo {
 	public const string TREE_PROP_TREEINFO_VERSION;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_URL")]
 	public const string TREE_PROP_URL;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_VARIANT")]
+	public const string TREE_PROP_VARIANT;
 	[CCode (cheader_filename = "osinfo/osinfo.h")]
+	[Version (since = "1.3.0")]
 	public static GLib.Quark error_quark ();
 }
