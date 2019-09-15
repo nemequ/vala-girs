@@ -421,6 +421,8 @@ namespace E {
 		[Version (since = "3.16")]
 		public unowned string get_credential_name ();
 		public unowned string get_host ();
+		[Version (since = "3.36")]
+		public bool get_is_external ();
 		public unowned string get_method ();
 		public uint16 get_port ();
 		[Version (since = "3.12")]
@@ -434,6 +436,8 @@ namespace E {
 		[Version (since = "3.16")]
 		public void set_credential_name (string? credential_name);
 		public void set_host (string? host);
+		[Version (since = "3.36")]
+		public void set_is_external (bool is_external);
 		public void set_method (string? method);
 		public void set_port (uint16 port);
 		[Version (since = "3.12")]
@@ -445,6 +449,7 @@ namespace E {
 		public GLib.SocketConnectable connectable { owned get; }
 		public string credential_name { get; set construct; }
 		public string host { get; set construct; }
+		public bool is_external { get; set construct; }
 		public string method { get; set construct; }
 		public uint port { get; set construct; }
 		public string proxy_uid { get; set construct; }
@@ -1306,6 +1311,10 @@ namespace E {
 		public bool get_acl_sync (string? uri, out GLib.SList<E.WebDAVAccessControlEntry> out_entries, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_current_user_privilege_set_sync (string? uri, out GLib.SList<E.WebDAVPrivilege> out_privileges, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_data_sync (string uri, out string? out_href, out string? out_etag, out string out_bytes, out size_t out_length, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.36")]
+		public unowned string get_last_dav_error_code ();
+		[Version (since = "3.36")]
+		public bool get_last_dav_error_is_permission ();
 		public bool get_principal_collection_set_sync (string? uri, out GLib.SList<string> out_principal_hrefs, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_supported_privilege_set_sync (string? uri, out GLib.Node out_privileges, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_sync (string uri, out string? out_href, out string? out_etag, out unowned GLib.OutputStream out_stream, GLib.Cancellable? cancellable = null) throws GLib.Error;

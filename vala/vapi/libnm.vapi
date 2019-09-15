@@ -2878,6 +2878,8 @@ namespace NM {
 	public class SettingGsm : NM.Setting {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_APN")]
 		public const string APN;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_AUTO_CONFIG")]
+		public const string AUTO_CONFIG;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_DEVICE_ID")]
 		public const string DEVICE_ID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_HOME_ONLY")]
@@ -2907,6 +2909,8 @@ namespace NM {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingGsm ();
 		public unowned string get_apn ();
+		[Version (since = "1.22")]
+		public bool get_auto_config ();
 		[Version (since = "1.2")]
 		public unowned string get_device_id ();
 		public bool get_home_only ();
@@ -2926,6 +2930,9 @@ namespace NM {
 		public unowned string get_username ();
 		[NoAccessorMethod]
 		public string apn { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.22")]
+		public bool auto_config { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public string device_id { owned get; set; }
