@@ -40,8 +40,6 @@ namespace Dee {
 		public unowned Dee.ModelIter insert_iter_before (Dee.ModelIter iter, Dee.ModelIter pos);
 		public unowned Dee.ModelIter insert_iter_with_original_order (Dee.ModelIter iter);
 		public unowned Dee.ModelIter prepend_iter (Dee.ModelIter iter);
-		[NoAccessorMethod]
-		public Dee.Filter filter { get; construct; }
 	}
 	[CCode (cheader_filename = "dee.h", type_id = "dee_hash_index_get_type ()")]
 	public class HashIndex : Dee.Index {
@@ -72,8 +70,6 @@ namespace Dee {
 		public unowned Dee.ModelIter lookup_one (string term);
 		public Dee.Analyzer analyzer { get; construct; }
 		public Dee.Model model { get; construct; }
-		[NoAccessorMethod]
-		public Dee.ModelReader reader { construct; }
 	}
 	[CCode (cheader_filename = "dee.h", ref_function = "", type_id = "dee_model_iter_get_type ()", unref_function = "")]
 	[Compact]
