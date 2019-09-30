@@ -746,6 +746,7 @@ namespace Gda {
 		[Version (since = "5.0.2")]
 		public Numeric ();
 		public Gda.Numeric copy ();
+		[DestroysInstance]
 		public void free ();
 		[Version (since = "5.0.2")]
 		public double get_double ();

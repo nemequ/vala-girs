@@ -229,6 +229,23 @@ namespace Osinfo {
 		public GLib.List<weak string> get_constraint_values (string propName);
 		public virtual bool matches (Osinfo.Entity entity);
 	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_firmware_get_type ()")]
+	public class Firmware : Osinfo.Entity {
+		[CCode (has_construct_function = false)]
+		public Firmware (string id, string architecture, string type);
+		public unowned string get_architecture ();
+		public unowned string get_firmware_type ();
+		public bool is_supported ();
+		[NoAccessorMethod]
+		public string architecture { owned get; set; }
+		[NoAccessorMethod]
+		public string type { owned get; set; }
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "firmwarelist", type_id = "osinfo_firmwarelist_get_type ()")]
+	public class FirmwareList : Osinfo.List {
+		[CCode (has_construct_function = false)]
+		public FirmwareList ();
+	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_image_get_type ()")]
 	public class Image : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
@@ -630,6 +647,7 @@ namespace Osinfo {
 		public unowned Osinfo.DeviceLink add_device (Osinfo.Device dev);
 		[Version (since = "0.2.2")]
 		public void add_device_driver (Osinfo.DeviceDriver driver);
+		public void add_firmware (Osinfo.Firmware firmware);
 		[Version (since = "1.3.0")]
 		public void add_image (Osinfo.Image image);
 		[Version (since = "0.2.0")]
@@ -658,6 +676,7 @@ namespace Osinfo {
 		public Osinfo.DeviceList get_devices_by_property (string property, string value, bool inherited);
 		public unowned string get_distro ();
 		public unowned string get_family ();
+		public Osinfo.FirmwareList get_firmware_list (Osinfo.Filter? filter);
 		[Version (since = "1.3.0")]
 		public Osinfo.ImageList get_image_list ();
 		[Version (since = "0.2.0")]
@@ -1002,6 +1021,12 @@ namespace Osinfo {
 	public const string DEVICE_PROP_VENDOR_ID;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_ENTITY_PROP_ID")]
 	public const string ENTITY_PROP_ID;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_FIRMWARE_PROP_ARCHITECTURE")]
+	public const string FIRMWARE_PROP_ARCHITECTURE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_FIRMWARE_PROP_SUPPORTED")]
+	public const string FIRMWARE_PROP_SUPPORTED;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_FIRMWARE_PROP_TYPE")]
+	public const string FIRMWARE_PROP_TYPE;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_GIBIBYTES")]
 	public const int GIBIBYTES;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_IMAGE_PROP_ARCHITECTURE")]

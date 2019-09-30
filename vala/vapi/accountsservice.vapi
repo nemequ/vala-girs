@@ -21,7 +21,7 @@ namespace Act {
 		public uint get_num_sessions ();
 		public uint get_num_sessions_anywhere ();
 		public unowned string get_object_path ();
-		public void get_password_expiration_policy (int64 expiration_time, int64 last_change_time, int64 min_days_between_changes, int64 max_days_between_changes, int64 days_to_warn, int64 days_after_expiration_until_lock);
+		public void get_password_expiration_policy (out int64 expiration_time, out int64 last_change_time, out int64 min_days_between_changes, out int64 max_days_between_changes, out int64 days_to_warn, out int64 days_after_expiration_until_lock);
 		public unowned string get_password_hint ();
 		public Act.UserPasswordMode get_password_mode ();
 		public unowned string get_primary_session_id ();
