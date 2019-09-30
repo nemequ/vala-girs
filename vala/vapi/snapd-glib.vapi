@@ -229,9 +229,23 @@ namespace Snapd {
 		public async GLib.GenericArray<weak Snapd.Change> get_changes_async (Snapd.ChangeFilter filter, string? snap_name, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.29")]
 		public GLib.GenericArray<weak Snapd.Change> get_changes_sync (Snapd.ChangeFilter filter, string? snap_name, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.49")]
+		public async bool get_connections2_async (Snapd.GetConnectionsFlags flags, string? snap, string? @interface, GLib.Cancellable? cancellable, out GLib.GenericArray<weak Snapd.Connection> established, out GLib.GenericArray<weak Snapd.Connection> undesired, out GLib.GenericArray<weak Snapd.Plug> plugs, out GLib.GenericArray<weak Snapd.Slot> slots) throws GLib.Error;
+		[Version (since = "1.49")]
+		public bool get_connections2_sync (Snapd.GetConnectionsFlags flags, string? snap, string? @interface, out GLib.GenericArray<weak Snapd.Connection> established, out GLib.GenericArray<weak Snapd.Connection> undesired, out GLib.GenericArray<weak Snapd.Plug> plugs, out GLib.GenericArray<weak Snapd.Slot> slots, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.49", since = "1.48")]
+		public async bool get_connections_async (GLib.Cancellable? cancellable, out GLib.GenericArray<weak Snapd.Connection> established, out GLib.GenericArray<weak Snapd.Connection> undesired, out GLib.GenericArray<weak Snapd.Plug> plugs, out GLib.GenericArray<weak Snapd.Slot> slots) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.49", since = "1.48")]
+		public bool get_connections_sync (out GLib.GenericArray<weak Snapd.Connection> established, out GLib.GenericArray<weak Snapd.Connection> undesired, out GLib.GenericArray<weak Snapd.Plug> plugs, out GLib.GenericArray<weak Snapd.Slot> slots, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async Snapd.Icon get_icon_async (string name, GLib.Cancellable? cancellable) throws GLib.Error;
 		public Snapd.Icon get_icon_sync (string name, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.48")]
+		public async GLib.GenericArray<weak Snapd.Interface> get_interfaces2_async (Snapd.GetInterfacesFlags flags, [CCode (array_length = false, array_null_terminated = true)] string[]? names, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.48")]
+		public GLib.GenericArray<weak Snapd.Interface> get_interfaces2_sync (Snapd.GetInterfacesFlags flags, [CCode (array_length = false, array_null_terminated = true)] string[]? names, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.48", since = "1.0")]
 		public async bool get_interfaces_async (GLib.Cancellable? cancellable, out GLib.GenericArray<weak Snapd.Plug> plugs, out GLib.GenericArray<weak Snapd.Slot> slots) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.48", since = "1.0")]
 		public bool get_interfaces_sync (out GLib.GenericArray<weak Snapd.Plug> plugs, out GLib.GenericArray<weak Snapd.Slot> slots, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.45")]
 		public unowned Snapd.Maintenance? get_maintenance ();
@@ -243,6 +257,10 @@ namespace Snapd {
 		public string[] get_sections_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.42")]
 		public async Snapd.Snap get_snap_async (string name, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.48")]
+		public async GLib.HashTable<string,GLib.Variant> get_snap_conf_async (string name, [CCode (array_length = false, array_null_terminated = true)] string[]? keys, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.48")]
+		public GLib.HashTable<string,GLib.Variant> get_snap_conf_sync (string name, [CCode (array_length = false, array_null_terminated = true)] string[]? keys, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.42")]
 		public Snapd.Snap get_snap_sync (string name, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.42")]
@@ -312,6 +330,10 @@ namespace Snapd {
 		[Version (since = "1.19")]
 		public void set_allow_interaction (bool allow_interaction);
 		public void set_auth_data (Snapd.AuthData? auth_data);
+		[Version (since = "1.48")]
+		public async bool set_snap_conf_async (string name, GLib.HashTable<string,GLib.Variant> key_values, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.48")]
+		public bool set_snap_conf_sync (string name, GLib.HashTable<string,GLib.Variant> key_values, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.24")]
 		public void set_socket_path (string? socket_path);
 		[Version (since = "1.16")]
@@ -334,9 +356,44 @@ namespace Snapd {
 	public class Connection : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Connection ();
+		[Version (since = "1.48")]
+		public bool get_gadget ();
+		[Version (since = "1.48")]
+		public unowned string get_interface ();
+		[Version (since = "1.48")]
+		public bool get_manual ();
+		[Version (deprecated = true, deprecated_since = "1.48", since = "1.0")]
 		public unowned string get_name ();
+		[Version (since = "1.48")]
+		public unowned Snapd.PlugRef get_plug ();
+		[Version (since = "1.48")]
+		public unowned GLib.Variant? get_plug_attribute (string name);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.48")]
+		public string[] get_plug_attribute_names (out uint length);
+		[Version (since = "1.48")]
+		public unowned Snapd.SlotRef get_slot ();
+		[Version (since = "1.48")]
+		public unowned GLib.Variant? get_slot_attribute (string name);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.48")]
+		public string[] get_slot_attribute_names (out uint length);
+		[Version (deprecated = true, deprecated_since = "1.48", since = "1.0")]
 		public unowned string get_snap ();
+		[Version (since = "1.48")]
+		public bool has_plug_attribute (string name);
+		[Version (since = "1.48")]
+		public bool has_slot_attribute (string name);
+		public bool gadget { get; construct; }
+		public string @interface { get; construct; }
+		public bool manual { get; construct; }
 		public string name { get; construct; }
+		public Snapd.PlugRef plug { get; construct; }
+		[NoAccessorMethod]
+		public GLib.HashTable<void*,void*> plug_attrs { owned get; construct; }
+		public Snapd.SlotRef slot { get; construct; }
+		[NoAccessorMethod]
+		public GLib.HashTable<void*,void*> slot_attrs { owned get; construct; }
 		public string snap { get; construct; }
 	}
 	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", type_id = "snapd_icon_get_type ()")]
@@ -349,6 +406,22 @@ namespace Snapd {
 		public GLib.Bytes data { get; construct; }
 		public string mime_type { get; construct; }
 	}
+	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", type_id = "snapd_interface_get_type ()")]
+	[Version (since = "1.48")]
+	public class Interface : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected Interface ();
+		public unowned string get_doc_url ();
+		public unowned string get_name ();
+		public unowned GLib.GenericArray<Snapd.Plug> get_plugs ();
+		public unowned GLib.GenericArray<Snapd.Slot> get_slots ();
+		public unowned string get_summary ();
+		public string doc_url { get; construct; }
+		public string name { get; construct; }
+		public GLib.GenericArray<void*> plugs { get; construct; }
+		public GLib.GenericArray<void*> slots { get; construct; }
+		public string summary { get; construct; }
+	}
 	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", type_id = "snapd_maintenance_get_type ()")]
 	[Version (since = "1.45")]
 	public class Maintenance : GLib.Object {
@@ -358,6 +431,27 @@ namespace Snapd {
 		public unowned string get_message ();
 		public Snapd.MaintenanceKind kind { get; construct; }
 		public string message { get; construct; }
+	}
+	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", type_id = "snapd_markdown_node_get_type ()")]
+	[Version (since = "1.48")]
+	public class MarkdownNode : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected MarkdownNode ();
+		public unowned GLib.GenericArray<Snapd.MarkdownNode> get_children ();
+		public Snapd.MarkdownNodeType get_node_type ();
+		public unowned string get_text ();
+		public GLib.GenericArray<void*> children { get; construct; }
+		public Snapd.MarkdownNodeType node_type { get; construct; }
+		public string text { get; construct; }
+	}
+	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", type_id = "snapd_markdown_parser_get_type ()")]
+	[Version (since = "1.48")]
+	public class MarkdownParser : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public MarkdownParser (Snapd.MarkdownVersion version);
+		public bool get_preserve_whitespace ();
+		public GLib.GenericArray<weak Snapd.MarkdownNode> parse (string text);
+		public void set_preserve_whitespace (bool preserve_whitespace);
 	}
 	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", type_id = "snapd_media_get_type ()")]
 	[Version (since = "1.45")]
@@ -384,6 +478,9 @@ namespace Snapd {
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "1.3")]
 		public string[] get_attribute_names (out uint length);
+		[Version (since = "1.48")]
+		public unowned GLib.GenericArray<Snapd.SlotRef> get_connected_slots ();
+		[Version (deprecated = true, deprecated_since = "1.48", since = "1.0")]
 		public unowned GLib.GenericArray<Snapd.Connection> get_connections ();
 		public unowned string get_interface ();
 		public unowned string get_label ();
@@ -397,6 +494,18 @@ namespace Snapd {
 		public string @interface { get; construct; }
 		public string label { get; construct; }
 		public string name { get; construct; }
+		public string snap { get; construct; }
+	}
+	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", type_id = "snapd_plug_ref_get_type ()")]
+	[Version (since = "1.0")]
+	public class PlugRef : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected PlugRef ();
+		[Version (since = "1.48")]
+		public unowned string get_plug ();
+		[Version (since = "1.48")]
+		public unowned string get_snap ();
+		public string plug { get; construct; }
 		public string snap { get; construct; }
 	}
 	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", type_id = "snapd_price_get_type ()")]
@@ -431,6 +540,9 @@ namespace Snapd {
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "1.3")]
 		public string[] get_attribute_names (out uint length);
+		[Version (since = "1.48")]
+		public unowned GLib.GenericArray<Snapd.PlugRef> get_connected_plugs ();
+		[Version (deprecated = true, deprecated_since = "1.48", since = "1.0")]
 		public unowned GLib.GenericArray<Snapd.Connection> get_connections ();
 		public unowned string get_interface ();
 		public unowned string get_label ();
@@ -444,6 +556,18 @@ namespace Snapd {
 		public string @interface { get; construct; }
 		public string label { get; construct; }
 		public string name { get; construct; }
+		public string snap { get; construct; }
+	}
+	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", type_id = "snapd_slot_ref_get_type ()")]
+	[Version (since = "1.0")]
+	public class SlotRef : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected SlotRef ();
+		[Version (since = "1.48")]
+		public unowned string get_slot ();
+		[Version (since = "1.48")]
+		public unowned string get_snap ();
+		public string slot { get; construct; }
 		public string snap { get; construct; }
 	}
 	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", type_id = "snapd_snap_get_type ()")]
@@ -706,7 +830,8 @@ namespace Snapd {
 		MATCH_NAME,
 		SELECT_PRIVATE,
 		SELECT_REFRESH,
-		SCOPE_WIDE
+		SCOPE_WIDE,
+		MATCH_COMMON_ID
 	}
 	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", cprefix = "SNAPD_GET_APPS_FLAGS_", type_id = "snapd_get_apps_flags_get_type ()")]
 	[Flags]
@@ -714,6 +839,23 @@ namespace Snapd {
 	public enum GetAppsFlags {
 		NONE,
 		SELECT_SERVICES
+	}
+	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", cprefix = "SNAPD_GET_CONNECTIONS_FLAGS_", type_id = "snapd_get_connections_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.49")]
+	public enum GetConnectionsFlags {
+		NONE,
+		SELECT_ALL
+	}
+	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", cprefix = "SNAPD_GET_INTERFACES_FLAGS_", type_id = "snapd_get_interfaces_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.48")]
+	public enum GetInterfacesFlags {
+		NONE,
+		INCLUDE_DOCS,
+		INCLUDE_PLUGS,
+		INCLUDE_SLOTS,
+		ONLY_CONNECTED
 	}
 	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", cprefix = "SNAPD_GET_SNAPS_FLAGS_", type_id = "snapd_get_snaps_flags_get_type ()")]
 	[Flags]
@@ -738,6 +880,25 @@ namespace Snapd {
 		UNKNOWN,
 		DAEMON_RESTART,
 		SYSTEM_RESTART
+	}
+	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", cprefix = "SNAPD_MARKDOWN_NODE_TYPE_", type_id = "snapd_markdown_node_type_get_type ()")]
+	[Version (since = "1.48")]
+	public enum MarkdownNodeType {
+		TEXT,
+		PARAGRAPH,
+		UNORDERED_LIST,
+		LIST_ITEM,
+		CODE_BLOCK,
+		CODE_SPAN,
+		EMPHASIS,
+		STRONG_EMPHASIS,
+		URL
+	}
+	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", cprefix = "SNAPD_MARKDOWN_", type_id = "snapd_markdown_version_get_type ()")]
+	[Version (since = "1.48")]
+	public enum MarkdownVersion {
+		[CCode (cname = "SNAPD_MARKDOWN_VERSION_0")]
+		@0
 	}
 	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", cprefix = "SNAPD_PUBLISHER_VALIDATION_", type_id = "snapd_publisher_validation_get_type ()")]
 	[Version (since = "1.42")]
@@ -804,7 +965,8 @@ namespace Snapd {
 		REVISION_NOT_AVAILABLE,
 		CHANNEL_NOT_AVAILABLE,
 		NOT_A_SNAP,
-		DNS_FAILURE;
+		DNS_FAILURE,
+		OPTION_NOT_FOUND;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", instance_pos = 3.9)]
