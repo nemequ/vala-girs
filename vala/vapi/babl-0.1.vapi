@@ -2,36 +2,146 @@
 
 [CCode (cprefix = "Babl", gir_namespace = "Babl", gir_version = "0.1", lower_case_cprefix = "babl_")]
 namespace Babl {
-	[CCode (cheader_filename = "Babl-0.1.h")]
-	[Compact]
-	public class  {
-		[CCode (cname = "babl_get_name")]
-		public unowned string et_name ();
-		[CCode (cname = "babl_format_get_bytes_per_pixel")]
-		public int ormat_get_bytes_per_pixel ();
-		[CCode (cname = "babl_format_get_n_components")]
-		public int ormat_get_n_components ();
-		[CCode (cname = "babl_format_has_alpha")]
-		public int ormat_has_alpha ();
-		[CCode (cname = "babl_format_is_format_n")]
-		public int ormat_is_format_n ();
-		[CCode (cname = "babl_process")]
-		public long rocess (void* source, void* destination, long n);
+	[CCode (cheader_filename = "babl.h", cname = "Babl")]
+	public struct Object {
 	}
-	[CCode (cheader_filename = "Babl-0.1.h", has_target = false)]
-	public delegate long FuncLinear (string src, string dst, long n);
-	[CCode (cheader_filename = "Babl-0.1.h", has_target = false)]
-	public delegate long FuncPlanar (int src_bands, string src, int src_pitch, int dst_bands, string dst, int dst_pitch, long n);
-	[CCode (cheader_filename = "Babl-0.1.h", cname = "BABL_MAJOR_VERSION")]
+	[CCode (cheader_filename = "babl.h", cprefix = "BABL_ICC_INTENT_", has_type_id = false)]
+	public enum IccIntent {
+		PERCEPTUAL,
+		RELATIVE_COLORIMETRIC,
+		SATURATION,
+		ABSOLUTE_COLORIMETRIC,
+		PERFORMANCE
+	}
+	[CCode (cheader_filename = "babl.h", cprefix = "BABL_MODEL_FLAG_", has_type_id = false)]
+	[Flags]
+	public enum ModelFlag {
+		ALPHA,
+		ASSOCIATED,
+		INVERTED,
+		LINEAR,
+		NONLINEAR,
+		PERCEPTUAL,
+		GRAY,
+		RGB,
+		CIE,
+		CMYK
+	}
+	[CCode (cheader_filename = "babl.h", cprefix = "BABL_SPACE_FLAG_", has_type_id = false)]
+	public enum SpaceFlags {
+		NONE,
+		EQUALIZE
+	}
+	[CCode (cheader_filename = "babl.h", instance_pos = 4.9)]
+	public delegate void FuncLinear (Babl.Object conversion, string src, string dst, long n);
+	[CCode (cheader_filename = "babl.h", instance_pos = 8.9)]
+	public delegate void FuncPlanar (Babl.Object conversion, int src_bands, string src, int src_pitch, int dst_bands, string dst, int dst_pitch, long n);
+	[CCode (cheader_filename = "babl.h", cname = "BABL_ALPHA_FLOOR")]
+	public const int ALPHA_FLOOR;
+	[CCode (cheader_filename = "babl.h", cname = "BABL_ALPHA_FLOOR_F")]
+	public const int ALPHA_FLOOR_F;
+	[CCode (cheader_filename = "babl.h", cname = "BABL_MAJOR_VERSION")]
 	public const int MAJOR_VERSION;
-	[CCode (cheader_filename = "Babl-0.1.h", cname = "BABL_MICRO_VERSION")]
+	[CCode (cheader_filename = "babl.h", cname = "BABL_MICRO_VERSION")]
 	public const int MICRO_VERSION;
-	[CCode (cheader_filename = "Babl-0.1.h", cname = "BABL_MINOR_VERSION")]
+	[CCode (cheader_filename = "babl.h", cname = "BABL_MINOR_VERSION")]
 	public const int MINOR_VERSION;
-	[CCode (cheader_filename = "Babl-0.1.h")]
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? component (string name);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? conversion_get_destination_space (Babl.Object conversion);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? conversion_get_source_space (Babl.Object conversion);
+	[CCode (cheader_filename = "babl.h")]
 	public static void exit ();
-	[CCode (cheader_filename = "Babl-0.1.h")]
-	public static void get_version (int major, int minor, int micro);
-	[CCode (cheader_filename = "Babl-0.1.h")]
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? fast_fish (void* source_format, void* destination_format, string performance);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? fish (void* source_format, void* destination_format);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? format (string encoding);
+	[CCode (cheader_filename = "babl.h")]
+	public static int format_exists (string name);
+	[CCode (cheader_filename = "babl.h")]
+	public static int format_get_bytes_per_pixel (Babl.Object format);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned string format_get_encoding (Babl.Object babl);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? format_get_model (Babl.Object format);
+	[CCode (cheader_filename = "babl.h")]
+	public static int format_get_n_components (Babl.Object format);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? format_get_space (Babl.Object format);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? format_get_type (Babl.Object format, int component_index);
+	[CCode (cheader_filename = "babl.h")]
+	public static int format_has_alpha (Babl.Object format);
+	[CCode (cheader_filename = "babl.h")]
+	public static int format_is_format_n (Babl.Object format);
+	[CCode (cheader_filename = "babl.h")]
+	public static int format_is_palette (Babl.Object format);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? format_n (Babl.Object type, int components);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? format_with_space (string encoding, Babl.Object space);
+	[CCode (cheader_filename = "babl.h")]
+	public static Babl.ModelFlag get_model_flags (Babl.Object model);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned string get_name (Babl.Object babl);
+	[CCode (cheader_filename = "babl.h")]
+	public static void get_version (out int major, out int minor, out int micro);
+	[CCode (cheader_filename = "babl.h")]
+	public static string icc_get_key (string icc_data, int icc_length, string key, string language, string country);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? icc_make_space (string icc_data, int icc_length, Babl.IccIntent intent, string error);
+	[CCode (cheader_filename = "babl.h")]
 	public static void init ();
+	[CCode (cheader_filename = "babl.h")]
+	public static void introspect (Babl.Object babl);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? model (string name);
+	[CCode (cheader_filename = "babl.h")]
+	public static int model_is (Babl.Object babl, string model_name);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? model_with_space (string name, Babl.Object space);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? new_palette (string name, Babl.Object format_u8, Babl.Object format_u8_with_alpha);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? new_palette_with_space (string name, Babl.Object space, Babl.Object format_u8, Babl.Object format_u8_with_alpha);
+	[CCode (cheader_filename = "babl.h")]
+	public static void palette_reset (Babl.Object babl);
+	[CCode (cheader_filename = "babl.h")]
+	public static void palette_set_palette (Babl.Object babl, Babl.Object format, [CCode (array_length = false)] uint8[] data, int count);
+	[CCode (cheader_filename = "babl.h")]
+	public static long process (Babl.Object babl_fish, void* source, void* destination, long n);
+	[CCode (cheader_filename = "babl.h")]
+	public static long process_rows (Babl.Object babl_fish, void* source, int source_stride, void* dest, int dest_stride, long n, int rows);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? sampling (int horizontal, int vertical);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? space (string name);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? space_from_chromaticities (string? name, double wx, double wy, double rx, double ry, double gx, double gy, double bx, double by, Babl.Object trc_red, Babl.Object? trc_green, Babl.Object? trc_blue, Babl.SpaceFlags flags);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? space_from_icc (string icc_data, int icc_length, Babl.IccIntent intent, out string error);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? space_from_rgbxyz_matrix (string? name, double wx, double wy, double wz, double rx, double gx, double bx, double ry, double gy, double by, double rz, double gz, double bz, Babl.Object trc_red, Babl.Object? trc_green, Babl.Object? trc_blue);
+	[CCode (cheader_filename = "babl.h")]
+	public static void space_get (Babl.Object space, out double xw, out double yw, out double xr, out double yr, out double xg, out double yg, out double xb, out double yb, out Babl.Object red_trc, out Babl.Object green_trc, out Babl.Object blue_trc);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned string space_get_icc (Babl.Object babl, out int length);
+	[CCode (cheader_filename = "babl.h")]
+	public static void space_get_rgb_luminance (Babl.Object space, out double red_luminance, out double green_luminance, out double blue_luminance);
+	[CCode (cheader_filename = "babl.h")]
+	public static int space_is_cmyk (Babl.Object space);
+	[CCode (cheader_filename = "babl.h")]
+	public static int space_is_gray (Babl.Object space);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? space_with_trc (Babl.Object space, Babl.Object trc);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? trc (string name);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? trc_gamma (double gamma);
+	[CCode (cheader_filename = "babl.h")]
+	public static unowned Babl.Object? type (string name);
 }
