@@ -7,16 +7,14 @@ namespace Vte {
 		[CCode (has_construct_function = false)]
 		protected Pty ();
 		public void child_setup ();
-		[Version (deprecated = true, deprecated_since = "0.42")]
 		public void close ();
 		[CCode (has_construct_function = false)]
 		public Pty.foreign_sync (int fd, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int get_fd ();
-		public bool get_size (out int rows, out int columns) throws GLib.Error;
+		public bool get_size (int rows, int columns) throws GLib.Error;
 		public bool set_size (int rows, int columns) throws GLib.Error;
 		public bool set_utf8 (bool utf8) throws GLib.Error;
-		[Version (since = "0.48")]
-		public async bool spawn_async (string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable, out GLib.Pid child_pid) throws GLib.Error;
+		public async bool spawn_async (string working_directory, string argv, string envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 5.33333, destroy_notify_pos = 5.66667)] owned GLib.SpawnChildSetupFunc child_setup, int timeout, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Pty.sync (Vte.PtyFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int fd { get; construct; }
@@ -49,6 +47,7 @@ namespace Vte {
 		public void feed ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gssize")] uint8[]? data);
 		public void feed_child ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gssize")] char[]? text);
 		public void feed_child_binary ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gsize")] uint8[]? data);
+		[Version (deprecated = true, deprecated_since = "0.60")]
 		public bool get_allow_bold ();
 		[Version (since = "0.50")]
 		public bool get_allow_hyperlink ();
@@ -136,6 +135,7 @@ namespace Vte {
 		public void search_set_regex (Vte.Regex? regex, uint32 flags);
 		public void search_set_wrap_around (bool wrap_around);
 		public void select_all ();
+		[Version (deprecated = true, deprecated_since = "0.60")]
 		public void set_allow_bold (bool allow_bold);
 		[Version (since = "0.50")]
 		public void set_allow_hyperlink (bool allow_hyperlink);
@@ -193,6 +193,7 @@ namespace Vte {
 		public void unselect_all ();
 		public void watch_child (GLib.Pid child_pid);
 		public bool write_contents_sync (GLib.OutputStream stream, Vte.WriteFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "0.60")]
 		public bool allow_bold { get; set; }
 		[Version (since = "0.50")]
 		public bool allow_hyperlink { get; set; }

@@ -2793,7 +2793,7 @@ namespace GData {
 		[NoWrapper]
 		public abstract int compare_with (GData.Comparable other);
 	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_color_get_type ()")]
+	[CCode (cheader_filename = "gdata/gdata.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gdata_color_get_type ()")]
 	public struct Color {
 		public uint16 red;
 		public uint16 green;

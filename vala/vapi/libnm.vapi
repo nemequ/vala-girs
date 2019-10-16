@@ -14,7 +14,8 @@ namespace NM {
 			WPA_PSK,
 			WPA_ENTERPRISE,
 			WPA2_PSK,
-			WPA2_ENTERPRISE
+			WPA2_ENTERPRISE,
+			SAE
 		}
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_UTILS_HWADDR_LEN_MAX")]
 		public const int HWADDR_LEN_MAX;
@@ -540,6 +541,7 @@ namespace NM {
 		[Version (since = "1.20")]
 		public async NM.RemoteConnection add_connection2 (GLib.Variant settings, NM.SettingsAddConnection2Flags flags, GLib.Variant? args, bool ignore_out_result, GLib.Cancellable? cancellable, out GLib.Variant out_result) throws GLib.Error;
 		public async NM.RemoteConnection add_connection_async (NM.Connection connection, bool save_to_disk, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public NM.ConnectivityState check_connectivity (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async NM.ConnectivityState check_connectivity_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.12")]
@@ -558,6 +560,7 @@ namespace NM {
 		public unowned string connectivity_check_get_uri ();
 		[Version (since = "1.10")]
 		public void connectivity_check_set_enabled (bool enabled);
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool deactivate_connection (NM.ActiveConnection active, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool deactivate_connection_async (NM.ActiveConnection active, GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned NM.ActiveConnection get_activating_connection ();
@@ -587,16 +590,20 @@ namespace NM {
 		public bool get_startup ();
 		public NM.State get_state ();
 		public unowned string get_version ();
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool load_connections ([CCode (array_length = false, array_null_terminated = true)] string[] filenames, out string failures, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (async_result_pos = 2.1)]
 		public async bool load_connections_async ([CCode (array_length = false, array_null_terminated = true)] string[] filenames, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] failures) throws GLib.Error;
 		public bool networking_get_enabled ();
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool networking_set_enabled (bool enabled) throws GLib.Error;
 		public static async NM.Client new_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.22")]
 		public async bool reload (NM.ManagerReloadFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool reload_connections (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool reload_connections_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool save_hostname (string? hostname, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool save_hostname_async (string? hostname, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool set_logging (string? level, string? domains) throws GLib.Error;
@@ -605,6 +612,7 @@ namespace NM {
 		public void wimax_set_enabled (bool enabled);
 		public bool wireless_get_enabled ();
 		public bool wireless_hardware_get_enabled ();
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public void wireless_set_enabled (bool enabled);
 		public bool wwan_get_enabled ();
 		public bool wwan_hardware_get_enabled ();
@@ -858,15 +866,17 @@ namespace NM {
 		protected Device ();
 		public virtual bool connection_compatible (NM.Connection connection) throws GLib.Error;
 		public bool connection_valid (NM.Connection connection);
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool @delete (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool delete_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
 		public static string[] disambiguate_names ([CCode (array_length_cname = "num_devices", array_length_pos = 1.1)] NM.Device[] devices);
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool disconnect (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool disconnect_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.GenericArray<NM.Connection> filter_connections (GLib.GenericArray<NM.Connection> connections);
 		public unowned NM.ActiveConnection get_active_connection ();
-		[Version (since = "1.2")]
+		[Version (deprecated = true, deprecated_since = "1.22", since = "1.2")]
 		public NM.Connection get_applied_connection (uint32 flags, out uint64 version_id, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.2")]
 		public async NM.Connection get_applied_connection_async (uint32 flags, GLib.Cancellable? cancellable, out uint64 version_id) throws GLib.Error;
@@ -907,12 +917,13 @@ namespace NM {
 		[Version (since = "1.2")]
 		public bool is_real ();
 		public bool is_software ();
-		[Version (since = "1.2")]
+		[Version (deprecated = true, deprecated_since = "1.22", since = "1.2")]
 		public bool reapply (NM.Connection? connection, uint64 version_id, uint32 flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.2")]
 		public async bool reapply_async (NM.Connection? connection, uint64 version_id, uint32 flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public void set_autoconnect (bool autoconnect);
-		[Version (since = "1.2")]
+		[Version (deprecated = true, deprecated_since = "1.22", since = "1.2")]
 		public void set_managed (bool managed);
 		public NM.ActiveConnection active_connection { get; }
 		public bool autoconnect { get; set; }
@@ -1494,9 +1505,10 @@ namespace NM {
 		public int64 get_last_scan ();
 		public NM.80211Mode get_mode ();
 		public unowned string get_permanent_hw_address ();
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool request_scan (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool request_scan_async (GLib.Cancellable? cancellable) throws GLib.Error;
-		[Version (since = "1.2")]
+		[Version (deprecated = true, deprecated_since = "1.22", since = "1.2")]
 		public bool request_scan_options (GLib.Variant options, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.2")]
 		public async void request_scan_options_async (GLib.Variant options, GLib.Cancellable? cancellable);
@@ -1891,18 +1903,22 @@ namespace NM {
 		public const string VISIBLE;
 		[CCode (has_construct_function = false)]
 		protected RemoteConnection ();
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool commit_changes (bool save_to_disk, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool commit_changes_async (bool save_to_disk, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool @delete (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool delete_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.12")]
 		public unowned string get_filename ();
 		[Version (since = "1.12")]
 		public NM.SettingsConnectionFlags get_flags ();
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public GLib.Variant get_secrets (string setting_name, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async GLib.Variant get_secrets_async (string setting_name, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool get_unsaved ();
 		public bool get_visible ();
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool save (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool save_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.12")]
@@ -2010,6 +2026,8 @@ namespace NM {
 		public const string EAP;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_IDENTITY")]
 		public const string IDENTITY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_OPTIONAL")]
+		public const string OPTIONAL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PAC_FILE")]
 		public const string PAC_FILE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PASSWORD")]
@@ -2114,6 +2132,8 @@ namespace NM {
 		public uint32 get_num_altsubject_matches ();
 		public uint32 get_num_eap_methods ();
 		public uint32 get_num_phase2_altsubject_matches ();
+		[Version (since = "1.22")]
+		public bool get_optional ();
 		public unowned string get_pac_file ();
 		public unowned string get_password ();
 		public NM.SettingSecretFlags get_password_flags ();
@@ -2215,6 +2235,9 @@ namespace NM {
 		public string[] eap { owned get; set; }
 		[NoAccessorMethod]
 		public string identity { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.22")]
+		public bool optional { get; set; }
 		[NoAccessorMethod]
 		public string pac_file { owned get; set; }
 		[NoAccessorMethod]

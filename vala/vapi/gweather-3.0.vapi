@@ -82,6 +82,8 @@ namespace GWeather {
 		public unowned string? get_country ();
 		public string? get_country_name ();
 		public double get_distance (GWeather.Location loc2);
+		[Version (since = "3.36")]
+		public unowned string get_english_name ();
 		public GWeather.LocationLevel get_level ();
 		public unowned string get_name ();
 		public unowned GWeather.Location? get_parent ();

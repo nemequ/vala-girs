@@ -1186,7 +1186,8 @@ namespace GVirConfig {
 		XEN,
 		VBOX,
 		QXL,
-		VIRTIO
+		VIRTIO,
+		BOCHS
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_VIRT_", type_id = "gvir_config_domain_virt_type_get_type ()")]
 	public enum DomainVirtType {
