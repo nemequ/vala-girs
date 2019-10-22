@@ -490,6 +490,10 @@ namespace NM {
 		public const string CONNECTIVITY_CHECK_AVAILABLE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIVITY_CHECK_ENABLED")]
 		public const string CONNECTIVITY_CHECK_ENABLED;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DBUS_CONNECTION")]
+		public const string DBUS_CONNECTION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DBUS_NAME_OWNER")]
+		public const string DBUS_NAME_OWNER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DEVICES")]
 		public const string DEVICES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DEVICE_ADDED")]
@@ -574,6 +578,10 @@ namespace NM {
 		public unowned NM.RemoteConnection get_connection_by_uuid (string uuid);
 		public unowned GLib.GenericArray<NM.RemoteConnection> get_connections ();
 		public NM.ConnectivityState get_connectivity ();
+		[Version (since = "1.22")]
+		public unowned GLib.DBusConnection get_dbus_connection ();
+		[Version (since = "1.22")]
+		public unowned string get_dbus_name_owner ();
 		public unowned NM.Device get_device_by_iface (string iface);
 		public unowned NM.Device get_device_by_path (string object_path);
 		public unowned GLib.GenericArray<NM.Device> get_devices ();
@@ -583,6 +591,7 @@ namespace NM {
 		public unowned string get_dns_mode ();
 		[Version (since = "1.6")]
 		public unowned string get_dns_rc_manager ();
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool get_logging (string? level, string? domains) throws GLib.Error;
 		public bool get_nm_running ();
 		public NM.ClientPermissionResult get_permission_result (NM.ClientPermission permission);
@@ -606,6 +615,7 @@ namespace NM {
 		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool save_hostname (string? hostname, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool save_hostname_async (string? hostname, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool set_logging (string? level, string? domains) throws GLib.Error;
 		public bool wimax_get_enabled ();
 		public bool wimax_hardware_get_enabled ();
@@ -631,6 +641,10 @@ namespace NM {
 		public bool connectivity_check_available { get; }
 		[NoAccessorMethod]
 		public bool connectivity_check_enabled { get; set; }
+		[Version (since = "1.22")]
+		public GLib.DBusConnection dbus_connection { get; construct; }
+		[Version (since = "1.22")]
+		public string dbus_name_owner { get; }
 		public GLib.GenericArray<NM.Device> devices { get; }
 		[Version (since = "1.6")]
 		public GLib.GenericArray<NM.DnsEntry> dns_configuration { get; }
@@ -664,13 +678,13 @@ namespace NM {
 		public bool wwan_hardware_enabled { get; }
 		public signal void active_connection_added (NM.ActiveConnection active_connection);
 		public signal void active_connection_removed (NM.ActiveConnection active_connection);
-		public virtual signal void any_device_added (NM.Device device);
-		public virtual signal void any_device_removed (NM.Device device);
-		public virtual signal void connection_added (NM.RemoteConnection connection);
-		public virtual signal void connection_removed (NM.RemoteConnection connection);
-		public virtual signal void device_added (NM.Device device);
-		public virtual signal void device_removed (NM.Device device);
-		public virtual signal void permission_changed (uint permission, uint result);
+		public signal void any_device_added (NM.Device device);
+		public signal void any_device_removed (NM.Device device);
+		public signal void connection_added (NM.RemoteConnection connection);
+		public signal void connection_removed (NM.RemoteConnection connection);
+		public signal void device_added (NM.Device device);
+		public signal void device_removed (NM.Device device);
+		public signal void permission_changed (uint permission, uint result);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_get_type ()")]
 	public abstract class Device : NM.Object, GLib.AsyncInitable, GLib.Initable {
@@ -864,7 +878,7 @@ namespace NM {
 		public const string WPAN_HW_ADDRESS;
 		[CCode (has_construct_function = false)]
 		protected Device ();
-		public virtual bool connection_compatible (NM.Connection connection) throws GLib.Error;
+		public bool connection_compatible (NM.Connection connection) throws GLib.Error;
 		public bool connection_valid (NM.Connection connection);
 		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool @delete (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -893,7 +907,7 @@ namespace NM {
 		public unowned string get_driver_version ();
 		public bool get_firmware_missing ();
 		public unowned string get_firmware_version ();
-		public virtual unowned string get_hw_address ();
+		public unowned string get_hw_address ();
 		public unowned string get_iface ();
 		public unowned NM.IPConfig get_ip4_config ();
 		public unowned NM.IPConfig get_ip6_config ();
@@ -908,10 +922,10 @@ namespace NM {
 		public bool get_nm_plugin_missing ();
 		public unowned string get_physical_port_id ();
 		public unowned string get_product ();
-		public virtual GLib.Type get_setting_type ();
+		public GLib.Type get_setting_type ();
 		public NM.DeviceState get_state ();
 		public NM.DeviceStateReason get_state_reason ();
-		public virtual unowned string get_type_description ();
+		public unowned string get_type_description ();
 		public unowned string get_udi ();
 		public unowned string get_vendor ();
 		[Version (since = "1.2")]
@@ -964,7 +978,7 @@ namespace NM {
 		public uint state_reason { get; }
 		public string udi { get; }
 		public string vendor { get; }
-		public virtual signal void state_changed (uint new_state, uint old_state, uint reason);
+		public signal void state_changed (uint new_state, uint old_state, uint reason);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_6lowpan", type_id = "nm_device_6lowpan_get_type ()")]
 	public class Device6Lowpan : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -1298,6 +1312,8 @@ namespace NM {
 		protected DeviceOvsBridge ();
 		[Version (since = "1.14")]
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
+		[Version (since = "1.22")]
+		public GLib.GenericArray<NM.Device> slaves { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ovs_interface_get_type ()")]
 	public class DeviceOvsInterface : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -1310,6 +1326,8 @@ namespace NM {
 		protected DeviceOvsPort ();
 		[Version (since = "1.14")]
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
+		[Version (since = "1.22")]
+		public GLib.GenericArray<NM.Device> slaves { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ppp_get_type ()")]
 	public class DevicePpp : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -1523,8 +1541,8 @@ namespace NM {
 		public string perm_hw_address { owned get; }
 		[NoAccessorMethod]
 		public NM.DeviceWifiCapabilities wireless_capabilities { get; }
-		public virtual signal void access_point_added (GLib.Object ap);
-		public virtual signal void access_point_removed (GLib.Object ap);
+		public signal void access_point_added (GLib.Object ap);
+		public signal void access_point_removed (GLib.Object ap);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_wifi_p2p", type_id = "nm_device_wifi_p2p_get_type ()")]
 	[Version (since = "1.16")]
@@ -1595,9 +1613,9 @@ namespace NM {
 		[Version (deprecated = true, deprecated_since = "1.2")]
 		public int tx_power { get; }
 		[Version (deprecated = true, deprecated_since = "1.2")]
-		public virtual signal void nsp_added (GLib.Object nsp);
+		public signal void nsp_added (GLib.Object nsp);
 		[Version (deprecated = true, deprecated_since = "1.2")]
-		public virtual signal void nsp_removed (GLib.Object nsp);
+		public signal void nsp_removed (GLib.Object nsp);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_wireguard", type_id = "nm_device_wireguard_get_type ()")]
 	public class DeviceWireGuard : NM.Device, GLib.AsyncInitable, GLib.Initable {
@@ -1881,10 +1899,6 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected Object ();
 		public unowned string get_path ();
-		[NoWrapper]
-		public virtual void init_dbus ();
-		[NoWrapper]
-		public virtual void object_creation_failed (string failed_path);
 		public string path { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_remote_connection_get_type ()")]
@@ -4983,7 +4997,7 @@ namespace NM {
 		public NM.VpnConnectionState get_vpn_state ();
 		public string banner { get; }
 		public NM.VpnConnectionState vpn_state { get; }
-		public virtual signal void vpn_state_changed (uint state, uint reason);
+		public signal void vpn_state_changed (uint object, uint p0);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", has_type_id = false)]
 	[Compact]

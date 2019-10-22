@@ -122,8 +122,11 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_dialer_button_get_type ()")]
 	public class DialerButton : Gtk.Button, Atk.Implementor, Gtk.Actionable, Gtk.Activatable, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public DialerButton (string? symbols);
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public int get_digit ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public unowned string get_symbols ();
 		public int digit { get; }
 		[NoAccessorMethod]
@@ -132,14 +135,22 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_dialer_cycle_button_get_type ()")]
 	public class DialerCycleButton : Hdy.DialerButton, Atk.Implementor, Gtk.Actionable, Gtk.Activatable, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public DialerCycleButton (string symbols);
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public unichar get_current_symbol ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public int get_cycle_timeout ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public bool is_cycling ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void set_cycle_timeout (int timeout);
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void stop_cycle ();
 		public int cycle_timeout { get; set construct; }
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public virtual signal void cycle_end ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public virtual signal void cycle_start ();
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_dialog_get_type ()")]

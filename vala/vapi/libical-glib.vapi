@@ -1433,7 +1433,7 @@ namespace ICal {
 		[Version (since = "1.0")]
 		public void set_owner (string v);
 		[Version (since = "1.0")]
-		public void set_parameter (owned ICal.Parameter parameter);
+		public void set_parameter (ICal.Parameter parameter);
 		[Version (since = "1.0")]
 		public void set_parameter_from_string (string name, string value);
 		[Version (since = "3.0")]

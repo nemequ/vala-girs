@@ -926,6 +926,7 @@ namespace MM {
 		public async bool delete_call (string call, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool delete_call_sync (string call, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public string dup_path ();
+		public bool get_emergency_only ();
 		public unowned string get_path ();
 		[Version (since = "1.12")]
 		public async bool hangup_all (GLib.Cancellable? cancellable) throws GLib.Error;
@@ -1025,6 +1026,8 @@ namespace MM {
 		public bool change_pin_sync (string old_pin, string new_pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool disable_pin (string pin, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool disable_pin_sync (string pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] dup_emergency_numbers ();
 		public string dup_identifier ();
 		public string dup_imsi ();
 		public string dup_operator_identifier ();
@@ -1032,6 +1035,8 @@ namespace MM {
 		public string dup_path ();
 		public async bool enable_pin (string pin, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool enable_pin_sync (string pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_emergency_numbers ();
 		public unowned string get_identifier ();
 		public unowned string get_imsi ();
 		public unowned string get_operator_identifier ();
@@ -1661,6 +1666,8 @@ namespace MM {
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public abstract string[] calls { owned get; set; }
+		[NoAccessorMethod]
+		public abstract bool emergency_only { get; set; }
 		public virtual signal void call_added (string arg_path);
 		public virtual signal void call_deleted (string arg_path);
 		public virtual signal bool handle_call_waiting_query (GLib.DBusMethodInvocation invocation);
@@ -1751,6 +1758,9 @@ namespace MM {
 		public void complete_send_puk (owned GLib.DBusMethodInvocation invocation);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		public abstract string[] emergency_numbers { owned get; set; }
 		[NoAccessorMethod]
 		public abstract string imsi { owned get; set; }
 		[NoAccessorMethod]
@@ -2224,7 +2234,8 @@ namespace MM {
 		QCDM,
 		GPS,
 		QMI,
-		MBIM;
+		MBIM,
+		AUDIO;
 		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_POWER_STATE_", type_id = "mm_modem_power_state_get_type ()")]
@@ -3160,6 +3171,8 @@ namespace MM {
 	public const string MODEM_VOICE_METHOD_TRANSFER;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_PROPERTY_CALLS")]
 	public const string MODEM_VOICE_PROPERTY_CALLS;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_PROPERTY_EMERGENCYONLY")]
+	public const string MODEM_VOICE_PROPERTY_EMERGENCYONLY;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_SIGNAL_CALLADDED")]
 	public const string MODEM_VOICE_SIGNAL_CALLADDED;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_VOICE_SIGNAL_CALLDELETED")]
@@ -3196,6 +3209,8 @@ namespace MM {
 	public const string SIM_METHOD_SENDPIN;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_METHOD_SENDPUK")]
 	public const string SIM_METHOD_SENDPUK;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_EMERGENCYNUMBERS")]
+	public const string SIM_PROPERTY_EMERGENCYNUMBERS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_IMSI")]
 	public const string SIM_PROPERTY_IMSI;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_OPERATORIDENTIFIER")]
