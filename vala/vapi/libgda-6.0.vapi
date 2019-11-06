@@ -686,6 +686,8 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public void append_column (Gda.DbColumn column);
 		[Version (since = "6.0")]
+		public void append_constraint (string constraint);
+		[Version (since = "6.0")]
 		public void append_fkey (Gda.DbFkey fkey);
 		[Version (since = "6.0")]
 		public bool create (Gda.Connection cnc, bool ifnotexists) throws GLib.Error;

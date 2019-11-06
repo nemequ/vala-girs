@@ -341,6 +341,7 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_location_get_dirname_for_display (GLib.File location);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	[Version (deprecated = true, deprecated_since = "3.36")]
 	public static string utils_make_valid_utf8 (string name);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static bool utils_menu_position_under_tree_view (Gtk.TreeView tree_view, Gdk.Rectangle rect);
@@ -357,7 +358,9 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_set_direct_save_filename (Gdk.DragContext context);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	[Version (deprecated = true, deprecated_since = "3.36")]
 	public static string utils_str_end_truncate (string string, uint truncate_length);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	[Version (deprecated = true, deprecated_since = "3.36")]
 	public static string utils_str_middle_truncate (string string, uint truncate_length);
 }

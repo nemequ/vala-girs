@@ -241,6 +241,8 @@ namespace GUPnP {
 		public unowned string get_service_type ();
 		public unowned string get_udn ();
 		public unowned Soup.URI get_url_base ();
+		[Version (since = "1.2.2")]
+		public async GUPnP.ServiceIntrospection introspect_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public GUPnP.Context context { get; construct; }
 		public string location { get; construct; }
 		public string service_type { get; construct; }

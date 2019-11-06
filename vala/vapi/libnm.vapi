@@ -478,6 +478,8 @@ namespace NM {
 		public const string ANY_DEVICE_REMOVED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CAN_MODIFY")]
 		public const string CAN_MODIFY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CHECKPOINTS")]
+		public const string CHECKPOINTS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIONS")]
 		public const string CONNECTIONS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTION_ADDED")]
@@ -1560,6 +1562,7 @@ namespace NM {
 		public signal void peer_removed (GLib.Object peer);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_wimax_get_type ()")]
+	[Version (deprecated = true, deprecated_since = "1.22.")]
 	public class DeviceWimax : NM.Device, GLib.AsyncInitable, GLib.Initable {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIMAX_ACTIVE_NSP")]
 		public const string ACTIVE_NSP;
@@ -5213,6 +5216,7 @@ namespace NM {
 		public GLib.Bytes wfd_ies { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_wimax_nsp_get_type ()")]
+	[Version (deprecated = true, deprecated_since = "1.22.")]
 	public class WimaxNsp : NM.Object, GLib.AsyncInitable, GLib.Initable {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIMAX_NSP_NAME")]
 		public const string NAME;

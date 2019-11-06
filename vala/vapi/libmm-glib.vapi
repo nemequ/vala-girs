@@ -6,185 +6,247 @@ namespace MM {
 	public class Bearer : MM.GdbusBearerProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusBearer {
 		[CCode (has_construct_function = false)]
 		protected Bearer ();
+		[Version (since = "1.0")]
 		public async bool connect (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool connect_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool disconnect (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool disconnect_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public string dup_interface ();
+		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (since = "1.0")]
 		public MM.BearerType get_bearer_type ();
+		[Version (since = "1.0")]
 		public bool get_connected ();
+		[Version (since = "1.0")]
 		public unowned string get_interface ();
+		[Version (since = "1.0")]
 		public uint get_ip_timeout ();
+		[Version (since = "1.0")]
 		public MM.BearerIpConfig get_ipv4_config ();
+		[Version (since = "1.0")]
 		public MM.BearerIpConfig get_ipv6_config ();
+		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.0")]
 		public MM.BearerProperties get_properties ();
+		[Version (since = "1.6")]
 		public MM.BearerStats get_stats ();
+		[Version (since = "1.0")]
 		public bool get_suspended ();
+		[Version (since = "1.0")]
 		public unowned MM.BearerIpConfig peek_ipv4_config ();
+		[Version (since = "1.0")]
 		public unowned MM.BearerIpConfig peek_ipv6_config ();
+		[Version (since = "1.0")]
 		public unowned MM.BearerProperties peek_properties ();
+		[Version (since = "1.6")]
 		public unowned MM.BearerStats peek_stats ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_bearer_ip_config_get_type ()")]
 	public class BearerIpConfig : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public BearerIpConfig ();
-		public MM.BearerIpConfig dup ();
-		[CCode (has_construct_function = false)]
-		public BearerIpConfig.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
+		protected BearerIpConfig ();
+		[Version (since = "1.0")]
 		public unowned string get_address ();
-		public GLib.Variant get_dictionary ();
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.0")]
 		public unowned string[] get_dns ();
+		[Version (since = "1.0")]
 		public unowned string get_gateway ();
+		[Version (since = "1.0")]
 		public MM.BearerIpMethod get_method ();
+		[Version (since = "1.4")]
 		public uint get_mtu ();
+		[Version (since = "1.0")]
 		public uint get_prefix ();
-		public void set_address (string address);
-		public void set_dns (string dns);
-		public void set_gateway (string gateway);
-		public void set_method (MM.BearerIpMethod ip_method);
-		public void set_mtu (uint mtu);
-		public void set_prefix (uint prefix);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_bearer_properties_get_type ()")]
 	public class BearerProperties : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.0")]
 		public BearerProperties ();
-		public bool cmp (MM.BearerProperties b);
-		public bool consume_string (string key, string value) throws GLib.Error;
-		public bool consume_variant (string key, GLib.Variant value) throws GLib.Error;
-		public MM.BearerProperties dup ();
-		[CCode (has_construct_function = false)]
-		public BearerProperties.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		public BearerProperties.from_string (string str) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool get_allow_roaming ();
+		[Version (since = "1.0")]
 		public MM.BearerAllowedAuth get_allowed_auth ();
+		[Version (since = "1.0")]
 		public unowned string get_apn ();
-		public GLib.Variant get_dictionary ();
+		[Version (since = "1.0")]
 		public MM.BearerIpFamily get_ip_type ();
-		[Version (deprecated = true, deprecated_since = "1.10.0.")]
+		[Version (deprecated = true, deprecated_since = "1.10.0.", since = "1.0")]
 		public unowned string get_number ();
+		[Version (since = "1.0")]
 		public unowned string get_password ();
+		[Version (since = "1.0")]
 		public MM.ModemCdmaRmProtocol get_rm_protocol ();
+		[Version (since = "1.0")]
 		public unowned string get_user ();
+		[Version (since = "1.0")]
 		public void set_allow_roaming (bool allow_roaming);
+		[Version (since = "1.0")]
 		public void set_allowed_auth (MM.BearerAllowedAuth allowed_auth);
+		[Version (since = "1.0")]
 		public void set_apn (string apn);
+		[Version (since = "1.0")]
 		public void set_ip_type (MM.BearerIpFamily ip_type);
-		[Version (deprecated = true, deprecated_since = "1.10.0.")]
+		[Version (deprecated = true, deprecated_since = "1.10.0.", since = "1.0")]
 		public void set_number (string number);
+		[Version (since = "1.0")]
 		public void set_password (string password);
+		[Version (since = "1.0")]
 		public void set_rm_protocol (MM.ModemCdmaRmProtocol protocol);
+		[Version (since = "1.0")]
 		public void set_user (string user);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_bearer_stats_get_type ()")]
 	public class BearerStats : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public BearerStats ();
-		[CCode (has_construct_function = false)]
-		public BearerStats.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
-		public GLib.Variant get_dictionary ();
+		protected BearerStats ();
+		[Version (since = "1.6")]
 		public uint get_duration ();
+		[Version (since = "1.6")]
 		public uint64 get_rx_bytes ();
+		[Version (since = "1.6")]
 		public uint64 get_tx_bytes ();
-		public void set_duration (uint duration);
-		public void set_rx_bytes (uint64 rx_bytes);
-		public void set_tx_bytes (uint64 tx_bytes);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_call_get_type ()")]
 	public class Call : GLib.DBusProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected Call ();
+		[Version (since = "1.6")]
 		public async bool accept (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.6")]
 		public bool accept_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.12")]
 		public async bool deflect (string number, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
 		public bool deflect_sync (string number, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.10")]
 		public string dup_audio_port ();
+		[Version (since = "1.6")]
 		public string dup_number ();
+		[Version (since = "1.6")]
 		public string dup_path ();
+		[Version (since = "1.10")]
 		public MM.CallAudioFormat get_audio_format ();
+		[Version (since = "1.10")]
 		public unowned string get_audio_port ();
+		[Version (since = "1.6")]
 		public MM.CallDirection get_direction ();
+		[Version (since = "1.12")]
 		public bool get_multiparty ();
+		[Version (since = "1.6")]
 		public unowned string get_number ();
+		[Version (since = "1.6")]
 		public unowned string get_path ();
+		[Version (since = "1.6")]
 		public MM.CallState get_state ();
+		[Version (since = "1.6")]
 		public MM.CallStateReason get_state_reason ();
+		[Version (since = "1.6")]
 		public async bool hangup (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.6")]
 		public bool hangup_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.12")]
 		public async bool join_multiparty (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
 		public bool join_multiparty_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.12")]
 		public async bool leave_multiparty (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.12")]
 		public bool leave_multiparty_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.10")]
 		public unowned MM.CallAudioFormat peek_audio_format ();
+		[Version (since = "1.6")]
 		public async bool send_dtmf (string dtmf, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.6")]
 		public bool send_dtmf_sync (string dtmf, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.6")]
 		public async bool start (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.6")]
 		public bool start_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_call_audio_format_get_type ()")]
 	public class CallAudioFormat : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public CallAudioFormat ();
-		public MM.CallAudioFormat dup ();
-		[CCode (has_construct_function = false)]
-		public CallAudioFormat.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
-		public GLib.Variant get_dictionary ();
+		protected CallAudioFormat ();
+		[Version (since = "1.10")]
 		public unowned string get_encoding ();
+		[Version (since = "1.10")]
 		public uint get_rate ();
+		[Version (since = "1.10")]
 		public unowned string get_resolution ();
-		public void set_encoding (string encoding);
-		public void set_rate (uint rate);
-		public void set_resolution (string resolution);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_call_properties_get_type ()")]
 	public class CallProperties : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.6")]
 		public CallProperties ();
-		public MM.CallProperties dup ();
 		[CCode (has_construct_function = false)]
 		public CallProperties.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public CallProperties.from_string (string str) throws GLib.Error;
 		public GLib.Variant get_dictionary ();
+		[Version (deprecated = true, deprecated_since = "1.12", since = "1.6")]
 		public MM.CallDirection get_direction ();
+		[Version (since = "1.6")]
 		public unowned string get_number ();
+		[Version (deprecated = true, deprecated_since = "1.12", since = "1.6")]
 		public MM.CallState get_state ();
+		[Version (deprecated = true, deprecated_since = "1.12", since = "1.6")]
 		public MM.CallStateReason get_state_reason ();
+		[Version (deprecated = true, deprecated_since = "1.12", since = "1.6")]
 		public void set_direction (MM.CallDirection direction);
+		[Version (since = "1.6")]
 		public void set_number (string text);
+		[Version (deprecated = true, deprecated_since = "1.12", since = "1.6")]
 		public void set_state (MM.CallState state);
+		[Version (deprecated = true, deprecated_since = "1.12", since = "1.6")]
 		public void set_state_reason (MM.CallStateReason state_reason);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_cdma_manual_activation_properties_get_type ()")]
 	public class CdmaManualActivationProperties : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.2")]
 		public CdmaManualActivationProperties ();
-		[CCode (has_construct_function = false)]
-		public CdmaManualActivationProperties.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		public CdmaManualActivationProperties.from_string (string str) throws GLib.Error;
-		public GLib.Variant get_dictionary ();
+		[Version (since = "1.2")]
 		public unowned string get_mdn ();
+		[Version (since = "1.2")]
 		public unowned string get_min ();
+		[Version (since = "1.2")]
 		public unowned string get_mn_aaa_key ();
+		[Version (since = "1.2")]
 		public unowned string get_mn_ha_key ();
+		[Version (since = "1.2")]
 		public uint8 get_prl (out size_t prl_len);
+		[Version (since = "1.2")]
 		public GLib.ByteArray get_prl_bytearray ();
+		[Version (since = "1.2")]
 		public uint16 get_sid ();
+		[Version (since = "1.2")]
 		public unowned string get_spc ();
+		[Version (since = "1.2")]
 		public unowned GLib.ByteArray peek_prl_bytearray ();
+		[Version (since = "1.2")]
 		public bool set_mdn (string mdn) throws GLib.Error;
+		[Version (since = "1.2")]
 		public bool set_min (string min) throws GLib.Error;
+		[Version (since = "1.2")]
 		public bool set_mn_aaa_key (string mn_aaa_key) throws GLib.Error;
+		[Version (since = "1.2")]
 		public bool set_mn_ha_key (string mn_ha_key) throws GLib.Error;
+		[Version (since = "1.2")]
 		public bool set_prl (uint8 prl, size_t prl_length) throws GLib.Error;
+		[Version (since = "1.2")]
 		public bool set_prl_bytearray (GLib.ByteArray prl) throws GLib.Error;
+		[Version (since = "1.2")]
 		public void set_sid (uint16 sid);
+		[Version (since = "1.2")]
 		public bool set_spc (string spc) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_firmware_properties_get_type ()")]
@@ -194,12 +256,19 @@ namespace MM {
 		[CCode (has_construct_function = false)]
 		public FirmwareProperties.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
 		public GLib.Variant get_dictionary ();
+		[Version (since = "1.0")]
 		public unowned string get_gobi_boot_version ();
+		[Version (since = "1.0")]
 		public unowned string get_gobi_modem_unique_id ();
+		[Version (since = "1.0")]
 		public unowned string get_gobi_pri_info ();
+		[Version (since = "1.0")]
 		public unowned string get_gobi_pri_unique_id ();
+		[Version (since = "1.0")]
 		public unowned string get_gobi_pri_version ();
+		[Version (since = "1.0")]
 		public MM.FirmwareImageType get_image_type ();
+		[Version (since = "1.0")]
 		public unowned string get_unique_id ();
 		public void set_gobi_boot_version (string version);
 		public void set_gobi_modem_unique_id (string id);
@@ -210,18 +279,16 @@ namespace MM {
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_firmware_update_settings_get_type ()")]
 	public class FirmwareUpdateSettings : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public FirmwareUpdateSettings (MM.ModemFirmwareUpdateMethod method);
-		[CCode (has_construct_function = false)]
-		public FirmwareUpdateSettings.from_variant (GLib.Variant variant) throws GLib.Error;
+		protected FirmwareUpdateSettings ();
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.10")]
 		public unowned string[] get_device_ids ();
+		[Version (since = "1.10")]
 		public unowned string get_fastboot_at ();
+		[Version (since = "1.10")]
 		public MM.ModemFirmwareUpdateMethod get_method ();
-		public GLib.Variant get_variant ();
+		[Version (since = "1.10")]
 		public unowned string get_version ();
-		public void set_device_ids (string device_ids);
-		public void set_fastboot_at (string fastboot_at);
-		public void set_version (string version);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusBearerProxy", type_id = "mm_gdbus_bearer_proxy_get_type ()")]
 	public class GdbusBearerProxy : GLib.DBusProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusBearer {
@@ -516,226 +583,347 @@ namespace MM {
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_kernel_event_properties_get_type ()")]
 	public class KernelEventProperties : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.8")]
 		public KernelEventProperties ();
-		public MM.KernelEventProperties dup ();
-		[CCode (has_construct_function = false)]
-		public KernelEventProperties.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		public KernelEventProperties.from_string (string str) throws GLib.Error;
+		[Version (since = "1.8")]
 		public unowned string get_action ();
-		public GLib.Variant get_dictionary ();
+		[Version (since = "1.8")]
 		public unowned string get_name ();
+		[Version (since = "1.8")]
 		public unowned string get_subsystem ();
+		[Version (since = "1.8")]
 		public unowned string get_uid ();
+		[Version (since = "1.8")]
 		public void set_action (string action);
+		[Version (since = "1.8")]
 		public void set_name (string name);
+		[Version (since = "1.8")]
 		public void set_subsystem (string subsystem);
+		[Version (since = "1.8")]
 		public void set_uid (string uid);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", lower_case_csuffix = "location_3gpp", type_id = "mm_location_3gpp_get_type ()")]
 	public class Location3gpp : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public Location3gpp ();
-		[CCode (has_construct_function = false)]
-		public Location3gpp.from_string_variant (GLib.Variant string) throws GLib.Error;
+		protected Location3gpp ();
+		[Version (since = "1.0")]
 		public ulong get_cell_id ();
+		[Version (since = "1.0")]
 		public ulong get_location_area_code ();
+		[Version (since = "1.0")]
 		public uint get_mobile_country_code ();
+		[Version (since = "1.0")]
 		public uint get_mobile_network_code ();
-		public GLib.Variant get_string_variant ();
+		[Version (since = "1.10")]
 		public ulong get_tracking_area_code ();
-		public bool reset ();
-		public bool set_cell_id (ulong cell_id);
-		public bool set_location_area_code (ulong location_area_code);
-		public bool set_mobile_country_code (uint mobile_country_code);
-		public bool set_mobile_network_code (uint mobile_network_code);
-		public bool set_tracking_area_code (ulong tracking_area_code);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_location_cdma_bs_get_type ()")]
 	public class LocationCdmaBs : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public LocationCdmaBs ();
-		[CCode (has_construct_function = false)]
-		public LocationCdmaBs.from_dictionary (GLib.Variant string) throws GLib.Error;
-		public GLib.Variant get_dictionary ();
+		protected LocationCdmaBs ();
+		[Version (since = "1.0")]
 		public double get_latitude ();
+		[Version (since = "1.0")]
 		public double get_longitude ();
-		public bool @set (double longitude, double latitude);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_location_gps_nmea_get_type ()")]
 	public class LocationGpsNmea : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public LocationGpsNmea ();
-		public bool add_trace (string trace);
+		protected LocationGpsNmea ();
+		[Version (since = "1.0")]
 		public string build_full ();
-		[CCode (has_construct_function = false)]
-		public LocationGpsNmea.from_string_variant (GLib.Variant string) throws GLib.Error;
-		public GLib.Variant get_string_variant ();
+		[Version (since = "1.0")]
 		public unowned string get_trace (string trace_type);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_location_gps_raw_get_type ()")]
 	public class LocationGpsRaw : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public LocationGpsRaw ();
-		public bool add_trace (string trace);
-		[CCode (has_construct_function = false)]
-		public LocationGpsRaw.from_dictionary (GLib.Variant string) throws GLib.Error;
+		protected LocationGpsRaw ();
+		[Version (since = "1.0")]
 		public double get_altitude ();
-		public GLib.Variant get_dictionary ();
+		[Version (since = "1.0")]
 		public double get_latitude ();
+		[Version (since = "1.0")]
 		public double get_longitude ();
+		[Version (since = "1.0")]
 		public unowned string get_utc_time ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_manager_get_type ()")]
 	public class Manager : MM.GdbusObjectManagerClient, GLib.AsyncInitable, GLib.DBusObjectManager, GLib.Initable {
 		[CCode (cname = "mm_manager_new", has_construct_function = false)]
+		[Version (since = "1.0")]
 		public async Manager (GLib.DBusConnection connection, GLib.DBusObjectManagerClientFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public GLib.DBusProxy get_proxy ();
+		[Version (since = "1.0")]
 		public unowned string get_version ();
+		[Version (since = "1.10")]
 		public async bool inhibit_device (string uid, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.10")]
 		public bool inhibit_device_sync (string uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public unowned GLib.DBusProxy peek_proxy ();
+		[Version (since = "1.8")]
 		public async bool report_kernel_event (MM.KernelEventProperties properties, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.8")]
 		public bool report_kernel_event_sync (MM.KernelEventProperties properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool scan_devices (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool scan_devices_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool set_logging (string level, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool set_logging_sync (string level, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.0")]
 		public Manager.sync (GLib.DBusConnection connection, GLib.DBusObjectManagerClientFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.10")]
 		public async bool uninhibit_device (string uid, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.10")]
 		public bool uninhibit_device_sync (string uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_modem_get_type ()")]
 	public class Modem : MM.GdbusModemProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModem {
 		[CCode (has_construct_function = false)]
 		protected Modem ();
+		[Version (since = "1.0")]
 		public async string command (string cmd, uint timeout, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public string command_sync (string cmd, uint timeout, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async MM.Bearer create_bearer (MM.BearerProperties properties, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.Bearer create_bearer_sync (MM.BearerProperties properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool delete_bearer (string bearer, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool delete_bearer_sync (string bearer, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool disable (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool disable_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.0")]
 		public string[] dup_bearer_paths ();
+		[Version (since = "1.12")]
 		public string dup_carrier_configuration ();
+		[Version (since = "1.12")]
 		public string dup_carrier_configuration_revision ();
+		[Version (since = "1.0")]
 		public string dup_device ();
+		[Version (since = "1.0")]
 		public string dup_device_identifier ();
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.0")]
 		public string[] dup_drivers ();
+		[Version (since = "1.0")]
 		public string dup_equipment_identifier ();
+		[Version (since = "1.8")]
 		public string dup_hardware_revision ();
+		[Version (since = "1.0")]
 		public string dup_manufacturer ();
+		[Version (since = "1.0")]
 		public string dup_model ();
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.0")]
 		public string[] dup_own_numbers ();
+		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (since = "1.0")]
 		public string dup_plugin ();
+		[Version (since = "1.0")]
 		public string dup_primary_port ();
+		[Version (since = "1.0")]
 		public string dup_revision ();
+		[Version (since = "1.0")]
 		public string dup_sim_path ();
+		[Version (since = "1.0")]
 		public async bool enable (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool enable_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool factory_reset (string code, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool factory_reset_sync (string code, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.ModemAccessTechnology get_access_technologies ();
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.0")]
 		public unowned string[] get_bearer_paths ();
+		[Version (since = "1.12")]
 		public unowned string get_carrier_configuration ();
+		[Version (since = "1.12")]
 		public unowned string get_carrier_configuration_revision ();
+		[Version (since = "1.0")]
 		public bool get_current_bands ([CCode (array_length_cname = "n_bands", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemBand[] bands);
+		[Version (since = "1.0")]
 		public MM.ModemCapability get_current_capabilities ();
+		[Version (since = "1.0")]
 		public bool get_current_modes (out MM.ModemMode allowed, out MM.ModemMode preferred);
+		[Version (since = "1.0")]
 		public unowned string get_device ();
+		[Version (since = "1.0")]
 		public unowned string get_device_identifier ();
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.0")]
 		public unowned string[] get_drivers ();
+		[Version (since = "1.0")]
 		public unowned string get_equipment_identifier ();
+		[Version (since = "1.8")]
 		public unowned string get_hardware_revision ();
+		[Version (since = "1.0")]
 		public unowned string get_manufacturer ();
+		[Version (since = "1.0")]
 		public uint get_max_active_bearers ();
+		[Version (since = "1.0")]
 		public uint get_max_bearers ();
+		[Version (since = "1.0")]
 		public unowned string get_model ();
+		[Version (since = "1.2")]
 		public static bool get_pending_network_initiated_sessions (MM.ModemOma self, [CCode (array_length_cname = "n_sessions", array_length_pos = 2.1, array_length_type = "guint")] out MM.OmaPendingNetworkInitiatedSession[] sessions);
+		[Version (since = "1.0")]
 		public unowned string get_plugin ();
+		[Version (since = "1.0")]
 		public bool get_ports ([CCode (array_length_cname = "n_ports", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemPortInfo[] ports);
+		[Version (since = "1.0")]
 		public MM.ModemPowerState get_power_state ();
+		[Version (since = "1.0")]
 		public unowned string get_primary_port ();
+		[Version (since = "1.0")]
 		public unowned string get_revision ();
+		[Version (since = "1.0")]
 		public uint get_signal_quality (out bool recent);
+		[Version (since = "1.0")]
 		public async MM.Sim get_sim (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.Sim get_sim_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.ModemState get_state ();
+		[Version (since = "1.0")]
 		public MM.ModemStateFailedReason get_state_failed_reason ();
+		[Version (since = "1.0")]
 		public bool get_supported_bands ([CCode (array_length_cname = "n_bands", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemBand[] bands);
+		[Version (since = "1.0")]
 		public bool get_supported_capabilities ([CCode (array_length_cname = "n_capabilities", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemCapability[] capabilities);
+		[Version (since = "1.0")]
 		public MM.BearerIpFamily get_supported_ip_families ();
+		[Version (since = "1.0")]
 		public bool get_supported_modes ([CCode (array_length_cname = "n_modes", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemModeCombination[] modes);
+		[Version (since = "1.0")]
 		public MM.ModemLock get_unlock_required ();
+		[Version (since = "1.0")]
 		public MM.UnlockRetries get_unlock_retries ();
+		[Version (since = "1.0")]
 		public async GLib.List<MM.Bearer> list_bearers (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public GLib.List<MM.Bearer> list_bearers_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool peek_current_bands ([CCode (array_length_cname = "n_bands", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemBand[] bands);
+		[Version (since = "1.2")]
 		public static bool peek_pending_network_initiated_sessions (MM.ModemOma self, [CCode (array_length_cname = "n_sessions", array_length_pos = 2.1, array_length_type = "guint")] out MM.OmaPendingNetworkInitiatedSession[] sessions);
+		[Version (since = "1.0")]
 		public bool peek_ports ([CCode (array_length_cname = "n_ports", array_length_pos = 1.1, array_length_type = "guint")] out unowned MM.ModemPortInfo[] ports);
+		[Version (since = "1.0")]
 		public bool peek_supported_bands ([CCode (array_length_cname = "n_bands", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemBand[] bands);
+		[Version (since = "1.0")]
 		public bool peek_supported_capabilities ([CCode (array_length_cname = "n_capabilities", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemCapability[] capabilities);
+		[Version (since = "1.0")]
 		public bool peek_supported_modes ([CCode (array_length_cname = "n_modes", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemModeCombination[] modes);
+		[Version (since = "1.0")]
 		public unowned MM.UnlockRetries peek_unlock_retries ();
+		[Version (since = "1.0")]
 		public async bool reset (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool reset_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool set_current_bands (MM.ModemBand bands, uint n_bands, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool set_current_bands_sync (MM.ModemBand bands, uint n_bands, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool set_current_capabilities (MM.ModemCapability capabilities, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool set_current_capabilities_sync (MM.ModemCapability capabilities, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool set_current_modes (MM.ModemMode modes, MM.ModemMode preferred, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool set_current_modes_sync (MM.ModemMode modes, MM.ModemMode preferred, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool set_power_state (MM.ModemPowerState state, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool set_power_state_sync (MM.ModemPowerState state, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", lower_case_csuffix = "modem_3gpp", type_id = "mm_modem_3gpp_get_type ()")]
 	public class Modem3gpp : MM.GdbusModem3gppProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModem3gpp {
 		[CCode (has_construct_function = false)]
 		protected Modem3gpp ();
+		[Version (since = "1.0")]
 		public string dup_imei ();
+		[Version (since = "1.10")]
 		public string dup_initial_eps_bearer_path ();
+		[Version (since = "1.0")]
 		public string dup_operator_code ();
+		[Version (since = "1.0")]
 		public string dup_operator_name ();
+		[Version (since = "1.0")]
 		public string dup_path ();
 		public static unowned string eps_ue_mode_operation_get_string (MM.Modem3gppEpsUeModeOperation val);
 		public static string facility_build_string_from_mask (MM.Modem3gppFacility mask);
+		[Version (since = "1.0")]
 		public MM.Modem3gppFacility get_enabled_facility_locks ();
+		[Version (since = "1.8")]
 		public MM.Modem3gppEpsUeModeOperation get_eps_ue_mode_operation ();
+		[Version (since = "1.0")]
 		public unowned string get_imei ();
+		[Version (since = "1.10")]
 		public async MM.Bearer get_initial_eps_bearer (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.10")]
 		public MM.BearerProperties get_initial_eps_bearer_settings ();
+		[Version (since = "1.10")]
 		public MM.Bearer get_initial_eps_bearer_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public unowned string get_operator_code ();
+		[Version (since = "1.0")]
 		public unowned string get_operator_name ();
+		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.10")]
 		public GLib.List<MM.Pco> get_pco ();
+		[Version (since = "1.0")]
 		public MM.Modem3gppRegistrationState get_registration_state ();
-		[Version (deprecated = true, deprecated_since = "1.10.0.")]
+		[Version (deprecated = true, deprecated_since = "1.10.0.", since = "1.0")]
 		public MM.Modem3gppSubscriptionState get_subscription_state ();
 		public static unowned string network_availability_get_string (MM.Modem3gppNetworkAvailability val);
+		[Version (since = "1.0")]
 		public static void network_free (MM.Modem3gppNetwork network);
+		[Version (since = "1.0")]
 		public static MM.ModemAccessTechnology network_get_access_technology (MM.Modem3gppNetwork network);
+		[Version (since = "1.0")]
 		public static MM.Modem3gppNetworkAvailability network_get_availability (MM.Modem3gppNetwork network);
+		[Version (since = "1.0")]
 		public static unowned string network_get_operator_code (MM.Modem3gppNetwork network);
+		[Version (since = "1.0")]
 		public static unowned string network_get_operator_long (MM.Modem3gppNetwork network);
+		[Version (since = "1.0")]
 		public static unowned string network_get_operator_short (MM.Modem3gppNetwork network);
+		[Version (since = "1.10")]
 		public unowned MM.BearerProperties peek_initial_eps_bearer_settings ();
+		[Version (since = "1.0")]
 		public async bool register (string network_id, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool register_sync (string network_id, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static unowned string registration_state_get_string (MM.Modem3gppRegistrationState val);
+		[Version (since = "1.0")]
 		public async GLib.List<MM.Modem3gppNetwork> scan (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public GLib.List<MM.Modem3gppNetwork> scan_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.8")]
 		public async bool set_eps_ue_mode_operation (MM.Modem3gppEpsUeModeOperation mode, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.8")]
 		public bool set_eps_ue_mode_operation_sync (MM.Modem3gppEpsUeModeOperation mode, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.10")]
 		public async bool set_initial_eps_bearer_settings (MM.BearerProperties config, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.10")]
 		public bool set_initial_eps_bearer_settings_sync (MM.BearerProperties config, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static unowned string subscription_state_get_string (MM.Modem3gppSubscriptionState val);
 	}
@@ -747,18 +935,31 @@ namespace MM {
 	public class Modem3gppUssd : MM.GdbusModem3gppUssdProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModem3gppUssd {
 		[CCode (has_construct_function = false)]
 		protected Modem3gppUssd ();
+		[Version (since = "1.0")]
 		public async bool cancel (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool cancel_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public string dup_network_notification ();
+		[Version (since = "1.0")]
 		public string dup_network_request ();
+		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (since = "1.0")]
 		public unowned string get_network_notification ();
+		[Version (since = "1.0")]
 		public unowned string get_network_request ();
+		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.0")]
 		public MM.Modem3gppUssdSessionState get_state ();
+		[Version (since = "1.0")]
 		public async string initiate (string command, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public string initiate_sync (string command, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async string respond (string response, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public string respond_sync (string response, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static unowned string session_state_get_string (MM.Modem3gppUssdSessionState val);
 	}
@@ -766,33 +967,56 @@ namespace MM {
 	public class ModemCdma : MM.GdbusModemCdmaProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModemCdma {
 		[CCode (has_construct_function = false)]
 		protected ModemCdma ();
+		[Version (since = "1.0")]
 		public async bool activate (string carrier, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool activate_manual (MM.CdmaManualActivationProperties properties, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool activate_manual_sync (MM.CdmaManualActivationProperties properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool activate_sync (string carrier, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public string dup_esn ();
+		[Version (since = "1.0")]
 		public string dup_meid ();
+		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (since = "1.0")]
 		public MM.ModemCdmaActivationState get_activation_state ();
+		[Version (since = "1.0")]
 		public MM.ModemCdmaRegistrationState get_cdma1x_registration_state ();
+		[Version (since = "1.0")]
 		public unowned string get_esn ();
+		[Version (since = "1.0")]
 		public MM.ModemCdmaRegistrationState get_evdo_registration_state ();
+		[Version (since = "1.0")]
 		public unowned string get_meid ();
+		[Version (since = "1.0")]
 		public uint get_nid ();
+		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.0")]
 		public uint get_sid ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_modem_firmware_get_type ()")]
 	public class ModemFirmware : MM.GdbusModemFirmwareProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModemFirmware {
 		[CCode (has_construct_function = false)]
 		protected ModemFirmware ();
+		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.10")]
 		public MM.FirmwareUpdateSettings get_update_settings ();
+		[Version (since = "1.0")]
 		public async bool list (GLib.Cancellable? cancellable, out MM.FirmwareProperties selected, out GLib.List<MM.FirmwareProperties> installed) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool list_sync (out MM.FirmwareProperties selected, out GLib.List<MM.FirmwareProperties> installed, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.10")]
 		public unowned MM.FirmwareUpdateSettings peek_update_settings ();
+		[Version (since = "1.0")]
 		public async bool select (string unique_id, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool select_sync (string unique_id, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_modem_location_get_type ()")]
@@ -800,113 +1024,195 @@ namespace MM {
 		[CCode (has_construct_function = false)]
 		protected ModemLocation ();
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.10")]
 		public string[] dup_assistance_data_servers ();
+		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (since = "1.6")]
 		public string dup_supl_server ();
+		[Version (since = "1.0")]
 		public async MM.Location3gpp get_3gpp (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.Location3gpp get_3gpp_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.10")]
 		public unowned string[] get_assistance_data_servers ();
+		[Version (since = "1.0")]
 		public MM.ModemLocationSource get_capabilities ();
+		[Version (since = "1.0")]
 		public async MM.LocationCdmaBs get_cdma_bs (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.LocationCdmaBs get_cdma_bs_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.ModemLocationSource get_enabled ();
+		[Version (since = "1.0")]
 		public async bool get_full (GLib.Cancellable? cancellable, out MM.Location3gpp location_3gpp, out MM.LocationGpsNmea location_gps_nmea, out MM.LocationGpsRaw location_gps_raw, out MM.LocationCdmaBs location_cdma_bs) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool get_full_sync (out MM.Location3gpp location_3gpp, out MM.LocationGpsNmea location_gps_nmea, out MM.LocationGpsRaw location_gps_raw, out MM.LocationCdmaBs location_cdma_bs, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async MM.LocationGpsNmea get_gps_nmea (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.LocationGpsNmea get_gps_nmea_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async MM.LocationGpsRaw get_gps_raw (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.LocationGpsRaw get_gps_raw_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public uint get_gps_refresh_rate ();
+		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.6")]
 		public unowned string get_supl_server ();
+		[Version (since = "1.10")]
 		public MM.ModemLocationAssistanceDataType get_supported_assistance_data ();
+		[Version (since = "1.10")]
 		public async bool inject_assistance_data ([CCode (array_length_cname = "data_size", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] data, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.10")]
 		public bool inject_assistance_data_sync ([CCode (array_length_cname = "data_size", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] data, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool set_gps_refresh_rate (uint rate, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool set_gps_refresh_rate_sync (uint rate, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.6")]
 		public async bool set_supl_server (string supl, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.6")]
 		public bool set_supl_server_sync (string supl, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool setup (MM.ModemLocationSource sources, bool signal_location, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool setup_sync (MM.ModemLocationSource sources, bool signal_location, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool signals_location ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_modem_messaging_get_type ()")]
 	public class ModemMessaging : MM.GdbusModemMessagingProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModemMessaging {
 		[CCode (has_construct_function = false)]
 		protected ModemMessaging ();
+		[Version (since = "1.0")]
 		public async MM.Sms create (MM.SmsProperties properties, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.Sms create_sync (MM.SmsProperties properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool @delete (string sms, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool delete_sync (string sms, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (since = "1.0")]
 		public MM.SmsStorage get_default_storage ();
+		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.0")]
 		public bool get_supported_storages ([CCode (array_length_cname = "n_storages", array_length_pos = 1.1, array_length_type = "guint")] out MM.SmsStorage[] storages);
+		[Version (since = "1.0")]
 		public async GLib.List<MM.Sms> list (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public GLib.List<MM.Sms> list_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool peek_supported_storages (out MM.SmsStorage storages, out uint n_storages);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_modem_oma_get_type ()")]
 	public class ModemOma : MM.GdbusModemOmaProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModemOma {
 		[CCode (has_construct_function = false)]
 		protected ModemOma ();
+		[Version (since = "1.2")]
 		public async bool accept_network_initiated_session (uint session_id, bool accept, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.2")]
 		public bool accept_network_initiated_session_sync (uint session_id, bool accept, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.2")]
 		public async bool cancel_session (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.2")]
 		public bool cancel_session_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.2")]
 		public string dup_path ();
+		[Version (since = "1.2")]
 		public MM.OmaFeature get_features ();
+		[Version (since = "1.2")]
 		public unowned string get_path ();
+		[Version (since = "1.2")]
 		public MM.OmaSessionState get_session_state ();
+		[Version (since = "1.2")]
 		public MM.OmaSessionType get_session_type ();
+		[Version (since = "1.2")]
 		public async bool setup (MM.OmaFeature features, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.2")]
 		public bool setup_sync (MM.OmaFeature features, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.2")]
 		public async bool start_client_initiated_session (MM.OmaSessionType session_type, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.2")]
 		public bool start_client_initiated_session_sync (MM.OmaSessionType session_type, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_modem_signal_get_type ()")]
 	public class ModemSignal : MM.GdbusModemSignalProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModemSignal {
 		[CCode (has_construct_function = false)]
 		protected ModemSignal ();
+		[Version (since = "1.2")]
 		public string dup_path ();
+		[Version (since = "1.2")]
 		public MM.Signal get_cdma ();
+		[Version (since = "1.2")]
 		public MM.Signal get_evdo ();
+		[Version (since = "1.2")]
 		public MM.Signal get_gsm ();
+		[Version (since = "1.2")]
 		public MM.Signal get_lte ();
+		[Version (since = "1.2")]
 		public unowned string get_path ();
+		[Version (since = "1.2")]
 		public uint get_rate ();
+		[Version (since = "1.2")]
 		public MM.Signal get_umts ();
+		[Version (since = "1.2")]
 		public unowned MM.Signal peek_cdma ();
+		[Version (since = "1.2")]
 		public unowned MM.Signal peek_evdo ();
+		[Version (since = "1.2")]
 		public unowned MM.Signal peek_gsm ();
+		[Version (since = "1.2")]
 		public unowned MM.Signal peek_lte ();
+		[Version (since = "1.2")]
 		public unowned MM.Signal peek_umts ();
+		[Version (since = "1.2")]
 		public async bool setup (uint rate, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.2")]
 		public bool setup_sync (uint rate, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_modem_simple_get_type ()")]
 	public class ModemSimple : MM.GdbusModemSimpleProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModemSimple {
 		[CCode (has_construct_function = false)]
 		protected ModemSimple ();
+		[Version (since = "1.0")]
 		public async MM.Bearer connect (MM.SimpleConnectProperties properties, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.Bearer connect_sync (MM.SimpleConnectProperties properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool disconnect (string? bearer, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool disconnect_sync (string? bearer, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.0")]
 		public async MM.SimpleStatus get_status (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.SimpleStatus get_status_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_modem_time_get_type ()")]
 	public class ModemTime : MM.GdbusModemTimeProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModemTime {
 		[CCode (has_construct_function = false)]
 		protected ModemTime ();
+		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (since = "1.0")]
 		public async string get_network_time (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public string get_network_time_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public MM.NetworkTimezone get_network_timezone ();
+		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.0")]
 		public unowned MM.NetworkTimezone peek_network_timezone ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_modem_voice_get_type ()")]
@@ -921,12 +1227,19 @@ namespace MM {
 		public async bool call_waiting_setup (bool enable, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.12")]
 		public bool call_waiting_setup_sync (bool enable, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.6")]
 		public async MM.Call create_call (MM.CallProperties properties, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.6")]
 		public MM.Call create_call_sync (MM.CallProperties properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.6")]
 		public async bool delete_call (string call, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.6")]
 		public bool delete_call_sync (string call, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.6")]
 		public string dup_path ();
+		[Version (since = "1.12")]
 		public bool get_emergency_only ();
+		[Version (since = "1.6")]
 		public unowned string get_path ();
 		[Version (since = "1.12")]
 		public async bool hangup_all (GLib.Cancellable? cancellable) throws GLib.Error;
@@ -940,7 +1253,9 @@ namespace MM {
 		public async bool hold_and_accept (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.12")]
 		public bool hold_and_accept_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.6")]
 		public async GLib.List<MM.Call> list_calls (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.6")]
 		public GLib.List<MM.Call> list_calls_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.12")]
 		public async bool transfer (GLib.Cancellable? cancellable) throws GLib.Error;
@@ -950,152 +1265,199 @@ namespace MM {
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_network_timezone_get_type ()")]
 	public class NetworkTimezone : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public NetworkTimezone ();
-		[CCode (has_construct_function = false)]
-		public NetworkTimezone.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
-		public GLib.Variant get_dictionary ();
+		protected NetworkTimezone ();
+		[Version (since = "1.0")]
 		public int32 get_dst_offset ();
+		[Version (since = "1.0")]
 		public int32 get_leap_seconds ();
+		[Version (since = "1.0")]
 		public int32 get_offset ();
-		public void set_dst_offset (int dst_offset);
-		public void set_leap_seconds (int leap_seconds);
-		public void set_offset (int offset);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_object_get_type ()")]
 	public class Object : MM.GdbusObjectProxy, GLib.DBusObject, MM.GdbusObject {
 		[CCode (has_construct_function = false)]
 		protected Object ();
+		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (since = "1.0")]
 		public MM.Modem get_modem ();
+		[Version (since = "1.0")]
 		public MM.Modem3gpp get_modem_3gpp ();
+		[Version (since = "1.0")]
 		public MM.Modem3gppUssd get_modem_3gpp_ussd ();
+		[Version (since = "1.0")]
 		public MM.ModemCdma get_modem_cdma ();
+		[Version (since = "1.0")]
 		public MM.ModemFirmware get_modem_firmware ();
+		[Version (since = "1.0")]
 		public MM.ModemLocation get_modem_location ();
+		[Version (since = "1.0")]
 		public MM.ModemMessaging get_modem_messaging ();
+		[Version (since = "1.2")]
 		public MM.ModemOma get_modem_oma ();
+		[Version (since = "1.2")]
 		public MM.ModemSignal get_modem_signal ();
+		[Version (since = "1.0")]
 		public MM.ModemSimple get_modem_simple ();
+		[Version (since = "1.0")]
 		public MM.ModemTime get_modem_time ();
+		[Version (since = "1.6")]
 		public MM.ModemVoice get_modem_voice ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_pco_get_type ()")]
 	public class Pco : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public Pco ();
-		public static MM.Pco from_variant (GLib.Variant variant) throws GLib.Error;
+		protected Pco ();
+		[Version (since = "1.10")]
 		public uint8 get_data (out size_t data_size);
+		[Version (since = "1.10")]
 		public uint32 get_session_id ();
+		[Version (since = "1.10")]
 		public bool is_complete ();
-		public static GLib.List<MM.Pco> list_add (owned GLib.List<MM.Pco> pco_list, MM.Pco pco);
+		[Version (deprecated = true, deprecated_since = "1.12.0", since = "1.10")]
 		public static void list_free (owned GLib.List<MM.Pco> pco_list);
-		public void set_complete (bool is_complete);
-		public void set_data (uint8 data, size_t data_size);
-		public void set_session_id (uint32 session_id);
-		public GLib.Variant to_variant ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_signal_get_type ()")]
 	public class Signal : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public Signal ();
-		[CCode (has_construct_function = false)]
-		public Signal.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
-		public GLib.Variant get_dictionary ();
+		protected Signal ();
+		[Version (since = "1.2")]
 		public double get_ecio ();
+		[Version (since = "1.2")]
 		public double get_io ();
+		[Version (since = "1.2")]
 		public double get_rscp ();
+		[Version (since = "1.2")]
 		public double get_rsrp ();
+		[Version (since = "1.2")]
 		public double get_rsrq ();
+		[Version (since = "1.2")]
 		public double get_rssi ();
+		[Version (since = "1.2")]
 		public double get_sinr ();
+		[Version (since = "1.2")]
 		public double get_snr ();
-		public void set_ecio (double value);
-		public void set_io (double value);
-		public void set_rscp (double value);
-		public void set_rsrp (double value);
-		public void set_rsrq (double value);
-		public void set_rssi (double value);
-		public void set_sinr (double value);
-		public void set_snr (double value);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_sim_get_type ()")]
 	public class Sim : MM.GdbusSimProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusSim {
 		[CCode (has_construct_function = false)]
 		protected Sim ();
+		[Version (since = "1.0")]
 		public async bool change_pin (string old_pin, string new_pin, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool change_pin_sync (string old_pin, string new_pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool disable_pin (string pin, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool disable_pin_sync (string pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.12")]
 		public string[] dup_emergency_numbers ();
+		[Version (since = "1.0")]
 		public string dup_identifier ();
+		[Version (since = "1.0")]
 		public string dup_imsi ();
+		[Version (since = "1.0")]
 		public string dup_operator_identifier ();
+		[Version (since = "1.0")]
 		public string dup_operator_name ();
+		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (since = "1.0")]
 		public async bool enable_pin (string pin, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool enable_pin_sync (string pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.12")]
 		public unowned string[] get_emergency_numbers ();
+		[Version (since = "1.0")]
 		public unowned string get_identifier ();
+		[Version (since = "1.0")]
 		public unowned string get_imsi ();
+		[Version (since = "1.0")]
 		public unowned string get_operator_identifier ();
+		[Version (since = "1.0")]
 		public unowned string get_operator_name ();
+		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.0")]
 		public async bool send_pin (string pin, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool send_pin_sync (string pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool send_puk (string puk, string pin, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool send_puk_sync (string puk, string pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_simple_connect_properties_get_type ()")]
 	public class SimpleConnectProperties : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.0")]
 		public SimpleConnectProperties ();
-		[CCode (has_construct_function = false)]
-		public SimpleConnectProperties.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		public SimpleConnectProperties.from_string (string str) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool get_allow_roaming ();
+		[Version (since = "1.0")]
 		public MM.BearerAllowedAuth get_allowed_auth ();
+		[Version (since = "1.0")]
 		public unowned string get_apn ();
-		public MM.BearerProperties get_bearer_properties ();
-		public GLib.Variant get_dictionary ();
+		[Version (since = "1.0")]
 		public MM.BearerIpFamily get_ip_type ();
-		[Version (deprecated = true, deprecated_since = "1.10.0.")]
+		[Version (deprecated = true, deprecated_since = "1.10.0.", since = "1.0")]
 		public unowned string get_number ();
+		[Version (since = "1.0")]
 		public unowned string get_operator_id ();
+		[Version (since = "1.0")]
 		public unowned string get_password ();
+		[Version (since = "1.0")]
 		public unowned string get_pin ();
+		[Version (since = "1.0")]
 		public unowned string get_user ();
+		[Version (since = "1.0")]
 		public void set_allow_roaming (bool allow_roaming);
+		[Version (since = "1.0")]
 		public void set_allowed_auth (MM.BearerAllowedAuth allowed_auth);
+		[Version (since = "1.0")]
 		public void set_apn (string apn);
+		[Version (since = "1.0")]
 		public void set_ip_type (MM.BearerIpFamily ip_type);
-		[Version (deprecated = true, deprecated_since = "1.10.0.")]
+		[Version (deprecated = true, deprecated_since = "1.10.0.", since = "1.0")]
 		public void set_number (string number);
+		[Version (since = "1.0")]
 		public void set_operator_id (string operator_id);
+		[Version (since = "1.0")]
 		public void set_password (string password);
+		[Version (since = "1.0")]
 		public void set_pin (string pin);
+		[Version (since = "1.0")]
 		public void set_user (string user);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_simple_status_get_type ()")]
 	public class SimpleStatus : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public SimpleStatus ();
-		[CCode (has_construct_function = false)]
-		public SimpleStatus.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
+		protected SimpleStatus ();
+		[Version (since = "1.0")]
 		public unowned string get_3gpp_operator_code ();
+		[Version (since = "1.0")]
 		public unowned string get_3gpp_operator_name ();
+		[Version (since = "1.0")]
 		public MM.Modem3gppRegistrationState get_3gpp_registration_state ();
+		[Version (deprecated = true, deprecated_since = "1.12.0.", since = "1.0")]
 		public MM.Modem3gppSubscriptionState get_3gpp_subscription_state ();
+		[Version (since = "1.0")]
 		public MM.ModemAccessTechnology get_access_technologies ();
+		[Version (since = "1.0")]
 		public MM.ModemCdmaRegistrationState get_cdma_cdma1x_registration_state ();
+		[Version (since = "1.0")]
 		public MM.ModemCdmaRegistrationState get_cdma_evdo_registration_state ();
+		[Version (since = "1.0")]
 		public uint get_cdma_nid ();
+		[Version (since = "1.0")]
 		public uint get_cdma_sid ();
+		[Version (since = "1.0")]
 		public void get_current_bands (out MM.ModemBand bands, out uint n_bands);
-		public GLib.Variant get_dictionary ();
+		[Version (since = "1.0")]
 		public uint32 get_signal_quality (out bool recent);
+		[Version (since = "1.0")]
 		public MM.ModemState get_state ();
 		[NoAccessorMethod]
 		public MM.ModemAccessTechnology access_technologies { get; set; }
@@ -1127,83 +1489,124 @@ namespace MM {
 		[CCode (has_construct_function = false)]
 		protected Sms ();
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
+		[Version (since = "1.0")]
 		public uint8[] dup_data ();
+		[Version (since = "1.0")]
 		public string dup_discharge_timestamp ();
+		[Version (since = "1.0")]
 		public string dup_number ();
+		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (since = "1.0")]
 		public string dup_smsc ();
+		[Version (since = "1.0")]
 		public string dup_text ();
+		[Version (since = "1.0")]
 		public string dup_timestamp ();
+		[Version (since = "1.0")]
 		public int get_class ();
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
+		[Version (since = "1.0")]
 		public unowned uint8[] get_data ();
+		[Version (since = "1.0")]
 		public bool get_delivery_report_request ();
+		[Version (since = "1.0")]
 		public uint get_delivery_state ();
+		[Version (since = "1.0")]
 		public unowned string get_discharge_timestamp ();
+		[Version (since = "1.0")]
 		public uint get_message_reference ();
+		[Version (since = "1.0")]
 		public unowned string get_number ();
+		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.0")]
 		public MM.SmsPduType get_pdu_type ();
+		[Version (since = "1.2")]
 		public MM.SmsCdmaServiceCategory get_service_category ();
+		[Version (since = "1.0")]
 		public unowned string get_smsc ();
+		[Version (since = "1.0")]
 		public MM.SmsState get_state ();
+		[Version (since = "1.0")]
 		public MM.SmsStorage get_storage ();
+		[Version (since = "1.2")]
 		public MM.SmsCdmaTeleserviceId get_teleservice_id ();
+		[Version (since = "1.0")]
 		public unowned string get_text ();
+		[Version (since = "1.0")]
 		public unowned string get_timestamp ();
+		[Version (since = "1.0")]
 		public uint get_validity_relative ();
+		[Version (since = "1.0")]
 		public MM.SmsValidityType get_validity_type ();
+		[Version (since = "1.0")]
 		public async bool send (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool send_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.0")]
 		public async bool store (MM.SmsStorage storage, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.0")]
 		public bool store_sync (MM.SmsStorage storage, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_sms_properties_get_type ()")]
 	public class SmsProperties : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.0")]
 		public SmsProperties ();
-		public MM.SmsProperties dup ();
-		[CCode (has_construct_function = false)]
-		public SmsProperties.from_dictionary (GLib.Variant dictionary) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		public SmsProperties.from_string (string str) throws GLib.Error;
+		[Version (since = "1.0")]
 		public int get_class ();
+		[Version (since = "1.0")]
 		public uint8 get_data (out size_t data_len);
+		[Version (since = "1.0")]
 		public GLib.ByteArray get_data_bytearray ();
+		[Version (since = "1.0")]
 		public bool get_delivery_report_request ();
-		public GLib.Variant get_dictionary ();
+		[Version (since = "1.0")]
 		public unowned string get_number ();
+		[Version (since = "1.2")]
 		public MM.SmsCdmaServiceCategory get_service_category ();
+		[Version (since = "1.0")]
 		public unowned string get_smsc ();
+		[Version (since = "1.2")]
 		public MM.SmsCdmaTeleserviceId get_teleservice_id ();
+		[Version (since = "1.0")]
 		public unowned string get_text ();
+		[Version (since = "1.0")]
 		public uint get_validity_relative ();
+		[Version (since = "1.0")]
 		public MM.SmsValidityType get_validity_type ();
+		[Version (since = "1.0")]
 		public unowned GLib.ByteArray peek_data_bytearray ();
+		[Version (since = "1.0")]
 		public void set_class (int message_class);
+		[Version (since = "1.0")]
 		public void set_data (uint8 data, size_t data_length);
+		[Version (since = "1.0")]
 		public void set_data_bytearray (GLib.ByteArray data);
+		[Version (since = "1.0")]
 		public void set_delivery_report_request (bool request);
+		[Version (since = "1.0")]
 		public void set_number (string number);
+		[Version (since = "1.2")]
 		public void set_service_category (MM.SmsCdmaServiceCategory service_category);
+		[Version (since = "1.0")]
 		public void set_smsc (string smsc);
+		[Version (since = "1.2")]
 		public void set_teleservice_id (MM.SmsCdmaTeleserviceId teleservice_id);
+		[Version (since = "1.0")]
 		public void set_text (string text);
+		[Version (since = "1.0")]
 		public void set_validity_relative (uint validity);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_unlock_retries_get_type ()")]
 	public class UnlockRetries : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public UnlockRetries ();
-		public string build_string ();
-		public bool cmp (MM.UnlockRetries b);
+		protected UnlockRetries ();
+		[Version (since = "1.0")]
 		public void @foreach (MM.UnlockRetriesForeachCb callback);
-		[CCode (has_construct_function = false)]
-		public UnlockRetries.from_dictionary (GLib.Variant dictionary);
+		[Version (since = "1.0")]
 		public uint @get (MM.ModemLock @lock);
-		public GLib.Variant get_dictionary ();
-		public void @set (MM.ModemLock @lock, uint retries);
-		public void unset (MM.ModemLock @lock);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusBearer", type_id = "mm_gdbus_bearer_get_type ()")]
 	public interface GdbusBearer : GLib.Object {
@@ -1820,17 +2223,20 @@ namespace MM {
 		public virtual signal bool handle_store (GLib.DBusMethodInvocation invocation, uint arg_storage);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", has_type_id = false)]
+	[Version (since = "1.0")]
 	public struct ModemModeCombination {
 		public MM.ModemMode allowed;
 		public MM.ModemMode preferred;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", has_type_id = false)]
+	[Version (since = "1.0")]
 	public struct ModemPortInfo {
 		public weak string name;
 		public MM.ModemPortType type;
 		public void array_free (uint array_size);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", has_type_id = false)]
+	[Version (since = "1.2")]
 	public struct OmaPendingNetworkInitiatedSession {
 		public MM.OmaSessionType session_type;
 		public uint session_id;
@@ -2804,6 +3210,7 @@ namespace MM {
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", instance_pos = 2.9)]
+	[Version (since = "1.0")]
 	public delegate void UnlockRetriesForeachCb (MM.ModemLock @lock, uint count);
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_METHOD_CONNECT")]
 	public const string BEARER_METHOD_CONNECT;
@@ -2898,6 +3305,7 @@ namespace MM {
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_SERVICE")]
 	public const string DBUS_SERVICE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MAJOR_VERSION")]
+	[Version (since = "1.0")]
 	public const int MAJOR_VERSION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MANAGER_METHOD_INHIBITDEVICE")]
 	public const string MANAGER_METHOD_INHIBITDEVICE;
@@ -2910,8 +3318,10 @@ namespace MM {
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MANAGER_PROPERTY_VERSION")]
 	public const string MANAGER_PROPERTY_VERSION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MICRO_VERSION")]
+	[Version (since = "1.0")]
 	public const int MICRO_VERSION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MINOR_VERSION")]
+	[Version (since = "1.0")]
 	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_CDMA_NID_UNKNOWN")]
 	public const int MODEM_CDMA_NID_UNKNOWN;
@@ -3256,6 +3666,7 @@ namespace MM {
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SMS_PROPERTY_VALIDITY")]
 	public const string SMS_PROPERTY_VALIDITY;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_UNLOCK_RETRIES_UNKNOWN")]
+	[Version (since = "1.0")]
 	public const int UNLOCK_RETRIES_UNKNOWN;
 	[CCode (cheader_filename = "libmm-glib.h")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_bearer_interface_info ();

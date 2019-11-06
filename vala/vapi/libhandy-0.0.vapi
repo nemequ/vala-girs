@@ -312,7 +312,7 @@ namespace Hdy {
 		public string visible_child_name { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_paginator_get_type ()")]
-	public class Paginator : Gtk.EventBox, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public class Paginator : Gtk.EventBox, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.0.11")]
 		public Paginator ();
@@ -479,6 +479,18 @@ namespace Hdy {
 		public Hdy.SqueezerTransitionType transition_type { get; set; }
 		public Gtk.Widget visible_child { get; }
 	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_swipe_group_get_type ()")]
+	public class SwipeGroup : GLib.Object, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.0.12")]
+		public SwipeGroup ();
+		[Version (since = "0.0.12")]
+		public void add_swipeable (Hdy.Swipeable swipeable);
+		[Version (since = "0.0.12")]
+		public unowned GLib.SList<Hdy.Swipeable> get_swipeables ();
+		[Version (since = "0.0.12")]
+		public void remove_swipeable (Hdy.Swipeable swipeable);
+	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_title_bar_get_type ()")]
 	public class TitleBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
@@ -562,6 +574,15 @@ namespace Hdy {
 		[Version (since = "0.0.10")]
 		public Gtk.Stack stack { get; set; }
 	}
+	[CCode (cheader_filename = "handy.h", type_cname = "HdySwipeableInterface", type_id = "hdy_swipeable_get_type ()")]
+	public interface Swipeable : Gtk.Widget {
+		public virtual signal void begin_swipe ();
+		[Version (since = "0.0.12")]
+		public virtual signal void end_swipe (int64 duration, double to);
+		[Version (since = "0.0.12")]
+		public virtual signal void switch_child (uint index, int64 duration);
+		public virtual signal void update_swipe (double value);
+	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_ARROWS_DIRECTION_", type_id = "hdy_arrows_direction_get_type ()")]
 	public enum ArrowsDirection {
 		UP,
@@ -590,7 +611,9 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_LEAFLET_MODE_TRANSITION_TYPE_", type_id = "hdy_leaflet_mode_transition_type_get_type ()")]
 	public enum LeafletModeTransitionType {
 		NONE,
-		SLIDE
+		SLIDE,
+		OVER,
+		UNDER
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_PAGINATOR_INDICATOR_STYLE_", type_id = "hdy_paginator_indicator_style_get_type ()")]
 	public enum PaginatorIndicatorStyle {
