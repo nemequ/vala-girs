@@ -421,7 +421,7 @@ namespace NM {
 		[Version (since = "1.18")]
 		public static NM.BridgeVlan from_str (string str) throws GLib.Error;
 		[Version (since = "1.18")]
-		public bool get_vid_range (uint16 vid_start, uint16 vid_end);
+		public bool get_vid_range (out uint16 vid_start, out uint16 vid_end);
 		[Version (since = "1.18")]
 		public bool is_pvid ();
 		[Version (since = "1.18")]
@@ -619,8 +619,11 @@ namespace NM {
 		public async bool save_hostname_async (string? hostname, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool set_logging (string? level, string? domains) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool wimax_get_enabled ();
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool wimax_hardware_get_enabled ();
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public void wimax_set_enabled (bool enabled);
 		public bool wireless_get_enabled ();
 		public bool wireless_hardware_get_enabled ();
@@ -667,8 +670,10 @@ namespace NM {
 		public NM.State state { get; }
 		public string version { get; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool wimax_enabled { get; set; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool wimax_hardware_enabled { get; }
 		[NoAccessorMethod]
 		public bool wireless_enabled { get; set; }
@@ -3092,6 +3097,8 @@ namespace NM {
 		public const int DAD_TIMEOUT_MAX;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_HOSTNAME")]
 		public const string DHCP_HOSTNAME;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_IAID")]
+		public const string DHCP_IAID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_SEND_HOSTNAME")]
 		public const string DHCP_SEND_HOSTNAME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_TIMEOUT")]
@@ -3146,6 +3153,8 @@ namespace NM {
 		[Version (since = "1.2")]
 		public int get_dad_timeout ();
 		public unowned string get_dhcp_hostname ();
+		[Version (since = "1.22")]
+		public unowned string get_dhcp_iaid ();
 		public bool get_dhcp_send_hostname ();
 		[Version (since = "1.2")]
 		public int get_dhcp_timeout ();
@@ -3199,6 +3208,9 @@ namespace NM {
 		public int dad_timeout { get; set construct; }
 		[NoAccessorMethod]
 		public string dhcp_hostname { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.22")]
+		public string dhcp_iaid { owned get; set; }
 		[NoAccessorMethod]
 		public bool dhcp_send_hostname { get; set construct; }
 		[NoAccessorMethod]

@@ -22,52 +22,31 @@ namespace Gedit {
 	public class Document : Gtk.SourceBuffer {
 		[CCode (has_construct_function = false)]
 		public Document ();
-		[Version (deprecated = true, deprecated_since = "3.14")]
-		public Gtk.SourceCompressionType get_compression_type ();
 		public string get_content_type ();
-		[Version (deprecated = true, deprecated_since = "3.18")]
-		public bool get_deleted ();
-		[Version (deprecated = true, deprecated_since = "3.14")]
-		public unowned Gtk.SourceEncoding get_encoding ();
 		[Version (since = "3.14")]
 		public unowned Gtk.SourceFile get_file ();
 		public unowned Gtk.SourceLanguage get_language ();
-		[Version (deprecated = true, deprecated_since = "3.14")]
-		public GLib.File? get_location ();
 		public string get_metadata (string key);
 		public string get_mime_type ();
-		[Version (deprecated = true, deprecated_since = "3.14")]
-		public Gtk.SourceNewlineType get_newline_type ();
 		public unowned Gtk.SourceSearchContext get_search_context ();
 		public string get_short_name_for_display ();
 		public string get_uri_for_display ();
 		public bool goto_line (int line);
 		public bool goto_line_offset (int line, int line_offset);
-		[Version (deprecated = true, deprecated_since = "3.18")]
-		public bool is_local ();
 		public bool is_untitled ();
 		public bool is_untouched ();
 		public void set_language (Gtk.SourceLanguage? lang);
 		public void set_search_context (Gtk.SourceSearchContext? search_context);
-		[Version (deprecated = true, deprecated_since = "3.18")]
-		public void set_short_name_for_display (string? short_name);
 		[NoAccessorMethod]
 		public string content_type { owned get; set; }
 		[NoAccessorMethod]
 		public bool empty_search { get; }
 		public string mime_type { owned get; }
 		[NoAccessorMethod]
-		[Version (deprecated = true, deprecated_since = "3.18")]
-		public bool read_only { get; }
-		[NoAccessorMethod]
-		public string shortname { owned get; set; }
-		[NoAccessorMethod]
-		public bool use_gvfs_metadata { get; construct; }
+		public string shortname { owned get; }
 		public virtual signal void cursor_moved ();
-		[Version (since = "2.22")]
 		public virtual signal void load ();
 		public virtual signal void loaded ();
-		[Version (since = "2.20")]
 		public virtual signal void save ();
 		public virtual signal void saved ();
 	}
@@ -278,9 +257,7 @@ namespace Gedit {
 		STATE_REVERTING,
 		STATE_SAVING,
 		STATE_PRINTING,
-		STATE_PRINT_PREVIEWING,
 		STATE_SHOWING_PRINT_PREVIEW,
-		STATE_GENERIC_NOT_EDITABLE,
 		STATE_LOADING_ERROR,
 		STATE_REVERTING_ERROR,
 		STATE_SAVING_ERROR,
@@ -346,10 +323,12 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static bool utils_menu_position_under_tree_view (Gtk.TreeView tree_view, Gdk.Rectangle rect);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	[Version (deprecated = true, deprecated_since = "3.36")]
 	public static void utils_menu_position_under_widget (Gtk.Menu menu, int x, int y, bool push_in, void* user_data);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static unowned string utils_newline_type_to_string (Gtk.SourceNewlineType newline_type);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	[Version (deprecated = true, deprecated_since = "3.36")]
 	public static string utils_replace_home_dir_with_tilde (string uri);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static void utils_set_atk_name_description (Gtk.Widget widget, string name, string description);

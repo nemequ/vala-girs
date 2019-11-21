@@ -45,7 +45,8 @@ namespace Vte {
 		[Version (since = "0.46")]
 		public bool event_check_regex_simple (Gdk.Event event, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] Vte.Regex[] regexes, uint32 match_flags, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] out unowned string[] matches);
 		public void feed ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gssize")] uint8[]? data);
-		public void feed_child ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gssize")] char[]? text);
+		public void feed_child ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gssize")] uint8[]? text);
+		[Version (deprecated = true, deprecated_since = "0.60")]
 		public void feed_child_binary ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gsize")] uint8[]? data);
 		[Version (deprecated = true, deprecated_since = "0.60")]
 		public bool get_allow_bold ();
@@ -363,6 +364,12 @@ namespace Vte {
 	public const uint64 TEST_FLAGS_ALL;
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_TEST_FLAGS_NONE")]
 	public const uint64 TEST_FLAGS_NONE;
+	[CCode (cheader_filename = "vte/vte.h")]
+	[Version (deprecated = true, deprecated_since = "0.60", since = "0.60")]
+	public static bool get_encoding_supported (string encoding);
+	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "vte/vte.h")]
+	[Version (deprecated = true, deprecated_since = "0.60", since = "0.60")]
+	public static string[] get_encodings (bool include_aliases);
 	[CCode (cheader_filename = "vte/vte.h")]
 	[Version (since = "0.40")]
 	public static unowned string get_features ();
