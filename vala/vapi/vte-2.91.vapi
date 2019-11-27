@@ -105,14 +105,14 @@ namespace Vte {
 		[Version (since = "0.40")]
 		public unowned string? get_word_char_exceptions ();
 		[Version (since = "0.50")]
-		public string hyperlink_check_event (Gdk.Event event);
+		public string? hyperlink_check_event (Gdk.Event event);
 		[Version (deprecated = true, deprecated_since = "0.46")]
 		public int match_add_gregex (GLib.Regex gregex, GLib.RegexMatchFlags gflags);
 		[Version (since = "0.46")]
 		public int match_add_regex (Vte.Regex regex, uint32 flags);
 		[Version (deprecated = true, deprecated_since = "0.46")]
-		public string match_check (long column, long row, out int tag);
-		public string match_check_event (Gdk.Event event, out int tag);
+		public string? match_check (long column, long row, out int tag);
+		public string? match_check_event (Gdk.Event event, out int tag);
 		public void match_remove (int tag);
 		public void match_remove_all ();
 		[Version (deprecated = true, deprecated_since = "0.40")]
@@ -254,6 +254,7 @@ namespace Vte {
 		public signal void current_file_uri_changed ();
 		public virtual signal void cursor_moved ();
 		public virtual signal void decrease_font_size ();
+		[Version (deprecated = true, deprecated_since = "0.60")]
 		public virtual signal void deiconify_window ();
 		public virtual signal void encoding_changed ();
 		public virtual signal void eof ();
@@ -261,16 +262,23 @@ namespace Vte {
 		public signal void hyperlink_hover_uri_changed (string uri, Gdk.Rectangle bbox);
 		[Version (deprecated = true, deprecated_since = "0.54")]
 		public virtual signal void icon_title_changed ();
+		[Version (deprecated = true, deprecated_since = "0.60")]
 		public virtual signal void iconify_window ();
 		public virtual signal void increase_font_size ();
+		[Version (deprecated = true, deprecated_since = "0.60")]
 		public virtual signal void lower_window ();
+		[Version (deprecated = true, deprecated_since = "0.60")]
 		public virtual signal void maximize_window ();
+		[Version (deprecated = true, deprecated_since = "0.60")]
 		public virtual signal void move_window (uint x, uint y);
 		[HasEmitter]
 		public virtual signal void paste_clipboard ();
+		[Version (deprecated = true, deprecated_since = "0.60")]
 		public virtual signal void raise_window ();
+		[Version (deprecated = true, deprecated_since = "0.60")]
 		public virtual signal void refresh_window ();
 		public virtual signal void resize_window (uint width, uint height);
+		[Version (deprecated = true, deprecated_since = "0.60")]
 		public virtual signal void restore_window ();
 		public virtual signal void selection_changed ();
 		public virtual signal void text_deleted ();

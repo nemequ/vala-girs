@@ -610,6 +610,7 @@ namespace Gda {
 		public uint get_size ();
 		[Version (since = "6.0")]
 		public bool get_unique ();
+		[Version (since = "6.0")]
 		public bool prepare_add (Gda.ServerOperation op) throws GLib.Error;
 		[Version (since = "6.0")]
 		public bool prepare_create (Gda.ServerOperation op, uint order) throws GLib.Error;
@@ -678,11 +679,51 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public void set_ref_table (string rtable);
 	}
+	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_index_get_type ()")]
+	public class DbIndex : Gda.DbBase {
+		[CCode (has_construct_function = false)]
+		public DbIndex ();
+		[Version (since = "6.0")]
+		public void append_field (Gda.DbIndexField field);
+		public bool drop (Gda.Connection cnc, bool ifexists) throws GLib.Error;
+		public static GLib.Quark error_quark ();
+		public unowned GLib.SList<Gda.DbIndexField>? get_fields ();
+		[Version (since = "6.0")]
+		public bool get_unique ();
+		[Version (since = "6.0")]
+		public void remove_field (string name);
+		[Version (since = "6.0")]
+		public void set_unique (bool val);
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_index_field_get_type ()")]
+	public class DbIndexField : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "6.0")]
+		public DbIndexField ();
+		[Version (since = "6.0")]
+		public Gda.DbIndexCollate get_collate ();
+		public unowned string get_collate_str ();
+		[Version (since = "6.0")]
+		public unowned Gda.DbColumn get_column ();
+		[Version (since = "6.0")]
+		public Gda.DbIndexSortOrder get_sort_order ();
+		public unowned string get_sort_order_str ();
+		[Version (since = "6.0")]
+		public void set_collate (Gda.DbIndexCollate collate);
+		[Version (since = "6.0")]
+		public void set_column (Gda.DbColumn column);
+		[Version (since = "6.0")]
+		public void set_sort_order (Gda.DbIndexSortOrder sorder);
+	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_table_get_type ()")]
 	public class DbTable : Gda.DbBase, Gda.DbBuildable {
 		[CCode (has_construct_function = false)]
 		[Version (since = "6.0")]
 		public DbTable ();
+		[Version (since = "6.0")]
+		public bool add_column (Gda.DbColumn col, Gda.Connection cnc) throws GLib.Error;
+		[Version (since = "6.0")]
+		public bool add_index (Gda.DbIndex index, Gda.Connection cnc, bool ifnotexists) throws GLib.Error;
 		[Version (since = "6.0")]
 		public void append_column (Gda.DbColumn column);
 		[Version (since = "6.0")]
@@ -691,6 +732,8 @@ namespace Gda {
 		public void append_fkey (Gda.DbFkey fkey);
 		[Version (since = "6.0")]
 		public bool create (Gda.Connection cnc, bool ifnotexists) throws GLib.Error;
+		[Version (since = "6.0")]
+		public bool drop (Gda.Connection cnc, bool ifexists) throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		[Version (since = "6.0")]
 		public unowned GLib.List<Gda.DbColumn> get_columns ();
@@ -701,6 +744,7 @@ namespace Gda {
 		public bool is_valid ();
 		[Version (since = "6.0")]
 		public bool prepare_create (Gda.ServerOperation op, bool ifnotexists) throws GLib.Error;
+		public bool rename (Gda.DbTable new_name, Gda.Connection cnc) throws GLib.Error;
 		[Version (since = "6.0")]
 		public void set_is_temp (bool istemp);
 		public bool update (Gda.MetaTable obj, Gda.Connection cnc) throws GLib.Error;
@@ -715,7 +759,9 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public DbView ();
 		[Version (since = "6.0")]
-		public bool create (Gda.Connection cnc) throws GLib.Error;
+		public bool create (Gda.Connection cnc, bool ifnotexists) throws GLib.Error;
+		[Version (since = "6.0")]
+		public bool drop (Gda.Connection cnc, bool ifexists, Gda.DbViewRefAction action) throws GLib.Error;
 		public unowned string get_defstring ();
 		[Version (since = "6.0")]
 		public bool get_ifnoexist ();
@@ -1772,7 +1818,6 @@ namespace Gda {
 		public Gda.SqlStatement? rewrite_for_default_values (Gda.Set @params, bool remove) throws GLib.Error;
 		public string serialize ();
 		public string to_sql_extended (Gda.Connection? cnc, Gda.Set? @params, Gda.StatementSqlFlag flags, out GLib.SList<weak Gda.Holder>? params_used) throws GLib.Error;
-		public string to_sql_real (Gda.SqlRenderingContext context) throws GLib.Error;
 		[NoAccessorMethod]
 		public Gda.SqlStatement structure { owned get; set; }
 		public virtual signal void checked (Gda.Connection cnc, bool checked);
@@ -2409,40 +2454,6 @@ namespace Gda {
 		public weak Gda.SqlStatement parsed_statement;
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
-	public struct SqlRenderingContext {
-		public Gda.StatementSqlFlag flags;
-		public weak Gda.Set @params;
-		public weak GLib.SList<Gda.Holder> params_used;
-		public weak Gda.ServerProvider provider;
-		public weak Gda.Connection cnc;
-		public weak Gda.SqlRenderingValue render_value;
-		public weak Gda.SqlRenderingPSpecFunc render_param_spec;
-		public weak Gda.SqlRenderingExpr render_expr;
-		public weak Gda.SqlRenderingFunc render_unknown;
-		public weak Gda.SqlRenderingFunc render_begin;
-		public weak Gda.SqlRenderingFunc render_rollback;
-		public weak Gda.SqlRenderingFunc render_commit;
-		public weak Gda.SqlRenderingFunc render_savepoint;
-		public weak Gda.SqlRenderingFunc render_rollback_savepoint;
-		public weak Gda.SqlRenderingFunc render_delete_savepoint;
-		public weak Gda.SqlRenderingFunc render_select;
-		public weak Gda.SqlRenderingFunc render_insert;
-		public weak Gda.SqlRenderingFunc render_delete;
-		public weak Gda.SqlRenderingFunc render_update;
-		public weak Gda.SqlRenderingFunc render_compound;
-		public weak Gda.SqlRenderingFunc render_field;
-		public weak Gda.SqlRenderingFunc render_table;
-		public weak Gda.SqlRenderingFunc render_function;
-		public weak Gda.SqlRenderingFunc render_operation;
-		public weak Gda.SqlRenderingFunc render_case;
-		public weak Gda.SqlRenderingFunc render_select_field;
-		public weak Gda.SqlRenderingFunc render_select_target;
-		public weak Gda.SqlRenderingFunc render_select_join;
-		public weak Gda.SqlRenderingFunc render_select_from;
-		public weak Gda.SqlRenderingFunc render_select_order;
-		public weak Gda.SqlRenderingFunc render_distinct;
-	}
-	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
 	public struct SqlStatementCheckValidityData {
 		public weak Gda.Connection cnc;
 		public weak Gda.MetaStore store;
@@ -2703,8 +2714,8 @@ namespace Gda {
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_COLUMN_ERROR_", has_type_id = false)]
 	public enum DbColumnError {
-		[CCode (cname = "GDA_DB_COLUMN_ERROR_TYPE")]
-		DB_COLUMN_ERROR_TYPE
+		TYPE,
+		WRONG_OPERATION
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_FKEY_", has_type_id = false)]
 	public enum DbFkeyReferenceAction {
@@ -2714,10 +2725,31 @@ namespace Gda {
 		SET_DEFAULT,
 		CASCADE
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_TABLE_COLUMN_", has_type_id = false)]
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_INDEX_COLLATE_", has_type_id = false)]
+	public enum DbIndexCollate {
+		BINARY,
+		NOCASE
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_INDEX_", has_type_id = false)]
+	public enum DbIndexError {
+		CONNECTION_NOT_OPENED,
+		SERVER_OPERATION
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_INDEX_SORT_ORDER_", has_type_id = false)]
+	public enum DbIndexSortOrder {
+		ASC,
+		DESC
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_TABLE_", has_type_id = false)]
 	public enum DbTableError {
-		[CCode (cname = "GDA_DB_TABLE_COLUMN_EMPTY")]
-		DB_TABLE_COLUMN_EMPTY
+		COLUMN_EMPTY,
+		CONNECTION_NOT_OPENED,
+		SERVER_OPERATION
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_VIEW_", has_type_id = false)]
+	public enum DbViewRefAction {
+		RESTRICT,
+		CASCADE
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DIFF_", has_type_id = false)]
 	public enum DiffType {
@@ -3203,14 +3235,6 @@ namespace Gda {
 	public delegate void ConnectionOpenFunc (Gda.Connection cnc, uint job_id, bool result, GLib.Error error, void* data);
 	[CCode (cheader_filename = "libgda/libgda.h", has_target = false)]
 	public delegate bool SqlForeachFunc (Gda.SqlAnyPart part, void* data) throws GLib.Error;
-	[CCode (cheader_filename = "libgda/libgda.h", has_target = false)]
-	public delegate string SqlRenderingExpr (Gda.SqlExpr expr, Gda.SqlRenderingContext context, bool is_default, bool is_null) throws GLib.Error;
-	[CCode (cheader_filename = "libgda/libgda.h", has_target = false)]
-	public delegate string SqlRenderingFunc (Gda.SqlAnyPart node, Gda.SqlRenderingContext context) throws GLib.Error;
-	[CCode (cheader_filename = "libgda/libgda.h", has_target = false)]
-	public delegate string SqlRenderingPSpecFunc (Gda.SqlParamSpec pspec, Gda.SqlExpr? expr, Gda.SqlRenderingContext context, bool is_default, bool is_null) throws GLib.Error;
-	[CCode (cheader_filename = "libgda/libgda.h", has_target = false)]
-	public delegate string SqlRenderingValue (GLib.Value value, Gda.SqlRenderingContext context) throws GLib.Error;
 	[CCode (cheader_filename = "libgda/libgda.h", has_target = false)]
 	public delegate bool SqlReservedKeywordsFunc (string word);
 	[CCode (cheader_filename = "libgda/libgda.h", has_target = false)]

@@ -273,20 +273,28 @@ namespace Hdy {
 		public Leaflet ();
 		public uint get_child_transition_duration ();
 		public bool get_child_transition_running ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public Hdy.LeafletChildTransitionType get_child_transition_type ();
 		public Hdy.Fold get_fold ();
 		public bool get_homogeneous (Hdy.Fold fold, Gtk.Orientation orientation);
 		public bool get_interpolate_size ();
 		public uint get_mode_transition_duration ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public Hdy.LeafletModeTransitionType get_mode_transition_type ();
+		[Version (since = "0.0.12")]
+		public Hdy.LeafletTransitionType get_transition_type ();
 		public unowned Gtk.Widget get_visible_child ();
 		public unowned string get_visible_child_name ();
 		public void set_child_transition_duration (uint duration);
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void set_child_transition_type (Hdy.LeafletChildTransitionType transition);
 		public void set_homogeneous (Hdy.Fold fold, Gtk.Orientation orientation, bool homogeneous);
 		public void set_interpolate_size (bool interpolate_size);
 		public void set_mode_transition_duration (uint duration);
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void set_mode_transition_type (Hdy.LeafletModeTransitionType transition);
+		[Version (since = "0.0.12")]
+		public void set_transition_type (Hdy.LeafletTransitionType transition);
 		public void set_visible_child (Gtk.Widget visible_child);
 		public void set_visible_child_name (string name);
 		[NoWrapper]
@@ -304,6 +312,8 @@ namespace Hdy {
 		public bool interpolate_size { get; set; }
 		public uint mode_transition_duration { get; set; }
 		public Hdy.LeafletModeTransitionType mode_transition_type { get; set; }
+		[Version (since = "0.0.12")]
+		public Hdy.LeafletTransitionType transition_type { get; set; }
 		[NoAccessorMethod]
 		public bool vhomogeneous_folded { get; set; }
 		[NoAccessorMethod]
@@ -601,6 +611,7 @@ namespace Hdy {
 		FOLDED
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_LEAFLET_CHILD_TRANSITION_TYPE_", type_id = "hdy_leaflet_child_transition_type_get_type ()")]
+	[Version (deprecated = true, deprecated_since = "0.0.12")]
 	public enum LeafletChildTransitionType {
 		NONE,
 		CROSSFADE,
@@ -609,7 +620,14 @@ namespace Hdy {
 		UNDER
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_LEAFLET_MODE_TRANSITION_TYPE_", type_id = "hdy_leaflet_mode_transition_type_get_type ()")]
+	[Version (deprecated = true, deprecated_since = "0.0.12")]
 	public enum LeafletModeTransitionType {
+		NONE,
+		SLIDE
+	}
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_LEAFLET_TRANSITION_TYPE_", type_id = "hdy_leaflet_transition_type_get_type ()")]
+	[Version (since = "0.0.12")]
+	public enum LeafletTransitionType {
 		NONE,
 		SLIDE,
 		OVER,

@@ -281,7 +281,7 @@ namespace NM {
 		public const string SERVICE_PLUGIN_STATE;
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_access_point_get_type ()")]
-	public class AccessPoint : NM.Object, GLib.AsyncInitable, GLib.Initable {
+	public class AccessPoint : NM.Object {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_BSSID")]
 		public const string BSSID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_FLAGS")]
@@ -335,7 +335,7 @@ namespace NM {
 		public NM.80211ApSecurityFlags wpa_flags { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_active_connection_get_type ()")]
-	public class ActiveConnection : NM.Object, GLib.AsyncInitable, GLib.Initable {
+	public class ActiveConnection : NM.Object {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_CONNECTION")]
 		public const string CONNECTION;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_DEFAULT")]
@@ -444,7 +444,7 @@ namespace NM {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_checkpoint_get_type ()")]
-	public class Checkpoint : NM.Object, GLib.AsyncInitable, GLib.Initable {
+	public class Checkpoint : NM.Object {
 		[CCode (has_construct_function = false)]
 		protected Checkpoint ();
 		[Version (since = "1.12")]
@@ -492,6 +492,8 @@ namespace NM {
 		public const string CONNECTIVITY_CHECK_AVAILABLE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIVITY_CHECK_ENABLED")]
 		public const string CONNECTIVITY_CHECK_ENABLED;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIVITY_CHECK_URI")]
+		public const string CONNECTIVITY_CHECK_URI;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DBUS_CONNECTION")]
 		public const string DBUS_CONNECTION;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DBUS_NAME_OWNER")]
@@ -581,6 +583,8 @@ namespace NM {
 		public unowned GLib.GenericArray<NM.RemoteConnection> get_connections ();
 		public NM.ConnectivityState get_connectivity ();
 		[Version (since = "1.22")]
+		public unowned GLib.Object get_context_busy_watcher ();
+		[Version (since = "1.22")]
 		public unowned GLib.DBusConnection get_dbus_connection ();
 		[Version (since = "1.22")]
 		public unowned string get_dbus_name_owner ();
@@ -595,6 +599,10 @@ namespace NM {
 		public unowned string get_dns_rc_manager ();
 		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool get_logging (string? level, string? domains) throws GLib.Error;
+		[Version (since = "1.22")]
+		public unowned GLib.MainContext get_main_context ();
+		[Version (since = "1.22")]
+		public NM.Metered get_metered ();
 		public bool get_nm_running ();
 		public NM.ClientPermissionResult get_permission_result (NM.ClientPermission permission);
 		public unowned NM.ActiveConnection get_primary_connection ();
@@ -646,6 +654,9 @@ namespace NM {
 		public bool connectivity_check_available { get; }
 		[NoAccessorMethod]
 		public bool connectivity_check_enabled { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.22")]
+		public string connectivity_check_uri { owned get; }
 		[Version (since = "1.22")]
 		public GLib.DBusConnection dbus_connection { get; construct; }
 		[Version (since = "1.22")]
@@ -659,7 +670,6 @@ namespace NM {
 		public string dns_rc_manager { get; }
 		[NoAccessorMethod]
 		public string hostname { owned get; }
-		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public uint metered { get; }
 		[NoAccessorMethod]
@@ -694,7 +704,7 @@ namespace NM {
 		public signal void permission_changed (uint permission, uint result);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_get_type ()")]
-	public abstract class Device : NM.Object, GLib.AsyncInitable, GLib.Initable {
+	public abstract class Device : NM.Object {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_6LOWPAN_HW_ADDRESS")]
 		public const string @6LOWPAN_HW_ADDRESS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_6LOWPAN_PARENT")]
@@ -725,6 +735,8 @@ namespace NM {
 		public const string FIRMWARE_VERSION;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_INTERFACE")]
 		public const string INTERFACE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_INTERFACE_FLAGS")]
+		public const string INTERFACE_FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP4_CONFIG")]
 		public const string IP4_CONFIG;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP4_CONNECTIVITY")]
@@ -916,6 +928,8 @@ namespace NM {
 		public unowned string get_firmware_version ();
 		public unowned string get_hw_address ();
 		public unowned string get_iface ();
+		[Version (since = "1.22")]
+		public NM.DeviceInterfaceFlags get_interface_flags ();
 		public unowned NM.IPConfig get_ip4_config ();
 		public unowned NM.IPConfig get_ip6_config ();
 		public unowned string get_ip_iface ();
@@ -959,6 +973,8 @@ namespace NM {
 		public string firmware_version { get; }
 		[NoAccessorMethod]
 		public string @interface { owned get; }
+		[Version (since = "1.22")]
+		public uint interface_flags { get; }
 		public NM.IPConfig ip4_config { get; }
 		[NoAccessorMethod]
 		[Version (since = "1.16")]
@@ -988,7 +1004,7 @@ namespace NM {
 		public signal void state_changed (uint new_state, uint old_state, uint reason);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_6lowpan", type_id = "nm_device_6lowpan_get_type ()")]
-	public class Device6Lowpan : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class Device6Lowpan : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected Device6Lowpan ();
 		[Version (since = "1.14")]
@@ -1001,7 +1017,7 @@ namespace NM {
 		public NM.Device parent { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_adsl_get_type ()")]
-	public class DeviceAdsl : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceAdsl : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_ADSL_CARRIER")]
 		public const string CARRIER;
 		[CCode (has_construct_function = false)]
@@ -1010,7 +1026,7 @@ namespace NM {
 		public bool carrier { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_bond_get_type ()")]
-	public class DeviceBond : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceBond : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BOND_CARRIER")]
 		public const string CARRIER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BOND_HW_ADDRESS")]
@@ -1027,7 +1043,7 @@ namespace NM {
 		public GLib.GenericArray<NM.Device> slaves { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_bridge_get_type ()")]
-	public class DeviceBridge : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceBridge : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BRIDGE_CARRIER")]
 		public const string CARRIER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BRIDGE_HW_ADDRESS")]
@@ -1044,7 +1060,7 @@ namespace NM {
 		public GLib.GenericArray<NM.Device> slaves { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_bt_get_type ()")]
-	public class DeviceBt : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceBt : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BT_CAPABILITIES")]
 		public const string CAPABILITIES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BT_HW_ADDRESS")]
@@ -1062,7 +1078,7 @@ namespace NM {
 		public string name { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_dummy_get_type ()")]
-	public class DeviceDummy : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceDummy : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceDummy ();
 		[Version (since = "1.10")]
@@ -1071,7 +1087,7 @@ namespace NM {
 		public string hw_address { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ethernet_get_type ()")]
-	public class DeviceEthernet : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceEthernet : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_ETHERNET_CARRIER")]
 		public const string CARRIER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_ETHERNET_HW_ADDRESS")]
@@ -1101,7 +1117,7 @@ namespace NM {
 		public uint speed { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_generic_get_type ()")]
-	public class DeviceGeneric : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceGeneric : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_GENERIC_HW_ADDRESS")]
 		public const string HW_ADDRESS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_GENERIC_TYPE_DESCRIPTION")]
@@ -1114,7 +1130,7 @@ namespace NM {
 		public string type_description { owned get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ip_tunnel_get_type ()")]
-	public class DeviceIPTunnel : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceIPTunnel : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceIPTunnel ();
 		[Version (since = "1.2")]
@@ -1167,7 +1183,7 @@ namespace NM {
 		public uint8 ttl { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_infiniband_get_type ()")]
-	public class DeviceInfiniband : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceInfiniband : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_INFINIBAND_CARRIER")]
 		public const string CARRIER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_INFINIBAND_HW_ADDRESS")]
@@ -1180,7 +1196,7 @@ namespace NM {
 		public string hw_address { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_macsec_get_type ()")]
-	public class DeviceMacsec : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceMacsec : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceMacsec ();
 		[Version (since = "1.6")]
@@ -1241,7 +1257,7 @@ namespace NM {
 		public uint window { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_macvlan_get_type ()")]
-	public class DeviceMacvlan : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceMacvlan : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceMacvlan ();
 		[Version (since = "1.2")]
@@ -1266,7 +1282,7 @@ namespace NM {
 		public bool tap { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_modem_get_type ()")]
-	public class DeviceModem : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceModem : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MODEM_APN")]
 		public const string APN;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MODEM_CURRENT_CAPABILITIES")]
@@ -1297,7 +1313,7 @@ namespace NM {
 		public string operator_code { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_olpc_mesh_get_type ()")]
-	public class DeviceOlpcMesh : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceOlpcMesh : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_OLPC_MESH_ACTIVE_CHANNEL")]
 		public const string MESH_ACTIVE_CHANNEL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_OLPC_MESH_COMPANION")]
@@ -1314,7 +1330,7 @@ namespace NM {
 		public string hw_address { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ovs_bridge_get_type ()")]
-	public class DeviceOvsBridge : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceOvsBridge : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceOvsBridge ();
 		[Version (since = "1.14")]
@@ -1323,12 +1339,12 @@ namespace NM {
 		public GLib.GenericArray<NM.Device> slaves { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ovs_interface_get_type ()")]
-	public class DeviceOvsInterface : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceOvsInterface : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceOvsInterface ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ovs_port_get_type ()")]
-	public class DeviceOvsPort : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceOvsPort : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceOvsPort ();
 		[Version (since = "1.14")]
@@ -1337,12 +1353,12 @@ namespace NM {
 		public GLib.GenericArray<NM.Device> slaves { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ppp_get_type ()")]
-	public class DevicePpp : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DevicePpp : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DevicePpp ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_team_get_type ()")]
-	public class DeviceTeam : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceTeam : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TEAM_CARRIER")]
 		public const string CARRIER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TEAM_CONFIG")]
@@ -1365,7 +1381,7 @@ namespace NM {
 		public GLib.GenericArray<NM.Device> slaves { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_tun_get_type ()")]
-	public class DeviceTun : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceTun : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceTun ();
 		[Version (since = "1.2")]
@@ -1397,7 +1413,7 @@ namespace NM {
 		public bool vnet_hdr { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_vlan_get_type ()")]
-	public class DeviceVlan : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceVlan : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VLAN_CARRIER")]
 		public const string CARRIER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VLAN_HW_ADDRESS")]
@@ -1418,7 +1434,7 @@ namespace NM {
 		public uint vlan_id { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_vxlan_get_type ()")]
-	public class DeviceVxlan : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceVxlan : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceVxlan ();
 		[Version (since = "1.2")]
@@ -1495,7 +1511,7 @@ namespace NM {
 		public uint8 ttl { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_wifi_get_type ()")]
-	public class DeviceWifi : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceWifi : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_ACCESS_POINTS")]
 		public const string ACCESS_POINTS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_ACTIVE_ACCESS_POINT")]
@@ -1553,7 +1569,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_wifi_p2p", type_id = "nm_device_wifi_p2p_get_type ()")]
 	[Version (since = "1.16")]
-	public class DeviceWifiP2P : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceWifiP2P : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceWifiP2P ();
 		public unowned string get_hw_address ();
@@ -1568,7 +1584,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_wimax_get_type ()")]
 	[Version (deprecated = true, deprecated_since = "1.22.")]
-	public class DeviceWimax : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceWimax : NM.Device {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIMAX_ACTIVE_NSP")]
 		public const string ACTIVE_NSP;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIMAX_BSID")]
@@ -1626,7 +1642,7 @@ namespace NM {
 		public signal void nsp_removed (GLib.Object nsp);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_wireguard", type_id = "nm_device_wireguard_get_type ()")]
-	public class DeviceWireGuard : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceWireGuard : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceWireGuard ();
 		[Version (since = "1.14")]
@@ -1643,14 +1659,14 @@ namespace NM {
 		public GLib.Bytes public_key { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_wpan_get_type ()")]
-	public class DeviceWpan : NM.Device, GLib.AsyncInitable, GLib.Initable {
+	public class DeviceWpan : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceWpan ();
 		public unowned string get_hw_address ();
 		public string hw_address { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_dhcp_config_get_type ()")]
-	public abstract class DhcpConfig : NM.Object, GLib.AsyncInitable, GLib.Initable {
+	public abstract class DhcpConfig : NM.Object {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DHCP_CONFIG_OPTIONS")]
 		public const string OPTIONS;
 		[CCode (has_construct_function = false)]
@@ -1701,7 +1717,7 @@ namespace NM {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_ip_config_get_type ()")]
-	public abstract class IPConfig : NM.Object, GLib.AsyncInitable, GLib.Initable {
+	public abstract class IPConfig : NM.Object {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_CONFIG_ADDRESSES")]
 		public const string ADDRESSES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_CONFIG_DOMAINS")]
@@ -1895,13 +1911,7 @@ namespace NM {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_object_get_type ()")]
-	public abstract class Object : GLib.Object, GLib.AsyncInitable, GLib.Initable {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_OBJECT_DBUS_CONNECTION")]
-		public const string DBUS_CONNECTION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_OBJECT_DBUS_OBJECT")]
-		public const string DBUS_OBJECT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_OBJECT_DBUS_OBJECT_MANAGER")]
-		public const string DBUS_OBJECT_MANAGER;
+	public abstract class Object : GLib.Object {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_OBJECT_PATH")]
 		public const string PATH;
 		[CCode (has_construct_function = false)]
@@ -1910,7 +1920,7 @@ namespace NM {
 		public string path { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_remote_connection_get_type ()")]
-	public class RemoteConnection : NM.Object, GLib.AsyncInitable, GLib.Initable, NM.Connection {
+	public class RemoteConnection : NM.Object, NM.Connection {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_DBUS_CONNECTION")]
 		public const string DBUS_CONNECTION;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_FILENAME")]
@@ -5001,7 +5011,7 @@ namespace NM {
 	public class VariantAttributeSpec {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_vpn_connection_get_type ()")]
-	public class VpnConnection : NM.ActiveConnection, GLib.AsyncInitable, GLib.Initable {
+	public class VpnConnection : NM.ActiveConnection {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VPN_CONNECTION_BANNER")]
 		public const string BANNER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VPN_CONNECTION_VPN_STATE")]
@@ -5179,7 +5189,7 @@ namespace NM {
 		public virtual signal void state_changed (uint state);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "wifi_p2p_peer", type_id = "nm_wifi_p2p_peer_get_type ()")]
-	public class WifiP2PPeer : NM.Object, GLib.AsyncInitable, GLib.Initable {
+	public class WifiP2PPeer : NM.Object {
 		[CCode (has_construct_function = false)]
 		protected WifiP2PPeer ();
 		[Version (since = "1.16")]
@@ -5229,7 +5239,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_wimax_nsp_get_type ()")]
 	[Version (deprecated = true, deprecated_since = "1.22.")]
-	public class WimaxNsp : NM.Object, GLib.AsyncInitable, GLib.Initable {
+	public class WimaxNsp : NM.Object {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIMAX_NSP_NAME")]
 		public const string NAME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIMAX_NSP_NETWORK_TYPE")]
@@ -5555,6 +5565,14 @@ namespace NM {
 		CARRIER_DETECT,
 		IS_SOFTWARE,
 		SRIOV
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_INTERFACE_FLAG_", type_id = "nm_device_interface_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.22")]
+	public enum DeviceInterfaceFlags {
+		UP,
+		LOWER_UP,
+		CARRIER
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_MODEM_CAPABILITY_", type_id = "nm_device_modem_capabilities_get_type ()")]
 	[Flags]
