@@ -15,7 +15,8 @@ namespace NM {
 			WPA_ENTERPRISE,
 			WPA2_PSK,
 			WPA2_ENTERPRISE,
-			SAE
+			SAE,
+			OWE
 		}
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_UTILS_HWADDR_LEN_MAX")]
 		public const int HWADDR_LEN_MAX;
@@ -1702,6 +1703,7 @@ namespace NM {
 		public IPAddress (int family, string addr, uint prefix) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public IPAddress.binary (int family, void* addr, uint prefix) throws GLib.Error;
+		public int cmp_full (NM.IPAddress b, NM.IPAddressCmpFlags cmp_flags);
 		public NM.IPAddress dup ();
 		public bool equal (NM.IPAddress other);
 		public unowned string get_address ();
@@ -3107,6 +3109,8 @@ namespace NM {
 		public const int DAD_TIMEOUT_MAX;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_HOSTNAME")]
 		public const string DHCP_HOSTNAME;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_HOSTNAME_FLAGS")]
+		public const string DHCP_HOSTNAME_FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_IAID")]
 		public const string DHCP_IAID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_SEND_HOSTNAME")]
@@ -3164,6 +3168,8 @@ namespace NM {
 		public int get_dad_timeout ();
 		public unowned string get_dhcp_hostname ();
 		[Version (since = "1.22")]
+		public NM.DhcpHostnameFlags get_dhcp_hostname_flags ();
+		[Version (since = "1.22")]
 		public unowned string get_dhcp_iaid ();
 		public bool get_dhcp_send_hostname ();
 		[Version (since = "1.2")]
@@ -3218,6 +3224,9 @@ namespace NM {
 		public int dad_timeout { get; set construct; }
 		[NoAccessorMethod]
 		public string dhcp_hostname { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.22")]
+		public uint dhcp_hostname_flags { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.22")]
 		public string dhcp_iaid { owned get; set; }
@@ -5433,7 +5442,8 @@ namespace NM {
 		GROUP_CCMP,
 		KEY_MGMT_PSK,
 		KEY_MGMT_802_1X,
-		KEY_MGMT_SAE
+		KEY_MGMT_SAE,
+		KEY_MGMT_OWE
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_802_11_MODE_", type_id = "nm_802_11_mode_get_type ()")]
 	public enum @80211Mode {
@@ -5721,6 +5731,23 @@ namespace NM {
 		FREQ_5GHZ,
 		MESH,
 		IBSS_RSN
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DHCP_HOSTNAME_FLAG_", type_id = "nm_dhcp_hostname_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.22")]
+	public enum DhcpHostnameFlags {
+		NONE,
+		FQDN_SERV_UPDATE,
+		FQDN_ENCODED,
+		FQDN_NO_UPDATE,
+		FQDN_CLEAR_FLAGS
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_IP_ADDRESS_CMP_FLAGS_", type_id = "nm_ip_address_cmp_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.22")]
+	public enum IPAddressCmpFlags {
+		NONE,
+		WITH_ATTRS
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_IP_ROUTING_RULE_AS_STRING_FLAGS_", type_id = "nm_ip_routing_rule_as_string_flags_get_type ()")]
 	[Flags]
@@ -6554,6 +6581,8 @@ namespace NM {
 	public const string IP_ROUTE_ATTRIBUTE_MTU;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_ONLINK")]
 	public const string IP_ROUTE_ATTRIBUTE_ONLINK;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_SCOPE")]
+	public const string IP_ROUTE_ATTRIBUTE_SCOPE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_SRC")]
 	public const string IP_ROUTE_ATTRIBUTE_SRC;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TABLE")]

@@ -333,6 +333,7 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static void utils_set_atk_name_description (Gtk.Widget widget, string name, string description);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	[Version (deprecated = true, deprecated_since = "3.36")]
 	public static void utils_set_atk_relation (Gtk.Widget obj1, Gtk.Widget obj2, Atk.RelationType rel_type);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_set_direct_save_filename (Gdk.DragContext context);

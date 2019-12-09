@@ -46,13 +46,21 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_arrows_get_type ()")]
 	public class Arrows : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public Arrows ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void animate ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public uint get_count ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public Hdy.ArrowsDirection get_direction ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public uint get_duration ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void set_count (uint count);
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void set_direction (Hdy.ArrowsDirection direction);
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void set_duration (uint duration);
 		public uint count { get; set; }
 		public Hdy.ArrowsDirection direction { get; set; }
@@ -100,13 +108,21 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_dialer_get_type ()")]
 	public class Dialer : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public Dialer ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void clear_number ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public unowned string get_number ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public Gtk.ReliefStyle get_relief ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public bool get_show_action_buttons ();
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void set_number (string number);
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void set_relief (Gtk.ReliefStyle relief);
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void set_show_action_buttons (bool show);
 		[NoAccessorMethod]
 		public uint column_spacing { get; set; }
@@ -267,10 +283,30 @@ namespace Hdy {
 		public void set_focus (Gtk.HeaderBar? header_bar);
 		public Gtk.HeaderBar focus { get; set; }
 	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_keypad_get_type ()")]
+	public class Keypad : Gtk.Grid, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public Keypad (bool only_digits, bool show_symbols);
+		public unowned Gtk.Widget get_entry ();
+		public void set_entry (Gtk.Entry entry);
+		public void set_left_action (Gtk.Widget widget);
+		public void set_right_action (Gtk.Widget widget);
+		public Gtk.Widget entry { get; set; }
+		public Gtk.Widget left_action { set; }
+		[NoAccessorMethod]
+		public bool only_digits { get; set; }
+		public Gtk.Widget right_action { set; }
+		[NoAccessorMethod]
+		public bool show_symbols { get; set; }
+	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_leaflet_get_type ()")]
-	public class Leaflet : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public class Leaflet : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Leaflet ();
+		[Version (since = "0.0.12")]
+		public bool get_can_swipe_back ();
+		[Version (since = "0.0.12")]
+		public bool get_can_swipe_forward ();
 		public uint get_child_transition_duration ();
 		public bool get_child_transition_running ();
 		[Version (deprecated = true, deprecated_since = "0.0.12")]
@@ -285,6 +321,10 @@ namespace Hdy {
 		public Hdy.LeafletTransitionType get_transition_type ();
 		public unowned Gtk.Widget get_visible_child ();
 		public unowned string get_visible_child_name ();
+		[Version (since = "0.0.12")]
+		public void set_can_swipe_back (bool can_swipe_back);
+		[Version (since = "0.0.12")]
+		public void set_can_swipe_forward (bool can_swipe_forward);
 		public void set_child_transition_duration (uint duration);
 		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public void set_child_transition_type (Hdy.LeafletChildTransitionType transition);
@@ -299,6 +339,10 @@ namespace Hdy {
 		public void set_visible_child_name (string name);
 		[NoWrapper]
 		public virtual void todo ();
+		[Version (since = "0.0.12")]
+		public bool can_swipe_back { get; set; }
+		[Version (since = "0.0.12")]
+		public bool can_swipe_forward { get; set; }
 		public uint child_transition_duration { get; set; }
 		public bool child_transition_running { get; }
 		public Hdy.LeafletChildTransitionType child_transition_type { get; set; }
@@ -326,6 +370,8 @@ namespace Hdy {
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.0.11")]
 		public Paginator ();
+		[Version (since = "0.0.12")]
+		public bool get_allow_mouse_drag ();
 		[Version (since = "0.0.11")]
 		public uint get_animation_duration ();
 		[Version (since = "0.0.11")]
@@ -352,6 +398,8 @@ namespace Hdy {
 		public void scroll_to (Gtk.Widget widget);
 		[Version (since = "0.0.11")]
 		public void scroll_to_full (Gtk.Widget widget, int64 duration);
+		[Version (since = "0.0.12")]
+		public void set_allow_mouse_drag (bool allow_mouse_drag);
 		[Version (since = "0.0.11")]
 		public void set_animation_duration (uint duration);
 		[Version (since = "0.0.11")]
@@ -364,6 +412,8 @@ namespace Hdy {
 		public void set_interactive (bool interactive);
 		[Version (since = "0.0.11")]
 		public void set_spacing (uint spacing);
+		[Version (since = "0.0.12")]
+		public bool allow_mouse_drag { get; set; }
 		[Version (since = "0.0.11")]
 		public uint animation_duration { get; set; }
 		[Version (since = "0.0.11")]
@@ -380,6 +430,8 @@ namespace Hdy {
 		public double position { get; }
 		[Version (since = "0.0.11")]
 		public uint spacing { get; set; }
+		[Version (since = "0.0.12")]
+		public signal void page_changed (uint index);
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_group_get_type ()")]
 	public class PreferencesGroup : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
@@ -586,7 +638,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_cname = "HdySwipeableInterface", type_id = "hdy_swipeable_get_type ()")]
 	public interface Swipeable : Gtk.Widget {
-		public virtual signal void begin_swipe ();
+		public virtual signal void begin_swipe (int direction);
 		[Version (since = "0.0.12")]
 		public virtual signal void end_swipe (int64 duration, double to);
 		[Version (since = "0.0.12")]
