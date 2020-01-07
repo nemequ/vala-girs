@@ -1436,15 +1436,23 @@ namespace Dazzle {
 		[Version (since = "3.30")]
 		public virtual Cairo.Surface? get_icon_surface (Gtk.Widget widget);
 		public unowned string get_id ();
+		[Version (since = "3.36")]
+		public virtual GLib.Icon? get_secondary_icon ();
+		public unowned string get_secondary_icon_name ();
+		[Version (since = "3.36")]
+		public virtual Cairo.Surface? get_secondary_icon_surface (Gtk.Widget widget);
 		public unowned string get_subtitle ();
 		public unowned string get_title ();
 		public void set_icon_name (string icon_name);
 		public void set_id (string id);
+		public void set_secondary_icon_name (string icon_name);
 		public void set_subtitle (string subtitle);
 		public void set_title (string title);
 		public GLib.Icon icon { owned get; }
 		public string icon_name { get; set; }
 		public string id { get; set; }
+		public GLib.Icon secondary_icon { owned get; }
+		public string secondary_icon_name { get; set; }
 		public string subtitle { get; set; }
 		public string title { get; set; }
 		[HasEmitter]

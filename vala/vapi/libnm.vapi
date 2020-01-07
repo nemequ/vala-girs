@@ -479,6 +479,8 @@ namespace NM {
 		public const string ANY_DEVICE_REMOVED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CAN_MODIFY")]
 		public const string CAN_MODIFY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CAPABILITIES")]
+		public const string CAPABILITIES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CHECKPOINTS")]
 		public const string CHECKPOINTS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIONS")]
@@ -513,12 +515,16 @@ namespace NM {
 		public const string DNS_RC_MANAGER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_HOSTNAME")]
 		public const string HOSTNAME;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_INSTANCE_FLAGS")]
+		public const string INSTANCE_FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_METERED")]
 		public const string METERED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_NETWORKING_ENABLED")]
 		public const string NETWORKING_ENABLED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_NM_RUNNING")]
 		public const string NM_RUNNING;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_PERMISSIONS_STATE")]
+		public const string PERMISSIONS_STATE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_PERMISSION_CHANGED")]
 		public const string PERMISSION_CHANGED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_PRIMARY_CONNECTION")]
@@ -576,6 +582,9 @@ namespace NM {
 		public unowned GLib.GenericArray<NM.ActiveConnection> get_active_connections ();
 		[Version (since = "1.2")]
 		public unowned GLib.GenericArray<NM.Device> get_all_devices ();
+		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
+		[Version (since = "1.24")]
+		public unowned uint32[] get_capabilities ();
 		[Version (since = "1.12")]
 		public unowned GLib.GenericArray<NM.Checkpoint> get_checkpoints ();
 		public unowned NM.RemoteConnection get_connection_by_id (string id);
@@ -598,6 +607,8 @@ namespace NM {
 		public unowned string get_dns_mode ();
 		[Version (since = "1.6")]
 		public unowned string get_dns_rc_manager ();
+		[Version (since = "1.24")]
+		public NM.ClientInstanceFlags get_instance_flags ();
 		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool get_logging (string? level, string? domains) throws GLib.Error;
 		[Version (since = "1.22")]
@@ -606,6 +617,8 @@ namespace NM {
 		public NM.Metered get_metered ();
 		public bool get_nm_running ();
 		public NM.ClientPermissionResult get_permission_result (NM.ClientPermission permission);
+		[Version (since = "1.24")]
+		public NM.Ternary get_permissions_state ();
 		public unowned NM.ActiveConnection get_primary_connection ();
 		public bool get_startup ();
 		public NM.State get_state ();
@@ -647,6 +660,8 @@ namespace NM {
 		public GLib.GenericArray<NM.Device> all_devices { get; }
 		[NoAccessorMethod]
 		public bool can_modify { get; }
+		[Version (since = "1.24")]
+		public GLib.Array<uint32> capabilities { get; }
 		[Version (since = "1.12")]
 		public GLib.GenericArray<NM.Checkpoint> checkpoints { get; }
 		public GLib.GenericArray<NM.RemoteConnection> connections { get; }
@@ -671,11 +686,16 @@ namespace NM {
 		public string dns_rc_manager { get; }
 		[NoAccessorMethod]
 		public string hostname { owned get; }
+		[NoAccessorMethod]
+		[Version (since = "1.24")]
+		public uint instance_flags { get; set construct; }
 		[Version (since = "1.2")]
 		public uint metered { get; }
 		[NoAccessorMethod]
 		public bool networking_enabled { get; set; }
 		public bool nm_running { get; }
+		[Version (since = "1.24")]
+		public NM.Ternary permissions_state { get; }
 		public NM.ActiveConnection primary_connection { get; }
 		public bool startup { get; }
 		public NM.State state { get; }
@@ -2026,7 +2046,7 @@ namespace NM {
 		public unowned string get_parent ();
 		[NoAccessorMethod]
 		[Version (since = "1.14")]
-		public string parent { owned get; set construct; }
+		public string parent { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_802_1x", type_id = "nm_setting_802_1x_get_type ()")]
 	public class Setting8021x : NM.Setting {
@@ -2284,7 +2304,7 @@ namespace NM {
 		public NM.SettingSecretFlags password_raw_flags { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.8")]
-		public uint phase1_auth_flags { get; set construct; }
+		public uint phase1_auth_flags { get; set; }
 		[NoAccessorMethod]
 		public string phase1_fast_provisioning { owned get; set; }
 		[NoAccessorMethod]
@@ -2340,7 +2360,7 @@ namespace NM {
 		[NoAccessorMethod]
 		public string subject_match { owned get; set; }
 		[NoAccessorMethod]
-		public bool system_ca_certs { get; set construct; }
+		public bool system_ca_certs { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_adsl_get_type ()")]
 	public class SettingAdsl : NM.Setting {
@@ -2559,32 +2579,32 @@ namespace NM {
 		[Version (since = "1.18")]
 		public bool remove_vlan_by_vid (uint16 vid_start, uint16 vid_end);
 		[NoAccessorMethod]
-		public uint ageing_time { get; set construct; }
+		public uint ageing_time { get; set; }
 		[NoAccessorMethod]
-		public uint forward_delay { get; set construct; }
+		public uint forward_delay { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public uint group_forward_mask { get; set construct; }
+		public uint group_forward_mask { get; set; }
 		[NoAccessorMethod]
-		public uint hello_time { get; set construct; }
+		public uint hello_time { get; set; }
 		[NoAccessorMethod]
 		[Version (deprecated = true, deprecated_since = "1.12")]
 		public string mac_address { owned get; set; }
 		[NoAccessorMethod]
-		public uint max_age { get; set construct; }
+		public uint max_age { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public bool multicast_snooping { get; set construct; }
+		public bool multicast_snooping { get; set; }
 		[NoAccessorMethod]
-		public uint priority { get; set construct; }
+		public uint priority { get; set; }
 		[NoAccessorMethod]
-		public bool stp { get; set construct; }
-		[NoAccessorMethod]
-		[Version (since = "1.18")]
-		public uint vlan_default_pvid { get; set construct; }
+		public bool stp { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.18")]
-		public bool vlan_filtering { get; set construct; }
+		public uint vlan_default_pvid { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.18")]
+		public bool vlan_filtering { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.18")]
 		public GLib.GenericArray<NM.BridgeVlan> vlans { owned get; set; }
@@ -2611,9 +2631,9 @@ namespace NM {
 		[NoAccessorMethod]
 		public bool hairpin_mode { get; set; }
 		[NoAccessorMethod]
-		public uint path_cost { get; set construct; }
+		public uint path_cost { get; set; }
 		[NoAccessorMethod]
-		public uint priority { get; set construct; }
+		public uint priority { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.18")]
 		public GLib.GenericArray<NM.BridgeVlan> vlans { owned get; set; }
@@ -2642,7 +2662,7 @@ namespace NM {
 		public unowned string get_username ();
 		[NoAccessorMethod]
 		[Version (since = "1.8")]
-		public uint mtu { get; set construct; }
+		public uint mtu { get; set; }
 		[NoAccessorMethod]
 		public string number { owned get; set; }
 		[NoAccessorMethod]
@@ -2758,25 +2778,25 @@ namespace NM {
 		public bool remove_secondary_by_value (string sec_uuid);
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public int auth_retries { get; set construct; }
+		public int auth_retries { get; set; }
 		[NoAccessorMethod]
-		public bool autoconnect { get; set construct; }
+		public bool autoconnect { get; set; }
 		[NoAccessorMethod]
-		public int autoconnect_priority { get; set construct; }
+		public int autoconnect_priority { get; set; }
 		[NoAccessorMethod]
-		public int autoconnect_retries { get; set construct; }
+		public int autoconnect_retries { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public NM.SettingConnectionAutoconnectSlaves autoconnect_slaves { get; set construct; }
+		public NM.SettingConnectionAutoconnectSlaves autoconnect_slaves { get; set; }
 		[NoAccessorMethod]
-		public uint gateway_ping_timeout { get; set construct; }
+		public uint gateway_ping_timeout { get; set; }
 		[NoAccessorMethod]
 		public string id { owned get; set; }
 		[NoAccessorMethod]
 		public string interface_name { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public int lldp { get; set construct; }
+		public int lldp { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.14")]
 		public int llmnr { get; set; }
@@ -2795,7 +2815,7 @@ namespace NM {
 		[NoAccessorMethod]
 		public string[] permissions { owned get; set; }
 		[NoAccessorMethod]
-		public bool read_only { get; set construct; }
+		public bool read_only { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] secondaries { owned get; set; }
@@ -2805,7 +2825,7 @@ namespace NM {
 		[Version (since = "1.4")]
 		public string stable_id { owned get; set; }
 		[NoAccessorMethod]
-		public uint64 timestamp { get; set construct; }
+		public uint64 timestamp { get; set; }
 		[NoAccessorMethod]
 		public string type { owned get; set; }
 		[NoAccessorMethod]
@@ -2814,7 +2834,7 @@ namespace NM {
 		[Version (since = "1.20")]
 		public int wait_device_timeout { get; set; }
 		[NoAccessorMethod]
-		public string zone { owned get; set construct; }
+		public string zone { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_dcb_get_type ()")]
 	public class SettingDcb : NM.Setting {
@@ -2880,17 +2900,17 @@ namespace NM {
 		[NoAccessorMethod]
 		public NM.SettingDcbFlags app_fcoe_flags { get; set; }
 		[NoAccessorMethod]
-		public string app_fcoe_mode { owned get; set construct; }
+		public string app_fcoe_mode { owned get; set; }
 		[NoAccessorMethod]
-		public int app_fcoe_priority { get; set construct; }
+		public int app_fcoe_priority { get; set; }
 		[NoAccessorMethod]
 		public NM.SettingDcbFlags app_fip_flags { get; set; }
 		[NoAccessorMethod]
-		public int app_fip_priority { get; set construct; }
+		public int app_fip_priority { get; set; }
 		[NoAccessorMethod]
 		public NM.SettingDcbFlags app_iscsi_flags { get; set; }
 		[NoAccessorMethod]
-		public int app_iscsi_priority { get; set construct; }
+		public int app_iscsi_priority { get; set; }
 		[NoAccessorMethod]
 		public GLib.Array<uint> priority_bandwidth { owned get; set; }
 		[NoAccessorMethod]
@@ -2999,7 +3019,7 @@ namespace NM {
 		public bool home_only { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.8")]
-		public uint mtu { get; set construct; }
+		public uint mtu { get; set; }
 		[NoAccessorMethod]
 		public string network_id { owned get; set; }
 		[NoAccessorMethod]
@@ -3089,12 +3109,12 @@ namespace NM {
 		public unowned string get_token ();
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public int addr_gen_mode { get; set construct; }
+		public int addr_gen_mode { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
 		public string dhcp_duid { owned get; set; }
 		[NoAccessorMethod]
-		public NM.SettingIP6ConfigPrivacy ip6_privacy { get; set construct; }
+		public NM.SettingIP6ConfigPrivacy ip6_privacy { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.4")]
 		public string token { owned get; set; }
@@ -3221,7 +3241,7 @@ namespace NM {
 		public GLib.GenericArray<NM.IPAddress> addresses { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public int dad_timeout { get; set construct; }
+		public int dad_timeout { get; set; }
 		[NoAccessorMethod]
 		public string dhcp_hostname { owned get; set; }
 		[NoAccessorMethod]
@@ -3231,7 +3251,7 @@ namespace NM {
 		[Version (since = "1.22")]
 		public string dhcp_iaid { owned get; set; }
 		[NoAccessorMethod]
-		public bool dhcp_send_hostname { get; set construct; }
+		public bool dhcp_send_hostname { get; set; }
 		[NoAccessorMethod]
 		public int dhcp_timeout { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -3243,24 +3263,24 @@ namespace NM {
 		public string[] dns_options { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.4")]
-		public int dns_priority { get; set construct; }
+		public int dns_priority { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] dns_search { owned get; set; }
 		[NoAccessorMethod]
 		public string gateway { owned get; set; }
 		[NoAccessorMethod]
-		public bool ignore_auto_dns { get; set construct; }
+		public bool ignore_auto_dns { get; set; }
 		[NoAccessorMethod]
-		public bool ignore_auto_routes { get; set construct; }
+		public bool ignore_auto_routes { get; set; }
 		[NoAccessorMethod]
-		public bool may_fail { get; set construct; }
+		public bool may_fail { get; set; }
 		[NoAccessorMethod]
 		public string method { owned get; set; }
 		[NoAccessorMethod]
-		public bool never_default { get; set construct; }
+		public bool never_default { get; set; }
 		[NoAccessorMethod]
-		public int64 route_metric { get; set construct; }
+		public int64 route_metric { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
 		public uint route_table { get; set; }
@@ -3327,13 +3347,13 @@ namespace NM {
 		public uint get_ttl ();
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint encapsulation_limit { get; set construct; }
+		public uint encapsulation_limit { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
 		public uint flags { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint flow_label { get; set construct; }
+		public uint flow_label { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public string input_key { owned get; set; }
@@ -3345,7 +3365,7 @@ namespace NM {
 		public uint mode { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint mtu { get; set construct; }
+		public uint mtu { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public string output_key { owned get; set; }
@@ -3354,16 +3374,16 @@ namespace NM {
 		public string parent { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public bool path_mtu_discovery { get; set construct; }
+		public bool path_mtu_discovery { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public string remote { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint tos { get; set construct; }
+		public uint tos { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint ttl { get; set construct; }
+		public uint ttl { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_infiniband_get_type ()")]
 	public class SettingInfiniband : NM.Setting {
@@ -3390,13 +3410,13 @@ namespace NM {
 		[NoAccessorMethod]
 		public string mac_address { owned get; set; }
 		[NoAccessorMethod]
-		public uint mtu { get; set construct; }
+		public uint mtu { get; set; }
 		[NoAccessorMethod]
-		public int p_key { get; set construct; }
+		public int p_key { get; set; }
 		[NoAccessorMethod]
-		public string parent { owned get; set construct; }
+		public string parent { owned get; set; }
 		[NoAccessorMethod]
-		public string transport_mode { owned get; set construct; }
+		public string transport_mode { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_macsec_get_type ()")]
 	public class SettingMacsec : NM.Setting {
@@ -3423,31 +3443,31 @@ namespace NM {
 		public NM.SettingMacsecValidation get_validation ();
 		[NoAccessorMethod]
 		[Version (since = "1.6")]
-		public bool encrypt { get; set construct; }
+		public bool encrypt { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.6")]
-		public string mka_cak { owned get; set construct; }
+		public string mka_cak { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.6")]
 		public NM.SettingSecretFlags mka_cak_flags { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.6")]
-		public string mka_ckn { owned get; set construct; }
+		public string mka_ckn { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.6")]
-		public int mode { get; set construct; }
+		public int mode { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.6")]
-		public string parent { owned get; set construct; }
+		public string parent { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.6")]
-		public int port { get; set construct; }
+		public int port { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
-		public bool send_sci { get; set construct; }
+		public bool send_sci { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.6")]
-		public int validation { get; set construct; }
+		public int validation { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_macvlan_get_type ()")]
 	public class SettingMacvlan : NM.Setting {
@@ -3474,16 +3494,16 @@ namespace NM {
 		public bool get_tap ();
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint mode { get; set construct; }
+		public uint mode { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public string parent { owned get; set construct; }
+		public string parent { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public bool promiscuous { get; set construct; }
+		public bool promiscuous { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public bool tap { get; set construct; }
+		public bool tap { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_match_get_type ()")]
 	[Version (since = "1.14")]
@@ -3518,7 +3538,7 @@ namespace NM {
 		public unowned string get_dhcp_anycast_address ();
 		public unowned GLib.Bytes get_ssid ();
 		[NoAccessorMethod]
-		public uint channel { get; set construct; }
+		public uint channel { get; set; }
 		[NoAccessorMethod]
 		public string dhcp_anycast_address { owned get; set; }
 		[NoAccessorMethod]
@@ -3544,16 +3564,16 @@ namespace NM {
 		public string datapath_type { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public string fail_mode { owned get; set construct; }
+		public string fail_mode { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public bool mcast_snooping_enable { get; set construct; }
+		public bool mcast_snooping_enable { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public bool rstp_enable { get; set construct; }
+		public bool rstp_enable { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public bool stp_enable { get; set construct; }
+		public bool stp_enable { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_dpdk_get_type ()")]
 	public class SettingOvsDpdk : NM.Setting {
@@ -3564,7 +3584,7 @@ namespace NM {
 		public unowned string get_devargs ();
 		[NoAccessorMethod]
 		[Version (since = "1.20")]
-		public string devargs { owned get; set construct; }
+		public string devargs { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_interface_get_type ()")]
 	public class SettingOvsInterface : NM.Setting {
@@ -3575,7 +3595,7 @@ namespace NM {
 		public unowned string get_interface_type ();
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public string type { owned get; set construct; }
+		public string type { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_patch_get_type ()")]
 	public class SettingOvsPatch : NM.Setting {
@@ -3586,7 +3606,7 @@ namespace NM {
 		public unowned string get_peer ();
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public string peer { owned get; set construct; }
+		public string peer { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_port_get_type ()")]
 	public class SettingOvsPort : NM.Setting {
@@ -3607,22 +3627,22 @@ namespace NM {
 		public unowned string get_vlan_mode ();
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public uint bond_downdelay { get; set construct; }
+		public uint bond_downdelay { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public string bond_mode { owned get; set construct; }
+		public string bond_mode { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public uint bond_updelay { get; set construct; }
+		public uint bond_updelay { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public string lacp { owned get; set construct; }
+		public string lacp { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public uint tag { get; set construct; }
+		public uint tag { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public string vlan_mode { owned get; set construct; }
+		public string vlan_mode { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ppp_get_type ()")]
 	public class SettingPpp : NM.Setting {
@@ -3685,41 +3705,41 @@ namespace NM {
 		public bool get_require_mppe ();
 		public bool get_require_mppe_128 ();
 		[NoAccessorMethod]
-		public uint baud { get; set construct; }
+		public uint baud { get; set; }
 		[NoAccessorMethod]
-		public bool crtscts { get; set construct; }
+		public bool crtscts { get; set; }
 		[NoAccessorMethod]
-		public uint lcp_echo_failure { get; set construct; }
+		public uint lcp_echo_failure { get; set; }
 		[NoAccessorMethod]
-		public uint lcp_echo_interval { get; set construct; }
+		public uint lcp_echo_interval { get; set; }
 		[NoAccessorMethod]
-		public bool mppe_stateful { get; set construct; }
+		public bool mppe_stateful { get; set; }
 		[NoAccessorMethod]
-		public uint mru { get; set construct; }
+		public uint mru { get; set; }
 		[NoAccessorMethod]
-		public uint mtu { get; set construct; }
+		public uint mtu { get; set; }
 		[NoAccessorMethod]
-		public bool no_vj_comp { get; set construct; }
+		public bool no_vj_comp { get; set; }
 		[NoAccessorMethod]
-		public bool noauth { get; set construct; }
+		public bool noauth { get; set; }
 		[NoAccessorMethod]
-		public bool nobsdcomp { get; set construct; }
+		public bool nobsdcomp { get; set; }
 		[NoAccessorMethod]
-		public bool nodeflate { get; set construct; }
+		public bool nodeflate { get; set; }
 		[NoAccessorMethod]
-		public bool refuse_chap { get; set construct; }
+		public bool refuse_chap { get; set; }
 		[NoAccessorMethod]
-		public bool refuse_eap { get; set construct; }
+		public bool refuse_eap { get; set; }
 		[NoAccessorMethod]
-		public bool refuse_mschap { get; set construct; }
+		public bool refuse_mschap { get; set; }
 		[NoAccessorMethod]
-		public bool refuse_mschapv2 { get; set construct; }
+		public bool refuse_mschapv2 { get; set; }
 		[NoAccessorMethod]
-		public bool refuse_pap { get; set construct; }
+		public bool refuse_pap { get; set; }
 		[NoAccessorMethod]
-		public bool require_mppe { get; set construct; }
+		public bool require_mppe { get; set; }
 		[NoAccessorMethod]
-		public bool require_mppe_128 { get; set construct; }
+		public bool require_mppe_128 { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_pppoe_get_type ()")]
 	public class SettingPppoe : NM.Setting {
@@ -3745,7 +3765,7 @@ namespace NM {
 		public unowned string get_username ();
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public string parent { owned get; set construct; }
+		public string parent { owned get; set; }
 		[NoAccessorMethod]
 		public string password { owned get; set; }
 		[NoAccessorMethod]
@@ -3783,7 +3803,7 @@ namespace NM {
 		public bool browser_only { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.6")]
-		public int method { get; set construct; }
+		public int method { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.6")]
 		public string pac_script { owned get; set; }
@@ -3813,15 +3833,15 @@ namespace NM {
 		public uint64 get_send_delay ();
 		public uint get_stopbits ();
 		[NoAccessorMethod]
-		public uint baud { get; set construct; }
+		public uint baud { get; set; }
 		[NoAccessorMethod]
-		public uint bits { get; set construct; }
+		public uint bits { get; set; }
 		[NoAccessorMethod]
-		public NM.SettingSerialParity parity { get; set construct; }
+		public NM.SettingSerialParity parity { get; set; }
 		[NoAccessorMethod]
-		public uint64 send_delay { get; set construct; }
+		public uint64 send_delay { get; set; }
 		[NoAccessorMethod]
-		public uint stopbits { get; set construct; }
+		public uint stopbits { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_sriov_get_type ()")]
 	[Version (since = "1.14")]
@@ -3837,9 +3857,9 @@ namespace NM {
 		public void remove_vf (uint idx);
 		public bool remove_vf_by_index (uint index);
 		[NoAccessorMethod]
-		public NM.Ternary autoprobe_drivers { get; set construct; }
+		public NM.Ternary autoprobe_drivers { get; set; }
 		[NoAccessorMethod]
-		public uint total_vfs { get; set construct; }
+		public uint total_vfs { get; set; }
 		[NoAccessorMethod]
 		public GLib.GenericArray<NM.SriovVF> vfs { owned get; set; }
 	}
@@ -4141,7 +4161,7 @@ namespace NM {
 		public string group { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint mode { get; set construct; }
+		public uint mode { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public bool multi_queue { get; set; }
@@ -4204,14 +4224,14 @@ namespace NM {
 		[NoAccessorMethod]
 		public string[] egress_priority_map { owned get; set; }
 		[NoAccessorMethod]
-		public NM.VlanFlags flags { get; set construct; }
+		public NM.VlanFlags flags { get; set; }
 		[NoAccessorMethod]
-		public uint id { get; set construct; }
+		public uint id { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] ingress_priority_map { owned get; set; }
 		[NoAccessorMethod]
-		public string parent { owned get; set construct; }
+		public string parent { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_vpn_get_type ()")]
 	public class SettingVpn : NM.Setting {
@@ -4339,52 +4359,52 @@ namespace NM {
 		public uint get_ttl ();
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint ageing { get; set construct; }
+		public uint ageing { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint destination_port { get; set construct; }
+		public uint destination_port { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint id { get; set construct; }
+		public uint id { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public bool l2_miss { get; set construct; }
+		public bool l2_miss { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public bool l3_miss { get; set construct; }
+		public bool l3_miss { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public bool learning { get; set construct; }
+		public bool learning { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint limit { get; set construct; }
+		public uint limit { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public string local { owned get; set construct; }
+		public string local { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public string parent { owned get; set construct; }
+		public string parent { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public bool proxy { get; set construct; }
+		public bool proxy { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public string remote { owned get; set construct; }
+		public string remote { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public bool rsc { get; set construct; }
+		public bool rsc { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint source_port_max { get; set construct; }
+		public uint source_port_max { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint source_port_min { get; set construct; }
+		public uint source_port_min { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint tos { get; set construct; }
+		public uint tos { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint ttl { get; set construct; }
+		public uint ttl { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_wifi_p2p", type_id = "nm_setting_wifi_p2p_get_type ()")]
 	[Version (since = "1.16")]
@@ -4538,7 +4558,7 @@ namespace NM {
 		public bool remove_mac_blacklist_item_by_value (string mac);
 		public bool remove_s390_option (string key);
 		[NoAccessorMethod]
-		public bool auto_negotiate { get; set construct; }
+		public bool auto_negotiate { get; set; }
 		[NoAccessorMethod]
 		public string cloned_mac_address { owned get; set; }
 		[NoAccessorMethod]
@@ -4551,7 +4571,7 @@ namespace NM {
 		[NoAccessorMethod]
 		public string[] mac_address_blacklist { owned get; set; }
 		[NoAccessorMethod]
-		public uint mtu { get; set construct; }
+		public uint mtu { get; set; }
 		[NoAccessorMethod]
 		public string port { owned get; set; }
 		[NoAccessorMethod]
@@ -4562,10 +4582,10 @@ namespace NM {
 		[NoAccessorMethod]
 		public string[] s390_subchannels { owned get; set; }
 		[NoAccessorMethod]
-		public uint speed { get; set construct; }
+		public uint speed { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
-		public uint wake_on_lan { get; set construct; }
+		public uint wake_on_lan { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public string wake_on_lan_password { owned get; set; }
@@ -4697,7 +4717,7 @@ namespace NM {
 		[NoAccessorMethod]
 		public string bssid { owned get; set; }
 		[NoAccessorMethod]
-		public uint channel { get; set construct; }
+		public uint channel { get; set; }
 		[NoAccessorMethod]
 		public string cloned_mac_address { owned get; set; }
 		[NoAccessorMethod]
@@ -4715,22 +4735,22 @@ namespace NM {
 		[NoAccessorMethod]
 		public string mode { owned get; set; }
 		[NoAccessorMethod]
-		public uint mtu { get; set construct; }
+		public uint mtu { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public uint powersave { get; set; }
 		[NoAccessorMethod]
-		public uint rate { get; set construct; }
+		public uint rate { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] seen_bssids { owned get; set; }
 		[NoAccessorMethod]
 		public GLib.Bytes ssid { owned get; set; }
 		[NoAccessorMethod]
-		public uint tx_power { get; set construct; }
+		public uint tx_power { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
-		public uint wake_on_wlan { get; set construct; }
+		public uint wake_on_wlan { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_wireless_security_get_type ()")]
 	public class SettingWirelessSecurity : NM.Setting {
@@ -4774,7 +4794,7 @@ namespace NM {
 		public string auth_alg { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
-		public int fils { get; set construct; }
+		public int fils { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] group { owned get; set; }
@@ -4791,7 +4811,7 @@ namespace NM {
 		public string[] pairwise { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public int pmf { get; set construct; }
+		public int pmf { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] proto { owned get; set; }
@@ -4810,12 +4830,12 @@ namespace NM {
 		[NoAccessorMethod]
 		public NM.SettingSecretFlags wep_key_flags { get; set; }
 		[NoAccessorMethod]
-		public NM.WepKeyType wep_key_type { get; set construct; }
+		public NM.WepKeyType wep_key_type { get; set; }
 		[NoAccessorMethod]
-		public uint wep_tx_keyidx { get; set construct; }
+		public uint wep_tx_keyidx { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
-		public uint wps_method { get; set construct; }
+		public uint wps_method { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_wpan_get_type ()")]
 	public class SettingWpan : NM.Setting {
@@ -4875,8 +4895,9 @@ namespace NM {
 		public (unowned string)[] get_attribute_names ();
 		[Version (since = "1.14")]
 		public uint get_index ();
+		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
 		[Version (since = "1.14")]
-		public uint get_vlan_ids (out uint length);
+		public unowned uint[] get_vlan_ids ();
 		public NM.SriovVFVlanProtocol get_vlan_protocol (uint vlan_id);
 		[Version (since = "1.14")]
 		public uint32 get_vlan_qos (uint vlan_id);
@@ -5502,7 +5523,8 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CAPABILITY_", type_id = "nm_capability_get_type ()")]
 	public enum Capability {
-		TEAM
+		TEAM,
+		OVS
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CHECKPOINT_CREATE_FLAG_", type_id = "nm_checkpoint_create_flags_get_type ()")]
 	[Flags]
@@ -5513,6 +5535,13 @@ namespace NM {
 		DELETE_NEW_CONNECTIONS,
 		DISCONNECT_NEW_DEVICES,
 		ALLOW_OVERLAPPING
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_INSTANCE_FLAGS_", type_id = "nm_client_instance_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.24")]
+	public enum ClientInstanceFlags {
+		NONE,
+		NO_AUTO_FETCH_PERMISSIONS
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_PERMISSION_", type_id = "nm_client_permission_get_type ()")]
 	public enum ClientPermission {

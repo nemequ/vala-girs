@@ -67,9 +67,11 @@ namespace GMime {
 		[CCode (has_construct_function = false)]
 		public Certificate ();
 		public long get_created ();
+		public int64 get_created64 ();
 		public GMime.DigestAlgo get_digest_algo ();
 		public unowned string get_email ();
 		public long get_expires ();
+		public int64 get_expires64 ();
 		public unowned string get_fingerprint ();
 		public GMime.Validity get_id_validity ();
 		public unowned string get_issuer_name ();
@@ -803,7 +805,9 @@ namespace GMime {
 		public Signature ();
 		public unowned GMime.Certificate get_certificate ();
 		public long get_created ();
+		public int64 get_created64 ();
 		public long get_expires ();
+		public int64 get_expires64 ();
 		public GMime.SignatureStatus get_status ();
 		public void set_certificate (GMime.Certificate cert);
 		public void set_created (long created);
@@ -1080,6 +1084,7 @@ namespace GMime {
 	public enum DecryptFlags {
 		NONE,
 		EXPORT_SESSION_KEY,
+		NO_VERIFY,
 		ENABLE_KEYSERVER_LOOKUPS,
 		ENABLE_ONLINE_CERTIFICATE_CHECKS
 	}
@@ -1187,7 +1192,8 @@ namespace GMime {
 		CRIT_CONFLICTING_PARAMETER,
 		CRIT_MULTIPART_WITHOUT_BOUNDARY,
 		WARN_INVALID_PARAMETER,
-		WARN_INVALID_ADDRESS_LIST
+		WARN_INVALID_ADDRESS_LIST,
+		CRIT_NESTING_OVERFLOW
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_PUBKEY_ALGO_", has_type_id = false)]
 	public enum PubKeyAlgo {

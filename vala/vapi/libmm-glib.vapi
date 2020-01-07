@@ -630,10 +630,13 @@ namespace MM {
 	public class LocationGpsNmea : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected LocationGpsNmea ();
-		[Version (since = "1.0")]
+		[Version (deprecated = true, deprecated_since = "1.14", since = "1.0")]
 		public string build_full ();
 		[Version (since = "1.0")]
 		public unowned string get_trace (string trace_type);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.14")]
+		public string[] get_traces ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_location_gps_raw_get_type ()")]
 	public class LocationGpsRaw : GLib.Object {
@@ -893,19 +896,6 @@ namespace MM {
 		public MM.Modem3gppRegistrationState get_registration_state ();
 		[Version (deprecated = true, deprecated_since = "1.10.0.", since = "1.0")]
 		public MM.Modem3gppSubscriptionState get_subscription_state ();
-		public static unowned string network_availability_get_string (MM.Modem3gppNetworkAvailability val);
-		[Version (since = "1.0")]
-		public static void network_free (MM.Modem3gppNetwork network);
-		[Version (since = "1.0")]
-		public static MM.ModemAccessTechnology network_get_access_technology (MM.Modem3gppNetwork network);
-		[Version (since = "1.0")]
-		public static MM.Modem3gppNetworkAvailability network_get_availability (MM.Modem3gppNetwork network);
-		[Version (since = "1.0")]
-		public static unowned string network_get_operator_code (MM.Modem3gppNetwork network);
-		[Version (since = "1.0")]
-		public static unowned string network_get_operator_long (MM.Modem3gppNetwork network);
-		[Version (since = "1.0")]
-		public static unowned string network_get_operator_short (MM.Modem3gppNetwork network);
 		[Version (since = "1.10")]
 		public unowned MM.BearerProperties peek_initial_eps_bearer_settings ();
 		[Version (since = "1.0")]
@@ -927,9 +917,22 @@ namespace MM {
 		public bool set_initial_eps_bearer_settings_sync (MM.BearerProperties config, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static unowned string subscription_state_get_string (MM.Modem3gppSubscriptionState val);
 	}
-	[CCode (cheader_filename = "libmm-glib.h", has_type_id = false)]
+	[CCode (cheader_filename = "libmm-glib.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", lower_case_csuffix = "modem_3gpp_network", type_id = "mm_modem_3gpp_network_get_type ()")]
 	[Compact]
 	public class Modem3gppNetwork {
+		public static unowned string availability_get_string (MM.Modem3gppNetworkAvailability val);
+		[Version (since = "1.0")]
+		public void free ();
+		[Version (since = "1.0")]
+		public MM.ModemAccessTechnology get_access_technology ();
+		[Version (since = "1.0")]
+		public MM.Modem3gppNetworkAvailability get_availability ();
+		[Version (since = "1.0")]
+		public unowned string get_operator_code ();
+		[Version (since = "1.0")]
+		public unowned string get_operator_long ();
+		[Version (since = "1.0")]
+		public unowned string get_operator_short ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", lower_case_csuffix = "modem_3gpp_ussd", type_id = "mm_modem_3gpp_ussd_get_type ()")]
 	public class Modem3gppUssd : MM.GdbusModem3gppUssdProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModem3gppUssd {
@@ -3166,6 +3169,8 @@ namespace MM {
 		GPRSPDPAUTHFAILURE,
 		[CCode (cname = "MM_MOBILE_EQUIPMENT_ERROR_GPRS_INVALID_MOBILE_CLASS")]
 		GPRSINVALIDMOBILECLASS,
+		[CCode (cname = "MM_MOBILE_EQUIPMENT_ERROR_GPRS_LAST_PDN_DISCONNECTION_NOT_ALLOWED_LEGACY")]
+		GPRSLASTPDNDISCONNECTIONNOTALLOWEDLEGACY,
 		[CCode (cname = "MM_MOBILE_EQUIPMENT_ERROR_GPRS_LAST_PDN_DISCONNECTION_NOT_ALLOWED")]
 		GPRSLASTPDNDISCONNECTIONNOTALLOWED,
 		[CCode (cname = "MM_MOBILE_EQUIPMENT_ERROR_GPRS_SEMANTICALLY_INCORRECT_MESSAGE")]

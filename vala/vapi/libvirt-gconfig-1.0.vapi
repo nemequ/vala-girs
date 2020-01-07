@@ -934,7 +934,8 @@ namespace GVirConfig {
 		ICH9_UHCI2,
 		ICH9_UHCI3,
 		VT82C686B_UHCI,
-		PCI_OHCI
+		PCI_OHCI,
+		QEMU_XHCI
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", cprefix = "GVIR_CONFIG_DOMAIN_CPU_FEATURE_POLICY_", type_id = "gvir_config_domain_cpu_feature_policy_get_type ()")]
 	public enum DomainCpuFeaturePolicy {

@@ -32,6 +32,8 @@ namespace GCab {
 		public unowned GLib.Bytes get_bytes ();
 		[Version (since = "0.6")]
 		public bool get_date (GLib.TimeVal result);
+		[Version (since = "1.4")]
+		public GLib.DateTime get_date_time ();
 		public unowned string? get_extract_name ();
 		public unowned GLib.File get_file ();
 		public unowned string get_name ();
@@ -41,6 +43,8 @@ namespace GCab {
 		public void set_attributes (uint32 attr);
 		[Version (since = "1.0")]
 		public void set_date (GLib.TimeVal tv);
+		[Version (since = "1.4")]
+		public void set_date_time (GLib.DateTime dt);
 		public void set_extract_name (string? name);
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]

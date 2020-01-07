@@ -345,6 +345,7 @@ namespace Hdy {
 		public bool can_swipe_forward { get; set; }
 		public uint child_transition_duration { get; set; }
 		public bool child_transition_running { get; }
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public Hdy.LeafletChildTransitionType child_transition_type { get; set; }
 		public Hdy.Fold fold { get; }
 		[NoAccessorMethod]
@@ -355,6 +356,7 @@ namespace Hdy {
 		public bool hhomogeneous_unfolded { get; set; }
 		public bool interpolate_size { get; set; }
 		public uint mode_transition_duration { get; set; }
+		[Version (deprecated = true, deprecated_since = "0.0.12")]
 		public Hdy.LeafletModeTransitionType mode_transition_type { get; set; }
 		[Version (since = "0.0.12")]
 		public Hdy.LeafletTransitionType transition_type { get; set; }
@@ -638,11 +640,13 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_cname = "HdySwipeableInterface", type_id = "hdy_swipeable_get_type ()")]
 	public interface Swipeable : Gtk.Widget {
+		[Version (since = "0.0.12")]
 		public virtual signal void begin_swipe (int direction);
 		[Version (since = "0.0.12")]
 		public virtual signal void end_swipe (int64 duration, double to);
 		[Version (since = "0.0.12")]
 		public virtual signal void switch_child (uint index, int64 duration);
+		[Version (since = "0.0.12")]
 		public virtual signal void update_swipe (double value);
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_ARROWS_DIRECTION_", type_id = "hdy_arrows_direction_get_type ()")]
