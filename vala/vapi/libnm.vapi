@@ -616,6 +616,8 @@ namespace NM {
 		[Version (since = "1.22")]
 		public NM.Metered get_metered ();
 		public bool get_nm_running ();
+		[Version (since = "1.24")]
+		public unowned NM.Object get_object_by_path (string dbus_path);
 		public NM.ClientPermissionResult get_permission_result (NM.ClientPermission permission);
 		[Version (since = "1.24")]
 		public NM.Ternary get_permissions_state ();
@@ -872,6 +874,8 @@ namespace NM {
 		public const string UDI;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VENDOR")]
 		public const string VENDOR;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VRF_TABLE")]
+		public const string VRF_TABLE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_AGEING")]
 		public const string VXLAN_AGEING;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_CARRIER")]
@@ -1454,6 +1458,15 @@ namespace NM {
 		public NM.Device parent { get; }
 		public uint vlan_id { get; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_vrf_get_type ()")]
+	public class DeviceVrf : NM.Device {
+		[CCode (has_construct_function = false)]
+		protected DeviceVrf ();
+		[Version (since = "1.24")]
+		public uint32 get_table ();
+		[Version (since = "1.24")]
+		public uint table { get; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_vxlan_get_type ()")]
 	public class DeviceVxlan : NM.Device {
 		[CCode (has_construct_function = false)]
@@ -1938,6 +1951,8 @@ namespace NM {
 		public const string PATH;
 		[CCode (has_construct_function = false)]
 		protected Object ();
+		[Version (since = "1.24")]
+		public unowned NM.Client get_client ();
 		public unowned string get_path ();
 		public string path { get; }
 	}
@@ -4286,6 +4301,15 @@ namespace NM {
 		[NoAccessorMethod]
 		public string user_name { owned get; set; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_vrf_get_type ()")]
+	[Version (since = "1.24")]
+	public class SettingVrf : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		public SettingVrf ();
+		public uint32 get_table ();
+		[NoAccessorMethod]
+		public uint table { get; set; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_vxlan_get_type ()")]
 	public class SettingVxlan : NM.Setting {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_AGEING")]
@@ -5741,7 +5765,8 @@ namespace NM {
 		WPAN,
 		@6LOWPAN,
 		WIREGUARD,
-		WIFI_P2P
+		WIFI_P2P,
+		VRF
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_WIFI_DEVICE_CAP_", type_id = "nm_device_wifi_capabilities_get_type ()")]
 	[Flags]
@@ -6804,6 +6829,10 @@ namespace NM {
 	public const string SETTING_USER_DATA;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_SETTING_NAME")]
 	public const string SETTING_USER_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VRF_SETTING_NAME")]
+	public const string SETTING_VRF_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VRF_TABLE")]
+	public const string SETTING_VRF_TABLE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_FWMARK")]
 	public const string SETTING_WIREGUARD_FWMARK;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_IP4_AUTO_DEFAULT_ROUTE")]

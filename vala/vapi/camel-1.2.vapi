@@ -1533,7 +1533,7 @@ namespace Camel {
 		public weak GLib.EqualFunc url_equal;
 		public Camel.ProviderURLFlags url_flags;
 		public weak GLib.HashFunc url_hash;
-		public int auto_detect (Camel.URL url, ref GLib.HashTable<void*,void*> auto_detected) throws GLib.Error;
+		public int auto_detect (Camel.URL url, out GLib.HashTable<string,string>? auto_detected) throws GLib.Error;
 		public static Camel.Provider @get (string protocol) throws GLib.Error;
 		public static void init ();
 		public static GLib.List<weak Camel.Provider> list (bool load);
@@ -3315,7 +3315,7 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", instance_pos = 2.9)]
 	public delegate string IndexNorm (Camel.Index index, string word);
 	[CCode (cheader_filename = "camel/camel.h", has_target = false)]
-	public delegate int ProviderAutoDetectFunc (Camel.URL url, GLib.HashTable<void*,void*> auto_detected) throws GLib.Error;
+	public delegate int ProviderAutoDetectFunc (Camel.URL url, out GLib.HashTable<string,string>? auto_detected) throws GLib.Error;
 	[CCode (cheader_filename = "camel/camel.h", instance_pos = 2.9)]
 	[Version (since = "3.4")]
 	public delegate unowned Camel.SExpResult? SExpFunc (Camel.SExp sexp, [CCode (array_length_cname = "argc", array_length_pos = 1.5)] Camel.SExpResult[] argv);

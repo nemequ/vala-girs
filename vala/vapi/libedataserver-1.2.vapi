@@ -513,6 +513,8 @@ namespace E {
 		[Version (since = "3.26")]
 		public string dup_contacts_url ();
 		public string dup_identity ();
+		[Version (since = "3.36")]
+		public bool get_allow_sources_rename ();
 		public bool get_calendar_enabled ();
 		[Version (since = "3.26")]
 		public unowned string? get_calendar_url ();
@@ -521,6 +523,8 @@ namespace E {
 		public unowned string? get_contacts_url ();
 		public unowned string get_identity ();
 		public bool get_mail_enabled ();
+		[Version (since = "3.36")]
+		public void set_allow_sources_rename (bool allow_sources_rename);
 		public void set_calendar_enabled (bool calendar_enabled);
 		[Version (since = "3.26")]
 		public void set_calendar_url (string? calendar_url);
@@ -529,6 +533,7 @@ namespace E {
 		public void set_contacts_url (string? contacts_url);
 		public void set_identity (string? identity);
 		public void set_mail_enabled (bool mail_enabled);
+		public bool allow_sources_rename { get; set construct; }
 		public bool calendar_enabled { get; set construct; }
 		public string calendar_url { get; set construct; }
 		public bool contacts_enabled { get; set construct; }
