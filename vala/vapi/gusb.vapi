@@ -201,11 +201,11 @@ namespace GUsb {
 		NONE,
 		AUTO_OPEN_DEVICES
 	}
-	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_CLAIM_INTERFACE_BIND_KERNEL_", has_type_id = false)]
+	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_CLAIM_INTERFACE_", has_type_id = false)]
 	[Flags]
 	public enum DeviceClaimInterfaceFlags {
-		[CCode (cname = "G_USB_DEVICE_CLAIM_INTERFACE_BIND_KERNEL_DRIVER")]
-		DEVICE_CLAIM_INTERFACE_BIND_KERNEL_DRIVER
+		NONE,
+		BIND_KERNEL_DRIVER
 	}
 	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_CLASS_", has_type_id = false)]
 	public enum DeviceClassCode {
