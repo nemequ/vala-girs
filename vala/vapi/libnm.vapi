@@ -2006,17 +2006,34 @@ namespace NM {
 		[NoWrapper]
 		public virtual void cancel_get_secrets (string connection_path, string setting_name);
 		public virtual void delete_secrets (NM.Connection connection, string connection_path, [CCode (scope = "async")] NM.SecretAgentOldDeleteSecretsFunc callback);
+		[Version (since = "1.24")]
+		public void destroy ();
+		[Version (since = "1.24")]
+		public void enable (bool enable);
+		[Version (since = "1.24")]
+		public unowned GLib.Object get_context_busy_watcher ();
+		[Version (since = "1.24")]
+		public unowned GLib.DBusConnection get_dbus_connection ();
+		[Version (since = "1.24")]
+		public unowned string get_dbus_name_owner ();
+		[Version (since = "1.24")]
+		public unowned GLib.MainContext get_main_context ();
 		public bool get_registered ();
 		public virtual void get_secrets (NM.Connection connection, string connection_path, string setting_name, [CCode (array_length = false, array_null_terminated = true)] string[] hints, NM.SecretAgentGetSecretsFlags flags, [CCode (scope = "async")] NM.SecretAgentOldGetSecretsFunc callback);
+		[Version (deprecated = true, deprecated_since = "1.24")]
 		public bool register (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool register_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual void save_secrets (NM.Connection connection, string connection_path, [CCode (scope = "async")] NM.SecretAgentOldSaveSecretsFunc callback);
+		[Version (deprecated = true, deprecated_since = "1.24")]
 		public bool unregister (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "1.24")]
 		public async bool unregister_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoAccessorMethod]
 		public bool auto_register { get; set construct; }
 		[NoAccessorMethod]
 		public NM.SecretAgentCapabilities capabilities { get; set construct; }
+		[Version (since = "1.24")]
+		public GLib.DBusConnection dbus_connection { get; construct; }
 		[NoAccessorMethod]
 		public string identifier { owned get; construct; }
 		public bool registered { get; }
@@ -6701,6 +6718,8 @@ namespace NM {
 	public const string SECRET_AGENT_OLD_AUTO_REGISTER;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_CAPABILITIES")]
 	public const string SECRET_AGENT_OLD_CAPABILITIES;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_DBUS_CONNECTION")]
+	public const string SECRET_AGENT_OLD_DBUS_CONNECTION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_IDENTIFIER")]
 	public const string SECRET_AGENT_OLD_IDENTIFIER;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_REGISTERED")]

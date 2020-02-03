@@ -67,6 +67,12 @@ namespace E {
 	public abstract class Cache : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Cache ();
+		[CCode (vfunc_name = "before_put")]
+		[NoWrapper]
+		public virtual bool before_put_impl (string uid, string revision, string object, E.CacheColumnValues other_columns, bool is_replace, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (vfunc_name = "before_remove")]
+		[NoWrapper]
+		public virtual bool before_remove_impl (string uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void change_revision ();
 		public bool clear_offline_changes (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoWrapper]

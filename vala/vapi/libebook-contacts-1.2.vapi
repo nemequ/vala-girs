@@ -836,9 +836,7 @@ namespace E {
 		CONTACT_ID_ALREADY_EXISTS,
 		NO_SUCH_SOURCE,
 		NO_SPACE;
-		public GLib.Error create (string custom_msg);
 		public static GLib.Quark quark ();
-		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_PHONE_NUMBER_ERROR_")]
 	[Version (since = "3.8")]

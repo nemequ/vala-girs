@@ -82,6 +82,8 @@ namespace Rsvg {
 		public void set_dpi_x_y (double dpi_x, double dpi_y);
 		[Version (deprecated = true, deprecated_since = "2.13.90", replacement = "render_cairo")]
 		public void set_size_callback (owned Rsvg.SizeFunc size_func);
+		[Version (since = "2.48")]
+		public bool set_stylesheet ([CCode (array_length_cname = "css_len", array_length_pos = 1.1, array_length_type = "gsize")] string[] css) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		[Version (since = "2.36")]
 		public Handle.with_flags (Rsvg.HandleFlags flags);

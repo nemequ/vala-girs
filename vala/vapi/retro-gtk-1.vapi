@@ -30,6 +30,7 @@ namespace Retro {
 		public bool has_option (string key);
 		public Retro.ControllerIterator iterate_controllers ();
 		public Retro.OptionIterator iterate_options ();
+		public void iteration ();
 		public void load_memory (Retro.MemoryType memory_type, string filename) throws GLib.Error;
 		public void load_state (string filename) throws GLib.Error;
 		public void override_option_default (string key, string value);
@@ -47,7 +48,6 @@ namespace Retro {
 		public void set_save_directory (string save_directory);
 		public void set_speed_rate (double speed_rate);
 		public void set_system_directory (string system_directory);
-		public void start ();
 		public void stop ();
 		public uint api_version { get; }
 		public string content_directory { get; set; }
@@ -61,6 +61,7 @@ namespace Retro {
 		public bool support_no_game { get; }
 		public string system_directory { get; set; }
 		public signal void audio_output ([CCode (array_length_cname = "length", array_length_pos = 1.5, array_length_type = "gulong")] uint8[] data, double sample_rate);
+		public signal void iterated ();
 		public signal void log (string log_domain, GLib.LogLevelFlags log_level, string message);
 		public signal void message (string message, uint frames);
 		public signal void shutdown ();

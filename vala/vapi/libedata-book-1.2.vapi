@@ -324,8 +324,8 @@ namespace E {
 		public bool set_key_value_int (string key, int value) throws GLib.Error;
 		public bool set_locale (string lc_collate, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool @unlock (E.bSqlUnlockAction action) throws GLib.Error;
-		public virtual signal bool before_insert_contact (void* db, GLib.Object contact, string extra, bool replace, GLib.Object cancellable, void* p4);
-		public virtual signal bool before_remove_contact (void* db, string contact_uid, GLib.Object cancellable, void* p2);
+		public virtual signal bool before_insert_contact (void* db, E.Contact contact, string extra, bool replace, GLib.Object cancellable);
+		public virtual signal bool before_remove_contact (void* db, string contact_uid, GLib.Cancellable? cancellable = null);
 	}
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", type_id = "e_data_book_get_type ()")]
 	public class DataBook : GLib.Object, GLib.Initable {
@@ -374,20 +374,27 @@ namespace E {
 		public void contact_added (E.Contact contact);
 		public void contact_removed (E.Contact contact);
 		public unowned E.BookBackend get_backend ();
-		[NoWrapper]
-		public virtual bool get_position (out int total, out int position, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public int get_position ();
 		public int get_total ();
+		[CCode (vfunc_name = "get_position")]
 		[NoWrapper]
-		public virtual bool load_locale (out string locale) throws GLib.Error;
+		public virtual bool impl_get_position (out int total, out int position, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (vfunc_name = "load_locale")]
+		[NoWrapper]
+		public virtual bool impl_load_locale (out string locale) throws GLib.Error;
+		[CCode (vfunc_name = "set_alphabetic_index")]
+		[NoWrapper]
+		public virtual bool impl_set_alphabetic_index (int index, string locale) throws GLib.Error;
+		[CCode (vfunc_name = "set_sexp")]
+		[NoWrapper]
+		public virtual bool impl_set_sexp (string? sexp) throws GLib.Error;
+		public bool load_locale (out string locale, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool recalculate (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool register_gdbus_object (GLib.DBusConnection connection, string object_path) throws GLib.Error;
-		[NoWrapper]
-		public virtual bool set_alphabetic_index (int index, string locale) throws GLib.Error;
-		[NoWrapper]
-		public virtual bool set_sexp (string? sexp) throws GLib.Error;
+		public bool set_alphabetic_index (int index, string locale, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool set_sexp (string? sexp, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual int step (string? revision_guard, E.BookCursorStepFlags flags, E.BookCursorOrigin origin, int count, out GLib.SList<string> results, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public E.BookBackend backend { get; construct; }
-		[NoAccessorMethod]
 		public int position { get; }
 		public int total { get; }
 	}

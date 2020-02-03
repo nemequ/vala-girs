@@ -235,6 +235,7 @@ namespace E {
 		public GLib.SList<E.CalCacheOfflineChange> get_offline_changes (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.34")]
 		public E.OfflineState get_offline_state (string uid, string? rid, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_timezone (string tzid, out unowned ICal.Timezone out_zone, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool list_timezones (out GLib.List<weak ICal.Timezone> out_timezones, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool put_component (ECal.Component component, string? extra, uint32 custom_flags, E.CacheOfflineFlag offline_flag, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool put_components (GLib.SList<ECal.Component> components, GLib.SList<string>? extras, GLib.SList<uint32>? custom_flags, E.CacheOfflineFlag offline_flag, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -253,9 +254,10 @@ namespace E {
 		public bool set_component_custom_flags (string uid, string? rid, uint32 custom_flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool set_component_extra (string uid, string? rid, string? extra, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[HasEmitter]
-		public virtual signal string dup_component_revision (void* icomp);
-		[HasEmitter]
-		public signal void* get_timezone (string tzid);
+		public virtual signal string dup_component_revision (ICal.Component icomp);
+		[CCode (cname = "get-timezone")]
+		[Version (since = "3.30")]
+		public signal unowned ICal.Timezone get_timezone_impl (string tzid);
 	}
 	[CCode (cheader_filename = "libedata-cal/libedata-cal.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_cal_cache_offline_change_get_type ()")]
 	[Compact]

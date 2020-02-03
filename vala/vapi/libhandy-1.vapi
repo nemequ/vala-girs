@@ -43,6 +43,74 @@ namespace Hdy {
 		[Version (since = "0.0.6")]
 		public bool use_underline { get; set; }
 	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_carousel_get_type ()")]
+	public class Carousel : Gtk.EventBox, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.0")]
+		public Carousel ();
+		[Version (since = "1.0")]
+		public bool get_allow_mouse_drag ();
+		[Version (since = "1.0")]
+		public uint get_animation_duration ();
+		[Version (since = "1.0")]
+		public bool get_center_content ();
+		[Version (since = "1.0")]
+		public uint get_indicator_spacing ();
+		[Version (since = "1.0")]
+		public Hdy.CarouselIndicatorStyle get_indicator_style ();
+		[Version (since = "1.0")]
+		public bool get_interactive ();
+		[Version (since = "1.0")]
+		public uint get_n_pages ();
+		[Version (since = "1.0")]
+		public double get_position ();
+		[Version (since = "1.0")]
+		public uint get_spacing ();
+		[Version (since = "1.0")]
+		public void insert (Gtk.Widget child, int position);
+		[Version (since = "1.0")]
+		public void prepend (Gtk.Widget child);
+		[Version (since = "1.0")]
+		public void reorder (Gtk.Widget child, int position);
+		[Version (since = "1.0")]
+		public void scroll_to (Gtk.Widget widget);
+		[Version (since = "1.0")]
+		public void scroll_to_full (Gtk.Widget widget, int64 duration);
+		[Version (since = "1.0")]
+		public void set_allow_mouse_drag (bool allow_mouse_drag);
+		[Version (since = "1.0")]
+		public void set_animation_duration (uint duration);
+		[Version (since = "1.0")]
+		public void set_center_content (bool center_content);
+		[Version (since = "1.0")]
+		public void set_indicator_spacing (uint spacing);
+		[Version (since = "1.0")]
+		public void set_indicator_style (Hdy.CarouselIndicatorStyle style);
+		[Version (since = "1.0")]
+		public void set_interactive (bool interactive);
+		[Version (since = "1.0")]
+		public void set_spacing (uint spacing);
+		[Version (since = "1.0")]
+		public bool allow_mouse_drag { get; set; }
+		[Version (since = "1.0")]
+		public uint animation_duration { get; set; }
+		[Version (since = "1.0")]
+		public bool center_content { get; set; }
+		[Version (since = "1.0")]
+		public uint indicator_spacing { get; set; }
+		[Version (since = "1.0")]
+		public Hdy.CarouselIndicatorStyle indicator_style { get; set; }
+		[Version (since = "1.0")]
+		public bool interactive { get; set; }
+		[Version (since = "1.0")]
+		public uint n_pages { get; }
+		[Version (since = "1.0")]
+		public double position { get; }
+		[Version (since = "1.0")]
+		public uint spacing { get; set; }
+		[Version (since = "1.0")]
+		public signal void page_changed (uint index);
+	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_column_get_type ()")]
 	public class Column : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
@@ -222,36 +290,34 @@ namespace Hdy {
 		public bool get_can_swipe_forward ();
 		public uint get_child_transition_duration ();
 		public bool get_child_transition_running ();
-		public Hdy.Fold get_fold ();
-		public bool get_homogeneous (Hdy.Fold fold, Gtk.Orientation orientation);
+		public bool get_folded ();
+		public bool get_homogeneous (bool folded, Gtk.Orientation orientation);
 		public bool get_interpolate_size ();
 		public uint get_mode_transition_duration ();
 		[Version (since = "0.0.12")]
 		public Hdy.LeafletTransitionType get_transition_type ();
 		public unowned Gtk.Widget get_visible_child ();
 		public unowned string get_visible_child_name ();
+		[Version (since = "1.0")]
+		public bool navigate (Hdy.NavigationDirection direction);
 		[Version (since = "0.0.12")]
 		public void set_can_swipe_back (bool can_swipe_back);
 		[Version (since = "0.0.12")]
 		public void set_can_swipe_forward (bool can_swipe_forward);
 		public void set_child_transition_duration (uint duration);
-		public void set_homogeneous (Hdy.Fold fold, Gtk.Orientation orientation, bool homogeneous);
+		public void set_homogeneous (bool folded, Gtk.Orientation orientation, bool homogeneous);
 		public void set_interpolate_size (bool interpolate_size);
 		public void set_mode_transition_duration (uint duration);
 		[Version (since = "0.0.12")]
 		public void set_transition_type (Hdy.LeafletTransitionType transition);
 		public void set_visible_child (Gtk.Widget visible_child);
 		public void set_visible_child_name (string name);
-		[NoWrapper]
-		public virtual void todo ();
 		[Version (since = "0.0.12")]
 		public bool can_swipe_back { get; set; }
 		[Version (since = "0.0.12")]
 		public bool can_swipe_forward { get; set; }
 		public uint child_transition_duration { get; set; }
 		public bool child_transition_running { get; }
-		public Hdy.Fold fold { get; }
-		[NoAccessorMethod]
 		public bool folded { get; }
 		[NoAccessorMethod]
 		public bool hhomogeneous_folded { get; set; }
@@ -267,74 +333,6 @@ namespace Hdy {
 		public bool vhomogeneous_unfolded { get; set; }
 		public Gtk.Widget visible_child { get; set; }
 		public string visible_child_name { get; set; }
-	}
-	[CCode (cheader_filename = "handy.h", type_id = "hdy_paginator_get_type ()")]
-	public class Paginator : Gtk.EventBox, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
-		[CCode (has_construct_function = false)]
-		[Version (since = "0.0.11")]
-		public Paginator ();
-		[Version (since = "0.0.12")]
-		public bool get_allow_mouse_drag ();
-		[Version (since = "0.0.11")]
-		public uint get_animation_duration ();
-		[Version (since = "0.0.11")]
-		public bool get_center_content ();
-		[Version (since = "0.0.11")]
-		public uint get_indicator_spacing ();
-		[Version (since = "0.0.11")]
-		public Hdy.PaginatorIndicatorStyle get_indicator_style ();
-		[Version (since = "0.0.11")]
-		public bool get_interactive ();
-		[Version (since = "0.0.11")]
-		public uint get_n_pages ();
-		[Version (since = "0.0.11")]
-		public double get_position ();
-		[Version (since = "0.0.11")]
-		public uint get_spacing ();
-		[Version (since = "0.0.11")]
-		public void insert (Gtk.Widget child, int position);
-		[Version (since = "0.0.11")]
-		public void prepend (Gtk.Widget child);
-		[Version (since = "0.0.11")]
-		public void reorder (Gtk.Widget child, int position);
-		[Version (since = "0.0.11")]
-		public void scroll_to (Gtk.Widget widget);
-		[Version (since = "0.0.11")]
-		public void scroll_to_full (Gtk.Widget widget, int64 duration);
-		[Version (since = "0.0.12")]
-		public void set_allow_mouse_drag (bool allow_mouse_drag);
-		[Version (since = "0.0.11")]
-		public void set_animation_duration (uint duration);
-		[Version (since = "0.0.11")]
-		public void set_center_content (bool center_content);
-		[Version (since = "0.0.11")]
-		public void set_indicator_spacing (uint spacing);
-		[Version (since = "0.0.11")]
-		public void set_indicator_style (Hdy.PaginatorIndicatorStyle style);
-		[Version (since = "0.0.11")]
-		public void set_interactive (bool interactive);
-		[Version (since = "0.0.11")]
-		public void set_spacing (uint spacing);
-		[Version (since = "0.0.12")]
-		public bool allow_mouse_drag { get; set; }
-		[Version (since = "0.0.11")]
-		public uint animation_duration { get; set; }
-		[Version (since = "0.0.11")]
-		public bool center_content { get; set; }
-		[Version (since = "0.0.11")]
-		public uint indicator_spacing { get; set; }
-		[Version (since = "0.0.11")]
-		public Hdy.PaginatorIndicatorStyle indicator_style { get; set; }
-		[Version (since = "0.0.11")]
-		public bool interactive { get; set; }
-		[Version (since = "0.0.11")]
-		public uint n_pages { get; }
-		[Version (since = "0.0.11")]
-		public double position { get; }
-		[Version (since = "0.0.11")]
-		public uint spacing { get; set; }
-		[Version (since = "0.0.12")]
-		public signal void page_changed (uint index);
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_group_get_type ()")]
 	public class PreferencesGroup : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
@@ -542,7 +540,7 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_cname = "HdySwipeableInterface", type_id = "hdy_swipeable_get_type ()")]
 	public interface Swipeable : Gtk.Widget {
 		[Version (since = "0.0.12")]
-		public virtual signal void begin_swipe (int direction);
+		public virtual signal void begin_swipe (Hdy.NavigationDirection direction);
 		[Version (since = "0.0.12")]
 		public virtual signal void end_swipe (int64 duration, double to);
 		[Version (since = "0.0.12")]
@@ -550,15 +548,16 @@ namespace Hdy {
 		[Version (since = "0.0.12")]
 		public virtual signal void update_swipe (double value);
 	}
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_CAROUSEL_INDICATOR_STYLE_", type_id = "hdy_carousel_indicator_style_get_type ()")]
+	public enum CarouselIndicatorStyle {
+		NONE,
+		DOTS,
+		LINES
+	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_CENTERING_POLICY_", type_id = "hdy_centering_policy_get_type ()")]
 	public enum CenteringPolicy {
 		LOOSE,
 		STRICT
-	}
-	[CCode (cheader_filename = "handy.h", cprefix = "HDY_FOLD_", type_id = "hdy_fold_get_type ()")]
-	public enum Fold {
-		UNFOLDED,
-		FOLDED
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_LEAFLET_TRANSITION_TYPE_", type_id = "hdy_leaflet_transition_type_get_type ()")]
 	[Version (since = "0.0.12")]
@@ -568,11 +567,11 @@ namespace Hdy {
 		OVER,
 		UNDER
 	}
-	[CCode (cheader_filename = "handy.h", cprefix = "HDY_PAGINATOR_INDICATOR_STYLE_", type_id = "hdy_paginator_indicator_style_get_type ()")]
-	public enum PaginatorIndicatorStyle {
-		NONE,
-		DOTS,
-		LINES
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_NAVIGATION_DIRECTION_", type_id = "hdy_navigation_direction_get_type ()")]
+	[Version (since = "1.0")]
+	public enum NavigationDirection {
+		BACK,
+		FORWARD
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_SQUEEZER_TRANSITION_TYPE_", type_id = "hdy_squeezer_transition_type_get_type ()")]
 	public enum SqueezerTransitionType {
@@ -598,8 +597,6 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h")]
 	[Version (since = "0.0.11")]
 	public static bool get_enable_animations (Gtk.Widget widget);
-	[CCode (cheader_filename = "handy.h")]
-	public static bool init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref unowned string[]? argv);
 	[CCode (cheader_filename = "handy.h")]
 	[Version (since = "0.0.6")]
 	public static void list_box_separator_header (Gtk.ListBoxRow row, Gtk.ListBoxRow? before, void* unused_user_data);

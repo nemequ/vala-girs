@@ -1179,7 +1179,7 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h", instance_pos = 4.9)]
 	public delegate void SourceResultCb (Grl.Source source, uint operation_id, owned Grl.Media? media, uint remaining, GLib.Error? error);
 	[CCode (cheader_filename = "grilo.h", instance_pos = 3.9)]
-	public delegate void SourceStoreCb (Grl.Source source, owned Grl.Media media, GLib.List<Grl.KeyID> failed_keys, GLib.Error? error);
+	public delegate void SourceStoreCb (Grl.Source source, Grl.Media media, GLib.List<Grl.KeyID> failed_keys, GLib.Error? error);
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_CONFIG_KEY_APIKEY")]
 	public const string CONFIG_KEY_APIKEY;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_CONFIG_KEY_APIKEY_BLOB")]
