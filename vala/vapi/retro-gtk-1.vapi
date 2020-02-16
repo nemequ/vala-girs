@@ -60,8 +60,7 @@ namespace Retro {
 		public double speed_rate { get; set; }
 		public bool support_no_game { get; }
 		public string system_directory { get; set; }
-		public signal void audio_output ([CCode (array_length_cname = "length", array_length_pos = 1.5, array_length_type = "gulong")] uint8[] data, double sample_rate);
-		public signal void iterated ();
+		public signal void crashed (string message);
 		public signal void log (string log_domain, GLib.LogLevelFlags log_level, string message);
 		public signal void message (string message, uint frames);
 		public signal void shutdown ();
@@ -214,7 +213,9 @@ namespace Retro {
 		ANALOG,
 		POINTER,
 		COUNT,
-		TYPE_MASK
+		TYPE_MASK;
+		public int get_id_count ();
+		public int get_index_count ();
 	}
 	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_JOYPAD_ID_", type_id = "retro_joypad_id_get_type ()")]
 	public enum JoypadId {
