@@ -6,7 +6,7 @@ namespace Retro {
 	public class ControllerIterator : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected ControllerIterator ();
-		public bool next (out uint port, out Retro.Controller? controller);
+		public bool next (out uint port, out unowned Retro.Controller controller);
 	}
 	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_core_get_type ()")]
 	public class Core : GLib.Object {

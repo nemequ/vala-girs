@@ -598,10 +598,15 @@ namespace Goa {
 		[CCode (async_result_pos = 2.1)]
 		public async bool call_add_account (string arg_provider, string arg_identity, string arg_presentation_identity, GLib.Variant arg_credentials, GLib.Variant arg_details, GLib.Cancellable? cancellable, out string out_account_object_path) throws GLib.Error;
 		public bool call_add_account_sync (string arg_provider, string arg_identity, string arg_presentation_identity, GLib.Variant arg_credentials, GLib.Variant arg_details, out string out_account_object_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (async_result_pos = 2.1)]
+		public async bool call_is_supported_provider (string arg_provider_type, GLib.Cancellable? cancellable, out bool out_is_supported) throws GLib.Error;
+		public bool call_is_supported_provider_sync (string arg_provider_type, out bool out_is_supported, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_add_account (owned GLib.DBusMethodInvocation invocation, string account_object_path);
+		public void complete_is_supported_provider (owned GLib.DBusMethodInvocation invocation, bool is_supported);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
 		public virtual signal bool handle_add_account (GLib.DBusMethodInvocation invocation, string arg_provider, string arg_identity, string arg_presentation_identity, GLib.Variant arg_credentials, GLib.Variant arg_details);
+		public virtual signal bool handle_is_supported_provider (GLib.DBusMethodInvocation invocation, string arg_provider_type);
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_maps_get_type ()")]
 	[Version (since = "3.14.0")]

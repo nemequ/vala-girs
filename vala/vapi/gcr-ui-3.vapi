@@ -16,10 +16,11 @@ namespace Gcr {
 	public class CertificateWidget : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public CertificateWidget (Gcr.Certificate? certificate);
+		public unowned Gck.Attributes? get_attributes ();
 		public unowned Gcr.Certificate? get_certificate ();
+		public void set_attributes (Gck.Attributes? attrs);
 		public void set_certificate (Gcr.Certificate? certificate);
-		[NoAccessorMethod]
-		public Gck.Attributes attributes { owned get; set; }
+		public Gck.Attributes attributes { get; set; }
 		public Gcr.Certificate certificate { get; set; }
 	}
 	[CCode (cheader_filename = "ui/gcr-ui.h", type_id = "gcr_collection_model_get_type ()")]
