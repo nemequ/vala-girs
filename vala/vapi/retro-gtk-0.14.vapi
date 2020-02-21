@@ -281,7 +281,7 @@ namespace Retro {
 		PRESSED,
 		COUNT
 	}
-	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_RUMBLE_EFFECT_", has_type_id = false)]
+	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_RUMBLE_EFFECT_", type_id = "retro_rumble_effect_get_type ()")]
 	public enum RumbleEffect {
 		STRONG,
 		WEAK,
