@@ -56,6 +56,7 @@ namespace Gegl {
 		public void set_color_from_pixel (Gegl.Rectangle rect, void* pixel, Babl.Object pixel_format);
 		public bool set_extent (Gegl.Rectangle extent);
 		public void set_pattern (Gegl.Rectangle rect, Gegl.Buffer pattern, int x_offset, int y_offset);
+		public bool share_storage (Gegl.Buffer buffer2);
 		public long signal_connect (string detailed_signal, [CCode (scope = "async")] GLib.Callback c_handler);
 		public static string? swap_create_file (string? suffix);
 		public static bool swap_has_file (string path);

@@ -12,7 +12,7 @@ namespace Act {
 		public unowned string get_email ();
 		public unowned string get_home_dir ();
 		public unowned string get_icon_file ();
-		public unowned string get_language ();
+		public unowned string? get_language ();
 		public unowned string get_location ();
 		public bool get_locked ();
 		public int get_login_frequency ();

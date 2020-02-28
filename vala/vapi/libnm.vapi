@@ -3126,6 +3126,8 @@ namespace NM {
 		public const string METHOD_MANUAL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_SHARED")]
 		public const string METHOD_SHARED;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_RA_TIMEOUT")]
+		public const string RA_TIMEOUT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_TOKEN")]
@@ -3137,6 +3139,8 @@ namespace NM {
 		[Version (since = "1.12")]
 		public unowned string get_dhcp_duid ();
 		public NM.SettingIP6ConfigPrivacy get_ip6_privacy ();
+		[Version (since = "1.24")]
+		public int32 get_ra_timeout ();
 		[Version (since = "1.4")]
 		public unowned string get_token ();
 		[NoAccessorMethod]
@@ -3147,6 +3151,9 @@ namespace NM {
 		public string dhcp_duid { owned get; set; }
 		[NoAccessorMethod]
 		public NM.SettingIP6ConfigPrivacy ip6_privacy { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.24")]
+		public int ra_timeout { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.4")]
 		public string token { owned get; set; }

@@ -42,6 +42,8 @@ namespace Hdy {
 		public string title { get; set; }
 		[Version (since = "0.0.6")]
 		public bool use_underline { get; set; }
+		[Version (since = "1.0")]
+		public signal void activated ();
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_carousel_get_type ()")]
 	public class Carousel : Gtk.EventBox, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
@@ -149,6 +151,69 @@ namespace Hdy {
 		public int selected_index { get; set; }
 		[Version (since = "0.0.10")]
 		public bool use_subtitle { get; set; }
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_deck_get_type ()")]
+	public class Deck : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public Deck ();
+		[Version (since = "1.0")]
+		public bool get_can_swipe_back ();
+		[Version (since = "1.0")]
+		public bool get_can_swipe_forward ();
+		[Version (since = "1.0")]
+		public bool get_homogeneous (Gtk.Orientation orientation);
+		[Version (since = "1.0")]
+		public bool get_interpolate_size ();
+		[Version (since = "1.0")]
+		public uint get_transition_duration ();
+		[Version (since = "1.0")]
+		public bool get_transition_running ();
+		[Version (since = "1.0")]
+		public Hdy.DeckTransitionType get_transition_type ();
+		[Version (since = "1.0")]
+		public unowned Gtk.Widget get_visible_child ();
+		[Version (since = "1.0")]
+		public unowned string get_visible_child_name ();
+		[Version (since = "1.0")]
+		public bool navigate (Hdy.NavigationDirection direction);
+		[Version (since = "1.0")]
+		public void set_can_swipe_back (bool can_swipe_back);
+		[Version (since = "1.0")]
+		public void set_can_swipe_forward (bool can_swipe_forward);
+		[Version (since = "1.0")]
+		public void set_homogeneous (Gtk.Orientation orientation, bool homogeneous);
+		[Version (since = "1.0")]
+		public void set_interpolate_size (bool interpolate_size);
+		[Version (since = "1.0")]
+		public void set_transition_duration (uint duration);
+		[Version (since = "1.0")]
+		public void set_transition_type (Hdy.DeckTransitionType transition);
+		[Version (since = "1.0")]
+		public void set_visible_child (Gtk.Widget visible_child);
+		[Version (since = "1.0")]
+		public void set_visible_child_name (string name);
+		[Version (since = "1.0")]
+		public bool can_swipe_back { get; set; }
+		[Version (since = "1.0")]
+		public bool can_swipe_forward { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.0")]
+		public bool hhomogeneous { get; set; }
+		[Version (since = "1.0")]
+		public bool interpolate_size { get; set; }
+		[Version (since = "1.0")]
+		public uint transition_duration { get; set; }
+		[Version (since = "1.0")]
+		public bool transition_running { get; }
+		[Version (since = "1.0")]
+		public Hdy.DeckTransitionType transition_type { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.0")]
+		public bool vhomogeneous { get; set; }
+		[Version (since = "1.0")]
+		public Gtk.Widget visible_child { get; set; }
+		[Version (since = "1.0")]
+		public string visible_child_name { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_dialog_get_type ()")]
 	public class Dialog : Gtk.Dialog, Atk.Implementor, Gtk.Buildable {
@@ -559,6 +624,14 @@ namespace Hdy {
 		LOOSE,
 		STRICT
 	}
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_DECK_TRANSITION_TYPE_", type_id = "hdy_deck_transition_type_get_type ()")]
+	[Version (since = "1.0")]
+	public enum DeckTransitionType {
+		NONE,
+		SLIDE,
+		OVER,
+		UNDER
+	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_LEAFLET_TRANSITION_TYPE_", type_id = "hdy_leaflet_transition_type_get_type ()")]
 	[Version (since = "0.0.12")]
 	public enum LeafletTransitionType {
@@ -577,6 +650,14 @@ namespace Hdy {
 	public enum SqueezerTransitionType {
 		NONE,
 		CROSSFADE
+	}
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_STACKABLE_BOX_TRANSITION_TYPE_", type_id = "hdy_stackable_box_transition_type_get_type ()")]
+	[Version (since = "1.0")]
+	public enum StackableBoxTransitionType {
+		NONE,
+		SLIDE,
+		OVER,
+		UNDER
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_VIEW_SWITCHER_POLICY_", type_id = "hdy_view_switcher_policy_get_type ()")]
 	public enum ViewSwitcherPolicy {
