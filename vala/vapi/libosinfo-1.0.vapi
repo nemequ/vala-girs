@@ -137,6 +137,8 @@ namespace Osinfo {
 		public unowned string get_location ();
 		[Version (since = "0.2.2")]
 		public bool get_pre_installable ();
+		[Version (since = "1.7.0")]
+		public int64 get_priority ();
 		[Version (since = "0.2.6")]
 		public bool get_signed ();
 	}
@@ -233,8 +235,11 @@ namespace Osinfo {
 	public class Firmware : Osinfo.Entity {
 		[CCode (has_construct_function = false)]
 		public Firmware (string id, string architecture, string type);
+		[Version (since = "1.7.0")]
 		public unowned string get_architecture ();
+		[Version (since = "1.7.0")]
 		public unowned string get_firmware_type ();
+		[Version (since = "1.8.0")]
 		public bool is_supported ();
 		[NoAccessorMethod]
 		public string architecture { owned get; set; }
@@ -244,6 +249,7 @@ namespace Osinfo {
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "firmwarelist", type_id = "osinfo_firmwarelist_get_type ()")]
 	public class FirmwareList : Osinfo.List {
 		[CCode (has_construct_function = false)]
+		[Version (since = "1.7.0")]
 		public FirmwareList ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", type_id = "osinfo_image_get_type ()")]
@@ -354,6 +360,7 @@ namespace Osinfo {
 		public void set_post_install_drivers_disk (string disk);
 		[Version (since = "0.2.2")]
 		public void set_post_install_drivers_location (string location);
+		[Version (since = "0.2.2")]
 		public void set_pre_install_drivers_disk (string disk);
 		[Version (since = "0.2.2")]
 		public void set_pre_install_drivers_location (string location);
@@ -386,6 +393,8 @@ namespace Osinfo {
 		public unowned string get_name ();
 		[Version (since = "0.2.0")]
 		public Osinfo.InstallConfigParamPolicy get_policy ();
+		[Version (since = "0.2.8")]
+		public unowned Osinfo.Datamap get_value_map ();
 		[Version (since = "0.2.1")]
 		public bool is_optional ();
 		[Version (since = "0.2.1")]
@@ -394,8 +403,7 @@ namespace Osinfo {
 		public void set_value_map (Osinfo.Datamap datamap);
 		public string name { get; construct; }
 		public Osinfo.InstallConfigParamPolicy policy { get; }
-		[NoAccessorMethod]
-		public Osinfo.Datamap value_map { owned get; set; }
+		public Osinfo.Datamap value_map { get; set; }
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", lower_case_csuffix = "install_config_paramlist", type_id = "osinfo_install_config_paramlist_get_type ()")]
 	public class InstallConfigParamList : Osinfo.List {
@@ -418,6 +426,7 @@ namespace Osinfo {
 		public string generate_command_line (Osinfo.Os os, Osinfo.InstallConfig config);
 		[Version (since = "0.2.12")]
 		public string generate_command_line_for_media (Osinfo.Media media, Osinfo.InstallConfig config);
+		[Version (since = "1.6.0")]
 		public string generate_command_line_for_tree (Osinfo.Tree tree, Osinfo.InstallConfig config);
 		[Version (since = "0.2.12")]
 		public string generate_for_media (Osinfo.Media media, Osinfo.InstallConfig config, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -670,12 +679,15 @@ namespace Osinfo {
 		public Osinfo.DeviceList get_all_devices (Osinfo.Filter? filter);
 		[Version (since = "0.2.2")]
 		public unowned Osinfo.DeviceDriverList get_device_drivers ();
+		[Version (since = "1.7.0")]
+		public Osinfo.DeviceDriverList get_device_drivers_prioritized ();
 		public Osinfo.DeviceLinkList get_device_links (Osinfo.Filter? filter);
 		public Osinfo.DeviceList get_devices (Osinfo.Filter? filter);
 		[Version (since = "0.0.6")]
 		public Osinfo.DeviceList get_devices_by_property (string property, string value, bool inherited);
 		public unowned string get_distro ();
 		public unowned string get_family ();
+		[Version (since = "1.7.0")]
 		public Osinfo.FirmwareList get_firmware_list (Osinfo.Filter? filter);
 		[Version (since = "1.3.0")]
 		public Osinfo.ImageList get_image_list ();
@@ -865,6 +877,7 @@ namespace Osinfo {
 		public unowned string get_treeinfo_variant ();
 		[Version (since = "0.1.0")]
 		public unowned string get_treeinfo_version ();
+		[Version (since = "0.1.0")]
 		public unowned string get_url ();
 		[Version (since = "1.5.0")]
 		public void set_os (Osinfo.Os os);
@@ -952,12 +965,18 @@ namespace Osinfo {
 		CLONES
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_RELEASE_STATUS_", type_id = "osinfo_release_status_get_type ()")]
-	[Version (since = "1.4.0")]
 	public enum ReleaseStatus {
 		RELEASED,
 		SNAPSHOT,
 		PRERELEASE,
 		ROLLING
+	}
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_ERROR_")]
+	[Version (since = "1.8.0")]
+	public errordomain Error {
+		GENERIC;
+		[Version (since = "1.3.0")]
+		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_ERROR_")]
 	public errordomain MediaError {
@@ -991,6 +1010,8 @@ namespace Osinfo {
 	public const string DEVICELINK_PROP_DRIVER;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICELINK_PROP_SUPPORTED")]
 	public const string DEVICELINK_PROP_SUPPORTED;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_DRIVER_DEFAULT_PRIORITY")]
+	public const int DEVICE_DRIVER_DEFAULT_PRIORITY;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_DRIVER_PROP_ARCHITECTURE")]
 	public const string DEVICE_DRIVER_PROP_ARCHITECTURE;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_DRIVER_PROP_DEVICE")]
@@ -1001,6 +1022,8 @@ namespace Osinfo {
 	public const string DEVICE_DRIVER_PROP_LOCATION;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_DRIVER_PROP_PRE_INSTALLABLE")]
 	public const string DEVICE_DRIVER_PROP_PRE_INSTALLABLE;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_DRIVER_PROP_PRIORITY")]
+	public const string DEVICE_DRIVER_PROP_PRIORITY;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_DRIVER_PROP_SIGNED")]
 	public const string DEVICE_DRIVER_PROP_SIGNED;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_DEVICE_PROP_BUS_TYPE")]
@@ -1233,7 +1256,4 @@ namespace Osinfo {
 	public const string TREE_PROP_URL;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_VARIANT")]
 	public const string TREE_PROP_VARIANT;
-	[CCode (cheader_filename = "osinfo/osinfo.h")]
-	[Version (since = "1.3.0")]
-	public static GLib.Quark error_quark ();
 }

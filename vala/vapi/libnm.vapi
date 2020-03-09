@@ -2536,6 +2536,8 @@ namespace NM {
 		public bool get_option (uint32 idx, out unowned string out_name, out unowned string out_value);
 		public unowned string get_option_by_name (string name);
 		public unowned string get_option_default (string name);
+		[Version (since = "1.24")]
+		public unowned string get_option_normalized (string name);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_valid_options ();
 		public bool remove_option (string name);

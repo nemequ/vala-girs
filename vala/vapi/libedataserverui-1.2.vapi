@@ -64,6 +64,8 @@ namespace E {
 	public class RemindersWidget : Gtk.Grid, Atk.Implementor, E.Extensible, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false)]
 		public RemindersWidget (ECal.ReminderWatcher watcher);
+		[Version (since = "3.38")]
+		public unowned Gtk.Paned get_paned ();
 		public unowned GLib.Settings get_settings ();
 		public unowned Gtk.TreeView get_tree_view ();
 		public unowned ECal.ReminderWatcher get_watcher ();
@@ -85,6 +87,12 @@ namespace E {
 	}
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", instance_pos = 4.9)]
 	public delegate bool CredentialsPrompterLoopPromptFunc (E.CredentialsPrompter prompter, E.Source source, E.NamedParameters credentials, out bool out_authenticated, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
+	public static void buffer_tagger_connect (Gtk.TextView textview);
+	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
+	public static void buffer_tagger_disconnect (Gtk.TextView textview);
+	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
+	public static void buffer_tagger_update_tags (Gtk.TextView textview);
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
 	[Version (since = "3.16")]
 	public static string trust_prompt_describe_certificate_errors (GLib.TlsCertificateFlags flags);

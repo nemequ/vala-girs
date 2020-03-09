@@ -26,8 +26,6 @@ namespace Spice {
 		[NoWrapper]
 		public virtual void channel_reset (bool migrating);
 		[NoWrapper]
-		public virtual void channel_reset_capabilities ();
-		[NoWrapper]
 		public virtual void channel_send_migration_handshake ();
 		[NoWrapper]
 		public virtual void channel_up ();
@@ -122,6 +120,9 @@ namespace Spice {
 		public virtual signal void display_primary_destroy ();
 		[Version (since = "0.31")]
 		public signal void gl_draw (uint x, uint y, uint width, uint height);
+		[Version (since = "0.36")]
+		public signal bool gst_video_overlay (Gst.Pipeline pipeline);
+		[Version (deprecated = true, deprecated_since = "0.36", since = "0.35")]
 		public signal void* streaming_mode (bool streaming_mode);
 	}
 	[CCode (cheader_filename = "spice-client.h", type_id = "spice_file_transfer_task_get_type ()")]
@@ -211,6 +212,7 @@ namespace Spice {
 		[NoAccessorMethod]
 		public bool agent_connected { get; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "0.37")]
 		public uint color_depth { get; set construct; }
 		[NoAccessorMethod]
 		public bool disable_animation { get; set construct; }
@@ -293,6 +295,31 @@ namespace Spice {
 		[Version (since = "0.15")]
 		public signal void port_event (int event);
 	}
+	[CCode (cheader_filename = "spice-client.h", type_id = "spice_qmp_port_get_type ()")]
+	[Version (since = "0.36")]
+	public class QmpPort : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected QmpPort ();
+		public static unowned Spice.QmpPort @get (Spice.PortChannel channel);
+		public async Spice.QmpStatus query_status_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool vm_action_async (Spice.QmpPortVmAction action, GLib.Cancellable? cancellable) throws GLib.Error;
+		[NoAccessorMethod]
+		public Spice.PortChannel channel { owned get; construct; }
+		[NoAccessorMethod]
+		public bool ready { get; }
+		public signal void event (string name, void* node);
+	}
+	[CCode (cheader_filename = "spice-client.h", ref_function = "spice_qmp_status_ref", type_id = "spice_qmp_status_get_type ()", unref_function = "spice_qmp_status_unref")]
+	[Compact]
+	[Version (since = "0.36")]
+	public class QmpStatus {
+		public bool running;
+		public bool singlestep;
+		public weak string status;
+		public int version;
+		public Spice.QmpStatus @ref ();
+		public void unref ();
+	}
 	[CCode (cheader_filename = "spice-client.h", type_id = "spice_record_channel_get_type ()")]
 	public class RecordChannel : Spice.Channel {
 		[CCode (has_construct_function = false)]
@@ -339,7 +366,7 @@ namespace Spice {
 		[NoAccessorMethod]
 		public bool client_sockets { get; set; }
 		[NoAccessorMethod]
-		[Version (since = "0.7")]
+		[Version (deprecated = true, deprecated_since = "0.37", since = "0.7")]
 		public int color_depth { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
@@ -354,6 +381,9 @@ namespace Spice {
 		[NoAccessorMethod]
 		[Version (since = "0.8")]
 		public bool enable_usbredir { get; set construct; }
+		[NoAccessorMethod]
+		[Version (since = "0.36")]
+		public bool gl_scanout { get; set construct; }
 		[NoAccessorMethod]
 		[Version (since = "0.9")]
 		public int glz_window_size { get; set; }
@@ -556,6 +586,16 @@ namespace Spice {
 		SCROLL_LOCK,
 		NUM_LOCK,
 		CAPS_LOCK
+	}
+	[CCode (cheader_filename = "spice-client.h", cprefix = "SPICE_QMP_PORT_VM_ACTION_", has_type_id = false)]
+	[Version (since = "0.36")]
+	public enum QmpPortVmAction {
+		QUIT,
+		RESET,
+		POWER_DOWN,
+		PAUSE,
+		CONTINUE,
+		LAST
 	}
 	[CCode (cheader_filename = "spice-client.h", cprefix = "SPICE_SESSION_MIGRATION_", type_id = "spice_session_migration_get_type ()")]
 	public enum SessionMigration {

@@ -167,7 +167,7 @@ namespace Retro {
 	public class OptionIterator : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected OptionIterator ();
-		public bool next (out uint key, out Retro.Option? option);
+		public bool next (out uint key, out unowned Retro.Option? option);
 	}
 	[CCode (cheader_filename = "retro-gtk.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "retro_pixdata_get_type ()")]
 	[Compact]

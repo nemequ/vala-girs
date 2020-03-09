@@ -1632,6 +1632,7 @@ namespace E {
 		EVENTS,
 		MEMOS,
 		TASKS,
+		WEBDAV_NOTES,
 		CALENDAR_AUTO_SCHEDULE,
 		SUBSCRIBED_ICALENDAR
 	}
@@ -1693,7 +1694,8 @@ namespace E {
 		PRINCIPAL,
 		COLLECTION,
 		RESOURCE,
-		SUBSCRIBED_ICALENDAR
+		SUBSCRIBED_ICALENDAR,
+		WEBDAV_NOTES
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_WEBDAV_RESOURCE_SUPPORTS_", has_type_id = false)]
 	[Flags]
@@ -1705,6 +1707,7 @@ namespace E {
 		TASKS,
 		FREEBUSY,
 		TIMEZONE,
+		WEBDAV_NOTES,
 		LAST
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_XMLHASH_STATUS_", has_type_id = false)]
