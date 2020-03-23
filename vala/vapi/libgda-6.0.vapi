@@ -584,8 +584,6 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public DbColumn ();
 		public static GLib.Quark error_quark ();
-		[CCode (has_construct_function = false)]
-		public DbColumn.from_meta (Gda.MetaTableColumn column);
 		[Version (since = "6.0")]
 		public bool get_autoinc ();
 		[Version (since = "6.0")]
@@ -652,8 +650,6 @@ namespace Gda {
 		[CCode (has_construct_function = false)]
 		[Version (since = "6.0")]
 		public DbFkey ();
-		[CCode (has_construct_function = false)]
-		public DbFkey.from_meta (Gda.MetaTableForeignKey metafkey);
 		[Version (since = "6.0")]
 		public unowned GLib.List<string> get_field_name ();
 		[Version (since = "6.0")]
@@ -685,8 +681,10 @@ namespace Gda {
 		public DbIndex ();
 		[Version (since = "6.0")]
 		public void append_field (Gda.DbIndexField field);
+		[Version (since = "6.0")]
 		public bool drop (Gda.Connection cnc, bool ifexists) throws GLib.Error;
 		public static GLib.Quark error_quark ();
+		[Version (since = "6.0")]
 		public unowned GLib.SList<Gda.DbIndexField>? get_fields ();
 		[Version (since = "6.0")]
 		public bool get_unique ();
@@ -701,15 +699,15 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public DbIndexField ();
 		[Version (since = "6.0")]
-		public Gda.DbIndexCollate get_collate ();
-		public unowned string get_collate_str ();
+		public unowned string get_collate ();
 		[Version (since = "6.0")]
 		public unowned Gda.DbColumn get_column ();
 		[Version (since = "6.0")]
 		public Gda.DbIndexSortOrder get_sort_order ();
+		[Version (since = "6.0")]
 		public unowned string get_sort_order_str ();
 		[Version (since = "6.0")]
-		public void set_collate (Gda.DbIndexCollate collate);
+		public void set_collate (string collate);
 		[Version (since = "6.0")]
 		public void set_column (Gda.DbColumn column);
 		[Version (since = "6.0")]
@@ -744,6 +742,7 @@ namespace Gda {
 		public bool is_valid ();
 		[Version (since = "6.0")]
 		public bool prepare_create (Gda.ServerOperation op, bool ifnotexists) throws GLib.Error;
+		[Version (since = "6.0")]
 		public bool rename (Gda.DbTable new_name, Gda.Connection cnc) throws GLib.Error;
 		[Version (since = "6.0")]
 		public void set_is_temp (bool istemp);
@@ -1642,6 +1641,8 @@ namespace Gda {
 		public void set_syntax_error ();
 		[NoAccessorMethod]
 		public int column_error { get; }
+		[NoAccessorMethod]
+		public bool debug { set; }
 		[NoAccessorMethod]
 		public int line_error { get; }
 		[NoAccessorMethod]
@@ -2724,11 +2725,6 @@ namespace Gda {
 		RESTRICT,
 		SET_DEFAULT,
 		CASCADE
-	}
-	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_INDEX_COLLATE_", has_type_id = false)]
-	public enum DbIndexCollate {
-		BINARY,
-		NOCASE
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DB_INDEX_", has_type_id = false)]
 	public enum DbIndexError {

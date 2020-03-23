@@ -3,12 +3,11 @@
 [CCode (cprefix = "Gedit", gir_namespace = "Gedit", gir_version = "3.0", lower_case_cprefix = "gedit_")]
 namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-app.h", type_id = "gedit_app_get_type ()")]
-	public abstract class App : Gtk.Application, GLib.ActionGroup, GLib.ActionMap {
+	public class App : Gtk.Application, GLib.ActionGroup, GLib.ActionMap {
 		[CCode (has_construct_function = false)]
 		protected App ();
 		public unowned Gedit.Window create_window (Gdk.Screen? screen);
 		public GLib.List<weak Gedit.Document> get_documents ();
-		public Gedit.LockdownMask get_lockdown ();
 		public GLib.List<weak Gedit.Window> get_main_windows ();
 		public GLib.List<weak Gedit.View> get_views ();
 		[NoWrapper]
@@ -16,7 +15,6 @@ namespace Gedit {
 		public virtual bool process_window_event (Gedit.Window window, Gdk.Event event);
 		public virtual void set_window_title (Gedit.Window window, string title);
 		public virtual bool show_help (Gtk.Window parent, string name, string link_id);
-		public Gedit.LockdownMask lockdown { get; }
 	}
 	[CCode (cheader_filename = "gedit/gedit-document.h", type_id = "gedit_document_get_type ()")]
 	public class Document : Gtk.SourceBuffer {
@@ -236,14 +234,6 @@ namespace Gedit {
 		DEBUG_UTILS,
 		DEBUG_METADATA
 	}
-	[CCode (cheader_filename = "gedit/gedit-app.h", cprefix = "GEDIT_LOCKDOWN_", type_id = "gedit_lockdown_mask_get_type ()")]
-	[Flags]
-	public enum LockdownMask {
-		COMMAND_LINE,
-		PRINTING,
-		PRINT_SETUP,
-		SAVE_TO_DISK
-	}
 	[CCode (cheader_filename = "gedit/gedit-notebook.h", cprefix = "GEDIT_NOTEBOOK_SHOW_TABS_", type_id = "gedit_notebook_show_tabs_mode_type_get_type ()")]
 	public enum NotebookShowTabsModeType {
 		NEVER,
@@ -279,8 +269,6 @@ namespace Gedit {
 	public delegate void MessageBusForeach (string object_path, string method);
 	[CCode (cheader_filename = "gedit/gedit-message-bus.h", instance_pos = 2.9)]
 	public delegate void MessageCallback (Gedit.MessageBus bus, Gedit.Message message);
-	[CCode (cheader_filename = "gedit/gedit-app.h", cname = "GEDIT_LOCKDOWN_ALL")]
-	public const int LOCKDOWN_ALL;
 	[CCode (cheader_filename = "gedit/gedit-commands.h")]
 	public static void commands_load_location (Gedit.Window window, GLib.File location, Gtk.SourceEncoding? encoding, int line_pos, int column_pos);
 	[CCode (cheader_filename = "gedit/gedit-commands.h")]
@@ -302,45 +290,22 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_basename_for_display (GLib.File location);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	[Version (deprecated = true, deprecated_since = "3.38")]
 	public static bool utils_decode_uri (string uri, out string scheme, out string user, out string host, out string port, out string path);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "gedit/gedit-utils.h")]
 	public static string[] utils_drop_get_uris (Gtk.SelectionData selection_data);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static Gtk.SourceCompressionType utils_get_compression_type_from_content_type (string content_type);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	public static void utils_get_current_viewport (Gdk.Screen screen, out int x, out int y);
-	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	public static uint utils_get_current_workspace (Gdk.Screen screen);
-	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	public static uint utils_get_window_workspace (Gtk.Window gtkwindow);
-	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static bool utils_is_valid_location (GLib.File location);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_location_get_dirname_for_display (GLib.File location);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	[Version (deprecated = true, deprecated_since = "3.36")]
-	public static string utils_make_valid_utf8 (string name);
-	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static bool utils_menu_position_under_tree_view (Gtk.TreeView tree_view, Gdk.Rectangle rect);
-	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	[Version (deprecated = true, deprecated_since = "3.36")]
-	public static void utils_menu_position_under_widget (Gtk.Menu menu, int x, int y, bool push_in, void* user_data);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static unowned string utils_newline_type_to_string (Gtk.SourceNewlineType newline_type);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	[Version (deprecated = true, deprecated_since = "3.36")]
-	public static string utils_replace_home_dir_with_tilde (string uri);
-	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static void utils_set_atk_name_description (Gtk.Widget widget, string name, string description);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	[Version (deprecated = true, deprecated_since = "3.36")]
-	public static void utils_set_atk_relation (Gtk.Widget obj1, Gtk.Widget obj2, Atk.RelationType rel_type);
-	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_set_direct_save_filename (Gdk.DragContext context);
-	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	[Version (deprecated = true, deprecated_since = "3.36")]
-	public static string utils_str_end_truncate (string string, uint truncate_length);
-	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	[Version (deprecated = true, deprecated_since = "3.36")]
-	public static string utils_str_middle_truncate (string string, uint truncate_length);
 }

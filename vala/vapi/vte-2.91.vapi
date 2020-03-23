@@ -7,14 +7,16 @@ namespace Vte {
 		[CCode (has_construct_function = false)]
 		protected Pty ();
 		public void child_setup ();
+		[Version (deprecated = true, deprecated_since = "0.42")]
 		public void close ();
 		[CCode (has_construct_function = false)]
 		public Pty.foreign_sync (int fd, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int get_fd ();
-		public bool get_size (int rows, int columns) throws GLib.Error;
+		public bool get_size (out int rows, out int columns) throws GLib.Error;
 		public bool set_size (int rows, int columns) throws GLib.Error;
 		public bool set_utf8 (bool utf8) throws GLib.Error;
-		public async bool spawn_async (string working_directory, string argv, string envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 5.33333, destroy_notify_pos = 5.66667)] owned GLib.SpawnChildSetupFunc child_setup, int timeout, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.48")]
+		public async bool spawn_async (string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable, out GLib.Pid child_pid) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Pty.sync (Vte.PtyFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int fd { get; construct; }
@@ -369,8 +371,10 @@ namespace Vte {
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_SPAWN_NO_PARENT_ENVV")]
 	public const int SPAWN_NO_PARENT_ENVV;
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_SPAWN_NO_SYSTEMD_SCOPE")]
+	[Version (since = "0.60")]
 	public const int SPAWN_NO_SYSTEMD_SCOPE;
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_SPAWN_REQUIRE_SYSTEMD_SCOPE")]
+	[Version (since = "0.60")]
 	public const int SPAWN_REQUIRE_SYSTEMD_SCOPE;
 	[CCode (cheader_filename = "vte/vte.h", cname = "VTE_TEST_FLAGS_ALL")]
 	public const uint64 TEST_FLAGS_ALL;
