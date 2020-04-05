@@ -392,7 +392,9 @@ namespace GVir {
 	public enum DomainDeleteFlags {
 		NONE,
 		SAVED_STATE,
-		SNAPSHOTS_METADATA
+		SNAPSHOTS_METADATA,
+		REMOVE_NVRAM,
+		KEEP_NVRAM
 	}
 	[CCode (cheader_filename = "libvirt-gobject/libvirt-gobject.h", cprefix = "GVIR_DOMAIN_REBOOT_", type_id = "gvir_domain_reboot_flags_get_type ()")]
 	public enum DomainRebootFlags {

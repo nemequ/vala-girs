@@ -1136,8 +1136,8 @@ namespace E {
 	public abstract class SourceSelectable : E.SourceBackend {
 		[CCode (has_construct_function = false)]
 		protected SourceSelectable ();
-		public string dup_color ();
-		public unowned string get_color ();
+		public string? dup_color ();
+		public unowned string? get_color ();
 		public bool get_selected ();
 		public void set_color (string? color);
 		public void set_selected (bool selected);

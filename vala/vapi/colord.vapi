@@ -478,6 +478,8 @@ namespace Cd {
 		public void add_metadata (string key, string value);
 		[Version (since = "1.1.2")]
 		public bool create_default () throws GLib.Error;
+		[Version (since = "1.4.5")]
+		public bool create_default_full (Cd.IccLoadFlags flags) throws GLib.Error;
 		[Version (since = "0.1.32")]
 		public bool create_from_edid (double gamma_value, Cd.ColorYxy red, Cd.ColorYxy green, Cd.ColorYxy blue, Cd.ColorYxy white) throws GLib.Error;
 		[Version (since = "1.1.2")]
@@ -1523,6 +1525,8 @@ namespace Cd {
 	public static double mat33_get_data (Cd.Mat3x3 src);
 	[CCode (cheader_filename = "colord.h")]
 	public static void mat33_init (Cd.Mat3x3 dest, double m00, double m01, double m02, double m10, double m11, double m12, double m20, double m21, double m22);
+	[CCode (cheader_filename = "colord.h")]
+	public static bool mat33_is_finite (Cd.Mat3x3 mat) throws GLib.Error;
 	[CCode (cheader_filename = "colord.h")]
 	public static void mat33_matrix_multiply (Cd.Mat3x3 mat_src1, Cd.Mat3x3 mat_src2, Cd.Mat3x3 mat_dest);
 	[CCode (cheader_filename = "colord.h")]

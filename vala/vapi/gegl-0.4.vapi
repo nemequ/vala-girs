@@ -263,12 +263,6 @@ namespace Gegl {
 	[Compact]
 	public class OperationContext {
 	}
-	[CCode (cheader_filename = "gegl.h", lower_case_csuffix = "param_enum", type_id = "gegl_param_enum_get_type ()")]
-	[GIR (name = "ParamEnum")]
-	public class Param : GLib.ParamSpecEnum {
-		[CCode (has_construct_function = false)]
-		protected Param ();
-	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_audio_fragment_get_type ()")]
 	public class ParamAudioFragment : GLib.ParamSpec {
 		[CCode (has_construct_function = false)]
@@ -288,6 +282,11 @@ namespace Gegl {
 	public class ParamDouble : GLib.ParamSpecDouble {
 		[CCode (has_construct_function = false)]
 		protected ParamDouble ();
+	}
+	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_enum_get_type ()")]
+	public class ParamEnum : GLib.ParamSpecEnum {
+		[CCode (has_construct_function = false)]
+		protected ParamEnum ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_file_path_get_type ()")]
 	public class ParamFilePath : GLib.ParamSpecString {
@@ -547,30 +546,6 @@ namespace Gegl {
 		[CCode (array_length = false)]
 		public weak float[] table;
 	}
-	[CCode (cheader_filename = "gegl.h", cname = "GeglParamSpecEnum", has_type_id = false)]
-	[GIR (name = "ParamSpecEnum")]
-	public struct ParamSpec {
-		public weak GLib.ParamSpecEnum parent_instance;
-		public weak GLib.SList<void*> excluded_values;
-		public static GLib.ParamSpec audio_fragment (global::string name, global::string nick, global::string blurb, GLib.ParamFlags flags);
-		public static GLib.ParamSpec color (global::string name, global::string nick, global::string blurb, Gegl.Color default_color, GLib.ParamFlags flags);
-		public static GLib.ParamSpec color_from_string (global::string name, global::string nick, global::string blurb, global::string default_color_string, GLib.ParamFlags flags);
-		public static unowned Gegl.Color color_get_default (GLib.ParamSpec self);
-		public static GLib.ParamSpec curve (global::string name, global::string nick, global::string blurb, Gegl.Curve default_curve, GLib.ParamFlags flags);
-		public static GLib.ParamSpec double (global::string name, global::string nick, global::string blurb, global::double minimum, global::double maximum, global::double default_value, global::double ui_minimum, global::double ui_maximum, global::double ui_gamma, GLib.ParamFlags flags);
-		public static GLib.ParamSpec @enum (global::string name, global::string nick, global::string blurb, GLib.Type enum_type, global::int default_value, GLib.ParamFlags flags);
-		[CCode (cname = "gegl_param_spec_enum_exclude_value")]
-		public void exclude_value (global::int value);
-		public static GLib.ParamSpec file_path (global::string name, global::string nick, global::string blurb, bool no_validate, bool null_ok, global::string default_value, GLib.ParamFlags flags);
-		public static GLib.ParamSpec format (global::string name, global::string nick, global::string blurb, GLib.ParamFlags flags);
-		public static unowned global::string get_property_key (GLib.ParamSpec pspec, global::string key_name);
-		public static GLib.ParamSpec int (global::string name, global::string nick, global::string blurb, global::int minimum, global::int maximum, global::int default_value, global::int ui_minimum, global::int ui_maximum, global::double ui_gamma, GLib.ParamFlags flags);
-		public static GLib.ParamSpec path (global::string name, global::string nick, global::string blurb, Gegl.Path default_path, GLib.ParamFlags flags);
-		public static GLib.ParamSpec seed (global::string name, global::string nick, global::string blurb, GLib.ParamFlags flags);
-		public static void set_property_key (GLib.ParamSpec pspec, global::string key_name, global::string value);
-		public static GLib.ParamSpec string (global::string name, global::string nick, global::string blurb, bool no_validate, bool null_ok, global::string default_value, GLib.ParamFlags flags);
-		public static GLib.ParamSpec uri (global::string name, global::string nick, global::string blurb, bool no_validate, bool null_ok, global::string default_value, GLib.ParamFlags flags);
-	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	public struct ParamSpecDouble {
 		public weak GLib.ParamSpecDouble parent_instance;
@@ -582,6 +557,12 @@ namespace Gegl {
 		public int ui_digits;
 		public void set_digits (int digits);
 		public void set_steps (double small_step, double big_step);
+	}
+	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
+	public struct ParamSpecEnum {
+		public weak GLib.ParamSpecEnum parent_instance;
+		public weak GLib.SList<void*> excluded_values;
+		public void exclude_value (int value);
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	public struct ParamSpecFilePath {
@@ -990,6 +971,38 @@ namespace Gegl {
 	public static void parallel_distribute_area (Gegl.Rectangle area, double thread_cost, Gegl.SplitStrategy split_strategy, Gegl.ParallelDistributeAreaFunc func);
 	[CCode (cheader_filename = "gegl.h")]
 	public static void parallel_distribute_range (size_t size, double thread_cost, Gegl.ParallelDistributeRangeFunc func);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_audio_fragment (string name, string nick, string blurb, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_color (string name, string nick, string blurb, Gegl.Color default_color, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_color_from_string (string name, string nick, string blurb, string default_color_string, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static unowned Gegl.Color param_spec_color_get_default (GLib.ParamSpec self);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_curve (string name, string nick, string blurb, Gegl.Curve default_curve, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_double (string name, string nick, string blurb, double minimum, double maximum, double default_value, double ui_minimum, double ui_maximum, double ui_gamma, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_enum (string name, string nick, string blurb, GLib.Type enum_type, int default_value, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_file_path (string name, string nick, string blurb, bool no_validate, bool null_ok, string default_value, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_format (string name, string nick, string blurb, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static unowned string param_spec_get_property_key (GLib.ParamSpec pspec, string key_name);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_int (string name, string nick, string blurb, int minimum, int maximum, int default_value, int ui_minimum, int ui_maximum, double ui_gamma, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_path (string name, string nick, string blurb, Gegl.Path default_path, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_seed (string name, string nick, string blurb, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static void param_spec_set_property_key (GLib.ParamSpec pspec, string key_name, string value);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_string (string name, string nick, string blurb, bool no_validate, bool null_ok, string default_value, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static GLib.ParamSpec param_spec_uri (string name, string nick, string blurb, bool no_validate, bool null_ok, string default_value, GLib.ParamFlags flags);
 	[CCode (cheader_filename = "gegl.h")]
 	public static void reset_stats ();
 	[CCode (cheader_filename = "gegl.h")]
