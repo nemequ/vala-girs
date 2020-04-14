@@ -4,12 +4,10 @@
 namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_action_row_get_type ()")]
 	public class ActionRow : Hdy.PreferencesRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
-		[CCode (has_construct_function = false)]
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.6")]
 		public ActionRow ();
 		public virtual void activate ();
-		[Version (since = "0.0.6")]
-		public void add_action (Gtk.Widget? widget);
 		[Version (since = "0.0.6")]
 		public void add_prefix (Gtk.Widget? widget);
 		[Version (since = "0.0.7")]
@@ -45,9 +43,30 @@ namespace Hdy {
 		[Version (since = "1.0")]
 		public signal void activated ();
 	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_application_window_get_type ()")]
+	public class ApplicationWindow : Gtk.ApplicationWindow, Atk.Implementor, GLib.ActionGroup, GLib.ActionMap, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "1.0")]
+		public ApplicationWindow ();
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_avatar_get_type ()")]
+	public class Avatar : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public Avatar (int size, string? text, bool show_initials);
+		public bool get_show_initials ();
+		public int get_size ();
+		public unowned string? get_text ();
+		public void set_image_load_func (owned Hdy.AvatarImageLoadFunc? load_image);
+		public void set_show_initials (bool show_initials);
+		public void set_size (int size);
+		public void set_text (string? text);
+		public bool show_initials { get; set; }
+		public int size { get; set; }
+		public string text { get; set; }
+	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_carousel_get_type ()")]
 	public class Carousel : Gtk.EventBox, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
-		[CCode (has_construct_function = false)]
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "1.0")]
 		public Carousel ();
 		[Version (since = "1.0")]
@@ -115,7 +134,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_column_get_type ()")]
 	public class Column : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
-		[CCode (has_construct_function = false)]
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Column ();
 		public int get_linear_growth_width ();
 		public int get_maximum_width ();
@@ -126,7 +145,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_combo_row_get_type ()")]
 	public class ComboRow : Hdy.ActionRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
-		[CCode (has_construct_function = false)]
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.6")]
 		public ComboRow ();
 		[Version (since = "0.0.6")]
@@ -215,16 +234,6 @@ namespace Hdy {
 		[Version (since = "1.0")]
 		public string visible_child_name { get; set; }
 	}
-	[CCode (cheader_filename = "handy.h", type_id = "hdy_dialog_get_type ()")]
-	public class Dialog : Gtk.Dialog, Atk.Implementor, Gtk.Buildable {
-		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		[Version (since = "0.0.7")]
-		public Dialog (Gtk.Window parent);
-		[Version (since = "0.0.11")]
-		public bool get_narrow ();
-		[Version (since = "0.0.11")]
-		public bool narrow { get; }
-	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_enum_value_object_get_type ()")]
 	public class EnumValueObject : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -234,23 +243,47 @@ namespace Hdy {
 		public int get_value ();
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_expander_row_get_type ()")]
-	public class ExpanderRow : Hdy.ActionRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
-		[CCode (has_construct_function = false)]
+	public class ExpanderRow : Hdy.PreferencesRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.6")]
 		public ExpanderRow ();
 		[Version (since = "0.0.6")]
 		public bool get_enable_expansion ();
 		public bool get_expanded ();
+		[Version (since = "1.0")]
+		public unowned string get_icon_name ();
 		[Version (since = "0.0.6")]
 		public bool get_show_enable_switch ();
+		[Version (since = "1.0")]
+		public unowned string get_subtitle ();
+		[Version (since = "1.0")]
+		public unowned string get_title ();
+		[Version (since = "1.0")]
+		public bool get_use_underline ();
 		[Version (since = "0.0.6")]
 		public void set_enable_expansion (bool enable_expansion);
 		public void set_expanded (bool expanded);
+		[Version (since = "1.0")]
+		public void set_icon_name (string icon_name);
 		[Version (since = "0.0.6")]
 		public void set_show_enable_switch (bool show_enable_switch);
+		[Version (since = "1.0")]
+		public void set_subtitle (string subtitle);
+		[Version (since = "1.0")]
+		public void set_title (string title);
+		[Version (since = "1.0")]
+		public void set_use_underline (bool use_underline);
 		public bool enable_expansion { get; set; }
 		public bool expanded { get; set; }
+		[Version (since = "1.0")]
+		public string icon_name { get; set; }
 		public bool show_enable_switch { get; set; }
+		[Version (since = "1.0")]
+		public string subtitle { get; set; }
+		[Version (since = "1.0")]
+		public string title { get; set; }
+		[Version (since = "1.0")]
+		public bool use_underline { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_header_bar_get_type ()")]
 	public class HeaderBar : Gtk.Container, Atk.Implementor, Gtk.Buildable {
@@ -401,7 +434,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_group_get_type ()")]
 	public class PreferencesGroup : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
-		[CCode (has_construct_function = false)]
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.10")]
 		public PreferencesGroup ();
 		[Version (since = "0.0.10")]
@@ -419,7 +452,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_page_get_type ()")]
 	public class PreferencesPage : Gtk.ScrolledWindow, Atk.Implementor, Gtk.Buildable {
-		[CCode (has_construct_function = false)]
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.10")]
 		public PreferencesPage ();
 		[Version (since = "0.0.10")]
@@ -437,7 +470,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_row_get_type ()")]
 	public class PreferencesRow : Gtk.ListBoxRow, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
-		[CCode (has_construct_function = false)]
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.10")]
 		public PreferencesRow ();
 		[Version (since = "0.0.10")]
@@ -454,10 +487,16 @@ namespace Hdy {
 		public bool use_underline { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_window_get_type ()")]
-	public class PreferencesWindow : Gtk.Window, Atk.Implementor, Gtk.Buildable {
-		[CCode (has_construct_function = false)]
+	public class PreferencesWindow : Hdy.Window, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.10")]
 		public PreferencesWindow ();
+		[Version (since = "1.0")]
+		public bool get_search_enabled ();
+		[Version (since = "1.0")]
+		public void set_search_enabled (bool search_enabled);
+		[Version (since = "1.0")]
+		public bool search_enabled { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_search_bar_get_type ()")]
 	public class SearchBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -482,7 +521,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_squeezer_get_type ()")]
 	public class Squeezer : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
-		[CCode (has_construct_function = false)]
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Squeezer ();
 		public bool get_child_enabled (Gtk.Widget child);
 		[Version (since = "0.0.10")]
@@ -521,7 +560,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_title_bar_get_type ()")]
 	public class TitleBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
-		[CCode (has_construct_function = false)]
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public TitleBar ();
 		public bool get_selection_mode ();
 		public void set_selection_mode (bool selection_mode);
@@ -544,7 +583,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_view_switcher_get_type ()")]
 	public class ViewSwitcher : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
-		[CCode (has_construct_function = false)]
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.10")]
 		public ViewSwitcher ();
 		[Version (since = "0.0.10")]
@@ -574,7 +613,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_view_switcher_bar_get_type ()")]
 	public class ViewSwitcherBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
-		[CCode (has_construct_function = false)]
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.10")]
 		public ViewSwitcherBar ();
 		[Version (since = "0.0.10")]
@@ -601,6 +640,70 @@ namespace Hdy {
 		public bool reveal { get; set; }
 		[Version (since = "0.0.10")]
 		public Gtk.Stack stack { get; set; }
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_view_switcher_title_get_type ()")]
+	public class ViewSwitcherTitle : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.0")]
+		public ViewSwitcherTitle ();
+		[Version (since = "1.0")]
+		public bool get_has_subtitle ();
+		[Version (since = "1.0")]
+		public Gtk.IconSize get_icon_size ();
+		[Version (since = "1.0")]
+		public Hdy.ViewSwitcherPolicy get_policy ();
+		[Version (since = "1.0")]
+		public unowned Gtk.Stack? get_stack ();
+		[Version (since = "1.0")]
+		public unowned string? get_subtitle ();
+		[Version (since = "1.0")]
+		public unowned string? get_title ();
+		[Version (since = "1.0")]
+		public bool get_title_visible ();
+		[Version (since = "1.0")]
+		public bool get_view_switcher_enabled ();
+		[Version (since = "1.0")]
+		public void set_has_subtitle (bool has_subtitle);
+		[Version (since = "1.0")]
+		public void set_icon_size (Gtk.IconSize icon_size);
+		[Version (since = "1.0")]
+		public void set_policy (Hdy.ViewSwitcherPolicy policy);
+		[Version (since = "1.0")]
+		public void set_stack (Gtk.Stack? stack);
+		[Version (since = "1.0")]
+		public void set_subtitle (string? subtitle);
+		[Version (since = "1.0")]
+		public void set_title (string? title);
+		[Version (since = "1.0")]
+		public void set_view_switcher_enabled (bool enabled);
+		[Version (since = "1.0")]
+		public bool has_subtitle { get; set; }
+		[Version (since = "1.0")]
+		public int icon_size { get; set; }
+		[Version (since = "1.0")]
+		public Hdy.ViewSwitcherPolicy policy { get; set; }
+		[Version (since = "1.0")]
+		public Gtk.Stack stack { get; set; }
+		[Version (since = "1.0")]
+		public string subtitle { get; set; }
+		[Version (since = "1.0")]
+		public string title { get; set; }
+		[Version (since = "1.0")]
+		public bool title_visible { get; }
+		[Version (since = "1.0")]
+		public bool view_switcher_enabled { get; set; }
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_window_get_type ()")]
+	public class Window : Gtk.Window, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "1.0")]
+		public Window ();
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_window_handle_get_type ()")]
+	public class WindowHandle : Gtk.EventBox, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "1.0")]
+		public WindowHandle ();
 	}
 	[CCode (cheader_filename = "handy.h", type_cname = "HdySwipeableInterface", type_id = "hdy_swipeable_get_type ()")]
 	public interface Swipeable : Gtk.Widget {
@@ -666,6 +769,8 @@ namespace Hdy {
 		WIDE
 	}
 	[CCode (cheader_filename = "handy.h", instance_pos = 1.9)]
+	public delegate Gdk.Pixbuf? AvatarImageLoadFunc (int size);
+	[CCode (cheader_filename = "handy.h", instance_pos = 1.9)]
 	public delegate string ComboRowGetEnumValueNameFunc (Hdy.EnumValueObject value);
 	[CCode (cheader_filename = "handy.h", instance_pos = 1.9)]
 	public delegate string ComboRowGetNameFunc (GLib.Object item);
@@ -681,8 +786,4 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h")]
 	[Version (since = "0.0.6")]
 	public static void list_box_separator_header (Gtk.ListBoxRow row, Gtk.ListBoxRow? before, void* unused_user_data);
-	[CCode (cheader_filename = "handy.h")]
-	public static long string_utf8_len (GLib.StringBuilder string);
-	[CCode (cheader_filename = "handy.h")]
-	public static unowned GLib.StringBuilder string_utf8_truncate (GLib.StringBuilder string, size_t len);
 }
