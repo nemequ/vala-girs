@@ -107,10 +107,20 @@ namespace MM {
 	public class BearerStats : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected BearerStats ();
+		[Version (since = "1.14")]
+		public uint get_attempts ();
 		[Version (since = "1.6")]
 		public uint get_duration ();
+		[Version (since = "1.14")]
+		public uint get_failed_attempts ();
 		[Version (since = "1.6")]
 		public uint64 get_rx_bytes ();
+		[Version (since = "1.14")]
+		public uint get_total_duration ();
+		[Version (since = "1.14")]
+		public uint64 get_total_rx_bytes ();
+		[Version (since = "1.14")]
+		public uint64 get_total_tx_bytes ();
 		[Version (since = "1.6")]
 		public uint64 get_tx_bytes ();
 	}
@@ -2362,7 +2372,8 @@ namespace MM {
 		ROAMING_SMS_ONLY,
 		EMERGENCY_ONLY,
 		HOME_CSFB_NOT_PREFERRED,
-		ROAMING_CSFB_NOT_PREFERRED
+		ROAMING_CSFB_NOT_PREFERRED,
+		ATTACHED_RLOS
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_SUBSCRIPTION_STATE_", type_id = "mm_modem_3gpp_subscription_state_get_type ()")]
 	public enum Modem3gppSubscriptionState {
@@ -2397,6 +2408,7 @@ namespace MM {
 		EVDOA,
 		EVDOB,
 		LTE,
+		@5GNR,
 		ANY;
 		public string build_string_from_mask ();
 	}
@@ -2535,8 +2547,8 @@ namespace MM {
 		CDMA_EVDO,
 		GSM_UMTS,
 		LTE,
-		LTE_ADVANCED,
 		IRIDIUM,
+		@5GNR,
 		ANY;
 		public string build_string_from_mask ();
 	}
@@ -2632,6 +2644,7 @@ namespace MM {
 		@2G,
 		@3G,
 		@4G,
+		@5G,
 		ANY;
 		public string build_string_from_mask ();
 	}

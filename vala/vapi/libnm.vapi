@@ -2562,6 +2562,8 @@ namespace NM {
 		public const string AGEING_TIME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_FORWARD_DELAY")]
 		public const string FORWARD_DELAY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_GROUP_ADDRESS")]
+		public const string GROUP_ADDRESS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_GROUP_FORWARD_MASK")]
 		public const string GROUP_FORWARD_MASK;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_HELLO_TIME")]
@@ -2570,6 +2572,12 @@ namespace NM {
 		public const string MAC_ADDRESS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MAX_AGE")]
 		public const string MAX_AGE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_QUERIER")]
+		public const string MULTICAST_QUERIER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_QUERY_USE_IFADDR")]
+		public const string MULTICAST_QUERY_USE_IFADDR;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_ROUTER")]
+		public const string MULTICAST_ROUTER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_SNOOPING")]
 		public const string MULTICAST_SNOOPING;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_PORT_HAIRPIN_MODE")]
@@ -2594,6 +2602,10 @@ namespace NM {
 		public const string VLAN_DEFAULT_PVID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_VLAN_FILTERING")]
 		public const string VLAN_FILTERING;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_VLAN_PROTOCOL")]
+		public const string VLAN_PROTOCOL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_VLAN_STATS_ENABLED")]
+		public const string VLAN_STATS_ENABLED;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingBridge ();
 		[Version (since = "1.18")]
@@ -2602,11 +2614,15 @@ namespace NM {
 		public void clear_vlans ();
 		public uint32 get_ageing_time ();
 		public uint16 get_forward_delay ();
+		public unowned string get_group_address ();
 		[Version (since = "1.10")]
 		public uint16 get_group_forward_mask ();
 		public uint16 get_hello_time ();
 		public unowned string get_mac_address ();
 		public uint16 get_max_age ();
+		public bool get_multicast_querier ();
+		public bool get_multicast_query_use_ifaddr ();
+		public unowned string get_multicast_router ();
 		[Version (since = "1.2")]
 		public bool get_multicast_snooping ();
 		[Version (since = "1.18")]
@@ -2619,6 +2635,8 @@ namespace NM {
 		public uint16 get_vlan_default_pvid ();
 		[Version (since = "1.18")]
 		public bool get_vlan_filtering ();
+		public unowned string get_vlan_protocol ();
+		public bool get_vlan_stats_enabled ();
 		[Version (since = "1.18")]
 		public void remove_vlan (uint idx);
 		[Version (since = "1.18")]
@@ -2627,6 +2645,9 @@ namespace NM {
 		public uint ageing_time { get; set; }
 		[NoAccessorMethod]
 		public uint forward_delay { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.24")]
+		public string group_address { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
 		public uint group_forward_mask { get; set; }
@@ -2637,6 +2658,12 @@ namespace NM {
 		public string mac_address { owned get; set; }
 		[NoAccessorMethod]
 		public uint max_age { get; set; }
+		[NoAccessorMethod]
+		public bool multicast_querier { get; set; }
+		[NoAccessorMethod]
+		public bool multicast_query_use_ifaddr { get; set; }
+		[NoAccessorMethod]
+		public string multicast_router { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public bool multicast_snooping { get; set; }
@@ -2650,6 +2677,11 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.18")]
 		public bool vlan_filtering { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.24")]
+		public string vlan_protocol { owned get; set; }
+		[NoAccessorMethod]
+		public bool vlan_stats_enabled { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.18")]
 		public GLib.GenericArray<NM.BridgeVlan> vlans { owned get; set; }

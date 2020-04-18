@@ -6,7 +6,7 @@ namespace Gda {
 	public class Batch : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Batch ();
-		public void add_statement (Gda.Statement stmt);
+		public void add_statement (owned Gda.Statement stmt);
 		public Gda.Batch copy ();
 		public static GLib.Quark error_quark ();
 		public bool get_parameters (out Gda.Set? out_params) throws GLib.Error;

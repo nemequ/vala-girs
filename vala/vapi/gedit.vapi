@@ -29,7 +29,9 @@ namespace Gedit {
 		public unowned Gtk.SourceSearchContext get_search_context ();
 		public string get_short_name_for_display ();
 		public string get_uri_for_display ();
+		[Version (deprecated = true, deprecated_since = "3.38")]
 		public bool goto_line (int line);
+		[Version (deprecated = true, deprecated_since = "3.38")]
 		public bool goto_line_offset (int line, int line_offset);
 		public bool is_untitled ();
 		public bool is_untouched ();
@@ -155,11 +157,17 @@ namespace Gedit {
 	public class View : Gtk.SourceView, Atk.Implementor, Gtk.Buildable, Gtk.Scrollable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public View (Gedit.Document doc);
+		[Version (deprecated = true, deprecated_since = "3.38")]
 		public void copy_clipboard ();
+		[Version (deprecated = true, deprecated_since = "3.38")]
 		public void cut_clipboard ();
+		[Version (deprecated = true, deprecated_since = "3.38")]
 		public void delete_selection ();
+		[Version (deprecated = true, deprecated_since = "3.38")]
 		public void paste_clipboard ();
+		[Version (deprecated = true, deprecated_since = "3.38")]
 		public void scroll_to_cursor ();
+		[Version (deprecated = true, deprecated_since = "3.38")]
 		public void select_all ();
 		public void set_font (bool default_font, string font_name);
 		public virtual signal void drop_uris ([CCode (array_length = false, array_null_terminated = true)] string[] uri_list);

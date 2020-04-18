@@ -273,6 +273,8 @@ namespace Osinfo {
 		[NoAccessorMethod]
 		public string architecture { owned get; set; }
 		[NoAccessorMethod]
+		public string cloud_init { owned get; set; }
+		[NoAccessorMethod]
 		public string format { owned get; set; }
 		[NoAccessorMethod]
 		public string url { owned get; set; }
@@ -677,6 +679,7 @@ namespace Osinfo {
 		public Osinfo.DeviceLinkList get_all_device_links (Osinfo.Filter? filter);
 		[Version (since = "0.0.5")]
 		public Osinfo.DeviceList get_all_devices (Osinfo.Filter? filter);
+		public unowned string get_cloud_image_username ();
 		[Version (since = "0.2.2")]
 		public unowned Osinfo.DeviceDriverList get_device_drivers ();
 		[Version (since = "1.7.0")]
@@ -706,6 +709,7 @@ namespace Osinfo {
 		public Osinfo.TreeList get_tree_list ();
 		[Version (since = "0.2.9")]
 		public Osinfo.OsVariantList get_variant_list ();
+		public string cloud_image_username { get; }
 		public string distro { get; }
 		public string family { get; }
 		public string kernel_url_argument { get; }
@@ -1198,6 +1202,8 @@ namespace Osinfo {
 	public const int MICRO_VERSION;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_MINOR_VERSION")]
 	public const int MINOR_VERSION;
+	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_CLOUD_IMAGE_USERNAME")]
+	public const string OS_PROP_CLOUD_IMAGE_USERNAME;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_DISTRO")]
 	public const string OS_PROP_DISTRO;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_OS_PROP_FAMILY")]
