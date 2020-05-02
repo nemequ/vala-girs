@@ -2783,6 +2783,8 @@ namespace NM {
 		public const string MDNS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_METERED")]
 		public const string METERED;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_MUD_URL")]
+		public const string MUD_URL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_MULTI_CONNECT")]
 		public const string MULTI_CONNECT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_PERMISSIONS")]
@@ -2832,6 +2834,8 @@ namespace NM {
 		public NM.SettingConnectionMdns get_mdns ();
 		[Version (since = "1.2")]
 		public NM.Metered get_metered ();
+		[Version (since = "1.26")]
+		public unowned string get_mud_url ();
 		[Version (since = "1.14")]
 		public NM.ConnectionMultiConnect get_multi_connect ();
 		public uint32 get_num_permissions ();
@@ -2885,6 +2889,9 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public NM.Metered metered { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.26")]
+		public string mud_url { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.14")]
 		public int multi_connect { get; set; }
@@ -6798,6 +6805,8 @@ namespace NM {
 	public const string SETTING_DNS_OPTION_NO_CHECK_NAMES;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NO_IP6_DOTINT")]
 	public const string SETTING_DNS_OPTION_NO_IP6_DOTINT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NO_RELOAD")]
+	public const string SETTING_DNS_OPTION_NO_RELOAD;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NO_TLD_QUERY")]
 	public const string SETTING_DNS_OPTION_NO_TLD_QUERY;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_ROTATE")]
@@ -6808,6 +6817,8 @@ namespace NM {
 	public const string SETTING_DNS_OPTION_SINGLE_REQUEST_REOPEN;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_TIMEOUT")]
 	public const string SETTING_DNS_OPTION_TIMEOUT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_TRUST_AD")]
+	public const string SETTING_DNS_OPTION_TRUST_AD;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_USE_VC")]
 	public const string SETTING_DNS_OPTION_USE_VC;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DUMMY_SETTING_NAME")]

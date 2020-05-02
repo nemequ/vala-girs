@@ -17,6 +17,8 @@ namespace Vte {
 		public bool set_utf8 (bool utf8) throws GLib.Error;
 		[Version (since = "0.48")]
 		public async bool spawn_async (string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable, out GLib.Pid child_pid) throws GLib.Error;
+		[Version (since = "0.62")]
+		public async void spawn_with_fds_async (string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, [CCode (array_length_cname = "n_fds", array_length_pos = 4.5)] int[]? fds, [CCode (array_length_cname = "n_map_fds", array_length_pos = 5.5)] int[]? map_fds, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable);
 		[CCode (has_construct_function = false)]
 		public Pty.sync (Vte.PtyFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int fd { get; construct; }
@@ -46,8 +48,9 @@ namespace Vte {
 		public void copy_primary ();
 		[Version (deprecated = true, deprecated_since = "0.46", since = "0.44")]
 		public bool event_check_gregex_simple (Gdk.Event event, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] GLib.Regex[] regexes, GLib.RegexMatchFlags match_flags, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] out unowned string[] matches);
-		[Version (since = "0.46")]
-		public bool event_check_regex_simple (Gdk.Event event, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] Vte.Regex[] regexes, uint32 match_flags, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] out unowned string[] matches);
+		[CCode (array_length_pos = 3.1, array_length_type = "gsize")]
+		[Version (since = "0.62")]
+		public string[]? event_check_regex_array (Gdk.Event event, [CCode (array_length_cname = "n_regexes", array_length_pos = 2.5, array_length_type = "gsize")] Vte.Regex[] regexes, uint32 match_flags);
 		public void feed ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gssize")] uint8[]? data);
 		public void feed_child ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gssize")] uint8[]? text);
 		[Version (deprecated = true, deprecated_since = "0.60")]
@@ -192,9 +195,11 @@ namespace Vte {
 		[Version (since = "0.40")]
 		public void set_word_char_exceptions (string exceptions);
 		[Version (since = "0.48")]
-		public void spawn_async (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags_, int timeout, GLib.Cancellable? cancellable);
+		public void spawn_async (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable);
 		[Version (deprecated = true, deprecated_since = "0.48")]
 		public bool spawn_sync (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 6.5)] GLib.SpawnChildSetupFunc? child_setup, out GLib.Pid child_pid, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.62")]
+		public void spawn_with_fds_async (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, [CCode (array_length_cname = "n_fds", array_length_pos = 5.5)] int[]? fds, [CCode (array_length_cname = "n_map_fds", array_length_pos = 6.5)] int[]? map_fds, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable);
 		public void unselect_all ();
 		public void watch_child (GLib.Pid child_pid);
 		public bool write_contents_sync (GLib.OutputStream stream, Vte.WriteFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;

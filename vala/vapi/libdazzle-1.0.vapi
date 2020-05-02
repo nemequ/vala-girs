@@ -42,11 +42,13 @@ namespace Dazzle {
 		public virtual bool get_fullscreen ();
 		[Version (since = "3.26")]
 		public unowned Gtk.Widget get_titlebar ();
+		public Dazzle.TitlebarAnimation get_titlebar_animation ();
 		[Version (since = "3.26")]
 		public virtual void set_fullscreen (bool fullscreen);
 		[Version (since = "3.26")]
 		public void set_titlebar (Gtk.Widget titlebar);
 		public bool fullscreen { get; set; }
+		public Dazzle.TitlebarAnimation titlebar_animation { get; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_bin_get_type ()")]
 	public class Bin : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -1967,6 +1969,13 @@ namespace Dazzle {
 		LEFT,
 		CENTER,
 		RIGHT
+	}
+	[CCode (cheader_filename = "dazzle.h", cprefix = "DZL_TITLEBAR_ANIMATION_", type_id = "dzl_titlebar_animation_get_type ()")]
+	public enum TitlebarAnimation {
+		HIDDEN,
+		SHOWING,
+		SHOWN,
+		HIDING
 	}
 	[CCode (cheader_filename = "dazzle.h", cprefix = "DZL_TREE_DROP_", type_id = "dzl_tree_drop_position_get_type ()")]
 	public enum TreeDropPosition {
