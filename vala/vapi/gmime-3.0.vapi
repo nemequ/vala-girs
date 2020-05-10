@@ -513,19 +513,19 @@ namespace GMime {
 		public void @foreach (GMime.ObjectForeachFunc callback);
 		public unowned GMime.InternetAddressList get_addresses (GMime.AddressType type);
 		public GMime.InternetAddressList get_all_recipients ();
-		public GMime.AutocryptHeaderList get_autocrypt_gossip_headers (GLib.DateTime now, GMime.DecryptFlags flags, string session_key) throws GLib.Error;
-		public GMime.AutocryptHeaderList get_autocrypt_gossip_headers_from_inner_part (GLib.DateTime now, GMime.Object inner_part);
-		public GMime.AutocryptHeader get_autocrypt_header (GLib.DateTime now);
+		public GMime.AutocryptHeaderList? get_autocrypt_gossip_headers (GLib.DateTime now, GMime.DecryptFlags flags, string session_key) throws GLib.Error;
+		public GMime.AutocryptHeaderList? get_autocrypt_gossip_headers_from_inner_part (GLib.DateTime now, GMime.Object inner_part);
+		public GMime.AutocryptHeader? get_autocrypt_header (GLib.DateTime now);
 		public unowned GMime.InternetAddressList get_bcc ();
-		public unowned GMime.Object get_body ();
+		public unowned GMime.Object? get_body ();
 		public unowned GMime.InternetAddressList get_cc ();
-		public GLib.DateTime get_date ();
+		public unowned GLib.DateTime? get_date ();
 		public unowned GMime.InternetAddressList get_from ();
-		public unowned string get_message_id ();
+		public unowned string? get_message_id ();
 		public unowned GMime.Object? get_mime_part ();
 		public unowned GMime.InternetAddressList get_reply_to ();
 		public unowned GMime.InternetAddressList get_sender ();
-		public unowned string get_subject ();
+		public unowned string? get_subject ();
 		public unowned GMime.InternetAddressList get_to ();
 		public GMime.Message? partial_split_message (size_t max_size, out size_t nparts);
 		public void set_date (GLib.DateTime date);
@@ -605,7 +605,7 @@ namespace GMime {
 		public weak GMime.ContentDisposition disposition;
 		public weak GMime.HeaderList headers;
 		[CCode (has_construct_function = false)]
-		public Object (GMime.ParserOptions? options, GMime.ContentType content_type);
+		protected Object ();
 		public void append_header (string header, string value, string charset);
 		public virtual void encode (GMime.EncodingConstraint constraint);
 		public unowned GMime.ContentDisposition get_content_disposition ();
@@ -625,6 +625,10 @@ namespace GMime {
 		public virtual void header_removed (GMime.Header header);
 		[NoWrapper]
 		public virtual void headers_cleared ();
+		[CCode (cname = "g_mime_object_new")]
+		public static GMime.Object new_for_type (GMime.ParserOptions? options, GMime.ContentType content_type);
+		[CCode (cname = "g_mime_object_new_type")]
+		public static GMime.Object new_for_type_str (GMime.ParserOptions? options, string type, string subtype);
 		public void prepend_header (string header, string value, string charset);
 		public static void register_type (string type, string subtype, GLib.Type object_type);
 		public bool remove_header (string header);
@@ -636,8 +640,6 @@ namespace GMime {
 		public void set_disposition (string disposition);
 		public void set_header (string header, string value, string charset);
 		public string to_string (GMime.FormatOptions? options);
-		[CCode (has_construct_function = false)]
-		public Object.type (GMime.ParserOptions? options, string type, string subtype);
 		public static void type_registry_init ();
 		public static void type_registry_shutdown ();
 		public ssize_t write_to_stream (GMime.FormatOptions? options, GMime.Stream stream);
@@ -1193,7 +1195,9 @@ namespace GMime {
 		CRIT_MULTIPART_WITHOUT_BOUNDARY,
 		WARN_INVALID_PARAMETER,
 		WARN_INVALID_ADDRESS_LIST,
-		CRIT_NESTING_OVERFLOW
+		CRIT_NESTING_OVERFLOW,
+		WARN_PART_WITHOUT_CONTENT,
+		CRIT_PART_WITHOUT_HEADERS_OR_CONTENT
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", cprefix = "GMIME_PUBKEY_ALGO_", has_type_id = false)]
 	public enum PubKeyAlgo {
