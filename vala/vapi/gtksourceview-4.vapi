@@ -897,7 +897,7 @@ namespace Gtk {
 		public void append_search_path (string path);
 		public void force_rescan ();
 		public static unowned Gtk.SourceStyleSchemeManager get_default ();
-		public unowned Gtk.SourceStyleScheme get_scheme (string scheme_id);
+		public unowned Gtk.SourceStyleScheme? get_scheme (string scheme_id);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[]? get_scheme_ids ();
 		[CCode (array_length = false, array_null_terminated = true)]

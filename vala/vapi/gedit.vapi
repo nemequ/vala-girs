@@ -242,12 +242,6 @@ namespace Gedit {
 		DEBUG_UTILS,
 		DEBUG_METADATA
 	}
-	[CCode (cheader_filename = "gedit/gedit-notebook.h", cprefix = "GEDIT_NOTEBOOK_SHOW_TABS_", type_id = "gedit_notebook_show_tabs_mode_type_get_type ()")]
-	public enum NotebookShowTabsModeType {
-		NEVER,
-		AUTO,
-		ALWAYS
-	}
 	[CCode (cheader_filename = "gedit/gedit-tab.h", cprefix = "GEDIT_TAB_", type_id = "gedit_tab_state_get_type ()")]
 	public enum TabState {
 		STATE_NORMAL,

@@ -2572,14 +2572,32 @@ namespace NM {
 		public const string MAC_ADDRESS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MAX_AGE")]
 		public const string MAX_AGE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_HASH_MAX")]
+		public const string MULTICAST_HASH_MAX;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_LAST_MEMBER_COUNT")]
+		public const string MULTICAST_LAST_MEMBER_COUNT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_LAST_MEMBER_INTERVAL")]
+		public const string MULTICAST_LAST_MEMBER_INTERVAL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_MEMBERSHIP_INTERVAL")]
+		public const string MULTICAST_MEMBERSHIP_INTERVAL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_QUERIER")]
 		public const string MULTICAST_QUERIER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_QUERIER_INTERVAL")]
+		public const string MULTICAST_QUERIER_INTERVAL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_QUERY_INTERVAL")]
+		public const string MULTICAST_QUERY_INTERVAL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_QUERY_RESPONSE_INTERVAL")]
+		public const string MULTICAST_QUERY_RESPONSE_INTERVAL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_QUERY_USE_IFADDR")]
 		public const string MULTICAST_QUERY_USE_IFADDR;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_ROUTER")]
 		public const string MULTICAST_ROUTER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_SNOOPING")]
 		public const string MULTICAST_SNOOPING;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_STARTUP_QUERY_COUNT")]
+		public const string MULTICAST_STARTUP_QUERY_COUNT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_STARTUP_QUERY_INTERVAL")]
+		public const string MULTICAST_STARTUP_QUERY_INTERVAL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_PORT_HAIRPIN_MODE")]
 		public const string PORT_HAIRPIN_MODE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_PORT_PATH_COST")]
@@ -2620,11 +2638,20 @@ namespace NM {
 		public uint16 get_hello_time ();
 		public unowned string get_mac_address ();
 		public uint16 get_max_age ();
+		public uint32 get_multicast_hash_max ();
+		public uint32 get_multicast_last_member_count ();
+		public uint64 get_multicast_last_member_interval ();
+		public uint64 get_multicast_membership_interval ();
 		public bool get_multicast_querier ();
+		public uint64 get_multicast_querier_interval ();
+		public uint64 get_multicast_query_interval ();
+		public uint64 get_multicast_query_response_interval ();
 		public bool get_multicast_query_use_ifaddr ();
 		public unowned string get_multicast_router ();
 		[Version (since = "1.2")]
 		public bool get_multicast_snooping ();
+		public uint32 get_multicast_startup_query_count ();
+		public uint64 get_multicast_startup_query_interval ();
 		[Version (since = "1.18")]
 		public uint get_num_vlans ();
 		public uint16 get_priority ();
@@ -2659,7 +2686,21 @@ namespace NM {
 		[NoAccessorMethod]
 		public uint max_age { get; set; }
 		[NoAccessorMethod]
+		public uint multicast_hash_max { get; set; }
+		[NoAccessorMethod]
+		public uint multicast_last_member_count { get; set; }
+		[NoAccessorMethod]
+		public uint64 multicast_last_member_interval { get; set; }
+		[NoAccessorMethod]
+		public uint64 multicast_membership_interval { get; set; }
+		[NoAccessorMethod]
 		public bool multicast_querier { get; set; }
+		[NoAccessorMethod]
+		public uint64 multicast_querier_interval { get; set; }
+		[NoAccessorMethod]
+		public uint64 multicast_query_interval { get; set; }
+		[NoAccessorMethod]
+		public uint64 multicast_query_response_interval { get; set; }
 		[NoAccessorMethod]
 		public bool multicast_query_use_ifaddr { get; set; }
 		[NoAccessorMethod]
@@ -2667,6 +2708,10 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public bool multicast_snooping { get; set; }
+		[NoAccessorMethod]
+		public uint multicast_startup_query_count { get; set; }
+		[NoAccessorMethod]
+		public uint64 multicast_startup_query_interval { get; set; }
 		[NoAccessorMethod]
 		public uint priority { get; set; }
 		[NoAccessorMethod]
@@ -3023,11 +3068,19 @@ namespace NM {
 	public class SettingEthtool : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingEthtool ();
+		[Version (since = "1.26")]
+		public void clear_coalesce (string optname);
+		[Version (since = "1.26")]
+		public void clear_coalesce_all ();
 		public void clear_features ();
+		[Version (since = "1.26")]
+		public bool get_coalesce (string optname, uint32 out_value);
 		public NM.Ternary get_feature (string optname);
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "1.20")]
 		public (unowned string)[] get_optnames (out uint out_length);
+		[Version (since = "1.26")]
+		public void set_coalesce (string optname, uint32 value);
 		public void set_feature (string optname, NM.Ternary value);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_generic_get_type ()")]
@@ -3601,17 +3654,55 @@ namespace NM {
 	public class SettingMatch : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingMatch ();
+		[Version (since = "1.26")]
+		public void add_driver (string driver);
 		public void add_interface_name (string interface_name);
+		[Version (since = "1.26")]
+		public void add_kernel_command_line (string kernel_command_line);
+		[Version (since = "1.26")]
+		public void clear_drivers ();
 		public void clear_interface_names ();
+		[Version (since = "1.26")]
+		public void clear_kernel_command_lines ();
+		[Version (since = "1.26")]
+		public unowned string get_driver (uint idx);
+		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
+		[Version (since = "1.26")]
+		public unowned string[] get_drivers ();
 		public unowned string get_interface_name (int idx);
-		[CCode (array_length = false, array_null_terminated = true)]
-		public unowned string[] get_interface_names (uint length);
+		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
+		public unowned string[] get_interface_names ();
+		[Version (since = "1.26")]
+		public unowned string get_kernel_command_line (uint idx);
+		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
+		[Version (since = "1.26")]
+		public unowned string[] get_kernel_command_lines ();
+		[Version (since = "1.26")]
+		public uint get_num_drivers ();
 		public uint get_num_interface_names ();
+		[Version (since = "1.26")]
+		public uint get_num_kernel_command_lines ();
+		[Version (since = "1.26")]
+		public void remove_driver (uint idx);
+		[Version (since = "1.26")]
+		public bool remove_driver_by_value (string driver);
 		public void remove_interface_name (int idx);
 		public bool remove_interface_name_by_value (string interface_name);
+		[Version (since = "1.26")]
+		public void remove_kernel_command_line (uint idx);
+		[Version (since = "1.26")]
+		public bool remove_kernel_command_line_by_value (string kernel_command_line);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		[Version (since = "1.26")]
+		public string[] driver { owned get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public string[] interface_name { owned get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		[Version (since = "1.26")]
+		public string[] kernel_command_line { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_olpc_mesh_get_type ()")]
 	public class SettingOlpcMesh : NM.Setting {
@@ -6583,6 +6674,50 @@ namespace NM {
 	public const string DBUS_VPN_WRONG_STATE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DHCP_CONFIG_FAMILY")]
 	public const string DHCP_CONFIG_FAMILY;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_ADAPTIVE_RX")]
+	public const string ETHTOOL_OPTNAME_COALESCE_ADAPTIVE_RX;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_ADAPTIVE_TX")]
+	public const string ETHTOOL_OPTNAME_COALESCE_ADAPTIVE_TX;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_PKT_RATE_HIGH")]
+	public const string ETHTOOL_OPTNAME_COALESCE_PKT_RATE_HIGH;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_PKT_RATE_LOW")]
+	public const string ETHTOOL_OPTNAME_COALESCE_PKT_RATE_LOW;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_FRAMES")]
+	public const string ETHTOOL_OPTNAME_COALESCE_RX_FRAMES;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_HIGH")]
+	public const string ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_HIGH;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_IRQ")]
+	public const string ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_IRQ;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_LOW")]
+	public const string ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_LOW;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_USECS")]
+	public const string ETHTOOL_OPTNAME_COALESCE_RX_USECS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_USECS_HIGH")]
+	public const string ETHTOOL_OPTNAME_COALESCE_RX_USECS_HIGH;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_USECS_IRQ")]
+	public const string ETHTOOL_OPTNAME_COALESCE_RX_USECS_IRQ;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_USECS_LOW")]
+	public const string ETHTOOL_OPTNAME_COALESCE_RX_USECS_LOW;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_SAMPLE_INTERVAL")]
+	public const string ETHTOOL_OPTNAME_COALESCE_SAMPLE_INTERVAL;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_STATS_BLOCK_USECS")]
+	public const string ETHTOOL_OPTNAME_COALESCE_STATS_BLOCK_USECS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_FRAMES")]
+	public const string ETHTOOL_OPTNAME_COALESCE_TX_FRAMES;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_HIGH")]
+	public const string ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_HIGH;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_IRQ")]
+	public const string ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_IRQ;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_LOW")]
+	public const string ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_LOW;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_USECS")]
+	public const string ETHTOOL_OPTNAME_COALESCE_TX_USECS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_USECS_HIGH")]
+	public const string ETHTOOL_OPTNAME_COALESCE_TX_USECS_HIGH;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_USECS_IRQ")]
+	public const string ETHTOOL_OPTNAME_COALESCE_TX_USECS_IRQ;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_USECS_LOW")]
+	public const string ETHTOOL_OPTNAME_COALESCE_TX_USECS_LOW;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_ESP_HW_OFFLOAD")]
 	public const string ETHTOOL_OPTNAME_FEATURE_ESP_HW_OFFLOAD;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_ESP_TX_CSUM_HW_OFFLOAD")]
@@ -6849,8 +6984,12 @@ namespace NM {
 	public const string SETTING_MACSEC_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_VALIDATION")]
 	public const string SETTING_MACSEC_VALIDATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_DRIVER")]
+	public const string SETTING_MATCH_DRIVER;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_INTERFACE_NAME")]
 	public const string SETTING_MATCH_INTERFACE_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_KERNEL_COMMAND_LINE")]
+	public const string SETTING_MATCH_KERNEL_COMMAND_LINE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_SETTING_NAME")]
 	public const string SETTING_MATCH_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_NAME")]
@@ -7005,6 +7144,9 @@ namespace NM {
 	public const int WIREGUARD_PUBLIC_KEY_LEN;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_SYMMETRIC_KEY_LEN")]
 	public const int WIREGUARD_SYMMETRIC_KEY_LEN;
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (since = "1.26")]
+	public static bool ethtool_optname_is_coalesce (string? optname);
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (since = "1.20")]
 	public static bool ethtool_optname_is_feature (string? optname);

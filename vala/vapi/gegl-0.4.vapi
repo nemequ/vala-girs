@@ -77,6 +77,8 @@ namespace Gegl {
 		[NoAccessorMethod]
 		public int height { get; set construct; }
 		[NoAccessorMethod]
+		public bool initialized { get; construct; }
+		[NoAccessorMethod]
 		public string path { owned get; construct; }
 		[NoAccessorMethod]
 		public int pixels { get; }
@@ -182,6 +184,77 @@ namespace Gegl {
 		public string to_string ();
 		public void transform_point (double x, double y);
 	}
+	[CCode (cheader_filename = "gegl.h", type_id = "gegl_metadata_hash_get_type ()")]
+	public class MetadataHash : Gegl.MetadataStore, Gegl.Metadata {
+		[CCode (has_construct_function = false, type = "GeglMetadataStore*")]
+		public MetadataHash ();
+	}
+	[CCode (cheader_filename = "gegl.h", type_id = "gegl_metadata_store_get_type ()")]
+	public abstract class MetadataStore : GLib.Object, Gegl.Metadata {
+		[CCode (has_construct_function = false)]
+		protected MetadataStore ();
+		[NoWrapper]
+		public virtual void _declare (GLib.ParamSpec pspec, bool shadow);
+		[NoWrapper]
+		public virtual unowned GLib.Value? _get_value (string name);
+		public void declare (GLib.ParamSpec pspec);
+		public unowned string get_artist ();
+		public unowned string get_comment ();
+		public unowned string get_copyright ();
+		public unowned string get_description ();
+		public unowned string get_disclaimer ();
+		public unowned string get_file_module_name ();
+		public Gegl.ResolutionUnit get_resolution_unit ();
+		public double get_resolution_x ();
+		public double get_resolution_y ();
+		public unowned string get_software ();
+		public unowned string get_source ();
+		public unowned string get_string (string name);
+		public GLib.DateTime get_timestamp ();
+		public unowned string get_title ();
+		public void get_value (string name, ref GLib.Value value);
+		public unowned string get_warning ();
+		public virtual bool has_value (string name);
+		public void notify (GLib.ParamSpec pspec, bool shadow);
+		public void register (string local_name, string name, [CCode (scope = "async")] GLib.ValueTransform transform);
+		[NoWrapper]
+		public virtual void register_hook (string file_module_name, uint flags);
+		public void set_artist (string artist);
+		public void set_comment (string comment);
+		public void set_copyright (string copyright);
+		public void set_description (string description);
+		public void set_disclaimer (string disclaimer);
+		public void set_resolution_unit (Gegl.ResolutionUnit unit);
+		public void set_resolution_x (double resolution_x);
+		public void set_resolution_y (double resolution_y);
+		public void set_software (string software);
+		public void set_source (string source);
+		public void set_string (string name, string string);
+		public void set_timestamp (GLib.DateTime timestamp);
+		public void set_title (string title);
+		public virtual void set_value (string name, GLib.Value value);
+		public void set_warning (string warning);
+		public GLib.Type typeof_value (string name);
+		public string artist { get; set; }
+		public string comment { get; set; }
+		public string copyright { get; set; }
+		public string description { get; set; }
+		public string disclaimer { get; set; }
+		public string file_module_name { get; }
+		public Gegl.ResolutionUnit resolution_unit { get; set; }
+		public double resolution_x { get; set; }
+		public double resolution_y { get; set; }
+		public string software { get; set; }
+		public string source { get; set; }
+		public GLib.DateTime timestamp { owned get; set; }
+		public string title { get; set; }
+		public string warning { get; set; }
+		public signal void changed (GLib.ParamSpec pspec);
+		public signal bool generate_value (GLib.ParamSpec pspec, ref GLib.Value value);
+		public signal void mapped (string file_module, bool exclude_unmapped);
+		public signal bool parse_value (GLib.ParamSpec pspec, ref GLib.Value value);
+		public signal void unmapped (string file_module, string local_name);
+	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_node_get_type ()")]
 	public class Node : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -214,10 +287,12 @@ namespace Gegl {
 		public GLib.Value? introspectable_get_property (string property_name);
 		public bool is_graph ();
 		public void link (Gegl.Node sink);
+		public void link_many (...);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] list_input_pads ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] list_output_pads ();
+		public unowned Gegl.Node new_child (...);
 		public Gegl.Processor new_processor (Gegl.Rectangle rectangle);
 		public void process ();
 		public unowned Gegl.Node remove_child (Gegl.Node child);
@@ -292,11 +367,6 @@ namespace Gegl {
 	public class ParamFilePath : GLib.ParamSpecString {
 		[CCode (has_construct_function = false)]
 		protected ParamFilePath ();
-	}
-	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_format_get_type ()")]
-	public class ParamFormat : GLib.ParamSpecPointer {
-		[CCode (has_construct_function = false)]
-		protected ParamFormat ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_int_get_type ()")]
 	public class ParamInt : GLib.ParamSpecInt {
@@ -513,6 +583,18 @@ namespace Gegl {
 		[CCode (has_construct_function = false)]
 		protected TileSource ();
 	}
+	[CCode (cheader_filename = "gegl.h", type_cname = "GeglMetadataInterface", type_id = "gegl_metadata_get_type ()")]
+	public interface Metadata : GLib.Object {
+		public abstract bool get_resolution (Gegl.ResolutionUnit unit, float x, float y);
+		public abstract bool iter_get_value (Gegl.MetadataIter iter, GLib.Value value);
+		public abstract void iter_init (Gegl.MetadataIter iter);
+		public abstract bool iter_lookup (Gegl.MetadataIter iter, string key);
+		public abstract unowned string iter_next (Gegl.MetadataIter iter);
+		public abstract bool iter_set_value (Gegl.MetadataIter iter, GLib.Value value);
+		public abstract void register_map (string file_module, uint flags, [CCode (array_length_cname = "n_map", array_length_pos = 3.1, array_length_type = "gsize")] Gegl.MetadataMap[] map);
+		public abstract bool set_resolution (Gegl.ResolutionUnit unit, float x, float y);
+		public void unregister_map ();
+	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	public struct BufferIterator {
 		public int length;
@@ -547,6 +629,15 @@ namespace Gegl {
 		public weak float[] table;
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
+	public struct MetadataIter {
+	}
+	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
+	public struct MetadataMap {
+		public weak string local_name;
+		public weak string name;
+		public weak GLib.ValueTransform transform;
+	}
+	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	public struct ParamSpecDouble {
 		public weak GLib.ParamSpecDouble parent_instance;
 		public double ui_minimum;
@@ -569,10 +660,6 @@ namespace Gegl {
 		public weak GLib.ParamSpecString parent_instance;
 		public uint no_validate;
 		public uint null_ok;
-	}
-	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
-	public struct ParamSpecFormat {
-		public weak GLib.ParamSpecPointer parent_instance;
 	}
 	[CCode (cheader_filename = "gegl.h", has_type_id = false)]
 	public struct ParamSpecInt {
@@ -715,6 +802,11 @@ namespace Gegl {
 		[CCode (cname = "Arithmetic xor covariant")]
 		XOR_COVARIANT
 	}
+	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_MAP_EXCLUDE_", has_type_id = false)]
+	public enum MapFlags {
+		[CCode (cname = "GEGL_MAP_EXCLUDE_UNMAPPED")]
+		MAP_EXCLUDE_UNMAPPED
+	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_orientation_get_type ()")]
 	public enum Orientation {
 		[CCode (cname = "Horizontal")]
@@ -736,6 +828,12 @@ namespace Gegl {
 		SUPERSET,
 		[CCode (cname = "Nearest")]
 		NEAREST
+	}
+	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_RESOLUTION_UNIT_", type_id = "gegl_resolution_unit_get_type ()")]
+	public enum ResolutionUnit {
+		NONE,
+		DPI,
+		DPM
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_sampler_type_get_type ()")]
 	public enum SamplerType {
@@ -930,6 +1028,8 @@ namespace Gegl {
 	[CCode (cheader_filename = "gegl.h", cname = "GEGL_PARAM_NO_VALIDATE")]
 	public const int PARAM_NO_VALIDATE;
 	[CCode (cheader_filename = "gegl.h")]
+	public static void apply_op (Gegl.Buffer buffer, string operation_name, ...);
+	[CCode (cheader_filename = "gegl.h")]
 	public static unowned Babl.Object? babl_variant (Babl.Object format, Gegl.BablVariant variant);
 	[CCode (cheader_filename = "gegl.h")]
 	public static void cl_disable ();
@@ -946,6 +1046,8 @@ namespace Gegl {
 	[CCode (cheader_filename = "gegl.h")]
 	public static void exit ();
 	[CCode (cheader_filename = "gegl.h")]
+	public static Gegl.Buffer filter_op (Gegl.Buffer source_buffer, string operation_name, ...);
+	[CCode (cheader_filename = "gegl.h")]
 	public static GLib.Value? format (string format_name);
 	[CCode (cheader_filename = "gegl.h")]
 	public static unowned string? format_get_name (GLib.Value format);
@@ -958,7 +1060,7 @@ namespace Gegl {
 	[CCode (cheader_filename = "gegl.h")]
 	public static bool has_operation (string operation_type);
 	[CCode (cheader_filename = "gegl.h")]
-	public static void init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref string[]? argv);
+	public static void init ([CCode (array_length_cname = "argc", array_length_pos = 0.5)] ref unowned string[]? argv);
 	[CCode (cheader_filename = "gegl.h")]
 	public static bool is_main_thread ();
 	[CCode (array_length_pos = 0.1, array_length_type = "guint", cheader_filename = "gegl.h")]
@@ -988,8 +1090,6 @@ namespace Gegl {
 	[CCode (cheader_filename = "gegl.h")]
 	public static GLib.ParamSpec param_spec_file_path (string name, string nick, string blurb, bool no_validate, bool null_ok, string default_value, GLib.ParamFlags flags);
 	[CCode (cheader_filename = "gegl.h")]
-	public static GLib.ParamSpec param_spec_format (string name, string nick, string blurb, GLib.ParamFlags flags);
-	[CCode (cheader_filename = "gegl.h")]
 	public static unowned string param_spec_get_property_key (GLib.ParamSpec pspec, string key_name);
 	[CCode (cheader_filename = "gegl.h")]
 	public static GLib.ParamSpec param_spec_int (string name, string nick, string blurb, int minimum, int maximum, int default_value, int ui_minimum, int ui_maximum, double ui_gamma, GLib.ParamFlags flags);
@@ -1003,6 +1103,8 @@ namespace Gegl {
 	public static GLib.ParamSpec param_spec_string (string name, string nick, string blurb, bool no_validate, bool null_ok, string default_value, GLib.ParamFlags flags);
 	[CCode (cheader_filename = "gegl.h")]
 	public static GLib.ParamSpec param_spec_uri (string name, string nick, string blurb, bool no_validate, bool null_ok, string default_value, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	public static void render_op (Gegl.Buffer source_buffer, Gegl.Buffer target_buffer, string operation_name, ...);
 	[CCode (cheader_filename = "gegl.h")]
 	public static void reset_stats ();
 	[CCode (cheader_filename = "gegl.h")]
