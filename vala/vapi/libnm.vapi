@@ -2057,6 +2057,23 @@ namespace NM {
 		[NoWrapper]
 		public virtual bool init_from_dbus (GLib.HashTable<void*,void*> keys, GLib.Variant setting_dict, GLib.Variant connection_dict, uint parse_flags) throws GLib.Error;
 		public static GLib.Type lookup_type (string name);
+		[Version (since = "1.26")]
+		public void option_clear_by_name (NM.UtilsPredicateStr? predicate);
+		[Version (since = "1.26.")]
+		public unowned GLib.Variant option_get (string opt_name);
+		[CCode (array_length = true, array_length_pos = 0.1, array_length_type = "guint", array_null_terminated = true)]
+		[Version (since = "1.26")]
+		public unowned string[] option_get_all_names ();
+		[Version (since = "1.26")]
+		public bool option_get_boolean (string opt_name, out bool out_value);
+		[Version (since = "1.26")]
+		public bool option_get_uint32 (string opt_name, out uint32 out_value);
+		[Version (since = "1.26")]
+		public void option_set (string opt_name, GLib.Variant? variant);
+		[Version (since = "1.26")]
+		public void option_set_boolean (string opt_name, bool value);
+		[Version (since = "1.26")]
+		public void option_set_uint32 (string opt_name, uint32 value);
 		public bool set_secret_flags (string secret_name, NM.SettingSecretFlags flags) throws GLib.Error;
 		public string to_string ();
 		[NoWrapper]
@@ -3068,19 +3085,14 @@ namespace NM {
 	public class SettingEthtool : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingEthtool ();
-		[Version (since = "1.26")]
-		public void clear_coalesce (string optname);
-		[Version (since = "1.26")]
-		public void clear_coalesce_all ();
+		[Version (deprecated = true, deprecated_since = "1.26", since = "1.14")]
 		public void clear_features ();
-		[Version (since = "1.26")]
-		public bool get_coalesce (string optname, uint32 out_value);
+		[Version (deprecated = true, deprecated_since = "1.26", since = "1.14")]
 		public NM.Ternary get_feature (string optname);
 		[CCode (array_length = false, array_null_terminated = true)]
-		[Version (since = "1.20")]
+		[Version (deprecated = true, deprecated_since = "1.26", since = "1.20")]
 		public (unowned string)[] get_optnames (out uint out_length);
-		[Version (since = "1.26")]
-		public void set_coalesce (string optname, uint32 value);
+		[Version (deprecated = true, deprecated_since = "1.26", since = "1.14")]
 		public void set_feature (string optname, NM.Ternary value);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_generic_get_type ()")]
@@ -6580,6 +6592,9 @@ namespace NM {
 	public delegate bool UtilsCheckFilePredicate (string filename, void* stat) throws GLib.Error;
 	[CCode (cheader_filename = "NetworkManager.h", instance_pos = 1.9)]
 	public delegate bool UtilsFileSearchInPathsPredicate (string filename);
+	[CCode (cheader_filename = "NetworkManager.h", has_target = false)]
+	[Version (since = "1.26")]
+	public delegate bool UtilsPredicateStr (string str);
 	[CCode (cheader_filename = "NetworkManager.h", instance_pos = 2.9)]
 	public delegate void VpnIterFunc (string key, string value);
 	[CCode (cheader_filename = "NetworkManager.h", cname = "_NMConnectionForEachSecretFunc", instance_pos = 1.9)]
@@ -6822,6 +6837,14 @@ namespace NM {
 	public const string ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_SEGMENTATION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_VLAN_STAG_HW_INSERT")]
 	public const string ETHTOOL_OPTNAME_FEATURE_TX_VLAN_STAG_HW_INSERT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_RX")]
+	public const string ETHTOOL_OPTNAME_RING_RX;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_RX_JUMBO")]
+	public const string ETHTOOL_OPTNAME_RING_RX_JUMBO;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_RX_MINI")]
+	public const string ETHTOOL_OPTNAME_RING_RX_MINI;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_TX")]
+	public const string ETHTOOL_OPTNAME_RING_TX;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ADDRESS_ATTRIBUTE_LABEL")]
 	public const string IP_ADDRESS_ATTRIBUTE_LABEL;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_CWND")]
@@ -7150,6 +7173,9 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (since = "1.20")]
 	public static bool ethtool_optname_is_feature (string? optname);
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (since = "1.26")]
+	public static bool ethtool_optname_is_ring (string? optname);
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (since = "1.4")]
 	public static NM.VpnEditorPlugin vpn_editor_plugin_load (string plugin_name, string check_service) throws GLib.Error;

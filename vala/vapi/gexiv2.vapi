@@ -85,6 +85,8 @@ namespace GExiv2 {
 		public bool set_xmp_tag_struct (string tag, GExiv2.StructureType type);
 		public static void unregister_all_xmp_namespaces ();
 		public static bool unregister_xmp_namespace (string name);
+		[Version (since = "0.12.1")]
+		public bool update_gps_info (double longitude, double latitude, double altitude);
 	}
 	[CCode (cheader_filename = "gexiv2/gexiv2.h", type_id = "gexiv2_preview_image_get_type ()")]
 	public class PreviewImage : GLib.Object {

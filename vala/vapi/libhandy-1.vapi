@@ -9,7 +9,7 @@ namespace Hdy {
 		public ActionRow ();
 		public virtual void activate ();
 		[Version (since = "0.0.6")]
-		public void add_prefix (Gtk.Widget? widget);
+		public void add_prefix (Gtk.Widget widget);
 		[Version (since = "0.0.7")]
 		public unowned Gtk.Widget? get_activatable_widget ();
 		[Version (since = "0.0.6")]
@@ -433,7 +433,7 @@ namespace Hdy {
 		public string visible_child_name { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_group_get_type ()")]
-	public class PreferencesGroup : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public class PreferencesGroup : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.10")]
 		public PreferencesGroup ();
@@ -451,7 +451,7 @@ namespace Hdy {
 		public string title { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_page_get_type ()")]
-	public class PreferencesPage : Gtk.ScrolledWindow, Atk.Implementor, Gtk.Buildable {
+	public class PreferencesPage : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.10")]
 		public PreferencesPage ();
@@ -582,7 +582,7 @@ namespace Hdy {
 		public GLib.Value value { get; construct; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_view_switcher_get_type ()")]
-	public class ViewSwitcher : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public class ViewSwitcher : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "0.0.10")]
 		public ViewSwitcher ();
@@ -753,14 +753,6 @@ namespace Hdy {
 	public enum SqueezerTransitionType {
 		NONE,
 		CROSSFADE
-	}
-	[CCode (cheader_filename = "handy.h", cprefix = "HDY_STACKABLE_BOX_TRANSITION_TYPE_", type_id = "hdy_stackable_box_transition_type_get_type ()")]
-	[Version (since = "1.0")]
-	public enum StackableBoxTransitionType {
-		NONE,
-		SLIDE,
-		OVER,
-		UNDER
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_VIEW_SWITCHER_POLICY_", type_id = "hdy_view_switcher_policy_get_type ()")]
 	public enum ViewSwitcherPolicy {
