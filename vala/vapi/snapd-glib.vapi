@@ -181,6 +181,10 @@ namespace Snapd {
 		public bool disable_sync (string name, [CCode (delegate_target_pos = 2.5)] Snapd.ProgressCallback? progress_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool disconnect_interface_async (string plug_snap, string plug_name, string slot_snap, string slot_name, [CCode (delegate_target_pos = 5.5)] Snapd.ProgressCallback? progress_callback, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool disconnect_interface_sync (string plug_snap, string plug_name, string slot_snap, string slot_name, [CCode (delegate_target_pos = 5.5)] Snapd.ProgressCallback? progress_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.54")]
+		public async GLib.Bytes download_async (string name, string? channel, string? revision, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.54")]
+		public GLib.Bytes download_sync (string name, string? channel, string? revision, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (deprecated = true, deprecated_since = "1.25", since = "1.8")]
 		public async bool enable_aliases_async (string snap, [CCode (array_length = false, array_null_terminated = true)] string[] aliases, [CCode (delegate_target_pos = 3.5)] Snapd.ProgressCallback? progress_callback, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (deprecated = true, deprecated_since = "1.25", since = "1.8")]
@@ -305,6 +309,10 @@ namespace Snapd {
 		public async Snapd.AuthData login_async (string email, string password, string? otp, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (deprecated = true, deprecated_since = "1.26", since = "1.0")]
 		public Snapd.AuthData login_sync (string email, string password, string? otp, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.55")]
+		public async bool logout_async (int64 id, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.55")]
+		public bool logout_sync (int64 id, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.25")]
 		public async bool prefer_async (string snap, [CCode (delegate_target_pos = 2.5)] Snapd.ProgressCallback? progress_callback, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.25")]
@@ -421,6 +429,8 @@ namespace Snapd {
 		public unowned GLib.GenericArray<Snapd.Plug> get_plugs ();
 		public unowned GLib.GenericArray<Snapd.Slot> get_slots ();
 		public unowned string get_summary ();
+		[Version (since = "1.57")]
+		public string make_label ();
 		public string doc_url { get; construct; }
 		public string name { get; construct; }
 		public GLib.GenericArray<void*> plugs { get; construct; }
@@ -938,7 +948,10 @@ namespace Snapd {
 		APP,
 		KERNEL,
 		GADGET,
-		OS
+		OS,
+		CORE,
+		BASE,
+		SNAPD
 	}
 	[CCode (cheader_filename = "snapd-glib/snapd-glib.h", cprefix = "SNAPD_SYSTEM_CONFINEMENT_", type_id = "snapd_system_confinement_get_type ()")]
 	[Version (since = "1.15")]
