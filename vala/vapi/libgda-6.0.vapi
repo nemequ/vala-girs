@@ -1869,6 +1869,8 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public void set_second (ushort second);
 		[Version (since = "6.0")]
+		public void set_timezone (long timezone);
+		[Version (since = "6.0")]
 		public string to_string ();
 		[Version (since = "6.0")]
 		public string to_string_local ();
@@ -3310,8 +3312,6 @@ namespace Gda {
 	public static bool parse_iso8601_date (GLib.Date gdate, string value);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static Gda.Time parse_iso8601_time (string value);
-	[CCode (cheader_filename = "libgda/libgda.h")]
-	public static GLib.DateTime parse_iso8601_timestamp (string value);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "4.2.9")]
 	public static Gda.SqlStatement? rewrite_sql_statement_for_null_parameters (owned Gda.SqlStatement sqlst, Gda.Set @params, out bool out_modified) throws GLib.Error;

@@ -431,7 +431,7 @@ namespace GUPnP {
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", instance_pos = 3.9)]
-	public delegate void ServiceIntrospectionCallback (GUPnP.ServiceInfo info, GUPnP.ServiceIntrospection introspection, GLib.Error error);
+	public delegate void ServiceIntrospectionCallback (GUPnP.ServiceInfo info, GUPnP.ServiceIntrospection? introspection, GLib.Error? error);
 	[CCode (cheader_filename = "libgupnp/gupnp.h", instance_pos = 2.9)]
 	public delegate void ServiceProxyActionCallback (GUPnP.ServiceProxy proxy, GUPnP.ServiceProxyAction action);
 	[CCode (cheader_filename = "libgupnp/gupnp.h", instance_pos = 3.9)]

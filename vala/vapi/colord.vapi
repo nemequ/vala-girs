@@ -543,7 +543,7 @@ namespace Cd {
 		[Version (since = "0.1.32")]
 		public unowned Cd.ColorXYZ get_white ();
 		[Version (since = "0.1.32")]
-		public bool load_data (uint8 data, size_t data_len, Cd.IccLoadFlags flags) throws GLib.Error;
+		public bool load_data ([CCode (array_length_cname = "data_len", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] data, Cd.IccLoadFlags flags) throws GLib.Error;
 		[Version (since = "0.1.32")]
 		public bool load_fd (int fd, Cd.IccLoadFlags flags) throws GLib.Error;
 		[Version (since = "0.1.32")]
@@ -649,11 +649,11 @@ namespace Cd {
 		[Version (since = "0.1.20")]
 		public bool has_option (string option);
 		[Version (since = "0.1.20")]
-		public bool load_from_data (string data, size_t size) throws GLib.Error;
+		public bool load_from_data ([CCode (array_length_cname = "size", array_length_pos = 1.1, array_length_type = "gsize")] string[] data) throws GLib.Error;
 		[Version (since = "0.1.20")]
 		public bool load_from_file (GLib.File file) throws GLib.Error;
 		[Version (since = "0.1.26")]
-		public bool save_to_data (string data, size_t size) throws GLib.Error;
+		public bool save_to_data ([CCode (array_length_cname = "size", array_length_pos = 1.1, array_length_type = "gsize")] string[] data) throws GLib.Error;
 		[Version (since = "0.1.20")]
 		public bool save_to_file (GLib.File file) throws GLib.Error;
 		[Version (since = "0.1.33")]

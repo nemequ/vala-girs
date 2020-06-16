@@ -853,6 +853,8 @@ namespace NM {
 		public const string OVS_BRIDGE_SLAVES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_OVS_PORT_SLAVES")]
 		public const string OVS_PORT_SLAVES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PATH")]
+		public const string PATH;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PHYSICAL_PORT_ID")]
 		public const string PHYSICAL_PORT_ID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PRODUCT")]
@@ -973,6 +975,8 @@ namespace NM {
 		public uint32 get_mtu ();
 		[Version (since = "1.2")]
 		public bool get_nm_plugin_missing ();
+		[Version (since = "1.26")]
+		public unowned string get_path ();
 		public unowned string get_physical_port_id ();
 		public unowned string get_product ();
 		public GLib.Type get_setting_type ();
@@ -1026,6 +1030,8 @@ namespace NM {
 		public uint mtu { get; }
 		[Version (since = "1.2")]
 		public bool nm_plugin_missing { get; }
+		[Version (since = "1.26")]
+		public string path { get; }
 		public string physical_port_id { get; }
 		public string product { get; }
 		[NoAccessorMethod]
@@ -3672,10 +3678,14 @@ namespace NM {
 		[Version (since = "1.26")]
 		public void add_kernel_command_line (string kernel_command_line);
 		[Version (since = "1.26")]
+		public void add_path (string path);
+		[Version (since = "1.26")]
 		public void clear_drivers ();
 		public void clear_interface_names ();
 		[Version (since = "1.26")]
 		public void clear_kernel_command_lines ();
+		[Version (since = "1.26")]
+		public void clear_paths ();
 		[Version (since = "1.26")]
 		public unowned string get_driver (uint idx);
 		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
@@ -3695,6 +3705,13 @@ namespace NM {
 		[Version (since = "1.26")]
 		public uint get_num_kernel_command_lines ();
 		[Version (since = "1.26")]
+		public uint get_num_paths ();
+		[Version (since = "1.26")]
+		public unowned string get_path (uint idx);
+		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
+		[Version (since = "1.26")]
+		public unowned string[] get_paths ();
+		[Version (since = "1.26")]
 		public void remove_driver (uint idx);
 		[Version (since = "1.26")]
 		public bool remove_driver_by_value (string driver);
@@ -3704,6 +3721,10 @@ namespace NM {
 		public void remove_kernel_command_line (uint idx);
 		[Version (since = "1.26")]
 		public bool remove_kernel_command_line_by_value (string kernel_command_line);
+		[Version (since = "1.26")]
+		public void remove_path (uint idx);
+		[Version (since = "1.26")]
+		public bool remove_path_by_value (string path);
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		[Version (since = "1.26")]
@@ -3715,6 +3736,10 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.26")]
 		public string[] kernel_command_line { owned get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		[Version (since = "1.26")]
+		public string[] path { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_olpc_mesh_get_type ()")]
 	public class SettingOlpcMesh : NM.Setting {
@@ -5667,7 +5692,8 @@ namespace NM {
 		KEY_MGMT_PSK,
 		KEY_MGMT_802_1X,
 		KEY_MGMT_SAE,
-		KEY_MGMT_OWE
+		KEY_MGMT_OWE,
+		KEY_MGMT_OWE_TM
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_802_11_MODE_", type_id = "nm_802_11_mode_get_type ()")]
 	public enum @80211Mode {
@@ -5688,7 +5714,8 @@ namespace NM {
 		IP4_READY,
 		IP6_READY,
 		MASTER_HAS_SLAVES,
-		LIFETIME_BOUND_TO_PROFILE_VISIBILITY
+		LIFETIME_BOUND_TO_PROFILE_VISIBILITY,
+		EXTERNAL
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_ACTIVE_CONNECTION_STATE_", type_id = "nm_active_connection_state_get_type ()")]
 	public enum ActiveConnectionState {
@@ -6285,7 +6312,8 @@ namespace NM {
 		NONE,
 		UNSAVED,
 		NM_GENERATED,
-		VOLATILE
+		VOLATILE,
+		EXTERNAL
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTINGS_UPDATE2_FLAG_", type_id = "nm_settings_update2_flags_get_type ()")]
 	[Flags]
@@ -6907,12 +6935,16 @@ namespace NM {
 	public const string LLDP_ATTR_IEEE_802_3_POWER_VIA_MDI;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_MANAGEMENT_ADDRESSES")]
 	public const string LLDP_ATTR_MANAGEMENT_ADDRESSES;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_MUD_URL")]
+	public const string LLDP_ATTR_MUD_URL;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_PORT_DESCRIPTION")]
 	public const string LLDP_ATTR_PORT_DESCRIPTION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_PORT_ID")]
 	public const string LLDP_ATTR_PORT_ID;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_PORT_ID_TYPE")]
 	public const string LLDP_ATTR_PORT_ID_TYPE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_RAW")]
+	public const string LLDP_ATTR_RAW;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_SYSTEM_CAPABILITIES")]
 	public const string LLDP_ATTR_SYSTEM_CAPABILITIES;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_SYSTEM_DESCRIPTION")]
@@ -7013,6 +7045,8 @@ namespace NM {
 	public const string SETTING_MATCH_INTERFACE_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_KERNEL_COMMAND_LINE")]
 	public const string SETTING_MATCH_KERNEL_COMMAND_LINE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_PATH")]
+	public const string SETTING_MATCH_PATH;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_SETTING_NAME")]
 	public const string SETTING_MATCH_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_NAME")]
