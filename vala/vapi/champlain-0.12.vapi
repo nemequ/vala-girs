@@ -180,7 +180,7 @@ namespace Champlain {
 		[CCode (has_construct_function = false)]
 		protected Layer ();
 		public virtual Champlain.BoundingBox get_bounding_box ();
-		public virtual void set_view (Champlain.View view);
+		public virtual void set_view (Champlain.View? view);
 	}
 	[CCode (cheader_filename = "champlain/champlain.h", type_id = "champlain_license_get_type ()")]
 	[Version (since = "0.10")]

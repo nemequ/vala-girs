@@ -11,6 +11,8 @@ namespace GSSDP {
 		public void clear_headers ();
 		public bool get_active ();
 		public GLib.InetAddress get_address ();
+		[Version (since = "1.2.3")]
+		public GLib.InetAddressMask get_address_mask ();
 		public GLib.SocketFamily get_family ();
 		public unowned string get_host_ip ();
 		public uint get_index ();
@@ -38,7 +40,7 @@ namespace GSSDP {
 		[NoAccessorMethod]
 		public string host_ip { owned get; set construct; }
 		[NoAccessorMethod]
-		public GLib.InetAddressMask host_mask { set construct; }
+		public GLib.InetAddressMask host_mask { owned get; set construct; }
 		public string @interface { get; construct; }
 		[NoAccessorMethod]
 		public uint msearch_port { get; construct; }

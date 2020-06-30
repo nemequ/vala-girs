@@ -1047,8 +1047,6 @@ namespace NM {
 	public class Device6Lowpan : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected Device6Lowpan ();
-		[Version (deprecated = true, deprecated_since = "1.24", since = "1.14")]
-		public unowned string get_hw_address ();
 		[Version (since = "1.14")]
 		public unowned NM.Device get_parent ();
 		[Version (since = "1.14")]
@@ -1074,8 +1072,6 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected DeviceBond ();
 		public bool get_carrier ();
-		[Version (deprecated = true, deprecated_since = "1.24")]
-		public unowned string get_hw_address ();
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 		public bool carrier { get; }
 		public GLib.GenericArray<NM.Device> slaves { get; }
@@ -1091,8 +1087,6 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected DeviceBridge ();
 		public bool get_carrier ();
-		[Version (deprecated = true, deprecated_since = "1.24")]
-		public unowned string get_hw_address ();
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 		public bool carrier { get; }
 		public GLib.GenericArray<NM.Device> slaves { get; }
@@ -1108,8 +1102,6 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected DeviceBt ();
 		public NM.BluetoothCapabilities get_capabilities ();
-		[Version (deprecated = true, deprecated_since = "1.24")]
-		public unowned string get_hw_address ();
 		public unowned string get_name ();
 		[NoAccessorMethod]
 		public NM.BluetoothCapabilities bt_capabilities { get; }
@@ -1119,8 +1111,6 @@ namespace NM {
 	public class DeviceDummy : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceDummy ();
-		[Version (deprecated = true, deprecated_since = "1.24", since = "1.10")]
-		public unowned string get_hw_address ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ethernet_get_type ()")]
 	public class DeviceEthernet : NM.Device {
@@ -1137,8 +1127,6 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected DeviceEthernet ();
 		public bool get_carrier ();
-		[Version (deprecated = true, deprecated_since = "1.24")]
-		public unowned string get_hw_address ();
 		public unowned string get_permanent_hw_address ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "1.2")]
@@ -1160,8 +1148,6 @@ namespace NM {
 		public const string TYPE_DESCRIPTION;
 		[CCode (has_construct_function = false)]
 		protected DeviceGeneric ();
-		[Version (deprecated = true, deprecated_since = "1.24")]
-		public unowned string get_hw_address ();
 		[NoAccessorMethod]
 		public string type_description { owned get; }
 	}
@@ -1227,8 +1213,6 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected DeviceInfiniband ();
 		public bool get_carrier ();
-		[Version (deprecated = true, deprecated_since = "1.24")]
-		public unowned string get_hw_address ();
 		public bool carrier { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_macsec_get_type ()")]
@@ -1243,8 +1227,6 @@ namespace NM {
 		public bool get_encrypt ();
 		[Version (since = "1.6")]
 		public bool get_es ();
-		[Version (deprecated = true, deprecated_since = "1.24", since = "1.6")]
-		public unowned string get_hw_address ();
 		[Version (since = "1.6")]
 		public uint8 get_icv_length ();
 		[Version (since = "1.6")]
@@ -1294,8 +1276,6 @@ namespace NM {
 	public class DeviceMacvlan : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceMacvlan ();
-		[Version (deprecated = true, deprecated_since = "1.24", since = "1.2")]
-		public unowned string get_hw_address ();
 		[Version (since = "1.2")]
 		public unowned string get_mode ();
 		[Version (since = "1.2")]
@@ -1356,8 +1336,6 @@ namespace NM {
 		protected DeviceOlpcMesh ();
 		public uint32 get_active_channel ();
 		public unowned NM.DeviceWifi get_companion ();
-		[Version (deprecated = true, deprecated_since = "1.24")]
-		public unowned string get_hw_address ();
 		public uint active_channel { get; }
 		public NM.DeviceWifi companion { get; }
 	}
@@ -1404,8 +1382,6 @@ namespace NM {
 		public bool get_carrier ();
 		[Version (since = "1.4")]
 		public unowned string get_config ();
-		[Version (deprecated = true, deprecated_since = "1.24")]
-		public unowned string get_hw_address ();
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 		public bool carrier { get; }
 		[Version (since = "1.4")]
@@ -1418,8 +1394,6 @@ namespace NM {
 		protected DeviceTun ();
 		[Version (since = "1.2")]
 		public int64 get_group ();
-		[Version (deprecated = true, deprecated_since = "1.24", since = "1.2")]
-		public unowned string get_hw_address ();
 		[Version (since = "1.2")]
 		public unowned string get_mode ();
 		[Version (since = "1.2")]
@@ -1455,8 +1429,6 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected DeviceVlan ();
 		public bool get_carrier ();
-		[Version (deprecated = true, deprecated_since = "1.24")]
-		public unowned string get_hw_address ();
 		public unowned NM.Device get_parent ();
 		public uint get_vlan_id ();
 		public bool carrier { get; }
@@ -1484,8 +1456,6 @@ namespace NM {
 		public uint get_dst_port ();
 		[Version (since = "1.2")]
 		public unowned string get_group ();
-		[Version (deprecated = true, deprecated_since = "1.24", since = "1.2")]
-		public unowned string get_hw_address ();
 		[Version (since = "1.2")]
 		public uint get_id ();
 		[Version (since = "1.2")]
@@ -1578,8 +1548,6 @@ namespace NM {
 		public unowned NM.AccessPoint get_active_access_point ();
 		public uint32 get_bitrate ();
 		public NM.DeviceWifiCapabilities get_capabilities ();
-		[Version (deprecated = true, deprecated_since = "1.24")]
-		public unowned string get_hw_address ();
 		[Version (since = "1.12")]
 		public int64 get_last_scan ();
 		public NM.80211Mode get_mode ();
@@ -1609,8 +1577,6 @@ namespace NM {
 	public class DeviceWifiP2P : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceWifiP2P ();
-		[Version (deprecated = true, deprecated_since = "1.24", since = "1.16")]
-		public unowned string get_hw_address ();
 		public unowned NM.WifiP2PPeer get_peer_by_path (string path);
 		public unowned GLib.GenericArray<NM.WifiP2PPeer> get_peers ();
 		public async bool start_find (GLib.Variant? options, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -1699,8 +1665,6 @@ namespace NM {
 	public class DeviceWpan : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceWpan ();
-		[Version (deprecated = true, deprecated_since = "1.24")]
-		public unowned string get_hw_address ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_dhcp_config_get_type ()")]
 	public abstract class DhcpConfig : NM.Object {
@@ -5152,13 +5116,16 @@ namespace NM {
 		public NM.TCAction dup ();
 		[Version (since = "1.12")]
 		public bool equal (NM.TCAction other);
+		[Version (since = "1.12")]
 		public unowned GLib.Variant get_attribute (string name);
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.12")]
 		public string[] get_attribute_names ();
 		[Version (since = "1.12")]
 		public unowned string get_kind ();
 		[Version (since = "1.12")]
 		public void @ref ();
+		[Version (since = "1.12")]
 		public void set_attribute (string name, GLib.Variant? value);
 		[Version (since = "1.12")]
 		public void unref ();
@@ -6905,6 +6872,8 @@ namespace NM {
 	public const string IP_ROUTE_ATTRIBUTE_TABLE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TOS")]
 	public const string IP_ROUTE_ATTRIBUTE_TOS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TYPE")]
+	public const string IP_ROUTE_ATTRIBUTE_TYPE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_WINDOW")]
 	public const string IP_ROUTE_ATTRIBUTE_WINDOW;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_CHASSIS_ID")]

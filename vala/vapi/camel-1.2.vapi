@@ -2007,6 +2007,8 @@ namespace Camel {
 	public class StreamBuffer : Camel.Stream, GLib.Seekable {
 		[CCode (has_construct_function = false, type = "CamelStream*")]
 		public StreamBuffer (Camel.Stream stream, Camel.StreamBufferMode mode);
+		[Version (since = "3.38")]
+		public void discard_cache ();
 		public int gets ([CCode (array_length_cname = "max", array_length_pos = 1.5, array_length_type = "guint")] char[] buf, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoWrapper]
 		public virtual void init (Camel.Stream stream, Camel.StreamBufferMode mode);

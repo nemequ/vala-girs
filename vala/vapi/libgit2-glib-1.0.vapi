@@ -748,6 +748,7 @@ namespace Ggit {
 		public unowned string? get_url ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public Ggit.RemoteHead[]? list () throws GLib.Error;
+		public void prune (Ggit.RemoteCallbacks callbacks) throws GLib.Error;
 		public bool push ([CCode (array_length = false, array_null_terminated = true)] string[]? specs, Ggit.PushOptions push_options) throws GLib.Error;
 		public bool update_tips (Ggit.RemoteCallbacks callbacks, bool update_fetch_head, Ggit.RemoteDownloadTagsType tags_type, string? message) throws GLib.Error;
 		public bool upload ([CCode (array_length = false, array_null_terminated = true)] string[]? specs, Ggit.PushOptions push_options) throws GLib.Error;
