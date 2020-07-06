@@ -4784,6 +4784,8 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_wireless_get_type ()")]
 	public class SettingWireless : NM.Setting {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_AP_ISOLATION")]
+		public const string AP_ISOLATION;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_BAND")]
 		public const string BAND;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_BSSID")]
@@ -4877,6 +4879,8 @@ namespace NM {
 		public bool add_seen_bssid (string bssid);
 		public bool ap_security_compatible (NM.SettingWirelessSecurity s_wireless_sec, NM.80211ApFlags ap_flags, NM.80211ApSecurityFlags ap_wpa, NM.80211ApSecurityFlags ap_rsn, NM.80211Mode ap_mode);
 		public void clear_mac_blacklist_items ();
+		[Version (since = "1.28")]
+		public NM.Ternary get_ap_isolation ();
 		public unowned string get_band ();
 		public unowned string get_bssid ();
 		public uint32 get_channel ();
@@ -4904,6 +4908,9 @@ namespace NM {
 		public NM.SettingWirelessWakeOnWLan get_wake_on_wlan ();
 		public void remove_mac_blacklist_item (uint32 idx);
 		public bool remove_mac_blacklist_item_by_value (string mac);
+		[NoAccessorMethod]
+		[Version (since = "1.28")]
+		public NM.Ternary ap_isolation { get; set; }
 		[NoAccessorMethod]
 		public string band { owned get; set; }
 		[NoAccessorMethod]

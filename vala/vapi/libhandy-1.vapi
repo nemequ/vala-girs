@@ -264,6 +264,8 @@ namespace Hdy {
 		public ExpanderRow ();
 		[Version (since = "1.0")]
 		public void add_action (Gtk.Widget widget);
+		[Version (since = "1.0")]
+		public void add_prefix (Gtk.Widget widget);
 		[Version (since = "0.0.6")]
 		public bool get_enable_expansion ();
 		public bool get_expanded ();
@@ -583,6 +585,42 @@ namespace Hdy {
 		[Version (since = "0.0.12")]
 		public void remove_swipeable (Hdy.Swipeable swipeable);
 	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_swipe_tracker_get_type ()")]
+	public class SwipeTracker : GLib.Object, Gtk.Orientable {
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.0")]
+		public SwipeTracker (Hdy.Swipeable swipeable);
+		[Version (since = "1.0")]
+		public bool get_allow_mouse_drag ();
+		[Version (since = "1.0")]
+		public bool get_enabled ();
+		[Version (since = "1.0")]
+		public bool get_reversed ();
+		[Version (since = "1.0")]
+		public unowned Hdy.Swipeable get_swipeable ();
+		[Version (since = "1.0")]
+		public void set_allow_mouse_drag (bool allow_mouse_drag);
+		[Version (since = "1.0")]
+		public void set_enabled (bool enabled);
+		[Version (since = "1.0")]
+		public void set_reversed (bool reversed);
+		[Version (since = "1.0")]
+		public void shift_position (double delta);
+		[Version (since = "1.0")]
+		public bool allow_mouse_drag { get; set; }
+		[Version (since = "1.0")]
+		public bool enabled { get; set; }
+		[Version (since = "1.0")]
+		public bool reversed { get; set; }
+		[Version (since = "1.0")]
+		public Hdy.Swipeable swipeable { get; construct; }
+		[Version (since = "1.0")]
+		public signal void begin_swipe (Hdy.NavigationDirection direction, bool direct);
+		[Version (since = "1.0")]
+		public signal void end_swipe (int64 duration, double to);
+		[Version (since = "1.0")]
+		public signal void update_swipe (double progress);
+	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_title_bar_get_type ()")]
 	public class TitleBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
@@ -726,19 +764,22 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_cname = "HdySwipeableInterface", type_id = "hdy_swipeable_get_type ()")]
 	public interface Swipeable : Gtk.Widget {
-		[NoWrapper]
+		[Version (since = "1.0")]
+		public void emit_child_switched (uint index, int64 duration);
+		[Version (since = "1.0")]
 		public abstract double get_cancel_progress ();
-		[NoWrapper]
+		[Version (since = "1.0")]
 		public abstract double get_distance ();
-		[NoWrapper]
+		[Version (since = "1.0")]
 		public abstract double get_progress ();
-		[NoWrapper]
-		public abstract void get_range (double lower, double upper);
-		[NoWrapper]
-		public abstract double get_snap_points (int n_snap_points);
-		[NoWrapper]
-		public abstract void get_swipe_area (Gdk.Rectangle rect);
-		[NoWrapper]
+		[CCode (array_length_pos = 0.1)]
+		[Version (since = "1.0")]
+		public abstract double[] get_snap_points ();
+		[Version (since = "1.0")]
+		public abstract Gdk.Rectangle get_swipe_area ();
+		[Version (since = "1.0")]
+		public abstract unowned Hdy.SwipeTracker get_swipe_tracker ();
+		[Version (since = "1.0")]
 		public abstract void switch_child (uint index, int64 duration);
 		[Version (since = "1.0")]
 		public signal void child_switched (uint index, int64 duration);

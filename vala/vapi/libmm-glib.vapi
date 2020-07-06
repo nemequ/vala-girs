@@ -1169,6 +1169,8 @@ namespace MM {
 		public MM.Signal get_gsm ();
 		[Version (since = "1.2")]
 		public MM.Signal get_lte ();
+		[Version (since = "1.16")]
+		public MM.Signal get_nr5g ();
 		[Version (since = "1.2")]
 		public unowned string get_path ();
 		[Version (since = "1.2")]
@@ -1183,6 +1185,8 @@ namespace MM {
 		public unowned MM.Signal peek_gsm ();
 		[Version (since = "1.2")]
 		public unowned MM.Signal peek_lte ();
+		[Version (since = "1.16")]
+		public unowned MM.Signal peek_nr5g ();
 		[Version (since = "1.2")]
 		public unowned MM.Signal peek_umts ();
 		[Version (since = "1.2")]
@@ -2004,6 +2008,8 @@ namespace MM {
 		public abstract GLib.Variant gsm { owned get; set; }
 		[NoAccessorMethod]
 		public abstract GLib.Variant lte { owned get; set; }
+		[NoAccessorMethod]
+		public abstract GLib.Variant nr5g { owned get; set; }
 		[NoAccessorMethod]
 		public abstract uint rate { get; set; }
 		[NoAccessorMethod]
@@ -3567,6 +3573,8 @@ namespace MM {
 	public const string MODEM_SIGNAL_PROPERTY_GSM;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SIGNAL_PROPERTY_LTE")]
 	public const string MODEM_SIGNAL_PROPERTY_LTE;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SIGNAL_PROPERTY_NR5G")]
+	public const string MODEM_SIGNAL_PROPERTY_NR5G;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SIGNAL_PROPERTY_RATE")]
 	public const string MODEM_SIGNAL_PROPERTY_RATE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SIGNAL_PROPERTY_UMTS")]

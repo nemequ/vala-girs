@@ -2095,6 +2095,9 @@ namespace E {
 	[Version (since = "3.18")]
 	public static bool secret_store_store_sync (string uid, string secret, string label, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.38")]
+	public static GLib.InputStream soup_logger_attach (Soup.Message message, owned GLib.InputStream input_stream);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.16")]
 	public static void soup_ssl_trust_connect (Soup.Message soup_message, E.Source source);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
