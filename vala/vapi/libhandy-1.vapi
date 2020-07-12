@@ -374,12 +374,43 @@ namespace Hdy {
 	public class HeaderGroup : GLib.Object, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public HeaderGroup ();
-		public void add_header_bar (Gtk.HeaderBar header_bar);
-		public unowned Gtk.HeaderBar? get_focus ();
-		public unowned GLib.SList<Gtk.HeaderBar> get_header_bars ();
-		public void remove_header_bar (Gtk.HeaderBar header_bar);
-		public void set_focus (Gtk.HeaderBar? header_bar);
-		public Gtk.HeaderBar focus { get; set; }
+		[Version (since = "1.0")]
+		public void add_gtk_header_bar (Gtk.HeaderBar header_bar);
+		[Version (since = "1.0")]
+		public void add_header_bar (Hdy.HeaderBar header_bar);
+		[Version (since = "1.0")]
+		public void add_header_group (Hdy.HeaderGroup header_group);
+		[Version (since = "1.0")]
+		public unowned GLib.SList<Hdy.HeaderGroupChild> get_children ();
+		[Version (since = "1.0")]
+		public bool get_decorate_all ();
+		[Version (since = "1.0")]
+		public void remove_child (Hdy.HeaderGroupChild child);
+		[Version (since = "1.0")]
+		public void remove_gtk_header_bar (Gtk.HeaderBar header_bar);
+		[Version (since = "1.0")]
+		public void remove_header_bar (Hdy.HeaderBar header_bar);
+		[Version (since = "1.0")]
+		public void remove_header_group (Hdy.HeaderGroup header_group);
+		[Version (since = "1.0")]
+		public void set_decorate_all (bool decorate_all);
+		[Version (since = "1.0")]
+		public bool decorate_all { get; set; }
+		[Version (since = "1.0")]
+		public signal void update_decoration_layouts ();
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_header_group_child_get_type ()")]
+	public class HeaderGroupChild : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected HeaderGroupChild ();
+		[Version (since = "1.0")]
+		public Hdy.HeaderGroupChildType get_child_type ();
+		[Version (since = "1.0")]
+		public unowned Gtk.HeaderBar get_gtk_header_bar ();
+		[Version (since = "1.0")]
+		public unowned Hdy.HeaderBar get_header_bar ();
+		[Version (since = "1.0")]
+		public unowned Hdy.HeaderGroup get_header_group ();
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_keypad_get_type ()")]
 	public class Keypad : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
@@ -801,6 +832,13 @@ namespace Hdy {
 		OVER,
 		UNDER,
 		SLIDE
+	}
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_HEADER_GROUP_CHILD_TYPE_", type_id = "hdy_header_group_child_type_get_type ()")]
+	[Version (since = "1.0")]
+	public enum HeaderGroupChildType {
+		HEADER_BAR,
+		GTK_HEADER_BAR,
+		HEADER_GROUP
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_LEAFLET_TRANSITION_TYPE_", type_id = "hdy_leaflet_transition_type_get_type ()")]
 	[Version (since = "0.0.12")]

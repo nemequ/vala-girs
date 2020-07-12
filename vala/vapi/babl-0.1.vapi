@@ -129,6 +129,8 @@ namespace Babl {
 	[CCode (cheader_filename = "babl.h")]
 	public static void space_get (Babl.Object space, out double xw, out double yw, out double xr, out double yr, out double xg, out double yg, out double xb, out double yb, out Babl.Object red_trc, out Babl.Object green_trc, out Babl.Object blue_trc);
 	[CCode (cheader_filename = "babl.h")]
+	public static double space_get_gamma (Babl.Object space);
+	[CCode (cheader_filename = "babl.h")]
 	public static unowned string space_get_icc (Babl.Object babl, out int length);
 	[CCode (cheader_filename = "babl.h")]
 	public static void space_get_rgb_luminance (Babl.Object space, out double red_luminance, out double green_luminance, out double blue_luminance);

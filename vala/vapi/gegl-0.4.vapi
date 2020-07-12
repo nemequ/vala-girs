@@ -181,6 +181,7 @@ namespace Gegl {
 		public void multiply (Gegl.Matrix3 right, Gegl.Matrix3 product);
 		public void originate (double x, double y);
 		public void parse_string (string string);
+		public void round_error ();
 		public string to_string ();
 		public void transform_point (double x, double y);
 	}

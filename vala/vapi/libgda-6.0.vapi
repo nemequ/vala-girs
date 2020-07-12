@@ -579,7 +579,7 @@ namespace Gda {
 		public string schema_name { owned get; set; }
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_column_get_type ()")]
-	public class DbColumn : GLib.Object, Gda.DbBuildable {
+	public class DbColumn : GLib.Object, Gda.DbBuildable, Gda.DdlModifiable {
 		[CCode (has_construct_function = false)]
 		[Version (since = "6.0")]
 		public DbColumn ();
@@ -643,6 +643,8 @@ namespace Gda {
 		public bool pkey { get; set; }
 		public uint scale { get; set; }
 		public uint size { get; set; }
+		[NoAccessorMethod]
+		public Gda.DbTable table { owned get; set; }
 		public bool unique { get; set; }
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_fkey_get_type ()")]
@@ -676,13 +678,11 @@ namespace Gda {
 		public void set_ref_table (string rtable);
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_index_get_type ()")]
-	public class DbIndex : Gda.DbBase {
+	public class DbIndex : Gda.DbBase, Gda.DdlModifiable {
 		[CCode (has_construct_function = false)]
 		public DbIndex ();
 		[Version (since = "6.0")]
 		public void append_field (Gda.DbIndexField field);
-		[Version (since = "6.0")]
-		public bool drop (Gda.Connection cnc, bool ifexists) throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		[Version (since = "6.0")]
 		public unowned GLib.SList<Gda.DbIndexField>? get_fields ();
@@ -692,6 +692,8 @@ namespace Gda {
 		public void remove_field (string name);
 		[Version (since = "6.0")]
 		public void set_unique (bool val);
+		[NoAccessorMethod]
+		public Gda.DbTable table { owned get; set; }
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_index_field_get_type ()")]
 	public class DbIndexField : GLib.Object {
@@ -714,24 +716,16 @@ namespace Gda {
 		public void set_sort_order (Gda.DbIndexSortOrder sorder);
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_table_get_type ()")]
-	public class DbTable : Gda.DbBase, Gda.DbBuildable {
+	public class DbTable : Gda.DbBase, Gda.DbBuildable, Gda.DdlModifiable {
 		[CCode (has_construct_function = false)]
 		[Version (since = "6.0")]
 		public DbTable ();
 		[Version (since = "6.0")]
-		public bool add_column (Gda.DbColumn col, Gda.Connection cnc) throws GLib.Error;
-		[Version (since = "6.0")]
-		public bool add_index (Gda.DbIndex index, Gda.Connection cnc, bool ifnotexists) throws GLib.Error;
-		[Version (since = "6.0")]
 		public void append_column (Gda.DbColumn column);
 		[Version (since = "6.0")]
-		public void append_constraint (string constraint);
+		public void append_constraint (string constr);
 		[Version (since = "6.0")]
 		public void append_fkey (Gda.DbFkey fkey);
-		[Version (since = "6.0")]
-		public bool create (Gda.Connection cnc, bool ifnotexists) throws GLib.Error;
-		[Version (since = "6.0")]
-		public bool drop (Gda.Connection cnc, bool ifexists) throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		[Version (since = "6.0")]
 		public unowned GLib.List<Gda.DbColumn> get_columns ();
@@ -743,8 +737,6 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public bool prepare_create (Gda.ServerOperation op, bool ifnotexists) throws GLib.Error;
 		[Version (since = "6.0")]
-		public bool rename (Gda.DbTable new_name, Gda.Connection cnc) throws GLib.Error;
-		[Version (since = "6.0")]
 		public void set_is_temp (bool istemp);
 		public bool update (Gda.MetaTable obj, Gda.Connection cnc) throws GLib.Error;
 		[NoAccessorMethod]
@@ -753,14 +745,11 @@ namespace Gda {
 		public string istemp { owned get; set; }
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_db_view_get_type ()")]
-	public class DbView : Gda.DbBase, Gda.DbBuildable {
+	public class DbView : Gda.DbBase, Gda.DbBuildable, Gda.DdlModifiable {
 		[CCode (has_construct_function = false)]
 		[Version (since = "6.0")]
 		public DbView ();
 		[Version (since = "6.0")]
-		public bool create (Gda.Connection cnc, bool ifnotexists) throws GLib.Error;
-		[Version (since = "6.0")]
-		public bool drop (Gda.Connection cnc, bool ifexists, Gda.DbViewRefAction action) throws GLib.Error;
 		public unowned string get_defstring ();
 		[Version (since = "6.0")]
 		public bool get_ifnoexist ();
@@ -2203,6 +2192,16 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public abstract bool write_node ([CCode (type = "xmlNodePtr")] Xml.Node* node) throws GLib.Error;
 	}
+	[CCode (cheader_filename = "libgda/libgda.h", type_cname = "GdaDdlModifiableInterface", type_id = "gda_ddl_modifiable_get_type ()")]
+	public interface DdlModifiable : GLib.Object {
+		[Version (since = "6.0")]
+		public abstract bool create (Gda.Connection cnc) throws GLib.Error;
+		[Version (since = "6.0")]
+		public abstract bool drop (Gda.Connection cnc) throws GLib.Error;
+		public static GLib.Quark error_quark ();
+		[Version (since = "6.0")]
+		public abstract bool rename (Gda.Connection cnc) throws GLib.Error;
+	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_cname = "GdaLockableInterface", type_id = "gda_lockable_get_type ()")]
 	public interface Lockable : GLib.Object {
 		public abstract void @lock ();
@@ -2867,8 +2866,10 @@ namespace Gda {
 		RENAME_TABLE,
 		ADD_COLUMN,
 		DROP_COLUMN,
+		RENAME_COLUMN,
 		CREATE_INDEX,
 		DROP_INDEX,
+		RENAME_INDEX,
 		CREATE_VIEW,
 		DROP_VIEW,
 		COMMENT_TABLE,
@@ -3202,6 +3203,13 @@ namespace Gda {
 		TRUNCATED_ERROR,
 		INVALID,
 		OTHER_ERROR;
+		public static GLib.Quark quark ();
+	}
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DDL_MODIFIABLE_")]
+	public errordomain DdlModifiableError {
+		NOT_IMPLEMENTED,
+		CONNECTION_NOT_OPENED,
+		MISSED_DATA;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_PROVIDER_META_")]
