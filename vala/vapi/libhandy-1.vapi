@@ -53,13 +53,19 @@ namespace Hdy {
 	public class Avatar : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Avatar (int size, string? text, bool show_initials);
+		[Version (since = "1.0")]
+		public unowned string? get_icon_name ();
 		public bool get_show_initials ();
 		public int get_size ();
 		public unowned string? get_text ();
+		[Version (since = "1.0")]
+		public void set_icon_name (string? icon_name);
 		public void set_image_load_func (owned Hdy.AvatarImageLoadFunc? load_image);
 		public void set_show_initials (bool show_initials);
 		public void set_size (int size);
 		public void set_text (string? text);
+		[Version (since = "1.0")]
+		public string icon_name { get; set; }
 		public bool show_initials { get; set; }
 		public int size { get; set; }
 		public string text { get; set; }
@@ -194,6 +200,8 @@ namespace Hdy {
 		public bool get_can_swipe_back ();
 		[Version (since = "1.0")]
 		public bool get_can_swipe_forward ();
+		[Version (since = "1.0")]
+		public unowned Gtk.Widget? get_child_by_name (string name);
 		[Version (since = "1.0")]
 		public bool get_homogeneous (Gtk.Orientation orientation);
 		[Version (since = "1.0")]
@@ -444,6 +452,8 @@ namespace Hdy {
 		public bool get_can_swipe_back ();
 		[Version (since = "0.0.12")]
 		public bool get_can_swipe_forward ();
+		[Version (since = "1.0")]
+		public unowned Gtk.Widget? get_child_by_name (string name);
 		public uint get_child_transition_duration ();
 		public bool get_child_transition_running ();
 		public bool get_folded ();
@@ -807,7 +817,7 @@ namespace Hdy {
 		[Version (since = "1.0")]
 		public abstract double[] get_snap_points ();
 		[Version (since = "1.0")]
-		public abstract Gdk.Rectangle get_swipe_area ();
+		public abstract Gdk.Rectangle get_swipe_area (Hdy.NavigationDirection navigation_direction, bool is_drag);
 		[Version (since = "1.0")]
 		public abstract unowned Hdy.SwipeTracker get_swipe_tracker ();
 		[Version (since = "1.0")]
