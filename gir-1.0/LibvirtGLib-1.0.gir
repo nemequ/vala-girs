@@ -263,6 +263,105 @@ operation.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="libvirt-glib-error">
+      <doc xml:space="preserve"
+           filename="libvirt-glib-error.c"
+           line="31">The libvirt API uses the &lt;code&gt;virError&lt;/code&gt; structure for reporting
+errors back to the application programmer. The libvirt API errors are
+provided in thread-local variables, while the GLib standard practice is
+to return errors via out parameters. This library provides a simple way
+to fill in &lt;code&gt;GError **&lt;/code&gt; output parameters with the contents
+of the most recent libvirt error object in the current thread.
+
+The &lt;code&gt;gvir_error_new&lt;/code&gt;, &lt;code&gt;gvir_error_new_literal&lt;/code&gt; and
+&lt;code&gt;gvir_error_new_valist&lt;/code&gt; methods all return a newly created
+&lt;code&gt;GError *&lt;/code&gt; object instance, differing only in the way the
+message needs to be provided. For most usage though, it is preferrable
+to use the &lt;code&gt;gvir_set_error&lt;/code&gt;, &lt;code&gt;gvir_set_error_literal&lt;/code&gt;
+and &lt;code&gt;gvir_set_error_valist&lt;/code&gt; methods. These all accept a
+&lt;code&gt;GError **&lt;/code&gt; argument and take care to only fill it if it
+points to a non-NULL location.
+
+&lt;example&gt;
+&lt;title&gt;Reporting GLib errors with libvirt APIs&lt;/title&gt;
+&lt;programlisting&gt;&lt;![CDATA[
+gboolean myapp_start_guest(const gchar *xml, GError **error)
+{
+    if (virDomainCreate(conn, xml, 0) &amp;lt; 0) {
+        gvir_set_error_literal(error, "Unable to start virtual machine");
+       return FALSE;
+    }
+
+    return TRUE;
+}
+]]&gt;&lt;/programlisting&gt;
+&lt;/example&gt;</doc>
+    </docsection>
+    <docsection name="libvirt-glib-event">
+      <doc xml:space="preserve"
+           filename="libvirt-glib-event.c"
+           line="38">The libvirt API has the ability to provide applications with asynchronous
+notifications of interesting events. To enable this functionality though,
+applications must provide libvirt with an event loop implementation. The
+libvirt-glib API provides such an implementation, which naturally integrates
+with the GMain event loop framework.
+
+To enable use of the GMain event loop glue, the &lt;code&gt;gvir_event_register()&lt;/code&gt;
+should be invoked. Once this is done, it is mandatory to have the default
+GMain event loop run by a thread in the application, usually the primary
+thread, eg by using &lt;code&gt;gtk_main()&lt;/code&gt; or &lt;code&gt;g_application_run()&lt;/code&gt;
+
+&lt;example&gt;
+&lt;title&gt;Registering for events with a GTK application&lt;/title&gt;
+&lt;programlisting&gt;&lt;![CDATA[
+int main(int argc, char **argv) {
+  ...setup...
+  gvir_event_register();
+  ...more setup...
+  gtk_main();
+  return 0;
+}
+]]&gt;&lt;/programlisting&gt;
+&lt;/example&gt;
+
+&lt;example&gt;
+&lt;title&gt;Registering for events using Appplication&lt;/title&gt;
+&lt;programlisting&gt;&lt;![CDATA[
+int main(int argc, char **argv) {
+  ...setup...
+  GApplication *app = ...create some impl of GApplication...
+  gvir_event_register();
+  ...more setup...
+  g_application_run(app);
+  return 0;
+}
+]]&gt;&lt;/programlisting&gt;
+&lt;/example&gt;</doc>
+    </docsection>
+    <docsection name="libvirt-glib-main">
+      <doc xml:space="preserve"
+           filename="libvirt-glib-main.c"
+           line="33">The Libvirt GLib library provides glue to integrate core libvirt
+infrastructure with the GLib library. This enables consistent
+error reporting procedures and a common event loop implementation
+for applications.
+
+Before using any functions in the Libvirt GLib library, it must be initialized
+by calling &lt;code&gt;gvir_init&lt;/code&gt; or &lt;code&gt;gvir_init_check&lt;/code&gt;.
+
+&lt;example&gt;
+&lt;title&gt;Initializing the Libvirt GLib library&lt;/title&gt;
+&lt;programlisting&gt;&lt;![CDATA[
+int main(int argc, char **argv) {
+  ...setup...
+  gvir_init(&amp;argc, &amp;argv);
+  ...more setup...
+  gtk_main();
+  return 0;
+}
+]]&gt;&lt;/programlisting&gt;
+&lt;/example&gt;</doc>
+    </docsection>
     <function name="set_error"
               c:identifier="gvir_set_error"
               introspectable="0">

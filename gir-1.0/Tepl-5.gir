@@ -5959,6 +5959,184 @@ the place where a warning or error occurred.</doc>
         </array>
       </field>
     </record>
+    <docsection name="abstract-factory">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-abstract-factory.c"
+           line="8">The Tepl framework uses the #TeplAbstractFactory singleton to create some
+objects and widgets. By creating a subclass of #TeplAbstractFactory (to
+override the desired virtual functions) and setting the instance with
+tepl_abstract_factory_set_singleton(), an application can tell Tepl to create
+custom objects and widgets.
+
+Note that #GtkTextViewClass has the ::create_buffer factory method, that
+#TeplView overrides to create a #TeplBuffer. How the #TeplView and
+#TeplBuffer are created can be customized with the ::create_tab vfunc of
+#TeplAbstractFactory.
+
+Recommendation for the subclass name: in Tepl, #TeplAbstractFactory is an
+abstract class, but in an application it is a concrete class. So
+“MyappAbstractFactory” is not a good name for a #TeplAbstractFactory
+subclass. “MyappFactory” is a better name (of course change “Myapp” with the
+application namespace).</doc>
+    </docsection>
+    <docsection name="application">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-application.c"
+           line="12">#TeplApplication extends the #GtkApplication class.
+
+For some features, the Tepl framework gets the default #GtkApplication with
+g_application_get_default(), for example to call g_application_hold(),
+g_application_mark_busy(), etc. Normally a GTK application has only one
+#GApplication per process, so this shouldn't cause any problem.
+
+Note that #TeplApplication extends the #GtkApplication class but without
+subclassing it, because several libraries might want to extend
+#GtkApplication and an application needs to be able to use all those
+extensions at the same time.
+
+# GActions # {#tepl-application-gactions}
+
+This class adds the following #GAction's to the #GtkApplication.
+Corresponding #AmtkActionInfo's are available with
+tepl_application_get_tepl_action_info_store().
+
+## For the File menu
+
+- `"app.tepl-new-window"`: creates a new main window with
+  tepl_abstract_factory_create_main_window().</doc>
+    </docsection>
+    <docsection name="application-window">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-application-window.c"
+           line="16">#TeplApplicationWindow extends the #GtkApplicationWindow class.
+
+An application needs to call tepl_application_window_set_tab_group() to
+benefit from the #TeplTabGroup interface implemented by this class.
+
+Note that #TeplApplicationWindow extends the #GtkApplicationWindow class but
+without subclassing it, because several libraries might want to extend
+#GtkApplicationWindow and an application needs to be able to use all those
+extensions at the same time.
+
+# GActions # {#tepl-application-window-gactions}
+
+This class adds the following #GAction's to the #GtkApplicationWindow.
+Corresponding #AmtkActionInfo's are available with
+tepl_application_get_tepl_action_info_store().
+
+## For the File menu
+
+- `"win.tepl-new-file"`: creates a new #TeplTab, appends it with
+  tepl_tab_group_append_tab() and set it as the active tab.
+- `"win.tepl-open"`: shows a #GtkFileChooser to open a new file.
+- `"win.tepl-save"`: saves the current file.
+- `"win.tepl-save-as"`: shows a #GtkFileChooser to save the current file to a
+  different location.
+
+## For the Edit menu
+
+- `"win.tepl-undo"`: calls gtk_source_buffer_undo() on the active buffer.
+- `"win.tepl-redo"`: calls gtk_source_buffer_redo() on the active buffer.
+
+The following actions require the %AMTK_FACTORY_IGNORE_ACCELS_FOR_APP flag,
+because otherwise accelerators don't work in other text widgets than the
+active view (e.g. in a #GtkEntry):
+- `"win.tepl-cut"`: calls tepl_view_cut_clipboard() on the active view.
+- `"win.tepl-copy"`: calls tepl_view_copy_clipboard() on the active view.
+- `"win.tepl-paste"`: calls tepl_view_paste_clipboard() on the active view.
+- `"win.tepl-delete"`: calls tepl_view_delete_selection() on the active view.
+- `"win.tepl-select-all"`: calls tepl_view_select_all() on the active view.
+- `"win.tepl-indent"`: calls gtk_source_view_indent_lines() on the selected
+  text of the active view.
+- `"win.tepl-unindent"`: calls gtk_source_view_unindent_lines() on the
+  selected text of the active view.
+
+See the tepl_menu_shell_append_edit_actions() convenience function.
+
+## For the Search menu
+
+- `"win.tepl-goto-line"`: shows the #TeplGotoLineBar of all #TeplTab's
+  belonging to #TeplApplicationWindow. Even though each #TeplTab has a
+  different #TeplGotoLineBar, all #TeplGotoLineBar's of the #TeplTabGroup
+  have their #GtkWidget:visible state synchronized, so when one
+  #TeplGotoLineBar is hidden, all the other #TeplGotoLineBar's are hidden as
+  well. The user may think that there is only one #TeplGotoLineBar per
+  window, with the #TeplGotoLineBar remembering a different state (mainly the
+  content of the #GtkSearchEntry) for each #TeplTab. To remember the state
+  for each #TeplTab, the easiest is to have a different widget for each
+  #TeplTab, hence the current implementation.</doc>
+    </docsection>
+    <docsection name="buffer">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-buffer.c"
+           line="10">#TeplBuffer is a subclass of #GtkSourceBuffer, to add more features useful
+for a text editor.
+
+It also adds an association to a #TeplFile that can be retrieved with
+tepl_buffer_get_file(). The association cannot change. The same for
+#TeplMetadata with tepl_buffer_get_metadata().
+
+The properties and signals have the tepl namespace, to avoid potential
+conflicts in the future if the property or signal is moved to
+#GtkSourceBuffer.</doc>
+    </docsection>
+    <docsection name="file">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-file.c"
+           line="11">A #TeplFile object is the on-disk representation of a #TeplBuffer.
+
+With a #TeplFile, you can create and configure a #TeplFileLoader and
+#TeplFileSaver which take by default the values of the #TeplFile properties
+(except for the file loader which auto-detect some properties). On a
+successful load or save operation, the #TeplFile properties are updated. If
+an operation fails, the #TeplFile properties have still the previous valid
+values.</doc>
+    </docsection>
+    <docsection name="file-chooser">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-file-chooser.c"
+           line="7">Extra functions for #GtkFileChooser, to have common code between
+#GtkFileChooserDialog and GtkFileChooserNative.</doc>
+    </docsection>
+    <docsection name="file-loader">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-file-loader.c"
+           line="9">A #TeplFileLoader object permits to load the content of a #GFile into a
+#TeplBuffer.
+
+A file loader should be used only for one load operation, including errors
+handling. If an error occurs, you can reconfigure the loader and relaunch the
+operation with tepl_file_loader_load_async().
+
+Running a #TeplFileLoader is an undoable action for the #TeplBuffer. That is,
+gtk_source_buffer_begin_not_undoable_action() and
+gtk_source_buffer_end_not_undoable_action() are called, which delete the
+undo/redo history.
+
+After a file loading, the buffer is reset to the content provided by the
+#GFile, so the buffer is set as “unmodified”, that is,
+gtk_text_buffer_set_modified() is called with %FALSE.</doc>
+    </docsection>
+    <docsection name="file-saver">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-file-saver.c"
+           line="12">A #TeplFileSaver object permits to save a #TeplBuffer into a #GFile.
+
+A file saver should be used only for one save operation, including errors
+handling. If an error occurs, you can reconfigure the saver and relaunch the
+operation with tepl_file_saver_save_async().
+
+# Things that need to be done at a higher level
+
+Make the #GtkTextView non-editable during the save operation. See
+gtk_text_view_set_editable(). Because the save operation is asynchronous, and
+gtk_text_buffer_set_modified() must be called (with a %FALSE value) only when
+the file has been successfully saved. So that's why
+gtk_text_buffer_set_modified() is called by tepl_file_saver_save_finish(),
+not at the beginning of the save operation. If the view/buffer is editable
+during the save operation, gtk_text_buffer_set_modified() may be called at
+the wrong place in the undo/redo history.</doc>
+    </docsection>
     <function name="finalize" c:identifier="tepl_finalize" version="3.0">
       <doc xml:space="preserve"
            filename="../tepl/tepl-init.c"
@@ -5975,6 +6153,44 @@ main(). It can be called several times.</doc>
         <type name="none" c:type="void"/>
       </return-value>
     </function>
+    <docsection name="fold-region">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-fold-region.c"
+           line="7">#TeplFoldRegion represents a region in a #GtkTextBuffer that can be folded.
+
+When a region is being folded, a #GtkTextTag with the #GtkTextTag:invisible
+property is applied to the folded region. The actual start and end position
+of this #GtkTextTag is respectively at the next new line after the start and
+end position of the bounds handed over to tepl_fold_region_set_bounds().</doc>
+    </docsection>
+    <docsection name="goto-line-bar">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-goto-line-bar.c"
+           line="10">#TeplGotoLineBar is an horizontal bar containing among other things:
+- A #GtkSearchEntry.
+- A close button.
+
+When the #GtkSearchEntry's content changes, tepl_view_goto_line() is called
+on the associated #TeplView.
+
+# High-level API
+
+#TeplGotoLineBar is integrated in the Tepl framework, see:
+- The `"win.tepl-goto-line"` #GAction in #TeplApplicationWindow.
+- The tepl_tab_get_goto_line_bar() function.</doc>
+    </docsection>
+    <docsection name="gutter-renderer-folds">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-gutter-renderer-folds.c"
+           line="8">#TeplGutterRendererFolds is a basic gutter renderer for code folding. It
+handles only the drawing, and has a flat view of the folding tree.</doc>
+    </docsection>
+    <docsection name="info-bar">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-info-bar.c"
+           line="7">#TeplInfoBar is a subclass of #GtkInfoBar with functions to ease the creation
+of info bars.</doc>
+    </docsection>
     <function name="init" c:identifier="tepl_init" version="3.0">
       <doc xml:space="preserve"
            filename="../tepl/tepl-init.c"
@@ -5989,6 +6205,11 @@ This function also calls amtk_init() and gtk_source_init().</doc>
         <type name="none" c:type="void"/>
       </return-value>
     </function>
+    <docsection name="io-error-info-bars">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-io-error-info-bars.c"
+           line="10">Verbose error reporting for file I/O operations.</doc>
+    </docsection>
     <function name="io_error_info_bar_cant_create_backup"
               c:identifier="tepl_io_error_info_bar_cant_create_backup"
               version="5.0">
@@ -6103,6 +6324,11 @@ the file. Possible actions:
         </parameter>
       </parameters>
     </function>
+    <docsection name="iter">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-iter.c"
+           line="7">#GtkTextIter utility functions.</doc>
+    </docsection>
     <function name="iter_get_line_indentation"
               c:identifier="tepl_iter_get_line_indentation"
               version="2.0">
@@ -6130,6 +6356,11 @@ desired to keep the same indentation level.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="menu-shell">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-menu-shell.c"
+           line="8">#GtkMenuShell functions.</doc>
+    </docsection>
     <function name="menu_shell_append_edit_actions"
               c:identifier="tepl_menu_shell_append_edit_actions"
               version="3.0">
@@ -6159,6 +6390,153 @@ correctly uses the %AMTK_FACTORY_IGNORE_ACCELS_FOR_APP flag to create the
         </parameter>
       </parameters>
     </function>
+    <docsection name="metadata">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-metadata.c"
+           line="7">A #TeplMetadata object contains a set of file metadata as key/value pairs.
+
+The tepl_metadata_get() and tepl_metadata_set() functions don't load or save
+the metadata on disk, they only access the metadata stored in the
+#TeplMetadata object memory.
+
+#TeplMetadata is intended to be used alongside #TeplMetadataManager to load
+and store the metadata on disk.
+
+# Values requirements
+
+Values must be nul-terminated UTF-8 strings.
+
+# Keys requirements # {#tepl-metadata-keys-requirements}
+
+Keys must be non-empty strings containing only:
+- ASCII alphanumeric characters (see g_ascii_isalnum());
+- `'-'` characters (dashes);
+- or `'_'` characters (underscores).
+
+Additionally, it's preferable that keys start with a namespace, to not get
+metadata conflicts between the application and libraries.
+
+Examples of valid metadata keys:
+- `"gedit-spell-checking-language"`
+- `"gCSVedit_column_delimiter"`
+- `"tepl-character-encoding"`</doc>
+    </docsection>
+    <docsection name="metadata-manager">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-metadata-manager.c"
+           line="10">#TeplMetadataManager permits to store file metadata on disk. It serves both
+as an easier replacement for GVfs metadata, and to have metadata support on
+platforms that don't support GVfs metadata.
+
+For the #GFile where the metadata are stored (see the
+tepl_metadata_manager_load_from_disk() and
+tepl_metadata_manager_save_to_disk() functions), the following applies:
+- A good place to store the metadata is in a sub-directory of the user data
+  directory. See g_get_user_data_dir().
+- The #GFile must be different for each process. It is advised for your
+  application to rely on #GApplication process uniqueness.
+  #TeplMetadataManager doesn't support concurrent accesses to the same #GFile
+  from different processes. Which means that metadata cannot be shared
+  between applications.
+
+# High-level API
+
+#TeplMetadataManager and #TeplMetadata are integrated in the Tepl framework,
+see:
+- tepl_application_handle_metadata().
+- the metadata API of #TeplBuffer.</doc>
+    </docsection>
+    <docsection name="notebook">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-notebook.c"
+           line="11">#TeplNotebook is a subclass of #GtkNotebook that implements the #TeplTabGroup
+interface.</doc>
+    </docsection>
+    <docsection name="panel">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-panel.c"
+           line="10">#TeplPanel permits to create a side or bottom panel that contains several
+components.
+
+#TeplPanel is a #GtkGrid subclass containing only one child #GtkWidget by
+default: the #GtkStack that can be retrieved with tepl_panel_get_stack().</doc>
+    </docsection>
+    <docsection name="statusbar">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-statusbar.c"
+           line="10">#TeplStatusbar is a subclass of #GtkStatusbar with a better look by default,
+and with added functions useful for a text editor.</doc>
+    </docsection>
+    <docsection name="style-scheme-chooser-widget">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-style-scheme-chooser-widget.c"
+           line="8">#TeplStyleSchemeChooserWidget is a simple implementation of the
+#GtkSourceStyleSchemeChooser interface. It already contains a
+#GtkScrolledWindow internally.
+
+Additional features compared to #GtkSourceStyleSchemeChooserWidget:
+- There is an additional convenience property:
+  #TeplStyleSchemeChooserWidget:tepl-style-scheme-id.
+- When the #GtkWidget::map signal is emitted, #TeplStyleSchemeChooserWidget
+  scrolls to the selected row.</doc>
+    </docsection>
+    <docsection name="tab">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-tab.c"
+           line="12">#TeplTab is meant to be the content of one tab in the text editor (if the
+text editor has a Tabbed Document Interface). It is a #GtkGrid container that
+contains the #TeplView and can contain one or several #GtkInfoBar's. Since it
+is a #GtkGrid, an application can of course add any other widget to it.
+
+To create a new #GtkInfoBar, it is recommended to use #TeplInfoBar (but
+#TeplTab doesn't enforce it).
+
+By default:
+- #TeplTab has a vertical #GtkOrientation.
+- The main child widget of #TeplTab is a #GtkScrolledWindow which contains
+  the #TeplView.
+- #GtkInfoBar's are added on top of the #GtkScrolledWindow.
+
+The way that the #TeplView is packed into the #TeplTab is customizable with
+the ::pack_view virtual function. Similarly, the way that #GtkInfoBar's are
+added can be customized with ::pack_info_bar.
+
+# TeplTabGroup implementation
+
+#TeplTab implements the #TeplTabGroup interface, for a group of only one tab.
+It is useful for text editors that open each file in a separate window, or
+for applications that don't require to open more than one file. But the
+tepl_tab_group_append_tab() operation is not supported, so some higher-level
+features of Tepl don't work with #TeplTab as the #TeplTabGroup of the window.
+This will maybe be improved in the future by creating automatically a new
+window.</doc>
+    </docsection>
+    <docsection name="tab-group">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-tab-group.c"
+           line="7">The tepl_tab_group_get_tabs() function permits to get the list of #TeplTab's.
+The tepl_tab_group_get_active_tab() function permits to get the #TeplTab
+currently shown in the #TeplTabGroup.
+
+#TeplTabGroup also contains convenience functions to get #TeplView's and
+#TeplBuffer's instead of #TeplTab's.</doc>
+    </docsection>
+    <docsection name="tab-label">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-tab-label.c"
+           line="13">#TeplTabLabel is the label/title of a #TeplTab, suitable for #GtkNotebook.
+
+A #TeplTabLabel contains:
+- a #GtkLabel with the #TeplBuffer:tepl-short-title.
+- a close button, when clicked the #TeplTab #TeplTab::close-request signal is
+  emitted.
+- a customizable tooltip, by default it shows the full #TeplFile:location.</doc>
+    </docsection>
+    <docsection name="utils">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-utils.c"
+           line="15">Utility functions.</doc>
+    </docsection>
     <function name="utils_binding_transform_func_smart_bool"
               c:identifier="tepl_utils_binding_transform_func_smart_bool"
               version="5.0">
@@ -6668,5 +7046,11 @@ returns "aa", not "a".</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="view">
+      <doc xml:space="preserve"
+           filename="../tepl/tepl-view.c"
+           line="13">#TeplView is a subclass of #GtkSourceView, to add more features useful for a
+text editor.</doc>
+    </docsection>
   </namespace>
 </repository>

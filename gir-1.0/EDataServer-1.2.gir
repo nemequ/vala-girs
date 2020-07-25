@@ -36455,6 +36455,722 @@ when @is_milestone is set to TRUE.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="e-cancellable-locks">
+      <doc xml:space="preserve"
+           filename="e-cancellable-locks.c"
+           line="23">An #ECancellableMutex and an #ECancellableRecMutex are similar to
+GLib's #GMutex and #GRecMutex, with one exception, their &lt;emphasis&gt;lock&lt;/emphasis&gt;
+function takes also a @GCancellable instance, thus the waiting for a lock
+can be cancelled any time.</doc>
+    </docsection>
+    <docsection name="e-client">
+      <doc xml:space="preserve"
+           filename="e-client.c"
+           line="28">This class provides some base functionality for clients
+such as #EBookClient and #ECalClient.</doc>
+    </docsection>
+    <docsection name="e-collator">
+      <doc xml:space="preserve"
+           filename="e-collator.c"
+           line="20">The #ECollator is a wrapper object around ICU collation services and
+provides features to sort words in locale specific ways. The collator
+also provides some API for determining features of the active alphabet
+in the user's locale, and which words should be sorted under which
+letter in the user's alphabet.</doc>
+    </docsection>
+    <docsection name="e-extensible">
+      <doc xml:space="preserve"
+           filename="e-extensible.c"
+           line="18">#EExtension objects can be tacked on to any #GObject instance that
+implements the #EExtensible interface.  A #GObject type can be made
+extensible in two steps:
+
+1. Add the #EExtensible interface when registering the #GType.
+   There are no methods to implement.
+
+|[
+#include &lt;libedataserver/libedataserver.h&gt;
+
+G_DEFINE_TYPE_WITH_CODE (
+        ECustomWidget, e_custom_widget, GTK_TYPE_WIDGET,
+        G_IMPLEMENT_INTERFACE (E_TYPE_EXTENSIBLE, NULL))
+]|
+
+2. Load extensions for the class at some point during #GObject
+   initialization.  Generally this should be done toward the end of
+   the initialization code, so extensions get a fully initialized
+   object to work with.
+
+|[
+static void
+e_custom_widget_constructed (ECustomWidget *widget)
+{
+        Construction code goes here, same as call to parent's 'constructed'...
+
+        e_extensible_load_extensions (E_EXTENSIBLE (widget));
+}
+]|</doc>
+    </docsection>
+    <docsection name="e-extension">
+      <doc xml:space="preserve"
+           filename="e-extension.c"
+           line="18">#EExtension provides a way to extend the functionality of objects
+that implement the #EExtensible interface.  #EExtension subclasses
+can target a particular extensible object type.  New instances of
+an extensible object type get paired with a new instance of each
+#EExtension subclass that targets the extensible object type.
+
+The first steps of writing a new extension are as follows:
+
+1. Subclass #EExtension.
+
+2. In the class initialization function, specify the #GType being
+   extended.  The #GType must implement the #EExtensible interface.
+
+3. Register the extension's own #GType.  If the extension is to
+   be loaded dynamically using #GTypeModule, the type should be
+   registered in the library module's e_module_load() function.</doc>
+    </docsection>
+    <docsection name="e-oauth2-service">
+      <doc xml:space="preserve"
+           filename="e-oauth2-service.c"
+           line="18">An interface for an OAuth2 service. Any descendant might be defined
+as an extension of #EOAuth2Services and it should add itself into it
+with e_oauth2_services_add(). To make it easier, an #EOAuth2ServiceBase
+is provided for convenience.</doc>
+    </docsection>
+    <docsection name="e-oauth2-service-base">
+      <doc xml:space="preserve"
+           filename="e-oauth2-service-base.c"
+           line="17">An abstract base class, which can be used by any #EOAuth2Service
+implementation. It registers itself to #EOAuth2Services at the end
+of its constructed method. The descendant implements the #EOAuth2ServiceInterface.</doc>
+    </docsection>
+    <docsection name="e-oauth2-services">
+      <doc xml:space="preserve"
+           filename="e-oauth2-services.c"
+           line="18">The extensible object, which holds all known OAuth2 services. Each
+#EOAuth2Service extends this object and adds itself to it with
+e_oauth2_services_add(). The services can be later searched for
+with e_oauth2_services_find(), which returns the service suitable
+for the given protocol and/or host name.</doc>
+    </docsection>
+    <docsection name="e-secret-store">
+      <doc xml:space="preserve"
+           filename="e-secret-store.c"
+           line="18">The e-secret-store API provides an interface to store,
+lookup and delete secrets from the keyring.</doc>
+    </docsection>
+    <docsection name="e-soup-auth-bearer">
+      <doc xml:space="preserve"
+           filename="e-soup-auth-bearer.c"
+           line="18">#ESoupAuthBearer adds libsoup support for the use of bearer tokens in
+HTTP requests to access OAuth 2.0 protected resources, as defined in
+&lt;ulink url="http://tools.ietf.org/html/rfc6750"&gt;RFC 6750&lt;/ulink&gt;.
+
+An #EBackend should integrate #ESoupAuthBearer first by adding it as a
+feature to a #SoupSession's #SoupAuthManager, then from a #SoupSession
+#SoupSession::authenticate handler call e_source_get_oauth2_access_token()
+and pass the results to e_soup_auth_bearer_set_access_token().</doc>
+    </docsection>
+    <docsection name="e-soup-session">
+      <doc xml:space="preserve"
+           filename="e-soup-session.c"
+           line="18">The #ESoupSession is a #SoupSession descendant, which hides common
+tasks related to the way evolution-data-server works.</doc>
+    </docsection>
+    <docsection name="e-source">
+      <doc xml:space="preserve"
+           filename="e-source.c"
+           line="18">An #ESource (or "data source") is a description of a file or network
+location where data can be obtained (such as a mail account), or a
+description of a resource at that location (such as a mail folder).
+
+In more concrete terms, it's an interface for a key file.  All such
+key files have a main group named [Data Source].  The keys in a
+[Data Source] group map to #GObject properties in an #ESource.
+
+Additional groups in the key file are referred to as "extensions".
+#ESourceExtension serves as the base class for writing interfaces
+for these additional key file groups.  The keys in one of these
+key file groups map to #GObject properties in some custom subclass
+of #ESourceExtension which was written specifically for that key
+file group.  For example, a key file might include a group named
+[Calendar], whose keys map to #GObject properties in an extension
+class named #ESourceCalendar.
+
+Each #ESource contains an internal dictionary of extension objects,
+accessible by their key file group name.  e_source_get_extension()
+can look up extension objects by name.
+
+An #ESource is identified by a unique identifier string, or "UID",
+which is also the basename of the corresponding key file.  Additional
+files related to the #ESource, such as cache files, are usually kept
+in a directory named after the UID of the #ESource.  Similarly, the
+password for an account described by an #ESource is kept in GNOME
+Keyring under the UID of the #ESource.  This makes finding these
+additional resources simple.
+
+Several extensions for common information such as authentication
+details are built into libedataserver (#ESourceAuthentication, for
+example).  Backend modules may also define their own extensions for
+information and settings unique to the backend.  #ESourceExtension
+subclasses written for specific backends are generally not available
+to applications and shared libraries.  This is by design, to try and
+keep backend-specific knowledge from creeping into places it doesn't
+belong.
+
+As of 3.12, an #ESource with an #ESourceProxy extension can serve as a
+#GProxyResolver.  Calling g_proxy_resolver_is_supported() on an #ESource
+will reflect this constraint.  Attempting a proxy lookup operation on an
+#ESource for which g_proxy_resolver_is_supported() returns %FALSE will
+fail with %G_IO_ERROR_NOT_SUPPORTED.</doc>
+    </docsection>
+    <docsection name="e-source-address-book">
+      <doc xml:space="preserve"
+           filename="e-source-address-book.c"
+           line="18">The #ESourceAddressBook extension identifies the #ESource as an
+address book.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceAddressBook *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_ADDRESS_BOOK);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-alarms">
+      <doc xml:space="preserve"
+           filename="e-source-alarms.c"
+           line="18">The #ESourceAlarms extension tracks alarm state for a calendar.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceAlarms *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_ALARMS);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-authentication">
+      <doc xml:space="preserve"
+           filename="e-source-authentication.c"
+           line="18">The #ESourceAuthentication extension tracks authentication settings
+for a user account on a remote server.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceAuthentication *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_AUTHENTICATION);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-autocomplete">
+      <doc xml:space="preserve"
+           filename="e-source-autocomplete.c"
+           line="18">The #ESourceAutocomplete extension tracks contact autocompletion
+settings for an address book.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceAutocomplete *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_AUTOCOMPLETE);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-autoconfig">
+      <doc xml:space="preserve"
+           filename="e-source-autoconfig.c"
+           line="18">The #ESourceAutoconfig extension keeps a mapping between user-specific
+sources and system-wide ones.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceAutoconfig *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_AUTOCONFIG);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-backend">
+      <doc xml:space="preserve"
+           filename="e-source-backend.c"
+           line="18">#ESourceBackend is an abstract base class for data sources requiring
+an associated backend to function.  The extension merely records the
+name of the backend the data source should be paired with.</doc>
+    </docsection>
+    <docsection name="e-source-calendar">
+      <doc xml:space="preserve"
+           filename="e-source-calendar.c"
+           line="18">The #ESourceCalendar extension identifies the #ESource as a calendar.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceCalendar *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_CALENDAR);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-camel">
+      <doc xml:space="preserve"
+           filename="e-source-camel.c"
+           line="18">#ESourceCamel itself is abstract.  Its sole function is to
+bridge #GObject properties from the #CamelSettings framework to the
+#ESource framework.  It does this by procedurally registering an
+#ESourceCamel subtype for each available #CamelService subtype,
+and then registering #GObject properties to proxy the properties in the
+corresponding #CamelSettings subtype.  The #ESourceCamel owns an
+instance of the appropriate #CamelSettings subtype, and redirects all
+get/set operations on its own #GObject properties to its #CamelSettings
+instance.  The #CamelSettings instance, now fully initialized from a key
+file, can then be inserted into a new #CamelService instance using
+camel_service_set_settings().
+
+Ultimately, this is all just implementation detail for glueing two
+unrelated class hierarchies together.  If you need to access provider
+specific settings, use the #CamelSettings API, not this.</doc>
+    </docsection>
+    <docsection name="e-source-collection">
+      <doc xml:space="preserve"
+           filename="e-source-collection.c"
+           line="18">The #ESourceCollection extension identifies the #ESource as the root
+of a data source collection.
+
+Access the extension as follows:
+
+|[
+   #include &lt;libedataserver/libedataserver.h&gt;
+
+   ESourceCollection *extension;
+
+   extension = e_source_get_extension (source, E_SOURCE_EXTENSION_COLLECTION);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-extension">
+      <doc xml:space="preserve"
+           filename="e-source-extension.c"
+           line="18">#ESourceExtension is an abstract base class for #ESource extension
+objects.  An #ESourceExtension object basically just maps the keys in
+a key file group to a set of #GObject properties.  The name of the key
+file group doubles as the name of the #ESourceExtension object.
+
+#ESourceExtension objects are accessed through e_source_get_extension().</doc>
+    </docsection>
+    <docsection name="e-source-goa">
+      <doc xml:space="preserve"
+           filename="e-source-goa.c"
+           line="18">The #ESourceGoa extension associates an #ESource with a #GoaAccount.
+This extension is usually found in a top-level #ESource, with various
+mail, calendar and address book data sources as children.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceGoa *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_GOA);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-mail-account">
+      <doc xml:space="preserve"
+           filename="e-source-mail-account.c"
+           line="18">The #ESourceMailAccount extension identifies the #ESource as a
+mail account and also links to a default "mail identity" to use.
+See #ESourceMailIdentity for more information about identities.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceMailAccount *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_MAIL_ACCOUNT);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-mail-composition">
+      <doc xml:space="preserve"
+           filename="e-source-mail-composition.c"
+           line="18">The #ESourceMailComposition extension tracks settings to be applied
+when composing a new mail message.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceMailComposition *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_MAIL_COMPOSITION);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-mail-identity">
+      <doc xml:space="preserve"
+           filename="e-source-mail-identity.c"
+           line="18">The #ESourceMailIdentity extension describes an "identity" for a mail
+account, which is the information that other people see when they read
+your messages.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceMailIdentity *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_MAIL_IDENTITY);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-mail-signature">
+      <doc xml:space="preserve"
+           filename="e-source-mail-signature.c"
+           line="18">The #ESourceMailSignature extension refers to a personalized email
+signature.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceMailSignature *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_MAIL_SIGNATURE);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-mail-submission">
+      <doc xml:space="preserve"
+           filename="e-source-mail-submission.c"
+           line="18">The #ESourceMailSubmission extension tracks settings to be applied
+when submitting a mail message for delivery.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceMailSubmission *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_MAIL_SUBMISSION);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-mail-transport">
+      <doc xml:space="preserve"
+           filename="e-source-mail-transport.c"
+           line="18">The #ESourceMailTransport extension identifies the #ESource as a
+mail transport which describes where to send outgoing messages.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceMailTransport *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_MAIL_TRANSPORT);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-mdn">
+      <doc xml:space="preserve"
+           filename="e-source-mdn.c"
+           line="18">The #ESourceMDN extension tracks Message Disposition Notification
+settings for a mail account.  See RFC 2298 for more information about
+Message Disposition Notification.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceMDN *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_MDN);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-memo-list">
+      <doc xml:space="preserve"
+           filename="e-source-memo-list.c"
+           line="18">The #ESourceCalendar extension identifies the #ESource as a memo list.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceCalendar *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_MEMO_LIST);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-offline">
+      <doc xml:space="preserve"
+           filename="e-source-offline.c"
+           line="18">The #ESourceOffline extension tracks whether data from a remote
+server should be cached locally for viewing while offline.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceOffline *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_OFFLINE);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-openpgp">
+      <doc xml:space="preserve"
+           filename="e-source-openpgp.c"
+           line="18">The #ESourceOpenPGP extension tracks OpenPGP (RFC 4880) settings to be
+applied to outgoing mail messages.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceOpenPGP *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_OPENPGP);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-proxy">
+      <doc xml:space="preserve"
+           filename="e-source-proxy.c"
+           line="18">The #ESourceProxy extension defines a network proxy profile.
+
+An #ESource instance with this extension can serve as a #GProxyResolver.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceProxy *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_PROXY);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-refresh">
+      <doc xml:space="preserve"
+           filename="e-source-refresh.c"
+           line="18">The #ESourceRefresh extension tracks the interval for fetching
+updates from a remote server.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceRefresh *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_REFRESH);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-registry">
+      <doc xml:space="preserve"
+           filename="e-source-registry.c"
+           line="18">The #ESourceRegistry is a global singleton store for all #ESource
+instances.  It uses file monitors to react to key file creation and
+deletion events, either constructing an #ESource instance from the
+newly created key file, or removing from the logical #ESource
+hierarchy the instance corresponding to the deleted key file.
+
+The #ESourceRegistry can be queried for individual #ESource instances
+by their unique identifier string or key file path, for collections of
+#ESource instances having a particular extension, or for all available
+#ESource instances.
+
+The #ESourceRegistry API also provides a front-end for the
+"org.gnome.Evolution.DefaultSources" #GSettings schema which tracks
+which #ESource instances are designated to be the user's default address
+book, calendar, memo list and task list for desktop integration.
+
+Note: The #ESourceRegistry uses thread default main context from the time
+of its creation to deliver D-Bus signals, finish operations and so on,
+thus it requires a running main loop for its proper functionality.</doc>
+    </docsection>
+    <docsection name="e-source-registry-watcher">
+      <doc xml:space="preserve"
+           filename="e-source-registry-watcher.c"
+           line="18">#ESourceRegistryWatcher watches for changes in an #ESourceRegistry
+and notifies about newly added and enabled #ESource instances, the same
+as about removed or disabled. The amount of notifications can be filtered
+with #ESourceRegistryWatcher::filter signal.
+
+The watcher listens only for changes, thus it is not pre-populated after
+its creation. That's because the owner usually wants to subscribe to
+the #ESourceRegistryWatcher::filter, #ESourceRegistryWatcher::appeared
+and #ESourceRegistryWatcher::disappeared signals. The owner should
+call e_source_registry_watcher_reclaim() when it has all the needed
+signal handlers connected.</doc>
+    </docsection>
+    <docsection name="e-source-resource">
+      <doc xml:space="preserve"
+           filename="e-source-resource.c"
+           line="18">The #ESourceResource extension holds the server-assigned identity of a
+remote calendar, address book, or whatever else an #ESource can represent.
+
+This extension is typically used by an #ECollectionBackend to note a
+server-assigned resource identity in an #ESource.  Then in a later session,
+after querying the server for available resources, a resource identity can
+be paired with the same #ESource #ESource:uid from the previous session,
+allowing locally cached data from the previous session to be reused.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceResource *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_RESOURCE);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-revision-guards">
+      <doc xml:space="preserve"
+           filename="e-source-revision-guards.c"
+           line="21">The #ESourceRevisionGuards extension configures whether revisions
+should be checked on modified objects. If a modified object has
+a conflicting revision with an existing object, then an
+%E_CLIENT_ERROR_OUT_OF_SYNC error should be produced for that object
+and the modification should be discarded.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceRevisionGuards *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_REVISION_GUARDS);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-security">
+      <doc xml:space="preserve"
+           filename="e-source-security.c"
+           line="18">The #ESourceSecurity extension tracks settings for establishing a
+secure connection with a remote server.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceSecurity *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_SECURITY);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-selectable">
+      <doc xml:space="preserve"
+           filename="e-source-selectable.c"
+           line="18">#ESourceSelectable is an abstract base class for data sources
+that can be selected.</doc>
+    </docsection>
+    <docsection name="e-source-smime">
+      <doc xml:space="preserve"
+           filename="e-source-smime.c"
+           line="18">The #ESourceSMIME extension tracks Secure/Multipurpose Internet Mail
+Extensions (S/MIME) settings to be applied to outgoing mail messages.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceSMIME *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_SMIME);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-task-list">
+      <doc xml:space="preserve"
+           filename="e-source-task-list.c"
+           line="18">The #ESourceCalendar extension identifies the #ESource as a task list.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceCalendar *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_TASK_LIST);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-uoa">
+      <doc xml:space="preserve"
+           filename="e-source-uoa.c"
+           line="18">The #ESourceUoa extension associates an #ESource with an #AgAccount.
+This extension is usually found in a top-level #ESource, with various
+mail, calendar and address book data sources as children.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceUoa *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_UOA);
+]|</doc>
+    </docsection>
+    <docsection name="e-source-webdav">
+      <doc xml:space="preserve"
+           filename="e-source-webdav.c"
+           line="18">The #ESourceWebdav extension tracks settings for accessing resources
+on a remote WebDAV server.
+
+This class exists in libedataserver because we have several
+WebDAV-based backends.  Each of these backends is free to use
+this class directly or subclass it with additional settings.
+Subclasses should override the extension name.
+
+The #SoupURI is parsed into components and distributed across
+several other built-in extensions such as #ESourceAuthentication
+and #ESourceSecurity.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libedataserver/libedataserver.h&gt;
+
+  ESourceWebdav *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_WEBDAV_BACKEND);
+]|</doc>
+    </docsection>
+    <docsection name="e-webdav-session">
+      <doc xml:space="preserve"
+           filename="e-webdav-session.c"
+           line="18">The #EWebDAVSession is a class to work with WebDAV (RFC 4918),
+CalDAV (RFC 4791) or CardDAV (RFC 6352) servers, providing API
+for common requests/responses, on top of an #ESoupSession. It
+supports also Access Control Protocol (RFC 3744).</doc>
+    </docsection>
+    <docsection name="e-xml-document">
+      <doc xml:space="preserve"
+           filename="e-xml-document.c"
+           line="18">The #EXmlDocument class wraps creation of XML documents.</doc>
+    </docsection>
     <function name="eds_check_version"
               c:identifier="eds_check_version"
               version="2.24">

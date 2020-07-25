@@ -4682,6 +4682,344 @@ window, to show different #DhProfile's.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="dh-application-window">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-application-window.c"
+           line="9">Functions for the main application window.</doc>
+    </docsection>
+    <docsection name="dh-assistant-view">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-assistant-view.c"
+           line="15">#DhAssistantView is a subclass of #WebKitWebView for displaying the
+documentation of just one symbol.
+
+A possible use-case: in a text editor, pressing a keyboard shortcut could
+display this widget for the symbol under the cursor.
+
+With the Devhelp application, an assistant can easily be launched with the
+command line option `--search-assistant`.</doc>
+    </docsection>
+    <docsection name="dh-book">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-book.c"
+           line="17">A #DhBook usually contains the documentation for one library (or
+application), for example GLib or GTK. A #DhBook corresponds to one index
+file. An index file is a file with the extension `*.devhelp`, `*.devhelp2`,
+`*.devhelp.gz` or `*.devhelp2.gz`.
+
+#DhBook creates a #GFileMonitor on the index file, and emits the
+#DhBook::updated or #DhBook::deleted signal in case the index file has
+changed on the filesystem. #DhBookListDirectory listens to those #DhBook
+signals, and emits in turn the #DhBookList #DhBookList::remove-book and
+#DhBookList::add-book signals.</doc>
+    </docsection>
+    <docsection name="dh-book-list">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-book-list.c"
+           line="10">#DhBookList is a base class for a list of #DhBook's.
+
+The default implementation maintains an internal #GList when books are added
+and removed with the #DhBookList::add-book and #DhBookList::remove-book
+signals, and returns that #GList in dh_book_list_get_books().
+
+The #DhBookList base class doesn't listen to the #DhBook #DhBook::deleted and
+#DhBook::updated signals. It is for example handled by #DhBookListDirectory.</doc>
+    </docsection>
+    <docsection name="dh-book-list-builder">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-book-list-builder.c"
+           line="11">#DhBookListBuilder permits to build #DhBookList objects.</doc>
+    </docsection>
+    <docsection name="dh-book-list-directory">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-book-list-directory.c"
+           line="9">#DhBookListDirectory is a subclass of #DhBookList containing the #DhBook's in
+#DhBookListDirectory:directory. In that directory, each book must be in a
+direct sub-directory, with the Devhelp index file as a direct child of that
+sub-directory.
+
+For example if #DhBookListDirectory:directory is "/usr/share/gtk-doc/html/",
+and if there is an index file at
+"/usr/share/gtk-doc/html/glib/glib.devhelp2", #DhBookListDirectory will
+contain a #DhBook for that index file.
+
+Additionally the name of (1) the sub-directory and (2) the index file minus
+its extension, must match ("glib" in the example).
+
+See #DhBook for the list of allowed Devhelp index file extensions
+("*.devhelp2" in the example).
+
+#DhBookListDirectory listens to the #DhBook #DhBook::deleted and
+#DhBook::updated signals, to remove the #DhBook or to re-create it. And
+#DhBookListDirectory contains a #GFileMonitor on the
+#DhBookListDirectory:directory to add new #DhBook's when they are installed.
+But note that those #GFileMonitor's are not guaranteed to work perfectly,
+recreating the #DhBookListDirectory (or restarting the application) may be
+needed to see all the index files after filesystem changes in
+#DhBookListDirectory:directory.</doc>
+    </docsection>
+    <docsection name="dh-book-manager">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-book-manager.c"
+           line="13">#DhBookManager was a singleton class containing all the #DhBook's. It is now
+empty.
+
+&lt;warning&gt;
+This class is entirely deprecated, you need to use #DhProfile, #DhSettings
+and #DhBookList instead.
+&lt;/warning&gt;</doc>
+    </docsection>
+    <docsection name="dh-book-tree">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-book-tree.c"
+           line="17">#DhBookTree is a #GtkTreeView (showing a tree, not a list) containing the
+general tree structure of the #DhBook's contained in a #DhBookList (the
+#DhBookList part of the provided #DhProfile).
+
+#DhBookTree calls the dh_book_get_tree() function to get the tree structure
+of a #DhBook. As such the tree contains only #DhLink's of type
+%DH_LINK_TYPE_BOOK or %DH_LINK_TYPE_PAGE.
+
+When an element is selected, the #DhBookTree::link-selected signal is
+emitted. Only one element can be selected at a time.</doc>
+    </docsection>
+    <docsection name="dh-completion">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-completion.c"
+           line="9">#DhCompletion is a basic replacement for #GCompletion. #GCompletion (part of
+GLib) is deprecated.
+
+#GCompletion is implemented with a simple #GList, while #DhCompletion uses a
+(sorted) #GSequence instead (or a #GList of #DhCompletion objects with
+dh_completion_aggregate_complete()). So #DhCompletion should scale better
+with more data, and #DhCompletion should be more appropriate if the same data
+is used several times (on the other hand if the data is used only once,
+#GCompletion should be faster).
+
+#DhCompletion works only with UTF-8 strings, and copies the strings.
+
+#DhCompletion is add-only, strings cannot be removed. But with
+dh_completion_aggregate_complete(), a #DhCompletion object can be removed
+from the #GList.</doc>
+    </docsection>
+    <docsection name="dh-keyword-model">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-keyword-model.c"
+           line="17">#DhKeywordModel is a custom #GtkTreeModel implementation (as a list, not a
+tree) for searching #DhLink's.
+
+The dh_keyword_model_filter() function is used to set the search criteria. It
+fills the #GtkTreeModel with the list of #DhLink's that match the search
+criteria (up to a certain maximum number of matches).
+
+How the search works (for end users) is explained in the user documentation
+of the Devhelp application.
+
+# Filter by book and page
+
+As a kind of API for integrating Devhelp with other applications, the search
+string supports additional features. Those features are not intended to be
+used directly by end users when typing the search string in the GUI, because
+it's not really convenient. It is intended to be used with the
+`devhelp --search "search-string"` command line, so that another application
+can launch Devhelp and set a specific search string.
+
+It is possible to filter by book by prefixing the search string with
+“book:the-book-ID”. For example “book:gtk3”. If there are no other search
+terms, it shows the top-level page of that book. If there are other search
+terms, it limits the search to the specified book. See also the
+dh_book_get_id() function (in the `*.devhelp2` index file format it's called
+the book “name”, not ID, but ID is clearer).
+
+Similarly, it is possible to filter by page, by prefixing the search string
+with “page:the-page-ID”. For example “page:GtkWindow”. If there are no other
+search terms, the top of the page is shown and the search matches all the
+symbols part of that page. If there are other search terms, it limits the
+search to the specified page. To know what is the “page ID”, see the
+dh_link_belongs_to_page() function.
+
+“book:” and “page:” can be combined. Normal search terms must be
+&lt;emphasis&gt;after&lt;/emphasis&gt; “book:” and “page:”.
+
+The book and page IDs – even if they contain an uppercase letter – don't
+affect the case sensitivity for the other search terms.</doc>
+    </docsection>
+    <docsection name="dh-link">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-link.c"
+           line="13">A #DhLink represents a link to an HTML page or somewhere inside a page (with
+an anchor) that is inside a #DhBook. The link can point to a specific symbol,
+or a page, or the top-level page of the #DhBook.
+
+A #DhLink has a type that can be retrieved with dh_link_get_link_type().
+
+There is exactly one #DhLink of type %DH_LINK_TYPE_BOOK per #DhBook object.</doc>
+    </docsection>
+    <docsection name="dh-notebook">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-notebook.c"
+           line="9">#DhNotebook is a subclass of #GtkNotebook. The content of the tabs are
+#DhTab's, and the tab labels are #DhTabLabel's.
+
+#DhNotebook handles the #DhWebView::open-new-tab signal by appending a new
+#DhTab.</doc>
+    </docsection>
+    <docsection name="dh-profile">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-profile.c"
+           line="9">#DhProfile permits to configure other libdevhelp objects. For example
+#DhSidebar has the #DhSidebar:profile construct-only property. A #DhProfile
+contains a #DhSettings object and a #DhBookList object. As a convention for
+other libdevhelp classes that use #DhProfile, if the #DhProfile is not
+provided (i.e. it is set to %NULL), then the default profile is used, see
+dh_profile_get_default().
+
+There is the possibility to run in parallel multiple profiles in the same
+process, for example:
+- In an IDE for different projects or different programming languages.
+- In different #GtkWindow's of the API browser application.
+
+With #DhSettings it's possible to share some #GSettings keys between
+different profiles.
+
+A possible use-case is to have one "generic" profile, which corresponds to
+the default profile as returned by dh_profile_get_default(). And another
+profile tailored to a specific development platform (for example GNOME),
+providing additional features useful for that development platform (for
+example to download the latest API documentation, have a start page, etc).</doc>
+    </docsection>
+    <docsection name="dh-profile-builder">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-profile-builder.c"
+           line="8">#DhProfileBuilder permits to build #DhProfile objects.</doc>
+    </docsection>
+    <docsection name="dh-search-bar">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-search-bar.c"
+           line="9">#DhSearchBar is a subclass of #GtkSearchBar, meant to be shown above a
+#DhNotebook. There is only one #DhSearchBar for the whole #DhNotebook, it
+applies the same search text to all the #DhWebView's (lazily, when the tab is
+shown).
+
+(A different way to implement the search for the #DhWebView's would be to
+have a different #GtkSearchEntry for each #DhWebView, with the
+#GtkSearchEntry shown inside the #DhTab; in that case #DhSearchBar won't help
+you).</doc>
+    </docsection>
+    <docsection name="dh-settings">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-settings.c"
+           line="11">#DhSettings represents the libdevhelp settings. The libdevhelp provides a
+#GSettings schema, but for some settings the use of #GSettings is optional:
+it is instead possible to set the #DhSettings property and do not bind it to
+the #GSettings key, to force a certain value and to not provide a user
+configuration for it in the application.
+
+To have the documentation about the available #GSettings keys, their types,
+the default values, etc, read the `*.gschema.xml` file.
+
+Note that #DhSettings do not expose the #GSettings objects, you should use
+the #DhSettings wrapper API instead. So instead of using g_settings_bind(),
+you should use g_object_bind_property() with a #DhSettings property as the
+source. This has the small drawback that the writability of the #GSettings
+keys are not exposed, it is assumed that all keys are writable; if knowing
+the writability of the #GSettings keys is really wanted, the #DhSettings API
+can be changed to expose publicly the #GSettings objects (for that purpose
+only).
+
+# Different default value
+
+If you want to save a #DhSettings setting with #GSettings, but with a
+different default value than the one provided by the libdevhelp #GSettings
+schema, the recommended thing to do is to *not* call the bind function
+provided by #DhSettings for that property, provide your own #GSettings schema
+with the same key but with a different default value, and call yourself
+g_settings_bind().
+
+# GSettings keys without corresponding properties
+
+For the following #GSettings keys, the use of #GSettings is mandatory, there
+are no corresponding #DhSettings properties (and thus no bind function).
+
+- `"books-disabled"`: if the use of #GSettings is not wanted, a custom
+  #DhBookList can be created instead.</doc>
+    </docsection>
+    <docsection name="dh-settings-builder">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-settings-builder.c"
+           line="8">#DhSettingsBuilder permits to build #DhSettings objects.
+
+The #GSettings schemas provided by the libdevhelp are relocatable. So the
+paths need to be provided. If a path for a certain schema is not provided to
+the #DhSettingsBuilder with the set function, the default path for that
+schema will be used. The default paths are the paths common with the Devhelp
+application.
+
+Why are the schemas relocatable? Because different major versions of
+libdevhelp must be parallel-installable, so the schema IDs must necessarily
+be different (they must contain the API/major version), but for users to not
+lose all their settings when there is a new major version of libdevhelp, the
+schemas – if still compatible – can be relocated to an old common path
+(common to several major versions of libdevhelp or to an application). If a
+schema becomes incompatible, the compatible keys can be migrated individually
+with dconf (see the DhDconfMigration utility class in the libdevhelp source
+code).</doc>
+    </docsection>
+    <docsection name="dh-sidebar">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-sidebar.c"
+           line="16">In the Devhelp application, there is one #DhSidebar per main window,
+displayed in the left side panel.
+
+A #DhSidebar contains:
+- a #GtkSearchEntry at the top;
+- a #DhBookTree (a subclass of #GtkTreeView);
+- another #GtkTreeView (displaying a list, not a tree) with a #DhKeywordModel
+  as its model.
+
+When the #GtkSearchEntry is empty, the #DhBookTree is shown. When the
+#GtkSearchEntry is not empty, it shows the search results in the other
+#GtkTreeView. The two #GtkTreeView's cannot be both visible at the same time,
+it's either one or the other.
+
+#DhSidebar emits the #DhSidebar::link-selected signal. When that happens, the
+Devhelp application opens the #DhLink in a #WebKitWebView shown at the right
+side of the main window.</doc>
+    </docsection>
+    <docsection name="dh-tab">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-tab.c"
+           line="8">#DhTab is a subclass of #GtkGrid, it is meant to be the content of one tab in
+a #DhNotebook. It contains by default only one element: a #DhWebView. But
+applications can add more widgets to the #GtkGrid.</doc>
+    </docsection>
+    <docsection name="dh-tab-label">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-tab-label.c"
+           line="9">The #DhTabLabel widget is used for the tab labels in #DhNotebook.
+
+It contains the title as returned by dh_web_view_get_devhelp_title(), plus a
+close button.</doc>
+    </docsection>
+    <docsection name="dh-web-view">
+      <doc xml:space="preserve"
+           filename="../devhelp/dh-web-view.c"
+           line="12">#DhWebView is a subclass of #WebKitWebView, to have a higher-level API for
+some features, and with some customizations for the libdevhelp use-case.
+
+Features:
+- Ctrl+scroll to zoom in/zoom out.
+- Sending the #DhWebView::open-new-tab signal on middle click or Ctrl+click
+  on a link (#DhNotebook handles that signal).
+- Calls gtk_show_uri_on_window() when opening a non-local link (for example a
+  `http://` URL).
+
+The #DhProfile is used for:
+- Applying the #DhSettings fonts.
+- When trying to load a remote URL from developer.gnome.org, find in the
+  #DhBookList if there is an equivalent local link to load it instead of
+  opening the URL with gtk_show_uri_on_window().</doc>
+    </docsection>
     <function name="finalize" c:identifier="dh_finalize" version="3.26">
       <doc xml:space="preserve"
            filename="../devhelp/dh-init.c"

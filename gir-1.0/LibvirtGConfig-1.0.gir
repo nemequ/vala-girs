@@ -15717,5 +15717,72 @@ will be mapped into the local filesystem namespace.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="libvirt-gconfig-domain-controller-usb">
+      <doc xml:space="preserve"
+           filename="libvirt-gconfig-domain-controller-usb.c"
+           line="28">A #GVirConfigDomainControllerUsb represents an USB controller device.
+A #GVirConfigDomain with #GVirConfigDomainControllerUsb devices will
+be able to use USB devices.
+
+Several USB controllers can be added to the same domain, for example
+to have an USB1 and an USB2 controller.
+
+When using SPICE (see #GVirConfigGraphicsSpice), USB devices plugged
+on the client can be forwarded to the guest through the use of
+#GVirConfigDomainRedirDev.
+
+&lt;example&gt;
+&lt;title&gt;Adding USB controllers to a standard x86 domain&lt;/title&gt;
+&lt;para&gt;
+This example shows the recommended USB setup to get a virtual machine
+looking like your usual x86 desktop or laptop.
+&lt;/para&gt;
+&lt;programlisting&gt;
+static GVirConfigDomainControllerUsb *
+create_usb_controller(GVirConfigDomainControllerUsbModel model, guint index,
+                      GVirConfigDomainControllerUsb *master, guint start_port)
+{
+    GVirConfigDomainControllerUsb *controller;
+
+    controller = gvir_config_domain_controller_usb_new();
+    gvir_config_domain_controller_usb_set_model(controller, model);
+    gvir_config_domain_controller_set_index(GVIR_CONFIG_DOMAIN_CONTROLLER(controller), index);
+    if (master)
+        gvir_config_domain_controller_usb_set_master(controller, master, start_port);
+
+    return controller;
+}
+
+void setup_default_usb_controllers(GVirConfigDomain *domain)
+{
+     GVirConfigDomainControllerUsb *ehci;
+     GVirConfigDomainControllerUsb *uhci1;
+     GVirConfigDomainControllerUsb *uhci2;
+     GVirConfigDomainControllerUsb *uhci3;
+
+     ehci = create_usb_controller(GVIR_CONFIG_DOMAIN_CONTROLLER_USB_MODEL_ICH9_EHCI1,
+                                  0, NULL, 0);
+     gvir_config_domain_add_device(domain, GVIR_CONFIG_DOMAIN_DEVICE(ehci));
+     uhci1 = create_usb_controller(GVIR_CONFIG_DOMAIN_CONTROLLER_USB_MODEL_ICH9_UHCI1,
+                                   0, ehci, 0);
+     gvir_config_domain_add_device(domain, GVIR_CONFIG_DOMAIN_DEVICE(uhci1));
+     g_object_unref(G_OBJECT(uhci1));
+     uhci2 = create_usb_controller(GVIR_CONFIG_DOMAIN_CONTROLLER_USB_MODEL_ICH9_UHCI2,
+                                   0, ehci, 2);
+     gvir_config_domain_add_device(domain, GVIR_CONFIG_DOMAIN_DEVICE(uhci2));
+     g_object_unref(G_OBJECT(uhci2));
+     uhci3 = create_usb_controller(GVIR_CONFIG_DOMAIN_CONTROLLER_USB_MODEL_ICH9_UHCI3,
+                                   0, ehci, 4);
+     gvir_config_domain_add_device(domain, GVIR_CONFIG_DOMAIN_DEVICE(uhci3));
+     g_object_unref(G_OBJECT(uhci3));
+     g_object_unref(G_OBJECT(ehci));
+}
+&lt;/programlisting&gt;
+&lt;/example&gt;
+
+This class models libvirt XML nodes located at
+&lt;ulink url="http://libvirt.org/formatdomain.html#elementsControllers"&gt;
+/domain/devices/controller[@type="usb"]&lt;/ulink&gt;</doc>
+    </docsection>
   </namespace>
 </repository>

@@ -4619,6 +4619,155 @@ could also create its pipeline in the handler for that.</doc>
             disguised="1">
       <source-position filename="clutter-gst-video-sink.h" line="68"/>
     </record>
+    <docsection name="clutter-gst-aspectratio">
+      <doc xml:space="preserve"
+           filename="clutter-gst-aspectratio.c"
+           line="30">#ClutterGstContent implements the #ClutterContent interface.</doc>
+    </docsection>
+    <docsection name="clutter-gst-camera">
+      <doc xml:space="preserve"
+           filename="clutter-gst-camera.c"
+           line="29">#ClutterGstCamera implements the #ClutterGstPlayer interface and
+plays camera streams.</doc>
+    </docsection>
+    <docsection name="clutter-gst-camera-device">
+      <doc xml:space="preserve"
+           filename="clutter-gst-camera-device.c"
+           line="28">#ClutterGstCameraDevice is a #GObject representing a camera device using GStreamer.</doc>
+    </docsection>
+    <docsection name="clutter-gst-camera-manager">
+      <doc xml:space="preserve"
+           filename="clutter-gst-camera-manager.c"
+           line="28">#ClutterGstCameraManager lists available cameras.</doc>
+    </docsection>
+    <docsection name="clutter-gst-content">
+      <doc xml:space="preserve"
+           filename="clutter-gst-content.c"
+           line="28">#ClutterGstContent implements the #ClutterContent interface.</doc>
+    </docsection>
+    <docsection name="clutter-gst-crop">
+      <doc xml:space="preserve"
+           filename="clutter-gst-crop.c"
+           line="29">#ClutterGstCrop sub-classes #ClutterGstContent.</doc>
+    </docsection>
+    <docsection name="clutter-gst-playback">
+      <doc xml:space="preserve"
+           filename="clutter-gst-playback.c"
+           line="34">#ClutterGstPlayback implements #ClutterGstPlayer.</doc>
+    </docsection>
+    <docsection name="clutter-gst-player">
+      <doc xml:space="preserve"
+           filename="clutter-gst-player.c"
+           line="34">#ClutterGstPlayer is an interface for controlling playback of media
+ sources.</doc>
+    </docsection>
+    <docsection name="clutter-gst-util">
+      <doc xml:space="preserve"
+           filename="clutter-gst-util.c"
+           line="30">The &lt;application&gt;Clutter-Gst&lt;/application&gt; library should be initialized
+with clutter_gst_init() before it can be used. You should pass pointers to
+the main argc and argv variables so that GStreamer, Clutter and Clutter-Gst
+gst can process their own command line options, as shown in the following
+example:
+
+&lt;example&gt;
+&lt;title&gt;Initializing the Clutter-Gst library&lt;/title&gt;
+&lt;programlisting language="c"&gt;
+int
+main (int argc, char *argv[])
+{
+  // initialize the Clutter-Gst library
+  clutter_gst_init (&amp;amp;argc, &amp;amp;argv);
+  ...
+}
+&lt;/programlisting&gt;
+&lt;/example&gt;
+
+It's allowed to pass two NULL pointers to clutter_gst_init() in case you
+don't want to pass the command line arguments to GStreamer, Clutter and
+Clutter-Gst.
+
+You can also use a #GOptionEntry array to initialize your own parameters
+as shown in the next code fragment:
+
+&lt;example&gt;
+&lt;title&gt;Initializing the Clutter-Gst library with additional options&lt;/title&gt;
+&lt;programlisting language="c"&gt;
+static GOptionEntry options[] =
+{
+  { "framerate", 'f', 0, G_OPTION_ARG_INT, &amp;opt_framerate,
+    "Number of frames per second", NULL },
+  { "fourcc", 'o', 0, G_OPTION_ARG_STRING,
+     &amp;opt_fourcc, "Fourcc of the wanted YUV format", NULL },
+  { NULL }
+};
+
+int
+main (int argc, char *argv[])
+{
+   GError           *error = NULL;
+   gboolean          result;
+
+   if (!g_thread_supported ())
+     g_thread_init (NULL);
+
+   result = clutter_gst_init_with_args (&amp;argc, &amp;argv,
+                                        " - Test YUV frames uploading",
+                                        options, NULL, &amp;error);
+
+   if (error)
+     {
+       g_print ("%s\n", error-&gt;message);
+       g_error_free (error);
+       return EXIT_FAILURE;
+     }
+  ...
+}
+&lt;/programlisting&gt;
+&lt;/example&gt;</doc>
+    </docsection>
+    <docsection name="clutter-gst-version">
+      <doc xml:space="preserve"
+           filename="clutter-gst-version.h"
+           line="33">Version checking macros.</doc>
+    </docsection>
+    <docsection name="clutter-gst-video-sink">
+      <doc xml:space="preserve"
+           filename="clutter-gst-video-sink.c"
+           line="36">#ClutterGstVideoSink is a subclass of #GstBaseSink which can be used to
+create a #CoglPipeline for rendering the frames of the video.
+
+To create a basic video player, an application can create a
+#GstPipeline as normal using gst_pipeline_new() and set the
+sink on it to one created with clutter_gst_video_sink_new(). The
+application can then listen for the #ClutterGstVideoSink::new-frame
+signal which will be emitted whenever there are new textures ready
+for rendering. For simple rendering, the application can just call
+clutter_gst_video_sink_get_pipeline() in the signal handler and use
+the returned pipeline to paint the new frame.
+
+An application is also free to do more advanced rendering by
+customizing the pipeline. In that case it should listen for the
+#ClutterGstVideoSink::pipeline-ready signal which will be emitted as
+soon as the sink has determined enough information about the video
+to know how it should be rendered. In the handler for this signal,
+the application can either make modifications to a copy of the
+pipeline returned by clutter_gst_video_sink_get_pipeline() or it can
+create its own pipeline from scratch and ask the sink to configure
+it with clutter_gst_video_sink_setup_pipeline(). If a custom pipeline
+is created using one of these methods then the application should
+call clutter_gst_video_sink_attach_frame() on the pipeline before
+rendering in order to update the textures on the pipeline's layers.
+
+If the %COGL_FEATURE_ID_GLSL feature is available then the pipeline
+used by the sink will have a shader snippet with a function in it
+called clutter_gst_sample_video0 which takes a single vec2 argument.
+This can be used by custom snippets set the by the application to
+sample from the video. The vec2 argument represents the normalised
+coordinates within the video. The function returns a vec4
+containing a pre-multiplied RGBA color of the pixel within the
+video.</doc>
+    </docsection>
     <function name="create_video_sink"
               c:identifier="clutter_gst_create_video_sink"
               version="3.0">

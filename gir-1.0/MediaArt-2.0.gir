@@ -957,6 +957,37 @@ returned if @error is set.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="cache">
+      <doc xml:space="preserve"
+           filename="cache.c"
+           line="31">These functions give you access to the media art that has been
+extracted and saved. There are normally two places the media art
+will be located in. These locations store symlinks not real copies
+of the content:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;
+    &lt;para&gt;The user's XDG_CACHE_HOME directory (usually
+&lt;filename&gt;~/.cache/media-art/&lt;/filename&gt;)&lt;/para&gt;
+  &lt;/listitem&gt;
+  &lt;listitem&gt;
+    &lt;para&gt;The local file system's top level
+&lt;filename&gt;.mediaartlocal&lt;/filename&gt; directory (for example
+&lt;filename&gt;/media/martyn/pendrive/.mediaartlocal/&lt;/filename&gt;)&lt;/para&gt;
+  &lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+To find the media art for a given media file, use the function
+media_art_get_file() (you can also use media_art_get_path(), which
+does the same thing but for path strings instead of #GFile
+objects).
+
+If media art for the file is not found in the cache, these
+functions will return %NULL. You may find some embedded media art
+upon loading the file, and you can use media_art_process_buffer()
+to convert it to the correct format and save it in the cache for
+next time. The media_art_process_file() function also supports
+searching for external media art images using a basic heuristic.</doc>
+    </docsection>
     <function name="error_quark"
               c:identifier="media_art_error_quark"
               version="0.2.0">
@@ -968,6 +999,34 @@ GError structures.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
+    <docsection name="extract">
+      <doc xml:space="preserve"
+           filename="extract.c"
+           line="35">The libmediaart library supports taking image data that you have extracted
+from a media file and saving it into the media art cache, so that future
+applications can display the media art without having to extract the image
+again. This is done using the media_art_process_file() or
+media_art_process_buffer() functions.
+
+Extracting new media art from a file needs to be done by your application.
+Usually, when an application loads a media file any embedded images will be
+made available as a side effect. For example, if you are using GStreamer any
+images will be returned through the #GstTagList interface as %GST_TAG_IMAGE
+tags.
+
+The media art cache requires that all images are saved as 'application/jpeg'
+files. Embedded images can be in several formats, and
+media_art_process_file() and media_art_process_buffer() functions will
+convert the supplied image data into the correct format if
+necessary. There are multiple backends that can be used for this,
+and you can choose which is used at build time using the library's
+'configure' script.
+
+If there is no embedded media art in a file,
+media_art_process_file() and media_art_process_buffer() functions will
+look in the directory that contains the media file for likely media
+art using a simple heuristic.</doc>
+    </docsection>
     <function name="file_to_jpeg"
               c:identifier="media_art_file_to_jpeg"
               version="0.1.0"
@@ -1168,6 +1227,14 @@ media_art_plugin_init() is called after the plugin is loaded.</doc>
         <type name="none" c:type="void"/>
       </return-value>
     </function>
+    <docsection name="plugins">
+      <doc xml:space="preserve"
+           filename="extractdummy.c"
+           line="27">Plugins are provided to allow different systems to make use of
+existing file format conversion APIs. By default, a GdkPixbuf and
+Qt implementation are provided. This API allows new implementations
+to be provided.</doc>
+    </docsection>
     <function name="remove"
               c:identifier="media_art_remove"
               version="0.2.0"

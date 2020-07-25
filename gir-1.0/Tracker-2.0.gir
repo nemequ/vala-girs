@@ -1160,6 +1160,85 @@ version @required_major.required_minor.@required_micro
         </parameter>
       </parameters>
     </function>
+    <docsection name="tracker-namespace-manager">
+      <doc xml:space="preserve" filename="../src/libtracker-sparql/tracker-namespace-manager.c" line="44">&lt;para&gt;
+#TrackerNamespaceManager keeps track of namespaces. It allows you to assign
+short prefixes for them to avoid typing full URLs all the time.
+
+The syntax used is that of Compact URIs (CURIEs) as defined here:
+(https://www.w3.org/TR/2010/NOTE-curie-20101216)
+
+Usually you will want to use the default namespace manager, as returned by
+tracker_namespace_manager_get_default(). This has a set of well-known
+prefixes predefined.
+&lt;/para&gt;</doc>
+    </docsection>
+    <docsection name="tracker-notifier">
+      <doc xml:space="preserve" filename="../src/libtracker-sparql/tracker-notifier.c" line="20">#TrackerNotifier is an object that receives notifications about
+changes to the Tracker database. A #TrackerNotifier is created
+through tracker_notifier_new(), passing the RDF types that are
+relevant to the caller, and possible different #TrackerNotifierFlags
+to change #TrackerNotifier behavior. After the notifier is created,
+events can be listened for by connecting to the #TrackerNotifier::events
+signal. This object was added in Tracker 1.12.
+
+#TrackerNotifier by default coalesces events so the user is only
+notified of changes after all metadata is extracted and inserted
+in the database, so the user is guaranteed that all relevant data
+will be available at the time of notification. If this is not desired,
+or when dealing with data not dealt with by tracker-extract, the
+%TRACKER_NOTIFIER_FLAG_NOTIFY_UNEXTRACTED flag can be passed.
+
+If the %TRACKER_NOTIFIER_FLAG_NOTIFY_UNEXTRACTED flag is passed,
+created/updated elements may be notified in two steps, first a
+CREATED/UPDATED event will be emitted, and then a second UPDATED
+event might appear after further metadata is extracted.
+
+#TrackerNotifier is tracker:id centric, the ID can be
+obtained from every event through tracker_notifier_event_get_id().
+The expected way to retrieving metadata is a query of the form:
+|[&lt;!-- language="SPARQL" --&gt;
+SELECT ?urn …
+WHERE {
+  ?urn a rdfs:Resource .
+  …
+  FILTER (tracker:id(?urn) = …)
+}
+]|
+
+If the flags %TRACKER_NOTIFIER_FLAG_QUERY_URN or
+%TRACKER_NOTIFIER_FLAG_QUERY_LOCATION are passed, the extra metadata
+will be available through tracker_notifier_event_get_urn() and/or
+tracker_notifier_event_get_location(). Note that this metadata can't
+be obtained for every element and situation, most notably during
+%TRACKER_NOTIFIER_EVENT_DELETE events.
+
+# Known caveats # {#trackernotifier-caveats}
+
+* If a resource is deleted, the %TRACKER_NOTIFIER_EVENT_DELETE event
+  emitted will have a %NULL location, even if the notifier was created
+  with the %TRACKER_NOTIFIER_FLAG_QUERY_LOCATION flag enabled. At the
+  time of notifying, the resource does not exist anymore, so no
+  meatadata can be retrieved.
+* Notifications of files being moved across indexed folders will
+  appear as %TRACKER_NOTIFIER_EVENT_UPDATE events, containing
+  the new location (if requested). The older location is no longer
+  known to Tracker, this may make tracking of elements in specific
+  folders hard using solely the #TrackerNotifier/Tracker data
+  available at event notification time.
+
+The recommendation to fix those is making the caller aware
+of tracker:ids, querying those in the application SPARQL
+queries so the client can search the formerly queried data for
+matching IDs when #TrackerNotifier events happen. URNs are just
+as effective as a matching mechanism, but more costly.</doc>
+    </docsection>
+    <docsection name="tracker-resource">
+      <doc xml:space="preserve" filename="../src/libtracker-sparql/tracker-resource.c" line="43">&lt;para&gt;
+#TrackerResource keeps track of a set of properties for a given resource.
+The resulting data can be serialized in several ways.
+&lt;/para&gt;</doc>
+    </docsection>
   <enumeration name="SparqlConnectionFlags" c:type="TrackerSparqlConnectionFlags" glib:type-name="TrackerSparqlConnectionFlags" glib:get-type="tracker_sparql_connection_flags_get_type">
 		<member name="none" c:identifier="TRACKER_SPARQL_CONNECTION_FLAGS_NONE" value="0" />
 		<member name="readonly" c:identifier="TRACKER_SPARQL_CONNECTION_FLAGS_READONLY" value="(null)" />
@@ -1184,7 +1263,7 @@ version @required_major.required_minor.@required_micro
 		<member name="internal" c:identifier="TRACKER_SPARQL_ERROR_INTERNAL" value="6" />
 		<member name="unsupported" c:identifier="TRACKER_SPARQL_ERROR_UNSUPPORTED" value="7" />
 	</enumeration>
-	<class name="SparqlBuilder" c:type="TrackerSparqlBuilder" glib:type-name="TrackerSparqlBuilder" glib:get-type="tracker_sparql_builder_get_type" glib:type-struct="SparqlBuilderClass" parent="GObject.Object">
+	<class name="SparqlBuilder" c:type="TrackerSparqlBuilder" c:symbol-prefix="builder" glib:type-name="TrackerSparqlBuilder" glib:get-type="tracker_sparql_builder_get_type" glib:type-struct="SparqlBuilderClass" parent="GObject.Object">
 		<field name="parent_instance" readable="0" private="1">
 			<type name="GObject.Object" c:type="GObject" />
 		</field>
@@ -1203,7 +1282,7 @@ version @required_major.required_minor.@required_micro
 		</constructor>
 		<method name="insert_open" c:identifier="tracker_sparql_builder_insert_open" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="graph" transfer-ownership="none" allow-none="1">
@@ -1213,7 +1292,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="insert_silent_open" c:identifier="tracker_sparql_builder_insert_silent_open" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="graph" transfer-ownership="none" allow-none="1">
@@ -1223,12 +1302,12 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="insert_close" c:identifier="tracker_sparql_builder_insert_close" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 		</method>
 		<method name="delete_open" c:identifier="tracker_sparql_builder_delete_open" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="graph" transfer-ownership="none" allow-none="1">
@@ -1238,12 +1317,12 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="delete_close" c:identifier="tracker_sparql_builder_delete_close" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 		</method>
 		<method name="graph_open" c:identifier="tracker_sparql_builder_graph_open" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="graph" transfer-ownership="none">
@@ -1253,22 +1332,22 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="graph_close" c:identifier="tracker_sparql_builder_graph_close" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 		</method>
 		<method name="where_open" c:identifier="tracker_sparql_builder_where_open" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 		</method>
 		<method name="where_close" c:identifier="tracker_sparql_builder_where_close" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 		</method>
 		<method name="subject_variable" c:identifier="tracker_sparql_builder_subject_variable" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="var_name" transfer-ownership="none">
@@ -1278,7 +1357,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="object_variable" c:identifier="tracker_sparql_builder_object_variable" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="var_name" transfer-ownership="none">
@@ -1288,7 +1367,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="subject_iri" c:identifier="tracker_sparql_builder_subject_iri" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="iri" transfer-ownership="none">
@@ -1298,7 +1377,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="subject" c:identifier="tracker_sparql_builder_subject" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="s" transfer-ownership="none">
@@ -1308,7 +1387,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="predicate_iri" c:identifier="tracker_sparql_builder_predicate_iri" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="iri" transfer-ownership="none">
@@ -1318,7 +1397,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="predicate" c:identifier="tracker_sparql_builder_predicate" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="s" transfer-ownership="none">
@@ -1328,7 +1407,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="object_iri" c:identifier="tracker_sparql_builder_object_iri" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="iri" transfer-ownership="none">
@@ -1338,7 +1417,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="object" c:identifier="tracker_sparql_builder_object" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="s" transfer-ownership="none">
@@ -1348,7 +1427,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="object_string" c:identifier="tracker_sparql_builder_object_string" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="literal" transfer-ownership="none">
@@ -1358,7 +1437,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="object_unvalidated" c:identifier="tracker_sparql_builder_object_unvalidated" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="value" transfer-ownership="none">
@@ -1368,7 +1447,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="object_boolean" c:identifier="tracker_sparql_builder_object_boolean" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="literal" transfer-ownership="none">
@@ -1378,7 +1457,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="object_int64" c:identifier="tracker_sparql_builder_object_int64" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="literal" transfer-ownership="none">
@@ -1388,7 +1467,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="object_date" c:identifier="tracker_sparql_builder_object_date" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="literal" direction="inout" transfer-ownership="full">
@@ -1398,7 +1477,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="object_double" c:identifier="tracker_sparql_builder_object_double" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="literal" transfer-ownership="none">
@@ -1408,17 +1487,17 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="object_blank_open" c:identifier="tracker_sparql_builder_object_blank_open" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 		</method>
 		<method name="object_blank_close" c:identifier="tracker_sparql_builder_object_blank_close" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 		</method>
 		<method name="prepend" c:identifier="tracker_sparql_builder_prepend" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="raw" transfer-ownership="none">
@@ -1428,7 +1507,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="append" c:identifier="tracker_sparql_builder_append" deprecated="1" deprecated-version="2.0">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="raw" transfer-ownership="none">
@@ -1484,7 +1563,7 @@ version @required_major.required_minor.@required_micro
 		<member name="embedded_insert" c:identifier="TRACKER_SPARQL_BUILDER_STATE_EMBEDDED_INSERT" value="8" />
 		<member name="graph" c:identifier="TRACKER_SPARQL_BUILDER_STATE_GRAPH" value="9" />
 	</enumeration>
-	<class name="SparqlConnection" c:type="TrackerSparqlConnection" glib:type-name="TrackerSparqlConnection" glib:get-type="tracker_sparql_connection_get_type" glib:type-struct="SparqlConnectionClass" parent="GObject.Object" abstract="1">
+	<class name="SparqlConnection" c:type="TrackerSparqlConnection" c:symbol-prefix="connection" glib:type-name="TrackerSparqlConnection" glib:get-type="tracker_sparql_connection_get_type" glib:type-struct="SparqlConnectionClass" parent="GObject.Object" abstract="1">
 		<field name="parent_instance" readable="0" private="1">
 			<type name="GObject.Object" c:type="GObject" />
 		</field>
@@ -1493,7 +1572,7 @@ version @required_major.required_minor.@required_micro
 		</field>
 		<function name="get_async" c:identifier="tracker_sparql_connection_get_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
@@ -1561,7 +1640,7 @@ version @required_major.required_minor.@required_micro
 		</function>
 		<function name="local_new_async" c:identifier="tracker_sparql_connection_local_new_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="flags" transfer-ownership="none">
@@ -1625,7 +1704,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="query_async" c:identifier="tracker_sparql_connection_query_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="sparql" transfer-ownership="none">
@@ -1654,7 +1733,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="query_async" invoker="query_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="sparql" transfer-ownership="none">
@@ -1683,7 +1762,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="update" c:identifier="tracker_sparql_connection_update" throws="1">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="sparql" transfer-ownership="none">
@@ -1699,7 +1778,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="update" invoker="update" throws="1">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="sparql" transfer-ownership="none">
@@ -1715,7 +1794,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="update_async" c:identifier="tracker_sparql_connection_update_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="sparql" transfer-ownership="none">
@@ -1737,7 +1816,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="update_finish" c:identifier="tracker_sparql_connection_update_finish" throws="1">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="_res_" transfer-ownership="none">
@@ -1747,7 +1826,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="update_async" invoker="update_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="sparql" transfer-ownership="none">
@@ -1769,7 +1848,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<virtual-method name="update_finish" invoker="update_finish" throws="1">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="_res_" transfer-ownership="none">
@@ -1779,7 +1858,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="update_array_async" c:identifier="tracker_sparql_connection_update_array_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="sparql" transfer-ownership="none">
@@ -1818,7 +1897,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="update_array_async" invoker="update_array_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="sparql" transfer-ownership="none">
@@ -1889,7 +1968,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="update_blank_async" c:identifier="tracker_sparql_connection_update_blank_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="sparql" transfer-ownership="none">
@@ -1921,7 +2000,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="update_blank_async" invoker="update_blank_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="sparql" transfer-ownership="none">
@@ -1953,7 +2032,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="load" c:identifier="tracker_sparql_connection_load" throws="1">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="file" transfer-ownership="none">
@@ -1966,7 +2045,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="load" invoker="load" throws="1">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="file" transfer-ownership="none">
@@ -1979,7 +2058,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="load_async" c:identifier="tracker_sparql_connection_load_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="file" transfer-ownership="none">
@@ -1998,7 +2077,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="load_finish" c:identifier="tracker_sparql_connection_load_finish" throws="1">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="_res_" transfer-ownership="none">
@@ -2008,7 +2087,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="load_async" invoker="load_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="file" transfer-ownership="none">
@@ -2027,7 +2106,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<virtual-method name="load_finish" invoker="load_finish" throws="1">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="_res_" transfer-ownership="none">
@@ -2057,7 +2136,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="statistics_async" c:identifier="tracker_sparql_connection_statistics_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
@@ -2083,7 +2162,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="statistics_async" invoker="statistics_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
@@ -2119,7 +2198,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<function name="set_domain" c:identifier="tracker_sparql_connection_set_domain">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="domain" transfer-ownership="none" allow-none="1">
@@ -2134,7 +2213,7 @@ version @required_major.required_minor.@required_micro
 		</function>
 		<function name="set_dbus_connection" c:identifier="tracker_sparql_connection_set_dbus_connection">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="dbus_connection" transfer-ownership="none">
@@ -2199,7 +2278,7 @@ version @required_major.required_minor.@required_micro
 		<field name="query_async">
 			<callback name="query_async" c:type="query_async">
 				<return-value transfer-ownership="none">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -2238,7 +2317,7 @@ version @required_major.required_minor.@required_micro
 		<field name="update">
 			<callback name="update" c:type="update" throws="1">
 				<return-value transfer-ownership="full">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -2259,7 +2338,7 @@ version @required_major.required_minor.@required_micro
 		<field name="update_async">
 			<callback name="update_async" c:type="update_async">
 				<return-value transfer-ownership="none">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -2286,7 +2365,7 @@ version @required_major.required_minor.@required_micro
 		<field name="update_finish">
 			<callback name="update_finish" c:type="update_finish" throws="1">
 				<return-value transfer-ownership="full">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -2301,7 +2380,7 @@ version @required_major.required_minor.@required_micro
 		<field name="update_array_async">
 			<callback name="update_array_async" c:type="update_array_async">
 				<return-value transfer-ownership="none">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -2371,7 +2450,7 @@ version @required_major.required_minor.@required_micro
 		<field name="update_blank_async">
 			<callback name="update_blank_async" c:type="update_blank_async">
 				<return-value transfer-ownership="none">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -2413,7 +2492,7 @@ version @required_major.required_minor.@required_micro
 		<field name="load">
 			<callback name="load" c:type="load" throws="1">
 				<return-value transfer-ownership="full">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -2431,7 +2510,7 @@ version @required_major.required_minor.@required_micro
 		<field name="load_async">
 			<callback name="load_async" c:type="load_async">
 				<return-value transfer-ownership="none">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -2455,7 +2534,7 @@ version @required_major.required_minor.@required_micro
 		<field name="load_finish">
 			<callback name="load_finish" c:type="load_finish" throws="1">
 				<return-value transfer-ownership="full">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -2485,7 +2564,7 @@ version @required_major.required_minor.@required_micro
 		<field name="statistics_async">
 			<callback name="statistics_async" c:type="statistics_async">
 				<return-value transfer-ownership="none">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -2550,7 +2629,7 @@ version @required_major.required_minor.@required_micro
 		</field>
 	</record>
 	<record name="SparqlConnectionPrivate" c:type="TrackerSparqlConnectionPrivate" disguised="1" />
-	<class name="SparqlCursor" c:type="TrackerSparqlCursor" glib:type-name="TrackerSparqlCursor" glib:get-type="tracker_sparql_cursor_get_type" glib:type-struct="SparqlCursorClass" parent="GObject.Object" abstract="1">
+	<class name="SparqlCursor" c:type="TrackerSparqlCursor" c:symbol-prefix="cursor" glib:type-name="TrackerSparqlCursor" glib:get-type="tracker_sparql_cursor_get_type" glib:type-struct="SparqlCursorClass" parent="GObject.Object" abstract="1">
 		<field name="parent_instance" readable="0" private="1">
 			<type name="GObject.Object" c:type="GObject" />
 		</field>
@@ -2645,7 +2724,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="next_async" c:identifier="tracker_sparql_cursor_next_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
@@ -2671,7 +2750,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="next_async" invoker="next_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
@@ -2697,22 +2776,22 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="rewind" c:identifier="tracker_sparql_cursor_rewind">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 		</method>
 		<virtual-method name="rewind" invoker="rewind">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 		</virtual-method>
 		<method name="close" c:identifier="tracker_sparql_cursor_close">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 		</method>
 		<virtual-method name="close" invoker="close">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 		</virtual-method>
 		<method name="get_integer" c:identifier="tracker_sparql_cursor_get_integer">
@@ -2805,7 +2884,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="set_connection" c:identifier="tracker_sparql_cursor_set_connection">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="value" transfer-ownership="none">
@@ -2897,7 +2976,7 @@ version @required_major.required_minor.@required_micro
 		<field name="next_async">
 			<callback name="next_async" c:type="next_async">
 				<return-value transfer-ownership="none">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -2933,7 +3012,7 @@ version @required_major.required_minor.@required_micro
 		<field name="rewind">
 			<callback name="rewind" c:type="rewind">
 				<return-value transfer-ownership="full">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -2945,7 +3024,7 @@ version @required_major.required_minor.@required_micro
 		<field name="close">
 			<callback name="close" c:type="close">
 				<return-value transfer-ownership="full">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -3016,7 +3095,7 @@ version @required_major.required_minor.@required_micro
 		</field>
 	</record>
 	<record name="SparqlCursorPrivate" c:type="TrackerSparqlCursorPrivate" disguised="1" />
-	<class name="SparqlStatement" c:type="TrackerSparqlStatement" glib:type-name="TrackerSparqlStatement" glib:get-type="tracker_sparql_statement_get_type" glib:type-struct="SparqlStatementClass" parent="GObject.Object" abstract="1">
+	<class name="SparqlStatement" c:type="TrackerSparqlStatement" c:symbol-prefix="statement" glib:type-name="TrackerSparqlStatement" glib:get-type="tracker_sparql_statement_get_type" glib:type-struct="SparqlStatementClass" parent="GObject.Object" abstract="1">
 		<field name="parent_instance" readable="0" private="1">
 			<type name="GObject.Object" c:type="GObject" />
 		</field>
@@ -3025,7 +3104,7 @@ version @required_major.required_minor.@required_micro
 		</field>
 		<method name="bind_int" c:identifier="tracker_sparql_statement_bind_int">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="name" transfer-ownership="none">
@@ -3038,7 +3117,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="bind_int" invoker="bind_int">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="name" transfer-ownership="none">
@@ -3051,7 +3130,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="bind_boolean" c:identifier="tracker_sparql_statement_bind_boolean">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="name" transfer-ownership="none">
@@ -3064,7 +3143,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="bind_boolean" invoker="bind_boolean">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="name" transfer-ownership="none">
@@ -3077,7 +3156,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="bind_string" c:identifier="tracker_sparql_statement_bind_string">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="name" transfer-ownership="none">
@@ -3090,7 +3169,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="bind_string" invoker="bind_string">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="name" transfer-ownership="none">
@@ -3103,7 +3182,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="bind_double" c:identifier="tracker_sparql_statement_bind_double">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="name" transfer-ownership="none">
@@ -3116,7 +3195,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="bind_double" invoker="bind_double">
 			<return-value transfer-ownership="full">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="name" transfer-ownership="none">
@@ -3149,7 +3228,7 @@ version @required_major.required_minor.@required_micro
 		</virtual-method>
 		<method name="execute_async" c:identifier="tracker_sparql_statement_execute_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
@@ -3175,7 +3254,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<virtual-method name="execute_async" invoker="execute_async">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="cancellable" transfer-ownership="none" allow-none="1">
@@ -3209,7 +3288,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="set_sparql" c:identifier="tracker_sparql_statement_set_sparql">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="value" transfer-ownership="none">
@@ -3227,7 +3306,7 @@ version @required_major.required_minor.@required_micro
 		</method>
 		<method name="set_connection" c:identifier="tracker_sparql_statement_set_connection">
 			<return-value transfer-ownership="none">
-				<type name="none" />
+				<type name="none" c:type="void" />
 			</return-value>
 			<parameters>
 				<parameter name="value" transfer-ownership="none">
@@ -3243,7 +3322,7 @@ version @required_major.required_minor.@required_micro
 		<field name="bind_int">
 			<callback name="bind_int" c:type="bind_int">
 				<return-value transfer-ownership="full">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -3261,7 +3340,7 @@ version @required_major.required_minor.@required_micro
 		<field name="bind_boolean">
 			<callback name="bind_boolean" c:type="bind_boolean">
 				<return-value transfer-ownership="full">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -3279,7 +3358,7 @@ version @required_major.required_minor.@required_micro
 		<field name="bind_string">
 			<callback name="bind_string" c:type="bind_string">
 				<return-value transfer-ownership="full">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -3297,7 +3376,7 @@ version @required_major.required_minor.@required_micro
 		<field name="bind_double">
 			<callback name="bind_double" c:type="bind_double">
 				<return-value transfer-ownership="full">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">
@@ -3330,7 +3409,7 @@ version @required_major.required_minor.@required_micro
 		<field name="execute_async">
 			<callback name="execute_async" c:type="execute_async">
 				<return-value transfer-ownership="none">
-					<type name="none" />
+					<type name="none" c:type="void" />
 				</return-value>
 				<parameters>
 					<parameter name="self" transfer-ownership="none">

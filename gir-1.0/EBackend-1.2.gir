@@ -11947,6 +11947,143 @@ or e_cache_offline_change_copy().</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="e-backend">
+      <doc xml:space="preserve"
+           filename="e-backend.c"
+           line="18">An #EBackend is paired with an #ESource to facilitate performing
+actions on the local or remote resource described by the #ESource.
+
+In other words, whereas a certain backend type knows how to talk to a
+certain type of server or data store, the #ESource fills in configuration
+details such as host name, user name, resource path, etc.
+
+All #EBackend instances are created by an #EBackendFactory.</doc>
+    </docsection>
+    <docsection name="e-backend-factory">
+      <doc xml:space="preserve"
+           filename="e-backend-factory.c"
+           line="18">An #EBackendFactory's job is to create an #EBackend instance for a
+given #ESource.  #EBackendFactory and #EBackend should be subclassed
+together, so that each type of #EBackendFactory creates a unique type
+of #EBackend.
+
+Each #EBackendFactory subclass must define a hash key to uniquely
+identify itself among other #EBackendFactory subclasses.  #EDataFactory
+then services incoming connection requests by deriving a hash key from
+the requested #ESource, using the dervied hash key to find an appropriate
+#EBackendFactory, and creating an #EBackend instance from that factory
+to pair with the requested #ESource.</doc>
+    </docsection>
+    <docsection name="e-cache">
+      <doc xml:space="preserve"
+           filename="e-cache.c"
+           line="18">The #ECache is an abstract class which consists of the common
+parts which can be used by its descendants. It also allows
+storing offline state for the stored objects.
+
+The API is thread safe, with special considerations to be made
+around e_cache_lock() and e_cache_unlock() for
+the sake of isolating transactions across threads.</doc>
+    </docsection>
+    <docsection name="e-collection-backend">
+      <doc xml:space="preserve"
+           filename="e-collection-backend.c"
+           line="18">#ECollectionBackend is a base class for backends which manage a
+collection of data sources that collectively represent the resources
+on a remote server.  The resources can include any number of private
+and shared email stores, calendars and address books.
+
+The backend's job is to synchronize local representations of remote
+resources by adding and removing #EServerSideSource instances in an
+#ESourceRegistryServer.  If possible the backend should also listen
+for notifications of newly-added or deleted resources on the remote
+server or else poll the remote server at regular intervals and then
+update the data source collection accordingly.
+
+The client is responsible to provide credentials to use to authenticate.</doc>
+    </docsection>
+    <docsection name="e-collection-backend-factory">
+      <doc xml:space="preserve"
+           filename="e-collection-backend-factory.c"
+           line="18">#ECollectionBackendFactory is a type of #EBackendFactory for creating
+#ECollectionBackend instances.</doc>
+    </docsection>
+    <docsection name="e-file-cache">
+      <doc xml:space="preserve"
+           filename="e-file-cache.c"
+           line="21">An #EFileCache is a simple hash table of strings backed by an XML file
+for permanent storage.  The XML file is written to disk with every unless
+the cache is temporarily frozen with e_file_cache_freeze_changes().</doc>
+    </docsection>
+    <docsection name="e-oauth2-support">
+      <doc xml:space="preserve"
+           filename="e-oauth2-support.c"
+           line="18">Support for OAuth 2.0 access tokens is typically provided through
+dynamically loaded modules.  The module will provide an extension
+class which implements the #EOAuth2SupportInterface, which can be
+plugged into all appropriate #EServerSideSource instances through
+e_server_side_source_set_oauth2_support().  Incoming requests for
+access tokens are then forwarded to the extension providing OAuth
+2.0 support through e_oauth2_support_get_access_token().</doc>
+    </docsection>
+    <docsection name="e-offline-listener">
+      <doc xml:space="preserve"
+           filename="e-offline-listener.c"
+           line="21">An #EOfflineListener basically just tracks Evolution's online/offline
+state and emits a #EOfflineListener:changed signal when a state change
+is detected.
+
+This class is highly Evolution-centric and for that reason has been
+deprecated.  Use #GNetworkMonitor instead.</doc>
+    </docsection>
+    <docsection name="e-server-side-source">
+      <doc xml:space="preserve"
+           filename="e-server-side-source.c"
+           line="18">An #EServerSideSource is an #ESource with some additional capabilities
+exclusive to the registry D-Bus service.</doc>
+    </docsection>
+    <docsection name="e-source-registry-server">
+      <doc xml:space="preserve"
+           filename="e-source-registry-server.c"
+           line="18">The #ESourceRegistryServer is the heart of the registry D-Bus service.
+Acting as a global singleton store for all #EServerSideSource instances,
+its responsibilities include loading data source content from key files,
+exporting data sources to clients over D-Bus, handling content change
+requests from clients, and saving content changes back to key files.
+
+It also hosts any number of built-in or 3rd party data source collection
+backends, which coordinate with #ESourceRegistryServer to automatically
+advertise available data sources on a remote server.</doc>
+    </docsection>
+    <docsection name="e-user-prompter">
+      <doc xml:space="preserve"
+           filename="e-user-prompter.c"
+           line="18">Use this to initiate a user prompt from an #EBackend descendant.</doc>
+    </docsection>
+    <docsection name="e-user-prompter-server">
+      <doc xml:space="preserve"
+           filename="e-user-prompter-server.c"
+           line="18">The #EUserPrompterServer is the heart of the user prompter D-Bus service.
+Acting as a global singleton for user prompts from backends.</doc>
+    </docsection>
+    <docsection name="e-user-prompter-server-extension">
+      <doc xml:space="preserve"
+           filename="e-user-prompter-server-extension.c"
+           line="18">The #EUserPrompterServerExtension is a base struct for extension
+of EUserPrompterServer, to provide customized or specialized dialog
+prompts.
+
+A descendant defines two virtual functions,
+the EUserPrompterServerExtensionClass::register_dialogs which is used as
+a convenient function, where the descendant registers all the dialogs it
+provides on the server with e_user_prompter_server_register().
+
+The next function is EUserPrompterServerExtensionClass::prompt, which is
+used to initiate user prompt. The implementor should not block main thread
+with this function, because this is treated fully asynchronously.
+User's response is passed to the server with
+e_user_prompter_server_extension_response() call.</doc>
+    </docsection>
     <function name="sqlite3_vfs_init"
               c:identifier="e_sqlite3_vfs_init"
               version="3.2">

@@ -1872,6 +1872,195 @@ units&lt;/ulink&gt;.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
+    <docsection name="rsvg-handle">
+      <doc xml:space="preserve"
+           filename="rsvg-handle.c"
+           line="23">This is the main entry point into the librsvg library.  An RsvgHandle is an
+object that represents SVG data in memory.  Your program creates an
+RsvgHandle from an SVG file, or from a memory buffer that contains SVG data,
+or in the most general form, from a #GInputStream that will provide SVG data.
+
+Librsvg can load SVG images and render them to Cairo surfaces,
+using a mixture of SVG's [static mode] and [secure static mode].
+Librsvg does not do animation nor scripting, and can load
+references to external data only in some situations; see below.
+
+Librsvg supports reading &lt;ulink
+url="https://www.w3.org/TR/SVG11/"&gt;SVG 1.1&lt;/ulink&gt; data, and is
+gradually adding support for features in &lt;ulink
+url="https://www.w3.org/TR/SVG2/"&gt;SVG 2&lt;/ulink&gt;.  Librsvg also supports
+SVGZ files, which are just an SVG stream compressed with the GZIP algorithm.
+
+# The "base file" and resolving references to external files
+
+When you load an SVG, librsvg needs to know the location of the "base file"
+for it.  This is so that librsvg can determine the location of referenced
+entities.  For example, say you have an SVG in &lt;filename&gt;/foo/bar/foo.svg&lt;/filename&gt;
+and that it has an image element like this:
+
+|[
+&lt;image href="resources/foo.png" .../&gt;
+]|
+
+In this case, librsvg needs to know the location of the toplevel
+&lt;filename&gt;/foo/bar/foo.svg&lt;/filename&gt; so that it can generate the appropriate
+reference to &lt;filename&gt;/foo/bar/resources/foo.png&lt;/filename&gt;.
+
+## Security and locations of referenced files
+
+When processing an SVG, librsvg will only load referenced files if they are
+in the same directory as the base file, or in a subdirectory of it.  That is,
+if the base file is &lt;filename&gt;/foo/bar/baz.svg&lt;/filename&gt;, then librsvg will
+only try to load referenced files (from SVG's
+&lt;literal&gt;&amp;lt;image&amp;gt;&lt;/literal&gt; element, for example, or from content
+included through XML entities) if those files are in &lt;filename&gt;/foo/bar/&lt;!--
+--&gt;*&lt;/filename&gt; or in &lt;filename&gt;/foo/bar/&lt;!-- --&gt;*&lt;!-- --&gt;/.../&lt;!--
+--&gt;*&lt;/filename&gt;.  This is so that malicious SVG files cannot include files
+that are in a directory above.
+
+The full set of rules for deciding which URLs may be loaded is as follows;
+they are applied in order.  A referenced URL will not be loaded as soon as
+one of these rules fails:
+
+&lt;orderedlist&gt;
+  &lt;listitem&gt;
+    All &lt;literal&gt;data:&lt;/literal&gt; URLs may be loaded.  These are sometimes used
+    to include raster image data, encoded as base-64, directly in an SVG file.
+  &lt;/listitem&gt;
+
+  &lt;listitem&gt;
+    All other URL schemes in references require a base URL.  For
+    example, this means that if you load an SVG with
+    rsvg_handle_new_from_data() without calling rsvg_handle_set_base_uri(),
+    then any referenced files will not be allowed (e.g. raster images to be
+    loaded from other files will not work).
+  &lt;/listitem&gt;
+
+  &lt;listitem&gt;
+    If referenced URLs are absolute, rather than relative, then they must
+    have the same scheme as the base URL.  For example, if the base URL has a
+    "&lt;literal&gt;file&lt;/literal&gt;" scheme, then all URL references inside the SVG must
+    also have the "&lt;literal&gt;file&lt;/literal&gt;" scheme, or be relative references which
+    will be resolved against the base URL.
+  &lt;/listitem&gt;
+
+  &lt;listitem&gt;
+    If referenced URLs have a "&lt;literal&gt;resource&lt;/literal&gt;" scheme, that is,
+    if they are included into your binary program with GLib's resource
+    mechanism, they are allowed to be loaded (provided that the base URL is
+    also a "&lt;literal&gt;resource&lt;/literal&gt;", per the previous rule).
+  &lt;/listitem&gt;
+
+  &lt;listitem&gt;
+    Otherwise, non-&lt;literal&gt;file&lt;/literal&gt; schemes are not allowed.  For
+    example, librsvg will not load &lt;literal&gt;http&lt;/literal&gt; resources, to keep
+    malicious SVG data from "phoning home".
+  &lt;/listitem&gt;
+
+  &lt;listitem&gt;
+    A relative URL must resolve to the same directory as the base URL, or to
+    one of its subdirectories.  Librsvg will canonicalize filenames, by
+    removing ".." path components and resolving symbolic links, to decide whether
+    files meet these conditions.
+  &lt;/listitem&gt;
+&lt;/orderedlist&gt;
+
+# Loading an SVG with GIO
+
+This is the easiest and most resource-efficient way of loading SVG data into
+an #RsvgHandle.
+
+If you have a #GFile that stands for an SVG file, you can simply call
+rsvg_handle_new_from_gfile_sync() to load an RsvgHandle from it.
+
+Alternatively, if you have a #GInputStream, you can use
+rsvg_handle_new_from_stream_sync().
+
+Both of those methods allow specifying a #GCancellable, so the loading
+process can be cancelled from another thread.
+
+## Loading an SVG from memory
+
+If you already have SVG data in a byte buffer in memory, you can create a
+memory input stream with g_memory_input_stream_new_from_data() and feed that
+to rsvg_handle_new_from_stream_sync().
+
+Note that in this case, it is important that you specify the base_file for
+the in-memory SVG data.  Librsvg uses the base_file to resolve links to
+external content, like raster images.
+
+# Loading an SVG without GIO
+
+You can load an RsvgHandle from a simple filename or URI with
+rsvg_handle_new_from_file().  Note that this is a blocking operation; there
+is no way to cancel it if loading a remote URI takes a long time.  Also, note that
+this method does not let you specify #RsvgHandleFlags.
+
+Otherwise, loading an SVG without GIO is not recommended, since librsvg will
+need to buffer your entire data internally before actually being able to
+parse it.  The deprecated way of doing this is by creating a handle with
+rsvg_handle_new() or rsvg_handle_new_with_flags(), and then using
+rsvg_handle_write() and rsvg_handle_close() to feed the handle with SVG data.
+Still, please try to use the GIO stream functions instead.
+
+# Resolution of the rendered image (dots per inch, or DPI)
+
+SVG images can contain dimensions like "&lt;literal&gt;5 cm&lt;/literal&gt;" or
+"&lt;literal&gt;2 pt&lt;/literal&gt;" that must be converted from physical units into
+device units.  To do this, librsvg needs to know the actual dots per inch
+(DPI) of your target device.  You can call rsvg_handle_set_dpi() or
+rsvg_handle_set_dpi_x_y() on an RsvgHandle to set the DPI before rendering
+it.
+
+# Rendering
+
+The preferred way to render an already-loaded RsvgHandle is to use
+rsvg_handle_render_cairo().  Please see its documentation for details.
+
+Alternatively, you can use rsvg_handle_get_pixbuf() to directly obtain a
+#GdkPixbuf with the rendered image.  This is simple, but it does not let you
+control the size at which the SVG will be rendered.  It will just be rendered
+at the size which rsvg_handle_get_dimensions() would return, which depends on
+the dimensions that librsvg is able to compute from the SVG data.
+
+# API ordering
+
+Due to the way the librsvg API evolved over time, an #RsvgHandle object is available
+for use as soon as it is constructed.  However, not all of its methods can be
+called at any time.  For example, an #RsvgHandle just constructed with rsvg_handle_new()
+is not loaded yet, and it does not make sense to call rsvg_handle_get_dimensions() on it
+just at that point.
+
+The documentation for the available methods in #RsvgHandle may mention that a particular
+method is only callable on a "fully loaded handle".  This means either:
+
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;
+    The handle was loaded with rsvg_handle_write() and rsvg_handle_close(), and
+    those functions returned no errors.
+  &lt;/listitem&gt;
+  &lt;listitem&gt;
+    The handle was loaded with rsvg_handle_read_stream_sync() and that function
+    returned no errors.
+  &lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+Before librsvg 2.46, the library did not fully verify that a handle was in a
+fully loaded state for the methods that require it.  To preserve
+compatibility with old code which inadvertently called the API without
+checking for errors, or which called some methods outside of the expected
+order, librsvg will just emit a g_critical() message in those cases.
+
+New methods introduced in librsvg 2.46 and later will check for the correct
+ordering, and panic if they are called out of order.  This will abort
+the program as if it had a failed assertion.</doc>
+    </docsection>
+    <docsection name="rsvg-pixbuf">
+      <doc xml:space="preserve"
+           filename="rsvg-pixbuf.c"
+           line="26">GdkPixbuf is a library for image loading and manipulation. It is part of the
+cross-platform GTK+ widget toolkit.</doc>
+    </docsection>
     <function name="set_default_dpi"
               c:identifier="rsvg_set_default_dpi"
               version="2.8"

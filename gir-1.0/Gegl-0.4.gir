@@ -12591,6 +12591,85 @@ or any other property that expects a Babl format.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="gegl-metadata">
+      <doc xml:space="preserve"
+           filename="../gegl/gegl-metadata.h"
+           line="26">Objects which need to store or retrieve image metadata when saving and
+loading image files should implement GeglMetadata. The object should be cast
+with GEGL_METADATA() and passed to the file load or save module via the
+`metadata` property. Image file modules should not implement the metadata
+property if either the module or file format does not support metadata.
+
+Gegl understands (but is not limited to) the following well-known metadata
+variables:
+
+- artist: Name of image creator.
+- comment: Miscellaneous comment; conversion from GIF comment.
+- copyright: Copyright notice.
+- description: Description of image (possibly long).
+- disclaimer: Legal disclaimer.
+- software: Software used to create the image.
+- source: Device used to create the image.
+- timestamp: Time of original image creation.
+- title: Short (one line) title or caption for image.
+- warning: Warning of nature of content.
+
+The Gegl Metadata subsystem can be used in one of three ways described
+below in order of increasing complexity:
+
+1. Recommended: Create a #GeglMetadataHash and pass it to a file loader
+   or saver via its `metadata` property. #GeglMetadataHash is a subclass of
+   #GeglMetadataStore which saves metadata in a hash table but which adds no
+   new properties or methods.  Image file metadata to be retrieved or saved
+   is accessed via #GeglMetadataStore properties or methods. Metadata values
+   not directly supported by Gegl may be declared using a #GParamSpec.
+2. Subclass #GeglMetadataStore. This may be useful if an application stores
+   metadata in internal structures which may be accessed via the subclass.
+   The subclass is used identically to #GeglMetadataHash.
+   #GeglMetadataStore aims to be sufficiently flexible to cover the majority
+   of application requirements.
+3. Implement the #GeglMetadata interface. This option should only be used if
+   #GeglMetadataStore cannot adequately satisfy application requirements.
+   Particular attention should be paid to semantics of the interface methods
+   as the file modules interact directly with these.
+
+For more complex requirements than provided by the metadata subsystem it is
+probably better to use a library such as `exiv2` or similar.</doc>
+    </docsection>
+    <docsection name="gegl-metadatahash">
+      <doc xml:space="preserve"
+           filename="../gegl/gegl-metadatahash.h"
+           line="35">#GeglMetadataHash is a #GeglMetadataStore implementing the data store using
+a hash table. It adds no new methods or properties to #GeglMetadataStore.</doc>
+    </docsection>
+    <docsection name="gegl-metadatastore">
+      <doc xml:space="preserve"
+           filename="../gegl/gegl-metadatastore.h"
+           line="35">#GeglMetadataStore is a non-instantiable base class implementing the
+#GeglMetadata interface and provides methods for metadata access using
+well-known names.  For consistency with other #GObject features, the naming
+convention for metadata variables is the same as for GObject properties.
+
+Methods are provided allowing the application to test whether a particular
+metadata item has a value and to set or get the values. If a metadata value
+does not exist, a GLib warning is printed. The
+gegl_metadata_store_has_value() method can be used to test silently for
+unset variables.
+
+Signals are provided to allow an application to intercept metadata values
+from file modules, for example a Jpeg comment block might be parsed to set
+multiple metadata values, or multiple values may be formatted into the
+comment block.
+
+Image resolution and resolution units are accessible only as properties.
+Well-known metatdata values are shadowed by properties to allow applications
+to take advantage of features such as introspection and property binding.
+
+#GeglMetadataStore does not itself implement the storage mechanism, it must
+be subclassed to provide this. #GeglMetadataHash implements a store using a
+hash table.  For convenience gegl_metadata_hash_new() casts its return value
+to #GeglMetadataStore as it does not add any new methods or properties.</doc>
+    </docsection>
     <function name="get_option_group"
               c:identifier="gegl_get_option_group"
               introspectable="0">

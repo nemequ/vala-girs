@@ -18940,6 +18940,18 @@ will use the foreground color.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="bidi">
+      <doc xml:space="preserve"
+           filename="../pango/pango-bidi-type.c"
+           line="22">Pango supports bidirectional text (like Arabic and Hebrew) automatically.
+Some applications however, need some help to correctly handle bidirectional text.
+
+The #PangoDirection type can be used with pango_context_set_base_dir() to
+instruct Pango about direction of text, though in most cases Pango detects
+that correctly and automatically.  The rest of the facilities in this section
+are used internally by Pango already, and are provided to help applications
+that need more direct control over bidirectional setting of text.</doc>
+    </docsection>
     <function name="bidi_type_for_unichar"
               c:identifier="pango_bidi_type_for_unichar"
               moved-to="BidiType.for_unichar"
@@ -19018,6 +19030,22 @@ For most purposes you may want to use pango_get_log_attrs().</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="context">
+      <doc xml:space="preserve"
+           filename="../pango/pango-context.c"
+           line="47">The #PangoContext structure stores global information
+influencing Pango's operation, such as the fontmap used
+to look up fonts, and default values such as the default
+language, default gravity, or default font.</doc>
+    </docsection>
+    <docsection name="coverage-maps">
+      <doc xml:space="preserve"
+           filename="../pango/pango-coverage.c"
+           line="22">It is often necessary in Pango to determine if a particular font can
+represent a particular character, and also how well it can represent
+that character. The #PangoCoverage is a data structure that is used
+to represent that information.</doc>
+    </docsection>
     <function name="default_break" c:identifier="pango_default_break">
       <doc xml:space="preserve"
            filename="../pango/break.c"
@@ -19066,6 +19094,16 @@ See pango_tailor_break() for language-specific breaks.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="engines">
+      <doc xml:space="preserve"
+           filename="../pango/pango-engine.c"
+           line="22">Pango used to have a module architecture in which the language-specific
+and render-system-specific components are provided by loadable
+modules.
+
+This is no longer the case, and all the APIs related
+to modules and engines should not be used anymore.</doc>
+    </docsection>
     <function name="extents_to_pixels"
               c:identifier="pango_extents_to_pixels"
               version="1.16">
@@ -19293,6 +19331,16 @@ A typical example:
         </parameter>
       </parameters>
     </function>
+    <docsection name="fonts">
+      <doc xml:space="preserve"
+           filename="../pango/fonts.c"
+           line="22">Pango supports a flexible architecture where a
+particular rendering architecture can supply an
+implementation of fonts. The #PangoFont structure
+represents an abstract rendering-system-independent font.
+Pango provides routines to list available fonts, and
+to load a font matching a given description.</doc>
+    </docsection>
     <function name="get_log_attrs" c:identifier="pango_get_log_attrs">
       <doc xml:space="preserve"
            filename="../pango/break.c"
@@ -19381,6 +19429,14 @@ filled in, %FALSE otherwise</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="glyphs">
+      <doc xml:space="preserve"
+           filename="../pango/shape.c"
+           line="22">pango_shape() produces a string of glyphs which
+can be measured or drawn to the screen. The following
+structures are used to store information about
+glyphs.</doc>
+    </docsection>
     <function name="gravity_get_for_matrix"
               c:identifier="pango_gravity_get_for_matrix"
               moved-to="Gravity.get_for_matrix"
@@ -19777,6 +19833,17 @@ See &lt;literal&gt;man setlocale&lt;/literal&gt; for more details.</doc>
         <type name="Language" c:type="PangoLanguage*"/>
       </return-value>
     </function>
+    <docsection name="layout">
+      <doc xml:space="preserve"
+           filename="../pango/pango-layout.c"
+           line="22">While complete access to the layout capabilities of Pango is provided
+using the detailed interfaces for itemization and shaping, using
+that functionality directly involves writing a fairly large amount
+of code. The objects and functions in this section provide a
+high-level driver for formatting entire paragraphs of text
+at once. This includes paragraph-level functionality such as
+line-breaking, justification, alignment and ellipsization.</doc>
+    </docsection>
     <function name="log2vis_get_embedding_levels"
               c:identifier="pango_log2vis_get_embedding_levels"
               version="1.4">
@@ -19819,6 +19886,204 @@ characters in the text will determine the final resolved direction.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="main">
+      <doc xml:space="preserve"
+           filename="../pango/pango-context.c"
+           line="22">The Pango rendering pipeline takes a string of
+Unicode characters and converts it into glyphs.
+The functions described in this section accomplish
+various steps of this process.
+
+![](pipeline.png)</doc>
+    </docsection>
+    <docsection name="markup">
+      <doc xml:space="preserve"
+           filename="../pango/pango-markup.c"
+           line="33">Frequently, you want to display some text to the user with attributes
+applied to part of the text (for example, you might want bold or
+italicized words). With the base Pango interfaces, you could create a
+#PangoAttrList and apply it to the text; the problem is that you'd
+need to apply attributes to some numeric range of characters, for
+example "characters 12-17." This is broken from an internationalization
+standpoint; once the text is translated, the word you wanted to
+italicize could be in a different position.
+
+The solution is to include the text attributes in the string to be
+translated. Pango provides this feature with a small markup language.
+You can parse a marked-up string into the string text plus a
+#PangoAttrList using either of pango_parse_markup() or
+pango_markup_parser_new().
+
+A simple example of a marked-up string might be:
+|[
+&lt;span foreground="blue" size="x-large"&gt;Blue text&lt;/span&gt; is &lt;i&gt;cool&lt;/i&gt;!
+]|
+
+Pango uses #GMarkup to parse this language, which means that XML
+features such as numeric character entities such as `&amp;#169;` for
+© can be used too.
+
+The root tag of a marked-up document is `&lt;markup&gt;`, but
+pango_parse_markup() allows you to omit this tag, so you will most
+likely never need to use it. The most general markup tag is `&lt;span&gt;`,
+then there are some convenience tags.
+
+## Span attributes
+
+`&lt;span&gt;` has the following attributes:
+
+* `font_desc`:
+  A font description string, such as "Sans Italic 12".
+  See pango_font_description_from_string() for a description of the
+  format of the string representation . Note that any other span
+  attributes will override this description. So if you have "Sans Italic"
+  and also a `style="normal"` attribute, you will get Sans normal,
+  not italic.
+
+* `font_family`:
+  A font family name
+
+* `font_size`, `size`:
+  Font size in 1024ths of a point, or one of the absolute
+  sizes `xx-small`, `x-small`, `small`, `medium`, `large`,
+  `x-large`, `xx-large`, or one of the relative sizes `smaller`
+  or `larger`. If you want to specify a absolute size, it's usually
+  easier to take advantage of the ability to specify a partial
+  font description using `font`; you can use `font='12.5'`
+  rather than `size='12800'`.
+
+* `font_style`:
+  One of `normal`, `oblique`, `italic`
+
+* `font_weight`:
+  One of `ultralight`, `light`, `normal`, `bold`,
+  `ultrabold`, `heavy`, or a numeric weight
+
+* `font_variant`:
+  One of `normal` or `smallcaps`
+
+* `font_stretch`, `stretch`:
+  One of `ultracondensed`, `extracondensed`, `condensed`,
+  `semicondensed`, `normal`, `semiexpanded`, `expanded`,
+  `extraexpanded`, `ultraexpanded`
+
+* `font_features`:
+  A comma-separated list of OpenType font feature
+  settings, in the same syntax as accepted by CSS. E.g:
+  `font_features='dlig=1, -kern, afrc on'`
+
+* `foreground`, `fgcolor`:
+  An RGB color specification such as `#00FF00` or a color
+  name such as `red`. Since 1.38, an RGBA color specification such
+  as `#00FF007F` will be interpreted as specifying both a foreground
+  color and foreground alpha.
+
+* `background`, `bgcolor`:
+  An RGB color specification such as `#00FF00` or a color
+  name such as `red`.
+  Since 1.38, an RGBA color specification such as `#00FF007F` will
+  be interpreted as specifying both a background color and
+  background alpha.
+
+* `alpha`, `fgalpha`:
+  An alpha value for the foreground color, either a plain
+  integer between 1 and 65536 or a percentage value like `50%`.
+
+* `background_alpha`, `bgalpha`:
+  An alpha value for the background color, either a plain
+  integer between 1 and 65536 or a percentage value like `50%`.
+
+* `underline`:
+  One of `none`, `single`, `double`, `low`, `error`,
+  `single-line`, `double-line` or `error-line`.
+
+* `underline_color`:
+  The color of underlines; an RGB color
+  specification such as `#00FF00` or a color name such as `red`
+
+* `overline`:
+  One of `none` or `single`
+
+* `overline_color`:
+  The color of overlines; an RGB color
+  specification such as `#00FF00` or a color name such as `red`
+
+* `rise`:
+  Vertical displacement, in Pango units. Can be negative for
+  subscript, positive for superscript.
+
+* `strikethrough`
+  `true` or `false` whether to strike through the text
+
+* `strikethrough_color`:
+  The color of strikethrough lines; an RGB
+  color specification such as `#00FF00` or a color name such as `red`
+
+* `fallback`:
+  `true` or `false` whether to enable fallback. If
+  disabled, then characters will only be used from the closest
+  matching font on the system. No fallback will be done to other
+  fonts on the system that might contain the characters in the text.
+  Fallback is enabled by default. Most applications should not
+  disable fallback.
+
+* `allow_breaks`:
+  `true` or `false` whether to allow line breaks or not. If
+  not allowed, the range will be kept in a single run as far
+  as possible. Breaks are allowed by default.
+
+* `insert_hyphens`:`
+  `true` or `false` whether to insert hyphens when breaking
+  lines in the middle of a word. Hyphens are inserted by default.
+
+* `show`:
+  A value determining how invisible characters are treated.
+  Possible values are `spaces`, `line-breaks`, `ignorables`
+  or combinations, such as `spaces|line-breaks`.
+
+* `lang`:
+  A language code, indicating the text language
+
+* `letter_spacing`:
+  Inter-letter spacing in 1024ths of a point.
+
+* `gravity`:
+  One of `south`, `east`, `north`, `west`, `auto`.
+
+* `gravity_hint`:
+  One of `natural`, `strong`, `line`.
+
+## Convenience tags
+
+The following convenience tags are provided:
+
+* `&lt;b&gt;`:
+  Bold
+
+* `&lt;big&gt;`:
+  Makes font relatively larger, equivalent to `&lt;span size="larger"&gt;`
+
+* `&lt;i&gt;`:
+  Italic
+
+* `&lt;s&gt;`:
+  Strikethrough
+
+* `&lt;sub&gt;`:
+  Subscript
+
+* `&lt;sup&gt;`:
+  Superscript
+
+* `&lt;small&gt;`:
+  Makes font relatively smaller, equivalent to `&lt;span size="smaller"&gt;`
+
+* `&lt;tt&gt;`:
+  Monospace
+
+* `&lt;u&gt;`:
+  Underline</doc>
+    </docsection>
     <function name="markup_parser_finish"
               c:identifier="pango_markup_parser_finish"
               version="1.31.0"
@@ -19941,6 +20206,37 @@ destroyed with g_markup_parse_context_free().</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="modules">
+      <doc xml:space="preserve"
+           filename="../pango/modules.c"
+           line="22">Functions and macros in this section were used to support
+loading dynamic modules that add engines to Pango at run time.
+
+That is no longer the case, and these APIs should not be
+used anymore.</doc>
+    </docsection>
+    <docsection name="pango-engine-lang">
+      <doc xml:space="preserve"
+           filename="../pango/pango-engine.c"
+           line="36">The &lt;firstterm&gt;language engines&lt;/firstterm&gt; are rendering-system independent
+engines that determine line, word, and character breaks for character strings.
+These engines are used in pango_break().</doc>
+    </docsection>
+    <docsection name="pango-engine-shape">
+      <doc xml:space="preserve"
+           filename="../pango/pango-engine.c"
+           line="48">The &lt;firstterm&gt;shape engines&lt;/firstterm&gt; are rendering-system dependent
+engines that convert character strings into glyph strings.
+These engines are used in pango_shape().</doc>
+    </docsection>
+    <docsection name="pango-version">
+      <doc xml:space="preserve"
+           filename="../pango/pango-utils.c"
+           line="22">The capital-letter macros defined here can be used to check the version of Pango
+at compile-time, and to &lt;firstterm&gt;encode&lt;/firstterm&gt; Pango versions into integers.
+
+The functions can be used to check the version of the linked Pango library at run-time.</doc>
+    </docsection>
     <function name="parse_enum"
               c:identifier="pango_parse_enum"
               version="1.16"
@@ -20545,6 +20841,13 @@ of the script, or %NULL if no such language exists.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="scripts">
+      <doc xml:space="preserve"
+           filename="../pango/pango-script.c"
+           line="56">The functions in this section are used to identify the writing
+system, or &lt;firstterm&gt;script&lt;/firstterm&gt; of individual characters
+and of ranges within a larger text string.</doc>
+    </docsection>
     <function name="shape" c:identifier="pango_shape">
       <doc xml:space="preserve"
            filename="../pango/shape.c"
@@ -20767,6 +21070,12 @@ strings to be freed with g_strfreev()</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="tab-stops">
+      <doc xml:space="preserve"
+           filename="../pango/pango-tabs.c"
+           line="22">Functions in this section are used to deal with #PangoTabArray objects
+that can be used to set tab stop positions in a #PangoLayout.</doc>
+    </docsection>
     <function name="tailor_break"
               c:identifier="pango_tailor_break"
               version="1.44">
@@ -20825,6 +21134,15 @@ from @analysis that are relevant to line breaking.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="text-attributes">
+      <doc xml:space="preserve"
+           filename="../pango/pango-attributes.c"
+           line="22">Attributed text is used in a number of places in Pango. It
+is used as the input to the itemization process and also when
+creating a #PangoLayout. The data types and functions in
+this section are used to represent and manipulate sets
+of attributes applied to a portion of text.</doc>
+    </docsection>
     <function name="trim_string"
               c:identifier="pango_trim_string"
               deprecated="1"
@@ -20921,6 +21239,12 @@ it by %PANGO_SCALE.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="utils">
+      <doc xml:space="preserve"
+           filename="../pango/pango-utils.c"
+           line="32">The functions and utilities in this section are mostly used from Pango
+backends and modules, but may be useful for other purposes too.</doc>
+    </docsection>
     <function name="version" c:identifier="pango_version" version="1.16">
       <doc xml:space="preserve"
            filename="../pango/pango-utils.c"
@@ -21009,5 +21333,52 @@ the version available at compile-time.</doc>
         <type name="utf8" c:type="const char*"/>
       </return-value>
     </function>
+    <docsection name="vertical">
+      <doc xml:space="preserve"
+           filename="../pango/pango-gravity.c"
+           line="22">Since 1.16, Pango is able to correctly lay vertical text out.  In fact, it can
+set layouts of mixed vertical and non-vertical text.  This section describes
+the types used for setting vertical text parameters.
+
+The way this is implemented is through the concept of
+&lt;firstterm&gt;gravity&lt;/firstterm&gt;.  Gravity of normal Latin text is south.  A
+gravity value of east means that glyphs will be rotated ninety degrees
+counterclockwise.  So, to render vertical text one needs to set the gravity
+and rotate the layout using the matrix machinery already in place.  This has
+the huge advantage that most algorithms working on a #PangoLayout do not need
+any change as the assumption that lines run in the X direction and stack in
+the Y direction holds even for vertical text layouts.
+
+Applications should only need to set base gravity on #PangoContext in use, and
+let Pango decide the gravity assigned to each run of text.  This automatically
+handles text with mixed scripts.  A very common use is to set the context base
+gravity to auto using pango_context_set_base_gravity()
+and rotate the layout normally.  Pango will make sure that
+Asian languages take the right form, while other scripts are rotated normally.
+
+The correct way to set gravity on a layout is to set it on the context
+associated with it using pango_context_set_base_gravity().  The context
+of a layout can be accessed using pango_layout_get_context().  The currently
+set base gravity of the context can be accessed using
+pango_context_get_base_gravity() and the &lt;firstterm&gt;resolved&lt;/firstterm&gt;
+gravity of it using pango_context_get_gravity().  The resolved gravity is
+the same as the base gravity for the most part, except that if the base
+gravity is set to %PANGO_GRAVITY_AUTO, the resolved gravity will depend
+on the current matrix set on context, and is derived using
+pango_gravity_get_for_matrix().
+
+The next thing an application may want to set on the context is the
+&lt;firstterm&gt;gravity hint&lt;/firstterm&gt;.  A #PangoGravityHint instructs how
+different scripts should react to the set base gravity.
+
+Font descriptions have a gravity property too, that can be set using
+pango_font_description_set_gravity() and accessed using
+pango_font_description_get_gravity().  However, those are rarely useful
+from application code and are mainly used by #PangoLayout internally.
+
+Last but not least, one can create #PangoAttribute&lt;!----&gt;s for gravity
+and gravity hint using pango_attr_gravity_new() and
+pango_attr_gravity_hint_new().</doc>
+    </docsection>
   </namespace>
 </repository>

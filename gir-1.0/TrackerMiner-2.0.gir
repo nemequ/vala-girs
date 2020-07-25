@@ -4449,5 +4449,127 @@ faster (HSDPA, UMTS, ...) connection</doc>
 network connection. This can be ethernet, wifi, etc.</doc>
       </member>
     </enumeration>
+    <docsection name="tracker-data-provider">
+      <doc xml:space="preserve"
+           filename="../src/libtracker-miner/tracker-data-provider.c"
+           line="28">#TrackerDataProvider allows you to operate on a set of #GFiles,
+returning a #GFileInfo structure for each file enumerated (e.g.
+tracker_data_provider_begin() will return a #GFileEnumerator
+which can be used to enumerate resources provided by the
+#TrackerDataProvider.
+
+There is also a #TrackerFileDataProvider which is an implementation
+of this #TrackerDataProvider interface.
+
+The #TrackerMinerFS class which is a subclass to #TrackerMiner
+takes a #TrackerDataProvider property which is passed down to the
+TrackerCrawler created upon instantiation. This property is
+#TrackerMinerFS:data-provider.</doc>
+    </docsection>
+    <docsection name="tracker-decorator">
+      <doc xml:space="preserve"
+           filename="../src/libtracker-miner/tracker-decorator.c"
+           line="31">#TrackerDecorator watches for signal updates based on content changes
+in the database. When new files are added initially, only simple
+metadata exists, for example, name, size, mtime, etc. The
+#TrackerDecorator queues files for extended metadata extraction
+(i.e. for tracker-extract to fetch metadata specific to the file
+type) for example 'nmm:whiteBalance' for a picture.</doc>
+    </docsection>
+    <docsection name="tracker-decorator-fs">
+      <doc xml:space="preserve"
+           filename="../src/libtracker-miner/tracker-decorator-fs.c"
+           line="29">#TrackerDecoratorFS is used to handle extended metadata extraction
+for resources on file systems that are mounted or unmounted.</doc>
+    </docsection>
+    <docsection name="tracker-indexing-tree">
+      <doc xml:space="preserve"
+           filename="../src/libtracker-miner/tracker-indexing-tree.c"
+           line="25">#TrackerIndexingTree handles the tree of directories configured to be indexed
+by the #TrackerMinerFS.</doc>
+    </docsection>
+    <docsection name="tracker-miner-enums">
+      <doc xml:space="preserve"
+           filename="../src/libtracker-miner/tracker-miner-enums.h"
+           line="27">Common enumeration types used in libtracker-miner.</doc>
+    </docsection>
+    <docsection name="tracker-miner-fs">
+      <doc xml:space="preserve"
+           filename="../src/libtracker-miner/tracker-miner-fs.c"
+           line="97">#TrackerMinerFS is an abstract base class for miners that collect data
+from a filesystem where parent/child relationships need to be
+inserted into the database correctly with queue management.
+
+All the filesystem crawling and monitoring is abstracted away,
+leaving to implementations the decisions of what directories/files
+should it process, and the actual data extraction.
+
+Example creating a TrackerMinerFS with our own file system root and
+data provider.
+
+First create our class and base it on TrackerMinerFS:
+|[
+G_DEFINE_TYPE_WITH_CODE (MyMinerFiles, my_miner_files, TRACKER_TYPE_MINER_FS,
+                         G_IMPLEMENT_INTERFACE (G_TYPE_INITABLE,
+                                                my_miner_files_initable_iface_init))
+]|
+
+Later in our class creation function, we are supplying the
+arguments we want. In this case, the 'root' is a #GFile pointing to
+a root URI location (for example 'file:///') and 'data_provider' is a
+#TrackerDataProvider used to enumerate 'root' and return children it
+finds. If 'data_provider' is %NULL (the default), then a
+#TrackerFileDataProvider is created automatically.
+|[
+// Note that only 'name' is mandatory
+miner = g_initable_new (MY_TYPE_MINER_FILES,
+                        NULL,
+                        error,
+                        "name", "MyMinerFiles",
+                        "root", root,
+                        "data-provider", data_provider,
+                        "processing-pool-wait-limit", 10,
+                        "processing-pool-ready-limit", 100,
+                        NULL);
+]|</doc>
+    </docsection>
+    <docsection name="tracker-miner-object">
+      <doc xml:space="preserve"
+           filename="../src/libtracker-miner/tracker-miner-object.c"
+           line="47">#TrackerMiner is an abstract base class to help developing data miners
+for tracker-store, being an abstract class it doesn't do much by itself,
+but provides the basic signaling and control over the actual indexing
+task.
+
+#TrackerMiner implements the #GInitable interface, and thus, all objects of
+types inheriting from #TrackerMiner must be initialized with g_initable_init()
+just after creation (or directly created with g_initable_new()).</doc>
+    </docsection>
+    <docsection name="tracker-miner-online">
+      <doc xml:space="preserve"
+           filename="../src/libtracker-miner/tracker-miner-online.c"
+           line="32">#TrackerMinerOnline is an abstract base class for miners retrieving data
+from online resources. It's a very thin layer above #TrackerMiner that
+additionally handles network connection status.
+
+#TrackerMinerOnline implementations can implement the
+&lt;literal&gt;connected&lt;/literal&gt; vmethod in order to tell the miner whether
+a connection is valid to retrieve data or not. The miner data extraction
+still must be dictated through the #TrackerMiner vmethods.</doc>
+    </docsection>
+    <docsection name="tracker-miner-proxy">
+      <doc xml:space="preserve"
+           filename="../src/libtracker-miner/tracker-miner-proxy.c"
+           line="22">#TrackerMinerProxy is a helper object to expose org.freedesktop.Tracker1.Miner
+DBus interfaces for the given #TrackerMiner object. This is used to implement
+miners as DBus services.
+
+This proxy allows the miner to be controlled through external means, such as
+#TrackerMinerManager in libtracker-control.
+
+#TrackerMinerProxy implements the #GInitable interface, and thus all objects of
+types inheriting from #TrackerMinerProxy must be initialized with g_initable_init()
+just after creation (or directly created with g_initable_new()).</doc>
+    </docsection>
   </namespace>
 </repository>

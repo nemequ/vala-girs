@@ -2126,6 +2126,25 @@ the language for the spell checking.</doc>
         </array>
       </field>
     </record>
+    <docsection name="checker">
+      <doc xml:space="preserve"
+           filename="gspell-checker.c"
+           line="35">#GspellChecker is a spell checker.
+
+If the #GspellChecker:language property is %NULL, it means that no
+dictonaries are available, in which case the #GspellChecker is in a
+“disabled” (but allowed) state.
+
+gspell uses the [Enchant](https://abiword.github.io/enchant/) library. The
+use of Enchant is part of the gspell API, #GspellChecker exposes the
+EnchantDict with the gspell_checker_get_enchant_dict() function.</doc>
+    </docsection>
+    <docsection name="checker-dialog">
+      <doc xml:space="preserve"
+           filename="gspell-checker-dialog.c"
+           line="29">#GspellCheckerDialog is a #GtkDialog to spell check a document one word
+at a time. It uses a #GspellNavigator.</doc>
+    </docsection>
     <function name="checker_error_quark"
               c:identifier="gspell_checker_error_quark"
               moved-to="CheckerError.quark">
@@ -2133,6 +2152,99 @@ the language for the spell checking.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
+    <docsection name="entry">
+      <doc xml:space="preserve"
+           filename="gspell-entry.c"
+           line="32">#GspellEntry extends the #GtkEntry class with inline spell checking.
+Misspelled words are highlighted with a red %PANGO_UNDERLINE_SINGLE.
+Right-clicking a misspelled word pops up a context menu of suggested
+replacements. The context menu also contains an “Ignore All” item to add the
+misspelled word to the session dictionary. And an “Add” item to add the word
+to the personal dictionary.
+
+For a basic use-case, there is the gspell_entry_basic_setup() convenience
+function.
+
+If you don't use the gspell_entry_basic_setup() function, you need to call
+gspell_entry_buffer_set_spell_checker() to associate a #GspellChecker to the
+#GtkEntryBuffer.
+
+Note that #GspellEntry extends the #GtkEntry class but without subclassing
+it, because #GtkEntry is already subclassed by #GtkSearchEntry for example.
+
+%PANGO_UNDERLINE_SINGLE is used for consistency with #GspellTextView.
+If you want a %PANGO_UNDERLINE_ERROR instead (a wavy underline), please fix
+[this bug](https://bugzilla.gnome.org/show_bug.cgi?id=763741) first.</doc>
+    </docsection>
+    <docsection name="entry-buffer">
+      <doc xml:space="preserve"
+           filename="gspell-entry-buffer.c"
+           line="26">#GspellEntryBuffer extends the #GtkEntryBuffer class with spell checking
+support.</doc>
+    </docsection>
+    <docsection name="language">
+      <doc xml:space="preserve"
+           filename="gspell-language.c"
+           line="36">#GspellLanguage represents a language that can be used for the spell
+checking, i.e. a language for which a dictionary is installed.</doc>
+    </docsection>
+    <docsection name="language-chooser">
+      <doc xml:space="preserve"
+           filename="gspell-language-chooser.c"
+           line="26">#GspellLanguageChooser is an interface that is implemented by widgets for
+choosing a #GspellLanguage.
+
+There are two properties: #GspellLanguageChooser:language and
+#GspellLanguageChooser:language-code. They are kept in sync. The former is
+useful, for example, to bind it to the #GspellChecker's language property
+with g_object_bind_property(). The latter is useful to bind it to a
+#GSettings key with g_settings_bind().
+
+When setting the language, %NULL or the empty string can be passed to pick
+the default language. In that case, the #GspellLanguageChooser:language-code
+property will contain the empty string, whereas the
+#GspellLanguageChooser:language property will contain the actual
+#GspellLanguage as returned by gspell_language_get_default(). If the user
+launches the #GspellLanguageChooser and chooses explicitly a language, then
+the #GspellLanguageChooser:language-code property will no longer be empty,
+even if it is the same language as the default language.
+
+Note that if an explicit language (non-%NULL or not the empty string) is set
+to the #GspellLanguageChooser, then the #GspellLanguageChooser:language-code
+property will not be empty, it will contain the language code of the passed
+language, even if the language is the same as the default language.
+
+Thus, a good default value for a #GSettings key is the empty string. That
+way, the default language is picked, and can change depending on the locale.
+But once the user has chosen a language, that language is kept in the
+#GSettings key.</doc>
+    </docsection>
+    <docsection name="language-chooser-button">
+      <doc xml:space="preserve"
+           filename="gspell-language-chooser-button.c"
+           line="29">#GspellLanguageChooserButton is a #GtkButton to choose an available
+#GspellLanguage. #GspellLanguageChooserButton implements the
+#GspellLanguageChooser interface.
+
+The button contains a label with the #GspellLanguageChooser:language name, as
+returned by gspell_language_get_name(). When the button is clicked, a
+#GspellLanguageChooserDialog is launched to choose the language.</doc>
+    </docsection>
+    <docsection name="language-chooser-dialog">
+      <doc xml:space="preserve"
+           filename="gspell-language-chooser-dialog.c"
+           line="28">#GspellLanguageChooserDialog is a #GtkDialog to choose an available
+#GspellLanguage. #GspellLanguageChooserDialog implements the
+#GspellLanguageChooser interface.
+
+The #GspellLanguageChooser:language and #GspellLanguageChooser:language-code
+properties are updated only when the Select button is pressed or when a row
+is activated (e.g. with a double-click).
+
+The application is responsible to destroy the dialog, typically when the
+#GtkDialog::response signal has been received or gtk_dialog_run() has
+returned.</doc>
+    </docsection>
     <function name="language_get_available"
               c:identifier="gspell_language_get_available"
               moved-to="Language.get_available">
@@ -2182,5 +2294,107 @@ are available.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="navigator">
+      <doc xml:space="preserve"
+           filename="gspell-navigator.c"
+           line="26">#GspellNavigator is an interface to navigate through misspelled words,
+and correct the mistakes.
+
+It is used by widgets like #GspellCheckerDialog. The purpose is to
+spell-check a document one word at a time.
+
+It is not mandatory to navigate through all the text. Depending on the
+context, an implementation could spell-check only the current page, or the
+selection, etc.
+
+For #GtkTextView, see the #GspellNavigatorTextView implementation of this
+interface.
+
+The #GspellNavigator interface requires #GInitiallyUnowned because a
+#GspellNavigator object is meant to be passed as an argument to a #GtkWidget
+constructor, for example gspell_checker_dialog_new(). This permits to
+decouple the frontend from the backend, making the #GtkWidget re-usable for
+different #GspellNavigator's.</doc>
+    </docsection>
+    <docsection name="navigator-text-view">
+      <doc xml:space="preserve"
+           filename="gspell-navigator-text-view.c"
+           line="30">#GspellNavigatorTextView is a simple implementation of the
+#GspellNavigator interface for the #GtkTextView widget.
+
+If a selection exists in the #GtkTextView, only the selected text is spell
+checked. Otherwise the whole buffer is checked.
+
+If only the selected text is spell checked, the implementation of
+gspell_navigator_change_all() changes only the occurrences that were
+present in the selection.
+
+The implementation of gspell_navigator_goto_next() selects the
+misspelled word and scrolls to it.
+
+You need to call gspell_text_buffer_set_spell_checker() to associate a
+#GspellChecker to the #GtkTextBuffer.</doc>
+    </docsection>
+    <docsection name="text-buffer">
+      <doc xml:space="preserve"
+           filename="gspell-text-buffer.c"
+           line="26">#GspellTextBuffer extends the #GtkTextBuffer class but without subclassing
+it, because the GtkSourceView library has already a #GtkTextBuffer subclass.
+
+# Support of the no-spell-check tag defined by GtkSourceView
+
+The syntax highlighting engine of the [GtkSourceView
+library](https://wiki.gnome.org/Projects/GtkSourceView) has a feature called
+“context classes”. One of the standard context classes is
+“&lt;emphasis&gt;no-spell-check&lt;/emphasis&gt;”: it defines the regions in the
+#GtkTextBuffer that should not be spell-checked.
+
+GtkSourceView creates a #GtkTextTag named
+`"gtksourceview:context-classes:no-spell-check"`. gspell reads this tag, to
+skip the text contained within the tag.
+
+If you use the GtkSourceView library in your application, keep in mind that
+the #GtkTextTag created by GtkSourceView is for read-only purposes; you
+cannot apply it yourself to other regions.
+
+On the other hand if the GtkSourceView library is not used, you can create a
+#GtkTextTag with the same name to mark certain regions in the text that
+gspell should skip. As it is not a great API, it is
+[planned](https://bugzilla.gnome.org/show_bug.cgi?id=771582) to add an
+explicit API in #GspellTextBuffer to set a #GtkTextTag that gspell should
+skip.
+
+See the class description of #GtkSourceBuffer for more information about
+context classes.</doc>
+    </docsection>
+    <docsection name="text-view">
+      <doc xml:space="preserve"
+           filename="gspell-text-view.c"
+           line="32">#GspellTextView extends the #GtkTextView class with inline spell checking.
+Misspelled words are highlighted with a red %PANGO_UNDERLINE_SINGLE.
+Right-clicking a misspelled word pops up a context menu of suggested
+replacements. The context menu also contains an “Ignore All” item to add the
+misspelled word to the session dictionary. And an “Add” item to add the word
+to the personal dictionary.
+
+For a basic use-case, there is the gspell_text_view_basic_setup() convenience
+function.
+
+The spell is checked only on the visible region of the #GtkTextView. Note
+that if a same #GtkTextBuffer is used for several views, the misspelled words
+are visible in all views, because the highlighting is achieved with a
+#GtkTextTag added to the buffer.
+
+If you don't use the gspell_text_view_basic_setup() function, you need to
+call gspell_text_buffer_set_spell_checker() to associate a #GspellChecker to
+the #GtkTextBuffer.
+
+Note that #GspellTextView extends the #GtkTextView class but without
+subclassing it, because the GtkSourceView library has already a #GtkTextView
+subclass.
+
+If you want a %PANGO_UNDERLINE_ERROR instead (a wavy underline), please fix
+[this bug](https://bugzilla.gnome.org/show_bug.cgi?id=763741) first.</doc>
+    </docsection>
   </namespace>
 </repository>

@@ -6651,6 +6651,124 @@ contact fields.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="e-book-query">
+      <doc xml:space="preserve"
+           filename="e-book-query.c"
+           line="24">This utility can be used to conveniently create search expressions
+which can later be used to query and filter results in the #EBookClient,
+#EBookClientView and #EBookClientCursor interfaces.</doc>
+    </docsection>
+    <docsection name="e-contact">
+      <doc xml:space="preserve"
+           filename="e-contact.c"
+           line="23">This subclass of #EVCard is a convenient interface for interacting with
+vCards. The #EBookClient, #EBookClientView and #EBookClientCursor return
+vCards in the form of an #EContact for your convenience.</doc>
+    </docsection>
+    <docsection name="e-phone-number">
+      <doc xml:space="preserve"
+           filename="e-phone-number.h"
+           line="27">This modules provides utility functions for parsing and formatting
+phone numbers. Under the hood it uses Google's libphonenumber.</doc>
+    </docsection>
+    <docsection name="e-source-backend-summary-setup">
+      <doc xml:space="preserve"
+           filename="e-source-backend-summary-setup.c"
+           line="22">The #ESourceBackendSummarySetup extension configures which #EContactFields
+should be in the summary and which of those fields should be optimized for
+quicker search results.
+
+Access the extension as follows:
+
+|[
+  #include &lt;libebook-contacts/libebook-contacts.h&gt;
+
+  ESourceBackendSummarySetup *extension;
+
+  extension = e_source_get_extension (source, E_SOURCE_EXTENSION_BACKEND_SUMMARY_SETUP);
+]|
+
+&lt;note&gt;&lt;para&gt;The summary configuration is expected to be setup in only one way for
+a given #ESource at creation time. Any configurations made after creation of the
+book in question will be ignored.&lt;/para&gt;&lt;/note&gt;</doc>
+    </docsection>
+    <docsection name="e-vcard">
+      <doc xml:space="preserve"
+           filename="e-vcard.c"
+           line="23">#EVCard is a low-level representation of a vCard, as specified in RFCs
+2425 and 2426 (for vCard version 3.0); this class only supports versions 2.1
+and 3.0 of the vCard standard.
+
+A vCard is an unordered set of attributes (otherwise known as properties),
+each with one or more values. The number of values an attribute has is
+determined by its type, and is given in the specification. Each attribute may
+also have zero or more named parameters, which provide metadata about its
+value.
+
+For example, the following line from a vCard:
+|[
+ADR;TYPE=WORK:;;100 Waters Edge;Baytown;LA;30314;United States of America
+]|
+is an &lt;code&gt;ADR&lt;/code&gt; attribute with 6 values giving the different
+components of the postal address. It has one parameter, &lt;code&gt;TYPE&lt;/code&gt;,
+which specifies that it’s a work address rather than a home address.
+
+Using the #EVCard API, this data is accessible as follows:
+&lt;example&gt;
+&lt;title&gt;Accessing a Multi-Valued Attribute&lt;/title&gt;
+&lt;programlisting&gt;
+EVCard *vcard;
+EVCardAttribute *attr;
+GList *param_values, *values;
+
+vcard = e_vcard_new_from_string (
+   "BEGIN:VCARD\n"
+   "VERSION:3.0\n"
+   "ADR;TYPE=WORK:;;100 Waters Edge;Baytown;LA;30314;United States of America\n"
+   "END:VCARD\n");
+attr = e_vcard_get_attribute (vcard, "ADR");
+
+g_assert_cmpstr (e_vcard_attribute_get_name (attr), ==, "ADR");
+g_assert (e_vcard_attribute_is_single_valued (attr) == FALSE);
+
+param_values = e_vcard_attribute_get_param (attr, "TYPE");
+g_assert_cmpuint (g_list_length (param_values), ==, 1);
+g_assert_cmpstr (param_values-&gt;data, ==, "WORK");
+
+values = e_vcard_attribute_get_values (attr);
+g_assert_cmpuint (g_list_length (values), ==, 6);
+g_assert_cmpstr (values-&gt;data, ==, "");
+g_assert_cmpstr (values-&gt;next-&gt;data, ==, "100 Waters Edge");
+g_assert_cmpstr (values-&gt;next-&gt;next-&gt;data, ==, "Baytown");
+/&lt;!-- --&gt;* etc. *&lt;!-- --&gt;/
+
+g_object_unref (vcard);
+&lt;/programlisting&gt;
+&lt;/example&gt;
+
+If a second &lt;code&gt;ADR&lt;/code&gt; attribute was present in the vCard, the above
+example would only ever return the first attribute. To access the values of
+other attributes of the same type, the entire attribute list must be iterated
+over using e_vcard_get_attributes(), then matching on
+e_vcard_attribute_get_name().
+
+vCard attribute values may be encoded in the vCard source, using base-64 or
+quoted-printable encoding. Such encoded values are automatically decoded when
+parsing the vCard, so the values returned by e_vcard_attribute_get_value()
+do not need further decoding. The ‘decoded’ functions,
+e_vcard_attribute_get_value_decoded() and
+e_vcard_attribute_get_values_decoded() are only relevant when adding
+attributes which use pre-encoded values and have their &lt;code&gt;ENCODING&lt;/code&gt;
+parameter set.
+
+String comparisons in #EVCard are almost universally case-insensitive.
+Attribute names, parameter names and parameter values are all compared
+case-insensitively. Only attribute values are case sensitive.
+
+#EVCard implements lazy parsing of its vCard data, so the first time its
+attributes are accessed may take slightly longer than normal to allow for the
+vCard to be parsed. This can be tested by calling e_vcard_is_parsed().</doc>
+    </docsection>
     <function name="name_western_parse"
               c:identifier="e_name_western_parse"
               moved-to="NameWestern.parse">

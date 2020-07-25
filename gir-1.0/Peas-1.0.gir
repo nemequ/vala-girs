@@ -3123,6 +3123,172 @@ loading a plugin.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="peas-activatable">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-activatable.c"
+           line="26">#PeasActivatable is an interface which should be implemented by plugins
+that should be activated on an object of a certain type (depending on the
+application). For instance, in a typical windowed application,
+#PeasActivatable plugin instances could be bound to individual toplevel
+windows.
+
+It is typical to use #PeasActivatable along with #PeasExtensionSet in order
+to activate and deactivate extensions automatically when plugins are loaded
+or unloaded.
+
+You can also use the code of this interface as a base for your own
+extension types, as illustrated by gedit's %GeditWindowActivatable and
+%GeditDocumentActivatable interfaces.</doc>
+    </docsection>
+    <docsection name="peas-engine">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-engine.c"
+           line="40">The #PeasEngine is the object which manages the plugins.
+
+Its role is twofold:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;
+    &lt;para&gt;it will fetch all the information about the available plugins
+    from all the registered plugin directories;&lt;/para&gt;
+  &lt;/listitem&gt;
+  &lt;listitem&gt;
+    &lt;para&gt;it will provide you an API to load, control and unload your
+    plugins and their extensions from within your application.&lt;/para&gt;
+  &lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+Since libpeas 1.22, @extension_type can be an Abstract #GType
+and not just an Interface #GType.</doc>
+    </docsection>
+    <docsection name="peas-extension">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-extension.c"
+           line="27">#PeasExtension is a proxy class used to access actual extensions
+implemented using various languages.  As such, the application writer will
+use #PeasExtension instances to call methods on extension provided by
+loaded plugins.
+
+To properly use the proxy instances, you will need GObject-introspection
+data for the #GType you want to use as an extension point.
+For instance, if you wish to use #PeasActivatable, you will need to
+put the following code excerpt in the engine initialization code, in order
+to load the required "Peas" typelib:
+
+|[
+g_irepository_require (g_irepository_get_default (),
+                       "Peas", "1.0", 0, NULL);
+]|
+
+You should proceed the same way for any namespace which provides types
+you want to use as extension points. GObject-introspection data is required
+for all the supported languages, even for C.
+
+#PeasExtension does not provide any way to access the underlying object.
+The main reason is that some loaders may not rely on proper GObject
+inheritance for the definition of extensions, and hence it would not be
+possible for libpeas to provide a functional GObject instance at all.
+Another reason is that it makes reference counting issues easier to deal
+with.
+
+See peas_extension_call() for more information.</doc>
+    </docsection>
+    <docsection name="peas-extension-base">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-extension-base.c"
+           line="28">#PeasExtensionBase can optionally be used as a base class for the extensions
+of your plugin. By inheriting from it, you will make your extension able to
+access the related #PeasPluginInfo, and especially the location where all
+the data of your plugin lives.
+
+Non-C extensions will usually not inherit from this class: Python
+plugins automatically get a "plugin_info" attribute that serves
+the same purpose.</doc>
+    </docsection>
+    <docsection name="peas-extension-set">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-extension-set.c"
+           line="34">A #PeasExtensionSet is an object which proxies method calls to a set
+of actual extensions.  The application writer will use these objects
+in order to call methods on several instances of an actual extension
+exported by all the currently loaded plugins.
+
+#PeasExtensionSet will automatically track loading and unloading of
+the plugins, and signal appearance and disappearance of new
+extension instances.  You should connect to those signals if you
+wish to call specific methods on loading or unloading time.
+
+Here is the code for a typical setup of #PeasExtensionSet with
+#PeasActivatable as the watched extension point, and #GtkWindow
+instances as the target objects:
+|[
+static void
+on_extension_added (PeasExtensionSet *set,
+                    PeasPluginInfo   *info,
+                    PeasActivatable  *activatable)
+{
+  peas_activatable_activate (activatable);
+}
+
+static void
+on_extension_removed (PeasExtensionSet *set,
+                      PeasPluginInfo   *info,
+                      PeasActivatable  *activatable)
+{
+  peas_activatable_deactivate (activatable);
+}
+
+PeasExtensionSet *
+setup_extension_set (PeasEngine *engine,
+                     GtkWindow  *window)
+{
+  PeasExtensionSet *set;
+
+  set = peas_extension_set_new (engine, PEAS_TYPE_ACTIVATABLE,
+                                "object", window, NULL);
+  peas_extension_set_foreach (set,
+                              (PeasExtensionSetForeachFunc) on_extension_added,
+                              NULL);
+  g_signal_connect (set, "extension-added",
+                    G_CALLBACK (on_extension_added), NULL);
+  g_signal_connect (set, "extension-removed",
+                    G_CALLBACK (on_extension_removed), NULL);
+  return set;
+}
+]|</doc>
+    </docsection>
+    <docsection name="peas-object-module">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-object-module.c"
+           line="33">#PeasObjectModule is a subclass of #GTypeModule which allows registration
+of extensions.  It will be used by C extensions implementors to register
+extension implementations from within the peas_register_types module
+function.
+
+Since libpeas 1.22, @extension_type can be an Abstract #GType
+and not just an Interface #GType.</doc>
+    </docsection>
+    <docsection name="peas-plugin-info">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-plugin-info.c"
+           line="39">A #PeasPluginInfo contains all the information available about a plugin.
+
+All this information comes from the related plugin info file, whose file
+extension is ".plugin". Here is an example of such a plugin file, in the
+#GKeyFile format:
+|[
+[Plugin]
+Module=helloworld
+Depends=foo;bar;baz
+Loader=python3
+Name=Hello World
+Description=Displays "Hello World"
+Authors=Steve Frécinaux &amp;lt;code@istique.net&amp;gt;
+Copyright=Copyright © 2009-10 Steve Frécinaux
+Website=https://wiki.gnome.org/Projects/Libpeas
+Help=http://library.gnome.org/devel/libpeas/stable/
+Hidden=false
+]|</doc>
+    </docsection>
     <function name="plugin_info_error_quark"
               c:identifier="peas_plugin_info_error_quark"
               moved-to="PluginInfo.error_quark">

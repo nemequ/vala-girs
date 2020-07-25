@@ -1260,6 +1260,59 @@ used by GTK.</doc>
         </parameter>
       </parameters>
     </function-macro>
+    <docsection name="GskRenderNode">
+      <doc xml:space="preserve"
+           filename="../gsk/gskrendernode.c"
+           line="19">#GskRenderNode is the basic block in a scene graph to be
+rendered using #GskRenderer.
+
+Each node has a parent, except the top-level node; each node may have
+children nodes.
+
+Each node has an associated drawing surface, which has the size of
+the rectangle set using gsk_render_node_set_bounds().
+
+Render nodes are meant to be transient; once they have been associated
+to a #GskRenderer it's safe to release any reference you have on them.
+All #GskRenderNodes are immutable, you can only specify their properties
+during construction.</doc>
+    </docsection>
+    <docsection name="GskRenderer">
+      <doc xml:space="preserve"
+           filename="../gsk/gskrenderer.c"
+           line="19">#GskRenderer is a class that renders a scene graph defined via a
+tree of #GskRenderNode instances.
+
+Typically you will use a #GskRenderer instance to repeatedly call
+gsk_renderer_render() to update the contents of its associated #GdkSurface.
+
+It is necessary to realize a #GskRenderer instance using gsk_renderer_realize()
+before calling gsk_renderer_render(), in order to create the appropriate
+windowing system resources needed to render the scene.</doc>
+    </docsection>
+    <docsection name="GskRoundedRect">
+      <doc xml:space="preserve"
+           filename="../gsk/gskroundedrect.c"
+           line="19">#GskRoundedRect defines a rectangle with rounded corners, as is commonly
+used in drawing.
+
+Operations on a #GskRoundedRect will normalize the rectangle, to
+ensure that the bounds are normalized and that the corner sizes don't exceed
+the size of the rectangle. The algorithm used for normalizing corner sizes
+is described in [the CSS specification](https://drafts.csswg.org/css-backgrounds-3/#border-radius).</doc>
+    </docsection>
+    <docsection name="GskTransform">
+      <doc xml:space="preserve"
+           filename="../gsk/gsktransform.c"
+           line="21">#GskTransform is an object to describe transform matrices. Unlike
+#graphene_matrix_t, #GskTransform retains the steps in how a transform was
+constructed, and allows inspecting them. It is modeled after the way
+CSS describes transforms.
+
+#GskTransform objects are immutable and cannot be changed after creation.
+This means code can safely expose them as properties of objects without
+having to worry about others changing them.</doc>
+    </docsection>
     <function-macro name="IS_BROADWAY_RENDERER"
                     c:identifier="GSK_IS_BROADWAY_RENDERER"
                     introspectable="0">
@@ -2454,21 +2507,21 @@ node to a file for later inspection.</doc>
                    c:identifier="gsk_renderer_new_for_surface">
         <doc xml:space="preserve"
              filename="../gsk/gskrenderer.c"
-             line="577">Creates an appropriate #GskRenderer instance for the given @surface.
+             line="584">Creates an appropriate #GskRenderer instance for the given @surface.
 
 The renderer will be realized when it is returned.</doc>
         <source-position filename="../gsk/gskrenderer.h" line="42"/>
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve"
                filename="../gsk/gskrenderer.c"
-               line="585">a #GskRenderer</doc>
+               line="592">a #GskRenderer</doc>
           <type name="Renderer" c:type="GskRenderer*"/>
         </return-value>
         <parameters>
           <parameter name="surface" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gsk/gskrenderer.c"
-                 line="579">a #GdkSurface</doc>
+                 line="586">a #GdkSurface</doc>
             <type name="Gdk.Surface" c:type="GdkSurface*"/>
           </parameter>
         </parameters>
@@ -2476,20 +2529,20 @@ The renderer will be realized when it is returned.</doc>
       <method name="get_surface" c:identifier="gsk_renderer_get_surface">
         <doc xml:space="preserve"
              filename="../gsk/gskrenderer.c"
-             line="205">Retrieves the #GdkSurface set using gsk_renderer_realize(). If the renderer
+             line="208">Retrieves the #GdkSurface set using gsk_renderer_realize(). If the renderer
 has not been realized yet, %NULL will be returned.</doc>
         <source-position filename="../gsk/gskrenderer.h" line="45"/>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="../gsk/gskrenderer.c"
-               line="212">a #GdkSurface</doc>
+               line="215">a #GdkSurface</doc>
           <type name="Gdk.Surface" c:type="GdkSurface*"/>
         </return-value>
         <parameters>
           <instance-parameter name="renderer" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gsk/gskrenderer.c"
-                 line="207">a #GskRenderer</doc>
+                 line="210">a #GskRenderer</doc>
             <type name="Renderer" c:type="GskRenderer*"/>
           </instance-parameter>
         </parameters>
@@ -2497,19 +2550,19 @@ has not been realized yet, %NULL will be returned.</doc>
       <method name="is_realized" c:identifier="gsk_renderer_is_realized">
         <doc xml:space="preserve"
              filename="../gsk/gskrenderer.c"
-             line="242">Checks whether the @renderer is realized or not.</doc>
+             line="245">Checks whether the @renderer is realized or not.</doc>
         <source-position filename="../gsk/gskrenderer.h" line="54"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../gsk/gskrenderer.c"
-               line="248">%TRUE if the #GskRenderer was realized, and %FALSE otherwise</doc>
+               line="251">%TRUE if the #GskRenderer was realized, and %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="renderer" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gsk/gskrenderer.c"
-                 line="244">a #GskRenderer</doc>
+                 line="247">a #GskRenderer</doc>
             <type name="Renderer" c:type="GskRenderer*"/>
           </instance-parameter>
         </parameters>
@@ -2517,7 +2570,7 @@ has not been realized yet, %NULL will be returned.</doc>
       <method name="realize" c:identifier="gsk_renderer_realize" throws="1">
         <doc xml:space="preserve"
              filename="../gsk/gskrenderer.c"
-             line="260">Creates the resources needed by the @renderer to render the scene
+             line="263">Creates the resources needed by the @renderer to render the scene
 graph.</doc>
         <source-position filename="../gsk/gskrenderer.h" line="48"/>
         <return-value transfer-ownership="none">
@@ -2527,13 +2580,13 @@ graph.</doc>
           <instance-parameter name="renderer" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gsk/gskrenderer.c"
-                 line="262">a #GskRenderer</doc>
+                 line="265">a #GskRenderer</doc>
             <type name="Renderer" c:type="GskRenderer*"/>
           </instance-parameter>
           <parameter name="surface" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gsk/gskrenderer.c"
-                 line="263">the #GdkSurface renderer will be used on</doc>
+                 line="266">the #GdkSurface renderer will be used on</doc>
             <type name="Gdk.Surface" c:type="GdkSurface*"/>
           </parameter>
         </parameters>
@@ -2541,7 +2594,7 @@ graph.</doc>
       <method name="render" c:identifier="gsk_renderer_render">
         <doc xml:space="preserve"
              filename="../gsk/gskrenderer.c"
-             line="379">Renders the scene graph, described by a tree of #GskRenderNode instances,
+             line="382">Renders the scene graph, described by a tree of #GskRenderNode instances,
 ensuring that the given @region gets redrawn.
 
 Renderers must ensure that changes of the contents given by the @root
@@ -2559,13 +2612,13 @@ the rendering is in progress.</doc>
           <instance-parameter name="renderer" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gsk/gskrenderer.c"
-                 line="381">a #GskRenderer</doc>
+                 line="384">a #GskRenderer</doc>
             <type name="Renderer" c:type="GskRenderer*"/>
           </instance-parameter>
           <parameter name="root" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gsk/gskrenderer.c"
-                 line="382">a #GskRenderNode</doc>
+                 line="385">a #GskRenderNode</doc>
             <type name="RenderNode" c:type="GskRenderNode*"/>
           </parameter>
           <parameter name="region"
@@ -2574,7 +2627,7 @@ the rendering is in progress.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../gsk/gskrenderer.c"
-                 line="383">the #cairo_region_t that must be redrawn or %NULL
+                 line="386">the #cairo_region_t that must be redrawn or %NULL
     for the whole window</doc>
             <type name="cairo.Region" c:type="const cairo_region_t*"/>
           </parameter>
@@ -2583,7 +2636,7 @@ the rendering is in progress.</doc>
       <method name="render_texture" c:identifier="gsk_renderer_render_texture">
         <doc xml:space="preserve"
              filename="../gsk/gskrenderer.c"
-             line="316">Renders the scene graph, described by a tree of #GskRenderNode instances,
+             line="319">Renders the scene graph, described by a tree of #GskRenderNode instances,
 to a #GdkTexture.
 
 The @renderer will acquire a reference on the #GskRenderNode tree while
@@ -2595,20 +2648,20 @@ transform node and pass that node instead.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../gsk/gskrenderer.c"
-               line="331">a #GdkTexture with the rendered contents of @root.</doc>
+               line="334">a #GdkTexture with the rendered contents of @root.</doc>
           <type name="Gdk.Texture" c:type="GdkTexture*"/>
         </return-value>
         <parameters>
           <instance-parameter name="renderer" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gsk/gskrenderer.c"
-                 line="318">a realized #GskRenderer</doc>
+                 line="321">a realized #GskRenderer</doc>
             <type name="Renderer" c:type="GskRenderer*"/>
           </instance-parameter>
           <parameter name="root" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gsk/gskrenderer.c"
-                 line="319">a #GskRenderNode</doc>
+                 line="322">a #GskRenderNode</doc>
             <type name="RenderNode" c:type="GskRenderNode*"/>
           </parameter>
           <parameter name="viewport"
@@ -2617,7 +2670,7 @@ transform node and pass that node instead.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../gsk/gskrenderer.c"
-                 line="320">the section to draw or %NULL to use @root's bounds</doc>
+                 line="323">the section to draw or %NULL to use @root's bounds</doc>
             <type name="Graphene.Rect" c:type="const graphene_rect_t*"/>
           </parameter>
         </parameters>
@@ -2625,7 +2678,7 @@ transform node and pass that node instead.</doc>
       <method name="unrealize" c:identifier="gsk_renderer_unrealize">
         <doc xml:space="preserve"
              filename="../gsk/gskrenderer.c"
-             line="293">Releases all the resources created by gsk_renderer_realize().</doc>
+             line="296">Releases all the resources created by gsk_renderer_realize().</doc>
         <source-position filename="../gsk/gskrenderer.h" line="52"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -2634,7 +2687,7 @@ transform node and pass that node instead.</doc>
           <instance-parameter name="renderer" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gsk/gskrenderer.c"
-                 line="295">a #GskRenderer</doc>
+                 line="298">a #GskRenderer</doc>
             <type name="Renderer" c:type="GskRenderer*"/>
           </instance-parameter>
         </parameters>

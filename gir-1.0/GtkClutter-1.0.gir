@@ -1004,6 +1004,89 @@ guaranteed to be initialized.</doc>
         <type name="GLib.OptionGroup" c:type="GOptionGroup*"/>
       </return-value>
     </function>
+    <docsection name="gtk-clutter-actor">
+      <doc xml:space="preserve"
+           filename="../clutter-gtk/gtk-clutter-actor.c"
+           line="25">#GtkClutterActor is a #ClutterContainer that also allows embedding
+any #GtkWidget in a Clutter scenegraph.
+
+#GtkClutterActor only allows embedding #GtkWidget&lt;!-- --&gt;s when inside
+the #ClutterStage provided by a #GtkClutterEmbed: it is not possible to
+use #GtkClutterActor in a #ClutterStage handled by Clutter alone.</doc>
+    </docsection>
+    <docsection name="gtk-clutter-embed">
+      <doc xml:space="preserve"
+           filename="../clutter-gtk/gtk-clutter-embed.c"
+           line="23">#GtkClutterEmbed is a GTK+ widget embedding a #ClutterStage inside
+a GTK+ application.
+
+By using a #GtkClutterEmbed widget is possible to build, show and
+interact with a scene built using Clutter inside a GTK+ application.
+
+## Event handling with GtkClutterEmbed
+
+Due to re-entrancy concerns, you should not use GTK event-related
+API from within event handling signals emitted by Clutter actors
+inside a #GtkClutterEmbed.
+
+Event-related API, like the GTK drag and drop functions, or the
+GTK grab ones, cause events to be processed inside the GDK event
+loop; #GtkClutterEmbed and the Clutter event loop may use those
+events to generate Clutter events, and thus emit signals on
+#ClutterActors. If you use the event-related signals of a
+#ClutterActor to call the GTK API, one of the two event loops
+will try to re-enter into each other, and either cause a crash
+or simply block your application.
+
+To avoid this behavior, you can either:
+
+ - only use GTK+ event handling signals to call event-related
+   GTK functions
+ - let the main loop re-enter, by calling event-related GTK
+   functions from within an idle or a timeout callback
+
+You should also make sure you're not using GTK widgets that call
+event-related GTK API, like the grab functions in a #GtkMenu, in
+response to Clutter actor events.
+
+## Using GtkClutterEmbed as a container
+
+Though #GtkClutterEmbed is a #GtkContainer subclass, it is not a
+real GTK+ container; #GtkClutterEmbed is required to implement the
+#GtkContainer virtual functions in order to embed a #GtkWidget
+through the #GtkClutterActor class. Calling gtk_container_add()
+on a #GtkClutterEmbed will trigger an assertion. It is strongly
+advised not to override the #GtkContainer implementation when
+subclassing #GtkClutterEmbed, to avoid breaking internal state.</doc>
+    </docsection>
+    <docsection name="gtk-clutter-texture">
+      <doc xml:space="preserve"
+           filename="../clutter-gtk/gtk-clutter-texture.c"
+           line="22">#GtkClutterTexture is a simple sub-class of #ClutterTexture that
+integrates nicely with #GdkPixbuf, #GtkIconTheme and stock icons.</doc>
+    </docsection>
+    <docsection name="gtk-clutter-util">
+      <doc xml:space="preserve"
+           filename="../clutter-gtk/gtk-clutter-util.c"
+           line="44">In order to properly integrate a Clutter scene into a GTK+ applications
+a certain degree of state must be retrieved from GTK+ itself.
+
+Clutter-GTK provides API for easing the process of synchronizing colors
+with the current GTK+ theme and for loading image sources from #GdkPixbuf,
+GTK+ stock items and icon themes.</doc>
+    </docsection>
+    <docsection name="gtk-clutter-window">
+      <doc xml:space="preserve"
+           filename="../clutter-gtk/gtk-clutter-window.c"
+           line="22">#GtkClutterWindow is a #GtkWindow sub-class that embeds a Clutter stage.
+
+#GtkClutterWindow behaves exactly like a #GtkWindow, except that its
+child is automatically embedded inside a #GtkClutterActor and it is
+thus part of the embedded #ClutterStage.
+
+Clutter actors can be added to the same stage by calling
+gtk_clutter_window_get_stage().</doc>
+    </docsection>
     <function name="init" c:identifier="gtk_clutter_init">
       <doc xml:space="preserve"
            filename="../clutter-gtk/gtk-clutter-util.c"
