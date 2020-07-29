@@ -45091,6 +45091,162 @@ webkit_web_context_set_web_extensions_initialization_user_data().</doc>
       <source-position filename="Source/WebKit/WebProcess/InjectedBundle/API/gtk/WebKitWebHitTestResult.h"
                        line="43"/>
     </record>
+    <docsection name="WebKitContextMenu">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/Shared/API/glib/WebKitContextMenu.cpp"
+           line="33">#WebKitContextMenu represents a context menu containing
+#WebKitContextMenuItem&lt;!-- --&gt;s in a #WebKitWebView.
+
+When a #WebKitWebView is about to display the context menu, it
+emits the #WebKitWebView::context-menu signal, which has the
+#WebKitContextMenu as an argument. You can modify it, adding new
+submenus that you can create with webkit_context_menu_new(), adding
+new #WebKitContextMenuItem&lt;!-- --&gt;s with
+webkit_context_menu_prepend(), webkit_context_menu_append() or
+webkit_context_menu_insert(), maybe after having removed the
+existing ones with webkit_context_menu_remove_all().</doc>
+    </docsection>
+    <docsection name="WebKitContextMenuItem">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/Shared/API/glib/WebKitContextMenuItem.cpp"
+           line="39">The #WebKitContextMenu is composed of #WebKitContextMenuItem&lt;!--
+--&gt;s. These items can be created from a #GtkAction, from a
+#WebKitContextMenuAction or from a #WebKitContextMenuAction and a
+label. These #WebKitContextMenuAction&lt;!-- --&gt;s denote stock actions
+for the items. You can also create separators and submenus.</doc>
+    </docsection>
+    <docsection name="WebKitHitTestResult">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/Shared/API/glib/WebKitHitTestResult.cpp"
+           line="31">A Hit Test is an operation to get context information about a given
+point in a #WebKitWebView. #WebKitHitTestResult represents the
+result of a Hit Test. It provides context information about what is
+at the coordinates of the Hit Test, such as if there's a link,
+an image or a media.
+
+You can get the context of the HitTestResult with
+webkit_hit_test_result_get_context() that returns a bitmask of
+#WebKitHitTestResultContext flags. You can also use
+webkit_hit_test_result_context_is_link(), webkit_hit_test_result_context_is_image() and
+webkit_hit_test_result_context_is_media() to determine whether there's
+a link, image or a media element at the coordinates of the Hit Test.
+Note that it's possible that several #WebKitHitTestResultContext flags
+are active at the same time, for example if there's a link containing an image.
+
+When the mouse is moved over a #WebKitWebView a Hit Test is performed
+for the mouse coordinates and #WebKitWebView::mouse-target-changed
+signal is emitted with a #WebKitHitTestResult.</doc>
+    </docsection>
+    <docsection name="WebKitURIRequest">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/Shared/API/glib/WebKitURIRequest.cpp"
+           line="37">A #WebKitURIRequest can be created with a URI using the
+webkit_uri_request_new() method, and you can get the URI of an
+existing request with the webkit_uri_request_get_uri() one.</doc>
+    </docsection>
+    <docsection name="WebKitURIResponse">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/Shared/API/glib/WebKitURIResponse.cpp"
+           line="31">A #WebKitURIResponse contains information such as the URI, the
+status code, the content length, the mime type, the HTTP status or
+the suggested filename.</doc>
+    </docsection>
+    <docsection name="WebKitUserMessage">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/Shared/API/glib/WebKitUserMessage.cpp"
+           line="39">A WebKitUserMessage is a message that can be used for the communication between the UI process
+and web extensions. A WebKitUserMessage always has a name, and it can also include parameters and
+UNIX file descriptors. Messages can be sent from a #WebKitWebContext to all #WebKitWebExtension&lt;!-- --&gt;s,
+from a #WebKitWebExtension to its corresponding #WebKitWebContext, and from a #WebKitWebView to its
+corresponding #WebKitWebPage (and vice versa). One to one messages can be replied to directly with
+webkit_user_message_send_reply().</doc>
+    </docsection>
+    <docsection name="WebKitWebEditor">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/WebProcess/InjectedBundle/API/glib/WebKitWebEditor.cpp"
+           line="30">The WebKitWebEditor provides access to various editing capabilities of
+a #WebKitWebPage such as a possibility to react to the current selection in
+#WebKitWebPage.</doc>
+    </docsection>
+    <docsection name="WebKitWebExtension">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/WebProcess/InjectedBundle/API/glib/WebKitWebExtension.cpp"
+           line="39">WebKitWebExtension is a loadable module for the WebProcess. It allows you to execute code in the
+WebProcess and being able to use the DOM API, to change any request or to inject custom
+JavaScript code, for example.
+
+To create a WebKitWebExtension you should write a module with an initialization function that could
+be either webkit_web_extension_initialize() with prototype #WebKitWebExtensionInitializeFunction or
+webkit_web_extension_initialize_with_user_data() with prototype #WebKitWebExtensionInitializeWithUserDataFunction.
+This function has to be public and it has to use the #G_MODULE_EXPORT macro. It is called when the
+web process is initialized.
+
+&lt;informalexample&gt;&lt;programlisting&gt;
+static void
+web_page_created_callback (WebKitWebExtension *extension,
+                           WebKitWebPage      *web_page,
+                           gpointer            user_data)
+{
+    g_print ("Page %d created for %s\n",
+             webkit_web_page_get_id (web_page),
+             webkit_web_page_get_uri (web_page));
+}
+
+G_MODULE_EXPORT void
+webkit_web_extension_initialize (WebKitWebExtension *extension)
+{
+    g_signal_connect (extension, "page-created",
+                      G_CALLBACK (web_page_created_callback),
+                      NULL);
+}
+&lt;/programlisting&gt;&lt;/informalexample&gt;
+
+The previous piece of code shows a trivial example of an extension that notifies when
+a #WebKitWebPage is created.
+
+WebKit has to know where it can find the created WebKitWebExtension. To do so you
+should use the webkit_web_context_set_web_extensions_directory() function. The signal
+#WebKitWebContext::initialize-web-extensions is the recommended place to call it.
+
+To provide the initialization data used by the webkit_web_extension_initialize_with_user_data()
+function, you have to call webkit_web_context_set_web_extensions_initialization_user_data() with
+the desired data as parameter. You can see an example of this in the following piece of code:
+
+&lt;informalexample&gt;&lt;programlisting&gt;
+#define WEB_EXTENSIONS_DIRECTORY /&lt;!-- --&gt;* ... *&lt;!-- --&gt;/
+
+static void
+initialize_web_extensions (WebKitWebContext *context,
+                           gpointer          user_data)
+{
+  /&lt;!-- --&gt;* Web Extensions get a different ID for each Web Process *&lt;!-- --&gt;/
+  static guint32 unique_id = 0;
+
+  webkit_web_context_set_web_extensions_directory (
+     context, WEB_EXTENSIONS_DIRECTORY);
+  webkit_web_context_set_web_extensions_initialization_user_data (
+     context, g_variant_new_uint32 (unique_id++));
+}
+
+int main (int argc, char **argv)
+{
+  g_signal_connect (webkit_web_context_get_default (),
+                   "initialize-web-extensions",
+                    G_CALLBACK (initialize_web_extensions),
+                    NULL);
+
+  GtkWidget *view = webkit_web_view_new ();
+
+  /&lt;!-- --&gt;* ... *&lt;!-- --&gt;/
+}
+&lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
+    </docsection>
+    <docsection name="WebKitWebHitTestResult">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/WebProcess/InjectedBundle/API/glib/WebKitWebHitTestResult.cpp"
+           line="34">WebKitWebHitTestResult extends #WebKitHitTestResult to provide information
+about the #WebKitDOMNode in the coordinates of the Hit Test.</doc>
+    </docsection>
     <class name="WebPage"
            c:symbol-prefix="web_page"
            c:type="WebKitWebPage"
