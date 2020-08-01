@@ -2196,6 +2196,8 @@ namespace Camel {
 		public unowned Camel.Folder? get_vee_uid_folder (string vee_message_uid);
 		[Version (since = "3.2")]
 		public void ignore_next_changed_event (Camel.Folder subfolder);
+		[Version (since = "3.38")]
+		public void propagate_skipped_changes ();
 		public virtual void rebuild_folder (Camel.Folder subfolder, GLib.Cancellable? cancellable = null);
 		[Version (since = "3.28")]
 		public GLib.List<Camel.Folder> ref_folders ();

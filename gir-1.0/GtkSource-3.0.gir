@@ -19348,6 +19348,167 @@ renderer</doc>
     <record name="ViewPrivate" c:type="GtkSourceViewPrivate" disguised="1">
       <source-position filename="gtksourceview.h" line="48"/>
     </record>
+    <docsection name="buffer">
+      <doc xml:space="preserve"
+           filename="gtksourcebuffer.c"
+           line="51">A #GtkSourceBuffer object is the model for #GtkSourceView widgets.
+It extends the #GtkTextBuffer class by adding features useful to display
+and edit source code such as syntax highlighting and bracket matching. It
+also implements support for the undo/redo.
+
+To create a #GtkSourceBuffer use gtk_source_buffer_new() or
+gtk_source_buffer_new_with_language(). The second form is just a convenience
+function which allows you to initially set a #GtkSourceLanguage. You can also
+directly create a #GtkSourceView and get its #GtkSourceBuffer with
+gtk_text_view_get_buffer().
+
+The highlighting is enabled by default, but you can disable it with
+gtk_source_buffer_set_highlight_syntax().
+
+# Undo/Redo
+
+A custom #GtkSourceUndoManager can be implemented and set with
+gtk_source_buffer_set_undo_manager(). However the default implementation
+should be suitable for most uses, so you can use the API provided by
+#GtkSourceBuffer instead of using #GtkSourceUndoManager. By default, actions
+that can be undone or redone are defined as groups of operations between a
+call to gtk_text_buffer_begin_user_action() and
+gtk_text_buffer_end_user_action(). In general, this happens whenever the user
+presses any key which modifies the buffer. But the default undo manager will
+try to merge similar consecutive actions into one undo/redo level. The
+merging is done word by word, so after writing a new sentence (character by
+character), each undo will remove the previous word.
+
+The default undo manager remembers the "modified" state of the buffer, and
+restores it when an action is undone or redone. It can be useful in a text
+editor to know whether the file is saved. See gtk_text_buffer_get_modified()
+and gtk_text_buffer_set_modified().
+
+The default undo manager also restores the selected text (or cursor
+position), if the selection was related to the action. For example if the
+user selects some text and deletes it, an undo will restore the selection. On
+the other hand, if some text is selected but a deletion occurs elsewhere (the
+deletion was done programmatically), an undo will not restore the selection,
+it will only moves the cursor (the cursor is moved so that the user sees the
+undo's effect). Warning: the selection restoring behavior might change in the
+future.
+
+# Context Classes # {#context-classes}
+
+It is possible to retrieve some information from the syntax highlighting
+engine. The default context classes that are applied to regions of a
+#GtkSourceBuffer:
+ - &lt;emphasis&gt;comment&lt;/emphasis&gt;: the region delimits a comment;
+ - &lt;emphasis&gt;no-spell-check&lt;/emphasis&gt;: the region should not be spell checked;
+ - &lt;emphasis&gt;path&lt;/emphasis&gt;: the region delimits a path to a file;
+ - &lt;emphasis&gt;string&lt;/emphasis&gt;: the region delimits a string.
+
+Custom language definition files can create their own context classes,
+since the functions like gtk_source_buffer_iter_has_context_class() take
+a string parameter as the context class.
+
+#GtkSourceBuffer provides an API to access the context classes:
+gtk_source_buffer_iter_has_context_class(),
+gtk_source_buffer_get_context_classes_at_iter(),
+gtk_source_buffer_iter_forward_to_context_class_toggle() and
+gtk_source_buffer_iter_backward_to_context_class_toggle().
+
+And the #GtkSourceBuffer::highlight-updated signal permits to be notified
+when a context class region changes.
+
+Each context class has also an associated #GtkTextTag with the name
+&lt;emphasis&gt;gtksourceview:context-classes:&amp;lt;name&amp;gt;&lt;/emphasis&gt;. For example to
+retrieve the #GtkTextTag for the string context class, one can write:
+|[
+GtkTextTagTable *tag_table;
+GtkTextTag *tag;
+
+tag_table = gtk_text_buffer_get_tag_table (buffer);
+tag = gtk_text_tag_table_lookup (tag_table, "gtksourceview:context-classes:string");
+]|
+
+The tag must be used for read-only purposes.
+
+Accessing a context class via the associated #GtkTextTag is less
+convenient than the #GtkSourceBuffer API, because:
+ - The tag doesn't always exist, you need to listen to the
+   #GtkTextTagTable::tag-added and #GtkTextTagTable::tag-removed signals.
+ - Instead of the #GtkSourceBuffer::highlight-updated signal, you can listen
+   to the #GtkTextBuffer::apply-tag and #GtkTextBuffer::remove-tag signals.
+
+A possible use-case for accessing a context class via the associated
+#GtkTextTag is to read the region but without adding a hard dependency on the
+GtkSourceView library (for example for a spell-checking library that wants to
+read the no-spell-check region).</doc>
+    </docsection>
+    <docsection name="completion">
+      <doc xml:space="preserve"
+           filename="gtksourcecompletion.c"
+           line="24">The completion system helps the user when he writes some text, such
+as words, command names, functions, and suchlike. Proposals can be
+shown, to complete the text the user is writing. Each proposal can
+contain an additional piece of information, that is displayed when
+the "Details" button is active.
+
+Proposals are created via a #GtkSourceCompletionProvider. There can
+be for example a provider to complete words (see
+#GtkSourceCompletionWords), another provider for the completion of
+function's names, etc. To add a provider, call
+gtk_source_completion_add_provider().
+
+When the completion is activated, a #GtkSourceCompletionContext object is
+created. The providers are asked whether they match the context, with
+gtk_source_completion_provider_match(). If a provider doesn't match the
+context, it will not be visible in the completion window. On the
+other hand, if the provider matches the context, its proposals will
+be displayed.
+
+When several providers match, they are all shown in the completion
+window, but one can switch between providers: see the
+#GtkSourceCompletion::move-page signal. It is also possible to
+activate the first proposals with key bindings, see the
+#GtkSourceCompletion:accelerators property.
+
+The #GtkSourceCompletionProposal interface represents a proposal.
+The #GtkSourceCompletionItem class is a simple implementation of this
+interface.
+
+If a proposal contains extra information (see
+gtk_source_completion_provider_get_info_widget()), it will be
+displayed in a #GtkSourceCompletionInfo window, which appears when
+the "Details" button is clicked.
+
+A #GtkSourceCompletionInfo window can also be used to display
+calltips. When no proposals are available, it can be useful to
+display extra information like a function's prototype (number of
+parameters, types of parameters, etc).
+
+Each #GtkSourceView object is associated with a #GtkSourceCompletion
+instance. This instance can be obtained with
+gtk_source_view_get_completion(). The #GtkSourceView class contains also the
+#GtkSourceView::show-completion signal.
+
+A same #GtkSourceCompletionProvider object can be used for several
+#GtkSourceCompletion.
+
+# GtkSourceCompletion as GtkBuildable
+
+The GtkSourceCompletion implementation of the #GtkBuildable interface exposes
+the info window object (see gtk_source_completion_get_info_window()) with the
+internal-child "info_window".
+
+An example of a UI definition fragment with GtkSourceCompletion:
+|[
+&lt;object class="GtkSourceCompletion"&gt;
+  &lt;property name="select_on_show"&gt;False&lt;/property&gt;
+  &lt;child internal-child="info_window"&gt;
+    &lt;object class="GtkSourceCompletionInfo"&gt;
+      &lt;property name="border_width"&gt;6&lt;/property&gt;
+    &lt;/object&gt;
+  &lt;/child&gt;
+&lt;/object&gt;
+]|</doc>
+    </docsection>
     <function name="completion_error_quark"
               c:identifier="gtk_source_completion_error_quark"
               moved-to="CompletionError.quark">
@@ -19355,6 +19516,125 @@ renderer</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
+    <docsection name="completioncontext">
+      <doc xml:space="preserve"
+           filename="gtksourcecompletioncontext.c"
+           line="22">Initially, the completion window is hidden. For a completion to occur, it has
+to be activated. The different possible activations are listed in
+#GtkSourceCompletionActivation. When an activation occurs, a
+#GtkSourceCompletionContext object is created, and the eligible providers are
+asked to add proposals with gtk_source_completion_context_add_proposals().
+
+If no proposals are added, the completion window remains hidden, and the
+context is destroyed.
+
+On the other hand, if proposals are added, the completion window becomes
+visible, and the user can choose a proposal. If the user is not happy with
+the shown proposals, he or she can insert or delete characters, to modify the
+completion context and therefore hoping to see the proposal he or she wants.
+This means that when an insertion or deletion occurs in the #GtkTextBuffer
+when the completion window is visible, the eligible providers are again asked
+to add proposals. The #GtkSourceCompletionContext:activation remains the
+same in this case.
+
+When the completion window is hidden, the interactive completion is triggered
+only on insertion in the buffer, not on deletion. Once the completion window
+is visible, then on each insertion or deletion, there is a new population and
+the providers are asked to add proposals. If there are no more proposals, the
+completion window disappears. So if you want to keep the completion window
+visible, but there are no proposals, you can insert a dummy proposal named
+"No proposals". For example, the user types progressively the name of
+a function, and some proposals appear. The user types a bad character and
+there are no proposals anymore. What the user wants is to delete the last
+character, and see the previous proposals. If the completion window
+disappears, the previous proposals will not reappear on the character
+deletion.
+
+A #GtkTextIter is associated with the context, this is where the completion
+takes place. With this #GtkTextIter, you can get the associated
+#GtkTextBuffer with gtk_text_iter_get_buffer().</doc>
+    </docsection>
+    <docsection name="completioninfo">
+      <doc xml:space="preserve"
+           filename="gtksourcecompletioninfo.c"
+           line="24">This object can be used to show a calltip or help for the
+current completion proposal.
+
+The info window has always the same size as the natural size of its child
+widget, added with gtk_container_add().  If you want a fixed size instead, a
+possibility is to use a scrolled window, as the following example
+demonstrates.
+
+&lt;example&gt;
+  &lt;title&gt;Fixed size with a scrolled window.&lt;/title&gt;
+  &lt;programlisting&gt;
+GtkSourceCompletionInfo *info;
+GtkWidget *your_widget;
+GtkWidget *scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+
+gtk_widget_set_size_request (scrolled_window, 300, 200);
+gtk_container_add (GTK_CONTAINER (scrolled_window), your_widget);
+gtk_container_add (GTK_CONTAINER (info), scrolled_window);
+  &lt;/programlisting&gt;
+&lt;/example&gt;
+
+If the calltip is displayed on top of a certain widget, say a #GtkTextView,
+you should attach the calltip window to the #GtkTextView with
+gtk_window_set_attached_to().  By doing this, the calltip will be hidden when
+the #GtkWidget::focus-out-event signal is emitted by the #GtkTextView. You
+may also be interested by the #GtkTextBuffer:cursor-position property (when
+its value is modified). If you use the #GtkSourceCompletionInfo through the
+#GtkSourceCompletion machinery, you don't need to worry about this.</doc>
+    </docsection>
+    <docsection name="completionitem">
+      <doc xml:space="preserve"
+           filename="gtksourcecompletionitem.c"
+           line="23">The #GtkSourceCompletionItem class is a simple implementation of the
+#GtkSourceCompletionProposal interface.</doc>
+    </docsection>
+    <docsection name="completionproposal">
+      <doc xml:space="preserve"
+           filename="gtksourcecompletionproposal.c"
+           line="29">The proposal interface represents a completion item in the completion window.
+It provides information on how to display the completion item and what action
+should be taken when the completion item is activated.
+
+The proposal is displayed in the completion window with a label and
+optionally an icon.
+The label may be specified using plain text or markup by implementing
+the corresponding get function. Only one of those get functions
+should return a value different from %NULL.
+The icon may be specified as a #GdkPixbuf, as an icon name or as a #GIcon by
+implementing the corresponding get function. At most one of those get functions
+should return a value different from %NULL, if they all return %NULL no icon
+will be used.</doc>
+    </docsection>
+    <docsection name="completionprovider">
+      <doc xml:space="preserve"
+           filename="gtksourcecompletionprovider.c"
+           line="31">You must implement this interface to provide proposals to #GtkSourceCompletion
+
+The provider may be displayed in the completion window as a header row, showing
+its name and optionally an icon.
+The icon may be specified as a #GdkPixbuf, as an icon name or as a #GIcon by
+implementing the corresponding get function. At most one of those get functions
+should return a value different from %NULL, if they all return %NULL no icon
+will be used.</doc>
+    </docsection>
+    <docsection name="completionwords">
+      <doc xml:space="preserve"
+           filename="completion-providers/words/gtksourcecompletionwords.c"
+           line="23">The #GtkSourceCompletionWords is an example of an implementation of
+the #GtkSourceCompletionProvider interface. The proposals are words
+appearing in the registered #GtkTextBuffer&lt;!-- --&gt;s.</doc>
+    </docsection>
+    <docsection name="encoding">
+      <doc xml:space="preserve"
+           filename="gtksourceencoding.c"
+           line="31">The #GtkSourceEncoding boxed type represents a character encoding. It is used
+for example by #GtkSourceFile. Note that the text in GTK+ widgets is always
+encoded in UTF-8.</doc>
+    </docsection>
     <function name="encoding_get_all"
               c:identifier="gtk_source_encoding_get_all"
               moved-to="Encoding.get_all"
@@ -19448,6 +19728,17 @@ if not found.</doc>
         <type name="Encoding" c:type="const GtkSourceEncoding*"/>
       </return-value>
     </function>
+    <docsection name="file">
+      <doc xml:space="preserve"
+           filename="gtksourcefile.c"
+           line="31">A #GtkSourceFile object is the on-disk representation of a #GtkSourceBuffer.
+With a #GtkSourceFile, you can create and configure a #GtkSourceFileLoader
+and #GtkSourceFileSaver which take by default the values of the
+#GtkSourceFile properties (except for the file loader which auto-detect some
+properties). On a successful load or save operation, the #GtkSourceFile
+properties are updated. If an operation fails, the #GtkSourceFile properties
+have still the previous valid values.</doc>
+    </docsection>
     <function name="file_loader_error_quark"
               c:identifier="gtk_source_file_loader_error_quark"
               moved-to="FileLoaderError.quark">
@@ -19462,6 +19753,470 @@ if not found.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
+    <docsection name="fileloader">
+      <doc xml:space="preserve"
+           filename="gtksourcefileloader.c"
+           line="38">A #GtkSourceFileLoader object permits to load the contents of a #GFile or a
+#GInputStream into a #GtkSourceBuffer.
+
+A file loader should be used only for one load operation, including errors
+handling. If an error occurs, you can reconfigure the loader and relaunch the
+operation with gtk_source_file_loader_load_async().
+
+Running a #GtkSourceFileLoader is an undoable action for the
+#GtkSourceBuffer. That is, gtk_source_buffer_begin_not_undoable_action() and
+gtk_source_buffer_end_not_undoable_action() are called, which delete the
+undo/redo history.
+
+After a file loading, the buffer is reset to the contents provided by the
+#GFile or #GInputStream, so the buffer is set as “unmodified”, that is,
+gtk_text_buffer_set_modified() is called with %FALSE. If the contents isn't
+saved somewhere (for example if you load from stdin), then you should
+probably call gtk_text_buffer_set_modified() with %TRUE after calling
+gtk_source_file_loader_load_finish().</doc>
+    </docsection>
+    <docsection name="filesaver">
+      <doc xml:space="preserve"
+           filename="gtksourcefilesaver.c"
+           line="38">A #GtkSourceFileSaver object permits to save a #GtkSourceBuffer into a
+#GFile.
+
+A file saver should be used only for one save operation, including errors
+handling. If an error occurs, you can reconfigure the saver and relaunch the
+operation with gtk_source_file_saver_save_async().</doc>
+    </docsection>
+    <docsection name="gutter">
+      <doc xml:space="preserve"
+           filename="gtksourcegutter.c"
+           line="33">The #GtkSourceGutter object represents the left or right gutter of the text
+view. It is used by #GtkSourceView to draw the line numbers and
+#GtkSourceMark&lt;!-- --&gt;s that might be present on a line. By packing
+additional #GtkSourceGutterRenderer objects in the gutter, you can extend the
+gutter with your own custom drawings.
+
+To get a #GtkSourceGutter, use the gtk_source_view_get_gutter() function.
+
+The gutter works very much the same way as cells rendered in a #GtkTreeView.
+The concept is similar, with the exception that the gutter does not have an
+underlying #GtkTreeModel. The builtin line number renderer is at position
+#GTK_SOURCE_VIEW_GUTTER_POSITION_LINES (-30) and the marks renderer is at
+#GTK_SOURCE_VIEW_GUTTER_POSITION_MARKS (-20). The gutter sorts the renderers
+in ascending order, from left to right. So the marks are displayed on the
+right of the line numbers.</doc>
+    </docsection>
+    <docsection name="gutterrenderer">
+      <doc xml:space="preserve"
+           filename="gtksourcegutterrenderer.c"
+           line="32">A #GtkSourceGutterRenderer represents a column in a #GtkSourceGutter. The
+column contains one cell for each visible line of the #GtkTextBuffer. Due to
+text wrapping, a cell can thus span multiple lines of the #GtkTextView. In
+this case, #GtkSourceGutterRendererAlignmentMode controls the alignment of
+the cell.
+
+The gutter renderer must announce its #GtkSourceGutterRenderer:size. The
+height is determined by the text view height. The width must be determined by
+the gutter renderer. The width generally takes into account the entire text
+buffer. For instance, to display the line numbers, if the buffer contains 100
+lines, the gutter renderer will always set its width such as three digits can
+be printed, even if only the first 20 lines are shown. Another strategy is to
+take into account only the visible lines.  In this case, only two digits are
+necessary to display the line numbers of the first 20 lines. To take another
+example, the gutter renderer for #GtkSourceMark&lt;!-- --&gt;s doesn't need to take
+into account the text buffer to announce its width. It only depends on the
+icons size displayed in the gutter column.
+
+An horizontal and vertical padding can be added with
+gtk_source_gutter_renderer_set_padding().  The total width of a gutter
+renderer is its size (#GtkSourceGutterRenderer:size) plus two times the
+horizontal padding (#GtkSourceGutterRenderer:xpad).
+
+When the available size to render a cell is greater than the required size to
+render the cell contents, the cell contents can be aligned horizontally and
+vertically with gtk_source_gutter_renderer_set_alignment().
+
+The cells rendering occurs in three phases:
+- begin: the gtk_source_gutter_renderer_begin() function is called when some
+  cells need to be redrawn. It provides the associated region of the
+  #GtkTextBuffer. The cells need to be redrawn when the #GtkTextView is
+  scrolled, or when the state of the cells change (see
+  #GtkSourceGutterRendererState).
+- draw: gtk_source_gutter_renderer_draw() is called for each cell that needs
+  to be drawn.
+- end: finally, gtk_source_gutter_renderer_end() is called.</doc>
+    </docsection>
+    <docsection name="gutterrendererpixbuf">
+      <doc xml:space="preserve"
+           filename="gtksourcegutterrendererpixbuf.c"
+           line="30">A #GtkSourceGutterRendererPixbuf can be used to render an image in a cell of
+#GtkSourceGutter.</doc>
+    </docsection>
+    <docsection name="gutterrenderertext">
+      <doc xml:space="preserve"
+           filename="gtksourcegutterrenderertext.c"
+           line="29">A #GtkSourceGutterRendererText can be used to render text in a cell of
+#GtkSourceGutter.</doc>
+    </docsection>
+    <docsection name="language">
+      <doc xml:space="preserve"
+           filename="gtksourcelanguage.c"
+           line="43">A #GtkSourceLanguage represents a programming or markup language, affecting
+syntax highlighting and [context classes][context-classes].
+
+Use #GtkSourceLanguageManager to obtain a #GtkSourceLanguage instance, and
+gtk_source_buffer_set_language() to apply it to a #GtkSourceBuffer.</doc>
+    </docsection>
+    <docsection name="languagemanager">
+      <doc xml:space="preserve"
+           filename="gtksourcelanguagemanager.c"
+           line="36">#GtkSourceLanguageManager is an object which processes language description
+files and creates and stores #GtkSourceLanguage objects, and provides API to
+access them.
+Use gtk_source_language_manager_get_default() to retrieve the default
+instance of #GtkSourceLanguageManager, and
+gtk_source_language_manager_guess_language() to get a #GtkSourceLanguage for
+given file name and content type.</doc>
+    </docsection>
+    <docsection name="map">
+      <doc xml:space="preserve"
+           filename="gtksourcemap.c"
+           line="34">#GtkSourceMap is a widget that maps the content of a #GtkSourceView into
+a smaller view so the user can have a quick overview of the whole document.
+
+This works by connecting a #GtkSourceView to to the #GtkSourceMap using
+the #GtkSourceMap:view property or gtk_source_map_set_view().
+
+#GtkSourceMap is a #GtkSourceView object. This means that you can add a
+#GtkSourceGutterRenderer to a gutter in the same way you would for a
+#GtkSourceView. One example might be a #GtkSourceGutterRenderer that shows
+which lines have changed in the document.
+
+Additionally, it is desirable to match the font of the #GtkSourceMap and
+the #GtkSourceView used for editing. Therefore, #GtkSourceMap:font-desc
+should be used to set the target font. You will need to adjust this to the
+desired font size for the map. A 1pt font generally seems to be an
+appropriate font size. "Monospace 1" is the default. See
+pango_font_description_set_size() for how to alter the size of an existing
+#PangoFontDescription.</doc>
+    </docsection>
+    <docsection name="mark">
+      <doc xml:space="preserve"
+           filename="gtksourcemark.c"
+           line="31">A #GtkSourceMark marks a position in the text where you want to display
+additional info. It is based on #GtkTextMark and thus is still valid after
+the text has changed though its position may change.
+
+#GtkSourceMark&lt;!-- --&gt;s are organised in categories which you have to set
+when you create the mark. Each category can have a priority, a pixbuf and
+other associated attributes. See gtk_source_view_set_mark_attributes().
+The pixbuf will be displayed in the margin at the line where the mark
+residents if the #GtkSourceView:show-line-marks property is set to %TRUE. If
+there are multiple marks in the same line, the pixbufs will be drawn on top
+of each other. The mark with the highest priority will be drawn on top.</doc>
+    </docsection>
+    <docsection name="markattributes">
+      <doc xml:space="preserve"
+           filename="gtksourcemarkattributes.c"
+           line="32">#GtkSourceMarkAttributes is an object specifying attributes used by
+a #GtkSourceView to visually show lines marked with #GtkSourceMark&lt;!-- --&gt;s
+of a specific category. It allows you to define a background color of a line,
+an icon shown in gutter and tooltips.
+
+The background color is used as a background of a line where a mark is placed
+and it can be set with gtk_source_mark_attributes_set_background(). To check
+if any custom background color was defined and what color it is, use
+gtk_source_mark_attributes_get_background().
+
+An icon is a graphic element which is shown in the gutter of a view. An
+example use is showing a red filled circle in a debugger to show that a
+breakpoint was set in certain line. To get an icon that will be placed in
+a gutter, first a base for it must be specified and then
+gtk_source_mark_attributes_render_icon() must be called.
+There are several ways to specify a base for an icon:
+&lt;itemizedlist&gt;
+ &lt;listitem&gt;
+  &lt;para&gt;
+   gtk_source_mark_attributes_set_icon_name()
+  &lt;/para&gt;
+ &lt;/listitem&gt;
+ &lt;listitem&gt;
+  &lt;para&gt;
+   gtk_source_mark_attributes_set_stock_id()
+  &lt;/para&gt;
+ &lt;/listitem&gt;
+ &lt;listitem&gt;
+  &lt;para&gt;
+   gtk_source_mark_attributes_set_gicon()
+  &lt;/para&gt;
+ &lt;/listitem&gt;
+ &lt;listitem&gt;
+  &lt;para&gt;
+   gtk_source_mark_attributes_set_pixbuf()
+  &lt;/para&gt;
+ &lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+Using any of the above functions overrides the one used earlier. But note
+that a getter counterpart of earlier used function can still return some
+value, but it is just not used when rendering the proper icon.
+
+To provide meaningful tooltips for a given mark of a category, you should
+connect to #GtkSourceMarkAttributes::query-tooltip-text or
+#GtkSourceMarkAttributes::query-tooltip-markup where the latter
+takes precedence.</doc>
+    </docsection>
+    <docsection name="printcompositor">
+      <doc xml:space="preserve"
+           filename="gtksourceprintcompositor.c"
+           line="39">The #GtkSourcePrintCompositor object is used to compose a #GtkSourceBuffer
+for printing. You can set various configuration options to customize the
+printed output. #GtkSourcePrintCompositor is designed to be used with the
+high-level printing API of gtk+, i.e. #GtkPrintOperation.
+
+The margins specified in this object are the layout margins: they define the
+blank space bordering the printed area of the pages. They must not be
+confused with the "print margins", i.e. the parts of the page that the
+printer cannot print on, defined in the #GtkPageSetup objects. If the
+specified layout margins are smaller than the "print margins", the latter
+ones are used as a fallback by the #GtkSourcePrintCompositor object, so that
+the printed area is not clipped.</doc>
+    </docsection>
+    <docsection name="region">
+      <doc xml:space="preserve"
+           filename="gtksourceregion.c"
+           line="29">A #GtkSourceRegion permits to store a group of subregions of a
+#GtkTextBuffer. #GtkSourceRegion stores the subregions with pairs of
+#GtkTextMark's, so the region is still valid after insertions and deletions
+in the #GtkTextBuffer.
+
+The #GtkTextMark for the start of a subregion has a left gravity, while the
+#GtkTextMark for the end of a subregion has a right gravity.
+
+The typical use-case of #GtkSourceRegion is to scan a #GtkTextBuffer chunk by
+chunk, not the whole buffer at once to not block the user interface. The
+#GtkSourceRegion represents in that case the remaining region to scan. You
+can listen to the #GtkTextBuffer::insert-text and
+#GtkTextBuffer::delete-range signals to update the #GtkSourceRegion
+accordingly.
+
+To iterate through the subregions, you need to use a #GtkSourceRegionIter,
+for example:
+|[
+GtkSourceRegion *region;
+GtkSourceRegionIter region_iter;
+
+gtk_source_region_get_start_region_iter (region, &amp;region_iter);
+
+while (!gtk_source_region_iter_is_end (&amp;region_iter))
+{
+        GtkTextIter subregion_start;
+        GtkTextIter subregion_end;
+
+        if (!gtk_source_region_iter_get_subregion (&amp;region_iter,
+                                                   &amp;subregion_start,
+                                                   &amp;subregion_end))
+        {
+                break;
+        }
+
+        // Do something useful with the subregion.
+
+        gtk_source_region_iter_next (&amp;region_iter);
+}
+]|</doc>
+    </docsection>
+    <docsection name="searchcontext">
+      <doc xml:space="preserve"
+           filename="gtksourcesearchcontext.c"
+           line="41">A #GtkSourceSearchContext is used for the search and replace in a
+#GtkSourceBuffer. The search settings are represented by a
+#GtkSourceSearchSettings object. There can be a many-to-many relationship
+between buffers and search settings, with the search contexts in-between: a
+search settings object can be shared between several search contexts; and a
+buffer can contain several search contexts at the same time.
+
+The total number of search occurrences can be retrieved with
+gtk_source_search_context_get_occurrences_count(). To know the position of a
+certain match, use gtk_source_search_context_get_occurrence_position().
+
+The buffer is scanned asynchronously, so it doesn't block the user interface.
+For each search, the buffer is scanned at most once. After that, navigating
+through the occurrences doesn't require to re-scan the buffer entirely.
+
+To search forward, use gtk_source_search_context_forward() or
+gtk_source_search_context_forward_async() for the asynchronous version.
+The backward search is done similarly. To replace a search match, or all
+matches, use gtk_source_search_context_replace() and
+gtk_source_search_context_replace_all().
+
+The search occurrences are highlighted by default. To disable it, use
+gtk_source_search_context_set_highlight(). You can enable the search
+highlighting for several #GtkSourceSearchContext&lt;!-- --&gt;s attached to the
+same buffer. Moreover, each of those #GtkSourceSearchContext&lt;!-- --&gt;s can
+have a different text style associated. Use
+gtk_source_search_context_set_match_style() to specify the #GtkSourceStyle
+to apply on search matches.
+
+Note that the #GtkSourceSearchContext:highlight and
+#GtkSourceSearchContext:match-style properties are in the
+#GtkSourceSearchContext class, not #GtkSourceSearchSettings. Appearance
+settings should be tied to one, and only one buffer, as different buffers can
+have different style scheme associated (a #GtkSourceSearchSettings object
+can be bound indirectly to several buffers).
+
+The concept of "current match" doesn't exist yet. A way to highlight
+differently the current match is to select it.
+
+A search occurrence's position doesn't depend on the cursor position or other
+parameters. Take for instance the buffer "aaaa" with the search text "aa".
+The two occurrences are at positions [0:2] and [2:4]. If you begin to search
+at position 1, you will get the occurrence [2:4], not [1:3]. This is a
+prerequisite for regular expression searches. The pattern ".*" matches the
+entire line. If the cursor is at the middle of the line, you don't want the
+rest of the line as the occurrence, you want an entire line. (As a side note,
+regular expression searches can also match multiple lines.)
+
+In the GtkSourceView source code, there is an example of how to use the
+search and replace API: see the tests/test-search.c file. It is a mini
+application for the search and replace, with a basic user interface.</doc>
+    </docsection>
+    <docsection name="searchsettings">
+      <doc xml:space="preserve"
+           filename="gtksourcesearchsettings.c"
+           line="29">A #GtkSourceSearchSettings object represents the settings of a search. The
+search settings can be associated with one or several
+#GtkSourceSearchContext&lt;!-- --&gt;s.</doc>
+    </docsection>
+    <docsection name="spacedrawer">
+      <doc xml:space="preserve"
+           filename="gtksourcespacedrawer.c"
+           line="38">#GtkSourceSpaceDrawer provides a way to visualize white spaces, by drawing
+symbols.
+
+Call gtk_source_view_get_space_drawer() to get the #GtkSourceSpaceDrawer
+instance of a certain #GtkSourceView.
+
+By default, no white spaces are drawn because the
+#GtkSourceSpaceDrawer:enable-matrix is %FALSE.
+
+To draw white spaces, gtk_source_space_drawer_set_types_for_locations() can
+be called to set the #GtkSourceSpaceDrawer:matrix property (by default all
+space types are enabled at all locations). Then call
+gtk_source_space_drawer_set_enable_matrix().
+
+For a finer-grained method, there is also the GtkSourceTag's
+#GtkSourceTag:draw-spaces property.
+
+# Example
+
+To draw non-breaking spaces everywhere and draw all types of trailing spaces
+except newlines:
+|[
+gtk_source_space_drawer_set_types_for_locations (space_drawer,
+                                                 GTK_SOURCE_SPACE_LOCATION_ALL,
+                                                 GTK_SOURCE_SPACE_TYPE_NBSP);
+
+gtk_source_space_drawer_set_types_for_locations (space_drawer,
+                                                 GTK_SOURCE_SPACE_LOCATION_TRAILING,
+                                                 GTK_SOURCE_SPACE_TYPE_ALL &amp;
+                                                 ~GTK_SOURCE_SPACE_TYPE_NEWLINE);
+
+gtk_source_space_drawer_set_enable_matrix (space_drawer, TRUE);
+]|
+
+# Use-case: draw unwanted white spaces
+
+A possible use-case is to draw only unwanted white spaces. Examples:
+- Draw all trailing spaces.
+- If the indentation and alignment must be done with spaces, draw tabs.
+
+And non-breaking spaces can always be drawn, everywhere, to distinguish them
+from normal spaces.</doc>
+    </docsection>
+    <docsection name="style">
+      <doc xml:space="preserve"
+           filename="gtksourcestyle.c"
+           line="30">The #GtkSourceStyle structure is used to describe text attributes
+which are set when given style is used.</doc>
+    </docsection>
+    <docsection name="stylescheme">
+      <doc xml:space="preserve"
+           filename="gtksourcestylescheme.c"
+           line="36">#GtkSourceStyleScheme contains all the text styles to be used in
+#GtkSourceView and #GtkSourceBuffer. For instance, it contains text styles
+for syntax highlighting, it may contain foreground and background color for
+non-highlighted text, color for the line numbers, current line highlighting,
+bracket matching, etc.
+
+Style schemes are stored in XML files. The format of a scheme file is
+documented in the [style scheme reference][style-reference].
+
+The two style schemes with IDs "classic" and "tango" follow more closely the
+GTK+ theme (for example for the background color).</doc>
+    </docsection>
+    <docsection name="styleschemechooser">
+      <doc xml:space="preserve"
+           filename="gtksourcestyleschemechooser.c"
+           line="28">#GtkSourceStyleSchemeChooser is an interface that is implemented by widgets
+for choosing style schemes.
+
+In GtkSourceView, the main widgets that implement this interface are
+#GtkSourceStyleSchemeChooserWidget and #GtkSourceStyleSchemeChooserButton.</doc>
+    </docsection>
+    <docsection name="styleschemechooserbutton">
+      <doc xml:space="preserve"
+           filename="gtksourcestyleschemechooserbutton.c"
+           line="32">The #GtkSourceStyleSchemeChooserButton is a button which displays
+the currently selected style scheme and allows to open a style scheme
+selection dialog to change the style scheme.
+It is suitable widget for selecting a style scheme in a preference dialog.
+
+In #GtkSourceStyleSchemeChooserButton, a #GtkSourceStyleSchemeChooserWidget
+is used to provide a dialog for selecting style schemes.</doc>
+    </docsection>
+    <docsection name="styleschemechooserwidget">
+      <doc xml:space="preserve"
+           filename="gtksourcestyleschemechooserwidget.c"
+           line="35">The #GtkSourceStyleSchemeChooserWidget widget lets the user select a
+style scheme. By default, the chooser presents a predefined list
+of style schemes.
+
+To change the initially selected style scheme,
+use gtk_source_style_scheme_chooser_set_style_scheme().
+To get the selected style scheme
+use gtk_source_style_scheme_chooser_get_style_scheme().</doc>
+    </docsection>
+    <docsection name="styleschememanager">
+      <doc xml:space="preserve"
+           filename="gtksourcestyleschememanager.c"
+           line="32">Object which provides access to #GtkSourceStyleScheme&lt;!-- --&gt;s.</doc>
+    </docsection>
+    <docsection name="tag">
+      <doc xml:space="preserve"
+           filename="gtksourcetag.c"
+           line="30">#GtkSourceTag is a subclass of #GtkTextTag that adds properties useful for
+the GtkSourceView library.
+
+If, for a certain tag, #GtkTextTag is sufficient, it's better that you create
+a #GtkTextTag, not a #GtkSourceTag.</doc>
+    </docsection>
+    <docsection name="undomanager">
+      <doc xml:space="preserve"
+           filename="gtksourceundomanager.c"
+           line="35">For most uses it isn't needed to use #GtkSourceUndoManager. #GtkSourceBuffer
+already provides an API and a default implementation for the undo/redo.
+
+For specific needs, the #GtkSourceUndoManager interface can be implemented to
+provide custom undo management. Use gtk_source_buffer_set_undo_manager() to
+install a custom undo manager for a particular #GtkSourceBuffer.
+
+Use gtk_source_undo_manager_can_undo_changed() and
+gtk_source_undo_manager_can_redo_changed() when respectively the undo state
+or redo state of the undo stack has changed.</doc>
+    </docsection>
+    <docsection name="utils">
+      <doc xml:space="preserve"
+           filename="gtksourceutils.c"
+           line="27">Utilities functions.</doc>
+    </docsection>
     <function name="utils_escape_search_text"
               c:identifier="gtk_source_utils_escape_search_text"
               version="3.10">
@@ -19528,5 +20283,41 @@ See also: gtk_source_utils_escape_search_text().</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="view">
+      <doc xml:space="preserve"
+           filename="gtksourceview.c"
+           line="56">#GtkSourceView is the main class of the GtkSourceView library.
+Use a #GtkSourceBuffer to display text with a #GtkSourceView.
+
+This class provides:
+ - Show the line numbers;
+ - Show a right margin;
+ - Highlight the current line;
+ - Indentation settings;
+ - Configuration for the Home and End keyboard keys;
+ - Configure and show line marks;
+ - And a few other things.
+
+An easy way to test all these features is to use the test-widget mini-program
+provided in the GtkSourceView repository, in the tests/ directory.
+
+# GtkSourceView as GtkBuildable
+
+The GtkSourceView implementation of the #GtkBuildable interface exposes the
+#GtkSourceView:completion object with the internal-child "completion".
+
+An example of a UI definition fragment with GtkSourceView:
+|[
+&lt;object class="GtkSourceView" id="source_view"&gt;
+  &lt;property name="tab_width"&gt;4&lt;/property&gt;
+  &lt;property name="auto_indent"&gt;True&lt;/property&gt;
+  &lt;child internal-child="completion"&gt;
+    &lt;object class="GtkSourceCompletion"&gt;
+      &lt;property name="select_on_show"&gt;False&lt;/property&gt;
+    &lt;/object&gt;
+  &lt;/child&gt;
+&lt;/object&gt;
+]|</doc>
+    </docsection>
   </namespace>
 </repository>

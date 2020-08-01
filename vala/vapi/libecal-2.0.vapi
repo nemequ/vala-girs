@@ -981,6 +981,9 @@ namespace ECal {
 	[CCode (cheader_filename = "libecal/libecal.h", instance_pos = 1.9)]
 	[Version (since = "3.34")]
 	public delegate bool ComponentPropertyBagFilterFunc (ICal.Property property);
+	[CCode (cheader_filename = "libecal/libecal.h", has_target = false)]
+	[Version (since = "3.38")]
+	public delegate void RecurFormatDateTimeFunc (ICal.Time itt, string buffer, int buffer_size);
 	[CCode (cheader_filename = "libecal/libecal.h", instance_pos = 3.9)]
 	[Version (since = "3.34")]
 	public delegate bool RecurInstanceCb (ICal.Component icomp, ICal.Time instance_start, ICal.Time instance_end, GLib.Cancellable? cancellable = null) throws GLib.Error;

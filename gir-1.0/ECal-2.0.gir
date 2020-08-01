@@ -13837,6 +13837,38 @@ The flags can be ignored when the operation or the backend don't support it.</do
    otherwise returns either the recurrence description or at least text like "The meeting recurs"</doc>
       </member>
     </bitfield>
+    <callback name="RecurFormatDateTimeFunc"
+              c:type="ECalRecurFormatDateTimeFunc"
+              version="3.38">
+      <doc xml:space="preserve"
+           filename="e-cal-recur.h"
+           line="117">Format the date/time value from @itt into @buffer, whose size cannot
+exceed @buffer_size letters.</doc>
+      <source-position filename="e-cal-recur.h" line="128"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="itt" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="e-cal-recur.h"
+               line="119">an #ICalTime to format to string</doc>
+          <type name="ICalGLib.Time" c:type="ICalTime*"/>
+        </parameter>
+        <parameter name="buffer" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="e-cal-recur.h"
+               line="120">a buffer to fill with the result</doc>
+          <type name="utf8" c:type="gchar*"/>
+        </parameter>
+        <parameter name="buffer_size" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="e-cal-recur.h"
+               line="121">the @buffer size, in bytes, not counting the NUL-terminator character</doc>
+          <type name="gint" c:type="gint"/>
+        </parameter>
+      </parameters>
+    </callback>
     <callback name="RecurInstanceCb"
               c:type="ECalRecurInstanceCb"
               version="3.34"
@@ -15954,6 +15986,54 @@ and returns the matching TZID, or %NULL if none found</doc>
               version="3.30">
       <doc xml:space="preserve"
            filename="e-cal-recur.c"
+           line="5913">Describes some simple types of recurrences in a human-readable and localized way.
+The @flags influence the output format and what to do when the @icalcomp
+contains more complicated recurrence, some which the function cannot describe.
+
+The @week_start_day is used for weekly recurrences, to start the list of selected
+days at that day.
+
+Uses e_time_format_date_and_time() to format the date/time value in the string.
+Call e_cal_recur_describe_recurrence_ex() with a custom formatting function.
+
+Free the returned string with g_free(), when no longer needed.</doc>
+      <source-position filename="e-cal-recur.h" line="136"/>
+      <return-value transfer-ownership="full" nullable="1">
+        <doc xml:space="preserve"
+             filename="e-cal-recur.c"
+             line="5931">a newly allocated string, which
+   describes the recurrence of the @icalcomp, or #NULL, when the @icalcomp
+   doesn't recur or the recurrence is too complicated to describe, also
+   according to given @flags.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </return-value>
+      <parameters>
+        <parameter name="icalcomp" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="e-cal-recur.c"
+               line="5915">an #ICalComponent</doc>
+          <type name="ICalGLib.Component" c:type="ICalComponent*"/>
+        </parameter>
+        <parameter name="week_start_day" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="e-cal-recur.c"
+               line="5916">a day when the week starts</doc>
+          <type name="GLib.DateWeekday" c:type="GDateWeekday"/>
+        </parameter>
+        <parameter name="flags" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="e-cal-recur.c"
+               line="5917">bit-or of #ECalRecurDescribeRecurrenceFlags</doc>
+          <type name="guint32" c:type="guint32"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="recur_describe_recurrence_ex"
+              c:identifier="e_cal_recur_describe_recurrence_ex"
+              version="3.38"
+              introspectable="0">
+      <doc xml:space="preserve"
+           filename="e-cal-recur.c"
            line="4958">Describes some simple types of recurrences in a human-readable and localized way.
 The @flags influence the output format and what to do when the @icalcomp
 contains more complicated recurrence, some which the function cannot describe.
@@ -15961,12 +16041,15 @@ contains more complicated recurrence, some which the function cannot describe.
 The @week_start_day is used for weekly recurrences, to start the list of selected
 days at that day.
 
+If @datetime_fmt_func is %NULL, the e_time_format_date_and_time() is used
+to format data/time value.
+
 Free the returned string with g_free(), when no longer needed.</doc>
-      <source-position filename="e-cal-recur.h" line="117"/>
+      <source-position filename="e-cal-recur.h" line="132"/>
       <return-value transfer-ownership="full" nullable="1">
         <doc xml:space="preserve"
              filename="e-cal-recur.c"
-             line="4973">a newly allocated string, which
+             line="4977">a newly allocated string, which
    describes the recurrence of the @icalcomp, or #NULL, when the @icalcomp
    doesn't recur or the recurrence is too complicated to describe, also
    according to given @flags.</doc>
@@ -15990,6 +16073,16 @@ Free the returned string with g_free(), when no longer needed.</doc>
                filename="e-cal-recur.c"
                line="4962">bit-or of #ECalRecurDescribeRecurrenceFlags</doc>
           <type name="guint32" c:type="guint32"/>
+        </parameter>
+        <parameter name="datetime_fmt_func"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve"
+               filename="e-cal-recur.c"
+               line="4963">formatting function for date/time value</doc>
+          <type name="RecurFormatDateTimeFunc"
+                c:type="ECalRecurFormatDateTimeFunc"/>
         </parameter>
       </parameters>
     </function>

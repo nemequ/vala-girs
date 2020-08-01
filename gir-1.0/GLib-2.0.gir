@@ -10527,7 +10527,7 @@ basename, no directory components are allowed. If template is
 Note that in contrast to g_mkdtemp() (and mkdtemp()) @tmpl is not
 modified, and might thus be a read-only literal string.</doc>
         <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                         line="119"/>
+                         line="161"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -11189,6 +11189,54 @@ differences in when a system will report a given error, etc.</doc>
    code applies.</doc>
       </member>
     </enumeration>
+    <bitfield name="FileSetContentsFlags"
+              version="2.66"
+              c:type="GFileSetContentsFlags">
+      <doc xml:space="preserve"
+           filename="install/include/glib-2.0/glib/gfileutils.h"
+           line="75">Flags to pass to g_file_set_contents_full() to affect its safety and
+performance.</doc>
+      <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
+                       line="105"/>
+      <member name="none" value="0" c:identifier="G_FILE_SET_CONTENTS_NONE">
+        <doc xml:space="preserve"
+             filename="install/include/glib-2.0/glib/gfileutils.h"
+             line="77">No guarantees about file consistency or durability.
+   The most dangerous setting, which is slightly faster than other settings.</doc>
+      </member>
+      <member name="consistent"
+              value="1"
+              c:identifier="G_FILE_SET_CONTENTS_CONSISTENT">
+        <doc xml:space="preserve"
+             filename="install/include/glib-2.0/glib/gfileutils.h"
+             line="79">Guarantee file consistency: after a crash,
+   either the old version of the file or the new version of the file will be
+   available, but not a mixture. On Unix systems this equates to an `fsync()`
+   on the file and use of an atomic `rename()` of the new version of the file
+   over the old.</doc>
+      </member>
+      <member name="durable"
+              value="2"
+              c:identifier="G_FILE_SET_CONTENTS_DURABLE">
+        <doc xml:space="preserve"
+             filename="install/include/glib-2.0/glib/gfileutils.h"
+             line="84">Guarantee file durability: after a crash, the
+   new version of the file will be available. On Unix systems this equates to
+   an `fsync()` on the file (if %G_FILE_SET_CONTENTS_CONSISTENT is unset), or
+   the effects of %G_FILE_SET_CONTENTS_CONSISTENT plus an `fsync()` on the
+   directory containing the file after calling `rename()`.</doc>
+      </member>
+      <member name="only_existing"
+              value="4"
+              c:identifier="G_FILE_SET_CONTENTS_ONLY_EXISTING">
+        <doc xml:space="preserve"
+             filename="install/include/glib-2.0/glib/gfileutils.h"
+             line="89">Only apply consistency and durability
+   guarantees if the file already exists. This may speed up file operations
+   if the file doesn’t currently exist, but may result in a corrupted version
+   of the new file if the system crashes while writing it.</doc>
+      </member>
+    </bitfield>
     <bitfield name="FileTest" c:type="GFileTest">
       <doc xml:space="preserve"
            filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -16584,7 +16632,7 @@ in a generic way.</doc>
 separator. It returns %TRUE for '/' on UNIX
 machines and for '\' or '/' under Windows.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="149"/>
+                       line="191"/>
       <parameters>
         <parameter name="c">
           <doc xml:space="preserve"
@@ -45081,7 +45129,7 @@ portions of a URI.
 Though technically incorrect, this will also allow escaping "0"
 bytes as "`%``00`".</doc>
         <source-position filename="install/include/glib-2.0/glib/guri.h"
-                         line="362"/>
+                         line="365"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -45975,7 +46023,8 @@ be parsed out if @flags contains %G_URI_FLAGS_HAS_PASSWORD, and
       </function>
       <function name="unescape_bytes"
                 c:identifier="g_uri_unescape_bytes"
-                version="2.66">
+                version="2.66"
+                throws="1">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
              line="36368">Unescapes a segment of an escaped string as binary data.
@@ -46005,6 +46054,9 @@ longer needed.</doc>
                  line="36371">the length of @escaped_string to escape, or -1 if it
   is NUL-terminated.</doc>
             <type name="gssize" c:type="gssize"/>
+          </parameter>
+          <parameter name="illegal_characters" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </function>
@@ -56277,7 +56329,7 @@ string.</doc>
     returned string, unlike this function which returns a pointer
     into the argument.</doc-deprecated>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="163"/>
+                       line="205"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -56553,7 +56605,7 @@ No attempt is made to force the resulting filename to be an absolute
 path. If the first element is a relative path, the result will
 be a relative path.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="131"/>
+                       line="173"/>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -56585,7 +56637,7 @@ be a relative path.</doc>
            line="12606">Behaves exactly like g_build_filename(), but takes the path elements
 as a va_list. This function is mainly meant for language bindings.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="136"/>
+                       line="178"/>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -56617,7 +56669,7 @@ as a va_list. This function is mainly meant for language bindings.</doc>
 as a string array, instead of varargs. This function is mainly
 meant for language bindings.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="134"/>
+                       line="176"/>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -56667,7 +56719,7 @@ Other than for determination of the number of leading and trailing
 copies of the separator, elements consisting only of copies
 of the separator are ignored.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="123"/>
+                       line="165"/>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -56703,7 +56755,7 @@ of the separator are ignored.</doc>
 as a string array, instead of varargs. This function is mainly
 meant for language bindings.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="127"/>
+                       line="169"/>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -56969,7 +57021,7 @@ exist.
 
 No file system I/O is done.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="174"/>
+                       line="216"/>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -59812,7 +59864,7 @@ basename, no directory components are allowed. If template is
 Note that in contrast to g_mkdtemp() (and mkdtemp()) @tmpl is not
 modified, and might thus be a read-only literal string.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="119"/>
+                       line="161"/>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -60600,7 +60652,7 @@ Normally a #GFileError value goes into a #GError returned
 from a function that manipulates files. So you would use
 g_file_error_from_errno() when constructing a #GError.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="79"/>
+                       line="112"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -60637,7 +60689,7 @@ stored in @contents will be nul-terminated, so for text files you can pass
 codes are those in the #GFileError enumeration. In the error case,
 @contents is set to %NULL and @length is set to zero.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="85"/>
+                       line="118"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -60695,7 +60747,7 @@ is returned in @name_used. This string should be freed with g_free()
 when not needed any longer. The returned name is in the GLib file
 name encoding.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="115"/>
+                       line="157"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -60738,7 +60790,7 @@ name encoding.</doc>
 readlink() function.  The returned string is in the encoding used
 for filenames. Use g_filename_to_utf8() to convert it to UTF-8.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="95"/>
+                       line="137"/>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -60798,7 +60850,7 @@ Possible error codes are those in the #GFileError enumeration.
 Note that the name for the temporary file is constructed by appending up
 to 7 characters to @filename.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="90"/>
+                       line="123"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -60826,6 +60878,32 @@ to 7 characters to @filename.</doc>
                filename="checkout/gobject-introspection/gir/glib-2.0.c"
                line="16574">length of @contents, or -1 if @contents is a nul-terminated string</doc>
           <type name="gssize" c:type="gssize"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="file_set_contents_full"
+              c:identifier="g_file_set_contents_full"
+              throws="1">
+      <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
+                       line="129"/>
+      <return-value transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="filename" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="contents" transfer-ownership="none">
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="length" transfer-ownership="none">
+          <type name="gssize" c:type="gssize"/>
+        </parameter>
+        <parameter name="flags" transfer-ownership="none">
+          <type name="FileSetContentsFlags" c:type="GFileSetContentsFlags"/>
+        </parameter>
+        <parameter name="mode" transfer-ownership="none">
+          <type name="gint" c:type="int"/>
         </parameter>
       </parameters>
     </function>
@@ -60874,7 +60952,7 @@ On Windows, there are no symlinks, so testing for
 its name indicates that it is executable, checking for well-known
 extensions and those listed in the `PATHEXT` environment variable.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="82"/>
+                       line="115"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -61575,7 +61653,7 @@ environment variable if it is set and it happens to be the same as
 the current directory.  This can make a difference in the case that
 the current directory is the target of a symbolic link.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="167"/>
+                       line="209"/>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -66658,7 +66736,7 @@ than the one under test).</doc>
            line="23424">Create a directory if it doesn't already exist. Create intermediate
 parent directories as needed, too.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="140"/>
+                       line="182"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -66703,7 +66781,7 @@ If you are going to be creating a temporary directory inside the
 directory returned by g_get_tmp_dir(), you might want to use
 g_dir_make_tmp() instead.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="100"/>
+                       line="142"/>
       <return-value transfer-ownership="full" nullable="1">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -66743,7 +66821,7 @@ If you are going to be creating a temporary directory inside the
 directory returned by g_get_tmp_dir(), you might want to use
 g_dir_make_tmp() instead.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="102"/>
+                       line="144"/>
       <return-value transfer-ownership="full" nullable="1">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -66781,7 +66859,7 @@ The X string will be modified to form the name of a file that
 didn't exist. The string should be in the GLib file name encoding.
 Most importantly, on Windows it should be in UTF-8.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="107"/>
+                       line="149"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -66819,7 +66897,7 @@ string will be modified to form the name of a file that didn't exist.
 The string should be in the GLib file name encoding. Most importantly,
 on Windows it should be in UTF-8.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="109"/>
+                       line="151"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -67630,7 +67708,7 @@ before the last slash. If @file_name consists only of directory
 separators (and on Windows, possibly a drive letter), a single
 separator is returned. If @file_name is empty, it gets ".".</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="169"/>
+                       line="211"/>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -67657,7 +67735,7 @@ is `/`.
 If the file name has no directory components "." is returned.
 The returned string should be freed when no longer needed.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="171"/>
+                       line="213"/>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -67701,7 +67779,7 @@ directory as returned by getcwd() or g_get_current_dir()
 either. Such paths should be avoided, or need to be handled using
 Windows-specific code.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="158"/>
+                       line="200"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -67724,7 +67802,7 @@ Windows-specific code.</doc>
 i.e. after the "/" in UNIX or "C:\" under Windows. If @file_name
 is not an absolute path it returns %NULL.</doc>
       <source-position filename="install/include/glib-2.0/glib/gfileutils.h"
-                       line="160"/>
+                       line="202"/>
       <return-value transfer-ownership="none" nullable="1">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -79371,7 +79449,7 @@ portions of a URI.
 Though technically incorrect, this will also allow escaping "0"
 bytes as "`%``00`".</doc>
       <source-position filename="install/include/glib-2.0/glib/guri.h"
-                       line="362"/>
+                       line="365"/>
       <return-value transfer-ownership="full">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/glib-2.0.c"
@@ -80281,7 +80359,8 @@ be parsed out if @flags contains %G_URI_FLAGS_HAS_PASSWORD, and
     <function name="uri_unescape_bytes"
               c:identifier="g_uri_unescape_bytes"
               moved-to="Uri.unescape_bytes"
-              version="2.66">
+              version="2.66"
+              throws="1">
       <doc xml:space="preserve"
            filename="checkout/gobject-introspection/gir/glib-2.0.c"
            line="36368">Unescapes a segment of an escaped string as binary data.
@@ -80311,6 +80390,9 @@ longer needed.</doc>
                line="36371">the length of @escaped_string to escape, or -1 if it
   is NUL-terminated.</doc>
           <type name="gssize" c:type="gssize"/>
+        </parameter>
+        <parameter name="illegal_characters" transfer-ownership="none">
+          <type name="utf8" c:type="const char*"/>
         </parameter>
       </parameters>
     </function>

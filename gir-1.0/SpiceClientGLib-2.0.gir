@@ -7634,6 +7634,124 @@ an USB device has been removed.</doc>
             disguised="1">
       <source-position filename="channel-webdav.h" line="40"/>
     </record>
+    <docsection name="channel-cursor">
+      <doc xml:space="preserve"
+           filename="channel-cursor.c"
+           line="27">The Spice protocol defines a set of messages for controlling cursor
+shape and position on the remote display area. The cursor changes
+that should be reflected on the display are notified by
+signals. See for example #SpiceCursorChannel::cursor-set and
+#SpiceCursorChannel::cursor-move signals and the #SpiceCursorChannel:cursor
+property.</doc>
+    </docsection>
+    <docsection name="channel-display">
+      <doc xml:space="preserve"
+           filename="channel-display.c"
+           line="33">A class that handles the rendering of the remote display and inform
+of its updates.
+
+The creation of the main graphic buffer is signaled with
+#SpiceDisplayChannel::display-primary-create.
+
+The update of regions is notified by
+#SpiceDisplayChannel::display-invalidate signals.</doc>
+    </docsection>
+    <docsection name="channel-inputs">
+      <doc xml:space="preserve"
+           filename="channel-inputs.c"
+           line="24">Spice supports sending keyboard key events and keyboard leds
+synchronization. The key events are sent using
+spice_inputs_key_press() and spice_inputs_key_release() using
+a modified variant of PC XT scancodes.
+
+Guest keyboard leds state can be manipulated with
+spice_inputs_set_key_locks(). When key lock change, a notification
+is emitted with #SpiceInputsChannel::inputs-modifiers signal.</doc>
+    </docsection>
+    <docsection name="channel-main">
+      <doc xml:space="preserve"
+           filename="channel-main.c"
+           line="35">The main channel is the Spice session control channel. It handles
+communication initialization (channels list), migrations, mouse
+modes, multimedia time, and agent communication.</doc>
+    </docsection>
+    <docsection name="channel-playback">
+      <doc xml:space="preserve"
+           filename="channel-playback.c"
+           line="30">#SpicePlaybackChannel class handles an audio playback stream. The
+audio data is received via #SpicePlaybackChannel::playback-data
+signal, and is controlled by the guest with
+#SpicePlaybackChannel::playback-stop and
+#SpicePlaybackChannel::playback-start signal events.
+
+Note: You may be interested to let the #SpiceAudio class play and
+record audio channels for your application.</doc>
+    </docsection>
+    <docsection name="channel-port">
+      <doc xml:space="preserve"
+           filename="channel-port.c"
+           line="25">A Spice port channel carry arbitrary data between the Spice client
+and the Spice server. It may be used to provide additional
+services on top of a Spice connection. For example, a channel can
+be associated with the qemu monitor for the client to interact
+with it, just like any qemu chardev. Or it may be used with
+various protocols, such as the Spice Controller.
+
+A port kind is identified simply by a fqdn, such as
+org.qemu.monitor, org.spice.spicy.test or org.ovirt.controller...
+
+Once connected and initialized, the client may read the name of the
+port via SpicePortChannel:port-name.
+
+When the other end of the port is ready,
+SpicePortChannel:port-opened is set to %TRUE and you can start
+receiving data via the signal SpicePortChannel::port-data, or
+sending data via spice_port_write_async().</doc>
+    </docsection>
+    <docsection name="channel-record">
+      <doc xml:space="preserve"
+           filename="channel-record.c"
+           line="29">#SpiceRecordChannel class handles an audio recording stream. The
+audio stream should start when #SpiceRecordChannel::record-start is
+emitted and should be stopped when #SpiceRecordChannel::record-stop
+is received.
+
+The audio is sent to the guest by calling spice_record_send_data()
+with the recorded PCM data.
+
+Note: You may be interested to let the #SpiceAudio class play and
+record audio channels for your application.</doc>
+    </docsection>
+    <docsection name="channel-smartcard">
+      <doc xml:space="preserve"
+           filename="channel-smartcard.c"
+           line="28">The Spice protocol defines a set of messages to forward smartcard
+information from the Spice client to the VM. This channel handles
+these messages. While it's mainly focus on smartcard readers and
+smartcards, it's also possible to use it with a software smartcard
+(ie a set of 3 certificates from the client machine).
+This class doesn't provide useful methods, see #SpiceSession properties
+for a way to enable/disable this channel, and #SpiceSmartcardManager
+if you want to detect smartcard reader hotplug/unplug, and smartcard
+insertion/removal.</doc>
+    </docsection>
+    <docsection name="channel-usbredir">
+      <doc xml:space="preserve"
+           filename="channel-usbredir.c"
+           line="43">The Spice protocol defines a set of messages to redirect USB devices
+from the Spice client to the VM. This channel handles these messages.</doc>
+    </docsection>
+    <docsection name="channel-webdav">
+      <doc xml:space="preserve"
+           filename="channel-webdav.c"
+           line="28">The "webdav" channel exports a directory to the guest for file
+manipulation (read/write/copy etc). The underlying protocol is
+implemented using WebDAV (RFC 4918).
+
+By default, the shared directory is the one associated with GLib
+%G_USER_DIRECTORY_PUBLIC_SHARE. You can specify a different
+directory with #SpiceSession #SpiceSession:shared-dir property.</doc>
+    </docsection>
     <function name="client_error_quark"
               c:identifier="spice_client_error_quark">
       <doc xml:space="preserve"
@@ -8940,6 +9058,11 @@ containing the data to write</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="qmp-port">
+      <doc xml:space="preserve"
+           filename="qmp-port.c"
+           line="25">A helper to handle QMP messages over a %SpicePortChannel.</doc>
+    </docsection>
     <function name="record_send_data"
               c:identifier="spice_record_send_data"
               deprecated="1"
@@ -9001,6 +9124,75 @@ arguments given to spice_get_option_group() option group.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="smartcard-manager">
+      <doc xml:space="preserve"
+           filename="smartcard-manager.c"
+           line="32">#SpiceSmartcardManager monitors smartcard reader plugging/unplugging,
+and smartcard insertions/removals. It also provides methods to handle
+software smartcards (to emulate a smartcard reader/smartcard on the
+guest using 3 certificates available to the client).</doc>
+    </docsection>
+    <docsection name="spice-audio">
+      <doc xml:space="preserve"
+           filename="spice-audio.c"
+           line="22">A class that handles the playback and record channels for your
+application, and connect them to the default sound system.</doc>
+    </docsection>
+    <docsection name="spice-channel">
+      <doc xml:space="preserve"
+           filename="spice-channel.c"
+           line="67">#SpiceChannel is the base class for the different kind of Spice
+channel connections, such as #SpiceMainChannel, or
+#SpiceInputsChannel.</doc>
+    </docsection>
+    <docsection name="spice-session">
+      <doc xml:space="preserve"
+           filename="spice-session.c"
+           line="133">The #SpiceSession class handles all the #SpiceChannel connections.
+It's also the class that contains connections informations, such as
+#SpiceSession:host and #SpiceSession:port.
+
+You can simply set the property #SpiceSession:uri to something like
+"spice://127.0.0.1?port=5930" to configure your connection details.
+
+You may want to connect to #SpiceSession::channel-new signal, to be
+informed of the availability of channels and to interact with
+them.
+
+For example, when the #SpiceInputsChannel is available and get the
+event #SPICE_CHANNEL_OPENED, you can send key events with
+spice_inputs_key_press(). When the #SpiceMainChannel is available,
+you can start sharing the clipboard...  .
+
+
+Once #SpiceSession properties set, you can call
+spice_session_connect() to start connecting and communicating with
+a Spice server.</doc>
+    </docsection>
+    <docsection name="spice-util">
+      <doc xml:space="preserve"
+           filename="spice-util.c"
+           line="30">Various functions for debugging and informational purposes.</doc>
+    </docsection>
+    <docsection name="spice-version">
+      <doc xml:space="preserve"
+           filename="spice-version.h"
+           line="25">Spice-Gtk provides macros to check the version of the library
+at compile-time</doc>
+    </docsection>
+    <docsection name="usb-device-manager">
+      <doc xml:space="preserve"
+           filename="usb-device-manager.c"
+           line="53">#SpiceUsbDeviceManager monitors USB redirection channels and USB
+devices plugging/unplugging. If #SpiceUsbDeviceManager:auto-connect
+is set to %TRUE, it will automatically connect newly plugged USB
+devices to available channels.
+
+There should always be a 1:1 relation between #SpiceUsbDeviceManager objects
+and #SpiceSession objects. Therefor there is no
+spice_usb_device_manager_new, instead there is
+spice_usb_device_manager_get() which ensures this 1:1 relation.</doc>
+    </docsection>
     <function name="util_get_debug" c:identifier="spice_util_get_debug">
       <source-position filename="spice-util.h" line="26"/>
       <return-value transfer-ownership="none">

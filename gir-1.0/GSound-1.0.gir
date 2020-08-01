@@ -1138,5 +1138,140 @@ not available: see the libcanberra documentation for details.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
+    <docsection name="gsound-attr">
+      <doc xml:space="preserve"
+           filename="gsound-attr.h"
+           line="30">Attributes which can be applied to a #GSoundContext or passed to one of
+the `play()` or `cache()` methods.</doc>
+    </docsection>
+    <docsection name="gsound-context">
+      <doc xml:space="preserve"
+           filename="gsound-context.c"
+           line="18">A #GSoundContext is used for playing system sounds. The typical use pattern
+is:
+
+* Initialize the #GSoundContext
+* [Optional] Set any global attributes using gsound_context_set_attributes()
+* [Optional] Cache any frequently-used sounds (for example, sound
+  effects for a game) using gsound_context_cache()
+* Play sounds using gsound_context_play_simple() or gsound_context_play_full()
+* Close the connection to the sound server and clean up the context using
+  g_object_unref()
+
+#GSoundContext implements the #GInitable interface, so if created with
+g_object_new() (as typically happens with language bindings) then you must
+call the g_initable_init() method before attempting to use it.
+
+# Simple Examples
+
+In C:
+
+|[&lt;!-- language="C" --&gt;
+GSoundContext *ctx = NULL;
+GCancellable *cancellable = g_cancellable_new();
+GError *error = NULL;
+
+ctx = gsound_context_new(cancellable, &amp;error);
+if (error) {
+    // handle error
+}
+
+gsound_context_play_simple(ctx, cancellable, &amp;error,
+                           GSOUND_ATTR_EVENT_ID, "phone-incoming-call",
+                           // other attributes...
+                           NULL);
+]|
+
+or, using Python via GObject Introspection:
+
+|[&lt;!-- language="Python" --&gt;
+from gi.repository import GSound
+
+ctx = GSound.Context()
+
+try:
+    ctx.init();
+    ctx.play_simple({ GSound.ATTR_EVENT_ID : "phone-incoming-call" })
+except:
+    # Handle error
+    pass
+]|
+
+or using Vala:
+
+|[&lt;!-- language="Vala" --&gt;
+try {
+    var ctx = new GSound.Context();
+    ctx.play_simple(null, GSound.Attribute.EVENT_ID, "phone-incoming-call");
+} catch (Error e) {
+    // handle error
+}
+]|
+
+# `play_simple()` versus `play_full()`
+
+The above examples use the gsound_context_play_simple() method for
+playing sounds. This is a "fire and forget" method which returns
+immediately and does not block your program, and is suitable for most use
+cases.
+
+If you need to find out when the sound finished (for example to repeat the
+sound) then you can use the gsound_context_play_full() version. This
+is an asynchronous method using the standard GIO async pattern, which will
+run the supplied #GAsyncReadyCallback when the sound server has finished.
+It is guaranteed that the callback will be run exactly once.
+
+Note that calling gsound_context_play_full() with a %NULL callback is not
+equivalent to calling gsound_context_play_simple(). When calling
+play_simple(), errors which occur before the sound is passed to the sound
+server are reported immediately, whereas with `play_full()` these are reported
+in the callback. If you pass a %NULL callback to gsound_context_play_full()
+you will not be able to receive these errors, so it is strongly recommended
+to avoid doing this and use gsound_context_play_simple() in the case when
+you don't need to be notified when the sound has finished.
+
+# Passing Attributes
+
+GSound supplies information to the sound server by means of attributes.
+Attributes can be set on the #GSoundContext itself using
+gsound_context_set_attributes(), or supplied in a `play()` call. Attributes
+set on the context will automatically applied to any subsequent `play()`
+calls, unless overridden by that call.
+
+In C and Vala, attributes are passed as %NULL-terminated list of
+(attribute, value) pairs. When using GObject introspection, attributes are
+typically passed using a language-specific associated array, for example
+a dict in Python or an object in JavaScript.
+
+For the list of attributes supported by GSound, see
+[GSound Attributes][gsound-GSound-Attributes].
+
+# Caching # {#caching}
+
+If supported by the sound server, frequently-used sounds may be cached. This
+may be useful, for example, for sound effects in a game. To cache a sound,
+either call gsound_context_cache(), or pass the special
+#GSOUND_ATTR_CANBERRA_CACHE_CONTROL attribute to one of the `play()`
+functions.
+
+For example, in the startup code for a game you might include something
+like the following (error checking omitted):
+
+|[ &lt;-- language="C" --&gt;
+GSoundContext *ctx = gsound_context_new (NULL, NULL);
+gsound_context_cache(ctx, NULL,
+                     GSOUND_ATTR_MEDIA_FILENAME,
+                     "/path/to/player-spaceship-fire-laser.ogg",
+                     NULL);
+]|
+
+There are three caching modes available, "permanent", "volatile" and "never".
+The default mode when calling gsound_context_cache() is "permanent", and
+the default mode for gsound_context_play_simple() and `play_full()` is
+"never".
+
+See the documentation for #GSOUND_ATTR_CANBERRA_CACHE_CONTROL for more
+details.</doc>
+    </docsection>
   </namespace>
 </repository>

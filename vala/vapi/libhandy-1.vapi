@@ -15,9 +15,7 @@ namespace Hdy {
 		[Version (since = "0.0.6")]
 		public unowned string get_icon_name ();
 		[Version (since = "0.0.6")]
-		public unowned string get_subtitle ();
-		[Version (since = "0.0.6")]
-		public unowned string get_title ();
+		public unowned string? get_subtitle ();
 		[Version (since = "0.0.6")]
 		public bool get_use_underline ();
 		[Version (since = "0.0.7")]
@@ -25,9 +23,7 @@ namespace Hdy {
 		[Version (since = "0.0.6")]
 		public void set_icon_name (string icon_name);
 		[Version (since = "0.0.6")]
-		public void set_subtitle (string subtitle);
-		[Version (since = "0.0.6")]
-		public void set_title (string title);
+		public void set_subtitle (string? subtitle);
 		[Version (since = "0.0.6")]
 		public void set_use_underline (bool use_underline);
 		[Version (since = "0.0.7")]
@@ -36,8 +32,6 @@ namespace Hdy {
 		public string icon_name { get; set; }
 		[Version (since = "0.0.6")]
 		public string subtitle { get; set; }
-		[Version (since = "0.0.6")]
-		public string title { get; set; }
 		[Version (since = "0.0.6")]
 		public bool use_underline { get; set; }
 		[Version (since = "1.0")]
@@ -282,9 +276,7 @@ namespace Hdy {
 		[Version (since = "0.0.6")]
 		public bool get_show_enable_switch ();
 		[Version (since = "1.0")]
-		public unowned string get_subtitle ();
-		[Version (since = "1.0")]
-		public unowned string get_title ();
+		public unowned string? get_subtitle ();
 		[Version (since = "1.0")]
 		public bool get_use_underline ();
 		[Version (since = "0.0.6")]
@@ -295,9 +287,7 @@ namespace Hdy {
 		[Version (since = "0.0.6")]
 		public void set_show_enable_switch (bool show_enable_switch);
 		[Version (since = "1.0")]
-		public void set_subtitle (string subtitle);
-		[Version (since = "1.0")]
-		public void set_title (string title);
+		public void set_subtitle (string? subtitle);
 		[Version (since = "1.0")]
 		public void set_use_underline (bool use_underline);
 		public bool enable_expansion { get; set; }
@@ -307,8 +297,6 @@ namespace Hdy {
 		public bool show_enable_switch { get; set; }
 		[Version (since = "1.0")]
 		public string subtitle { get; set; }
-		[Version (since = "1.0")]
-		public string title { get; set; }
 		[Version (since = "1.0")]
 		public bool use_underline { get; set; }
 	}
@@ -423,24 +411,50 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_keypad_get_type ()")]
 	public class Keypad : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		public Keypad (bool only_digits, bool show_symbols);
+		[Version (since = "0.0.12")]
+		public Keypad (bool symbols_visible, bool letters_visible);
+		[Version (since = "1.0")]
 		public uint get_column_spacing ();
-		public unowned Gtk.Widget get_entry ();
+		[Version (since = "1.0")]
+		public unowned Gtk.Widget? get_end_action ();
+		[Version (since = "1.0")]
+		public unowned Gtk.Entry get_entry ();
+		[Version (since = "1.0")]
+		public bool get_letters_visible ();
+		[Version (since = "1.0")]
 		public uint get_row_spacing ();
+		[Version (since = "1.0")]
+		public unowned Gtk.Widget? get_start_action ();
+		[Version (since = "1.0")]
+		public bool get_symbols_visible ();
+		[Version (since = "1.0")]
 		public void set_column_spacing (uint spacing);
-		public void set_entry (Gtk.Entry entry);
-		public void set_left_action (Gtk.Widget widget);
-		public void set_right_action (Gtk.Widget widget);
+		[Version (since = "1.0")]
+		public void set_end_action (Gtk.Widget? end_action);
+		[Version (since = "0.0.12")]
+		public void set_entry (Gtk.Entry? entry);
+		[Version (since = "1.0")]
+		public void set_letters_visible (bool letters_visible);
+		[Version (since = "1.0")]
 		public void set_row_spacing (uint spacing);
+		[Version (since = "1.0")]
+		public void set_start_action (Gtk.Widget? start_action);
+		[Version (since = "1.0")]
+		public void set_symbols_visible (bool symbols_visible);
+		[Version (since = "1.0")]
 		public uint column_spacing { get; set; }
-		public Gtk.Widget entry { get; set; }
-		public Gtk.Widget left_action { set; }
-		[NoAccessorMethod]
-		public bool only_digits { get; set; }
-		public Gtk.Widget right_action { set; }
+		[Version (since = "1.0")]
+		public Gtk.Widget end_action { get; set; }
+		[Version (since = "1.0")]
+		public Gtk.Entry entry { get; set; }
+		[Version (since = "1.0")]
+		public bool letters_visible { get; set; }
+		[Version (since = "1.0")]
 		public uint row_spacing { get; set; }
-		[NoAccessorMethod]
-		public bool show_symbols { get; set; }
+		[Version (since = "1.0")]
+		public Gtk.Widget start_action { get; set; }
+		[Version (since = "1.0")]
+		public bool symbols_visible { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_leaflet_get_type ()")]
 	public class Leaflet : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
@@ -560,9 +574,19 @@ namespace Hdy {
 		[Version (since = "0.0.10")]
 		public PreferencesWindow ();
 		[Version (since = "1.0")]
+		public void close_subpage ();
+		[Version (since = "1.0")]
+		public bool get_can_swipe_back ();
+		[Version (since = "1.0")]
 		public bool get_search_enabled ();
 		[Version (since = "1.0")]
+		public void present_subpage (Gtk.Widget subpage);
+		[Version (since = "1.0")]
+		public void set_can_swipe_back (bool can_swipe_back);
+		[Version (since = "1.0")]
 		public void set_search_enabled (bool search_enabled);
+		[Version (since = "1.0")]
+		public bool can_swipe_back { get; set; }
 		[Version (since = "1.0")]
 		public bool search_enabled { get; set; }
 	}
@@ -600,6 +624,10 @@ namespace Hdy {
 		public bool get_transition_running ();
 		public Hdy.SqueezerTransitionType get_transition_type ();
 		public unowned Gtk.Widget? get_visible_child ();
+		[Version (since = "1.0")]
+		public float get_xalign ();
+		[Version (since = "1.0")]
+		public float get_yalign ();
 		public void set_child_enabled (Gtk.Widget child, bool enabled);
 		[Version (since = "0.0.10")]
 		public void set_homogeneous (bool homogeneous);
@@ -607,12 +635,20 @@ namespace Hdy {
 		public void set_interpolate_size (bool interpolate_size);
 		public void set_transition_duration (uint duration);
 		public void set_transition_type (Hdy.SqueezerTransitionType transition);
+		[Version (since = "1.0")]
+		public void set_xalign (float xalign);
+		[Version (since = "1.0")]
+		public void set_yalign (float yalign);
 		public bool homogeneous { get; set; }
 		public bool interpolate_size { get; set; }
 		public uint transition_duration { get; set; }
 		public bool transition_running { get; }
 		public Hdy.SqueezerTransitionType transition_type { get; set; }
 		public Gtk.Widget visible_child { get; }
+		[Version (since = "1.0")]
+		public float xalign { get; set; }
+		[Version (since = "1.0")]
+		public float yalign { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_swipe_group_get_type ()")]
 	public class SwipeGroup : GLib.Object, Gtk.Buildable {
