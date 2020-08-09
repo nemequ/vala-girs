@@ -81,6 +81,8 @@ namespace Vte {
 		public bool get_enable_bidi ();
 		[Version (since = "0.58")]
 		public bool get_enable_shaping ();
+		[Version (since = "0.62")]
+		public bool get_enable_sixel ();
 		[Version (deprecated = true, deprecated_since = "0.54")]
 		public unowned string? get_encoding ();
 		public unowned Pango.FontDescription get_font ();
@@ -175,6 +177,8 @@ namespace Vte {
 		public void set_enable_bidi (bool enable_bidi);
 		[Version (since = "0.58")]
 		public void set_enable_shaping (bool enable_shaping);
+		[Version (since = "0.62")]
+		public void set_enable_sixel (bool enabled);
 		[Version (deprecated = true, deprecated_since = "0.54")]
 		public bool set_encoding (string? codeset) throws GLib.Error;
 		public void set_font (Pango.FontDescription? font_desc);
@@ -227,6 +231,8 @@ namespace Vte {
 		public bool enable_bidi { get; set; }
 		[Version (since = "0.58")]
 		public bool enable_shaping { get; set; }
+		[Version (since = "0.62")]
+		public bool enable_sixel { get; set; }
 		[NoAccessorMethod]
 		[Version (deprecated = true, deprecated_since = "0.54")]
 		public string encoding { owned get; set; }
@@ -319,6 +325,16 @@ namespace Vte {
 		DELETE_SEQUENCE,
 		TTY
 	}
+	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_FEATURE_", has_type_id = false)]
+	[Flags]
+	[Version (since = "0.62")]
+	public enum FeatureFlags {
+		FLAG_BIDI,
+		FLAG_ICU,
+		FLAG_SYSTEMD,
+		FLAG_SIXEL,
+		FLAGS_MASK
+	}
 	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_FORMAT_", type_id = "vte_format_get_type ()")]
 	[Version (since = "0.50")]
 	public enum Format {
@@ -393,6 +409,9 @@ namespace Vte {
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "vte/vte.h")]
 	[Version (deprecated = true, deprecated_since = "0.60", since = "0.60")]
 	public static string[] get_encodings (bool include_aliases);
+	[CCode (cheader_filename = "vte/vte.h")]
+	[Version (since = "0.62")]
+	public static Vte.FeatureFlags get_feature_flags ();
 	[CCode (cheader_filename = "vte/vte.h")]
 	[Version (since = "0.40")]
 	public static unowned string get_features ();
