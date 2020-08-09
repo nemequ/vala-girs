@@ -74,12 +74,6 @@ namespace Hdy {
 		[Version (since = "1.0")]
 		public uint get_animation_duration ();
 		[Version (since = "1.0")]
-		public bool get_center_content ();
-		[Version (since = "1.0")]
-		public uint get_indicator_spacing ();
-		[Version (since = "1.0")]
-		public Hdy.CarouselIndicatorStyle get_indicator_style ();
-		[Version (since = "1.0")]
 		public bool get_interactive ();
 		[Version (since = "1.0")]
 		public uint get_n_pages ();
@@ -104,12 +98,6 @@ namespace Hdy {
 		[Version (since = "1.0")]
 		public void set_animation_duration (uint duration);
 		[Version (since = "1.0")]
-		public void set_center_content (bool center_content);
-		[Version (since = "1.0")]
-		public void set_indicator_spacing (uint spacing);
-		[Version (since = "1.0")]
-		public void set_indicator_style (Hdy.CarouselIndicatorStyle style);
-		[Version (since = "1.0")]
 		public void set_interactive (bool interactive);
 		[Version (since = "1.0")]
 		public void set_reveal_duration (uint reveal_duration);
@@ -119,12 +107,6 @@ namespace Hdy {
 		public bool allow_mouse_drag { get; set; }
 		[Version (since = "1.0")]
 		public uint animation_duration { get; set; }
-		[Version (since = "1.0")]
-		public bool center_content { get; set; }
-		[Version (since = "1.0")]
-		public uint indicator_spacing { get; set; }
-		[Version (since = "1.0")]
-		public Hdy.CarouselIndicatorStyle indicator_style { get; set; }
 		[Version (since = "1.0")]
 		public bool interactive { get; set; }
 		[Version (since = "1.0")]
@@ -137,6 +119,30 @@ namespace Hdy {
 		public uint spacing { get; set; }
 		[Version (since = "1.0")]
 		public signal void page_changed (uint index);
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_carousel_indicator_dots_get_type ()")]
+	public class CarouselIndicatorDots : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "1.0")]
+		public CarouselIndicatorDots ();
+		[Version (since = "1.0")]
+		public unowned Hdy.Carousel? get_carousel ();
+		[Version (since = "1.0")]
+		public void set_carousel (Hdy.Carousel? carousel);
+		[Version (since = "1.0")]
+		public Hdy.Carousel carousel { get; set; }
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_carousel_indicator_lines_get_type ()")]
+	public class CarouselIndicatorLines : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "1.0")]
+		public CarouselIndicatorLines ();
+		[Version (since = "1.0")]
+		public unowned Hdy.Carousel? get_carousel ();
+		[Version (since = "1.0")]
+		public void set_carousel (Hdy.Carousel? carousel);
+		[Version (since = "1.0")]
+		public Hdy.Carousel carousel { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_clamp_get_type ()")]
 	public class Clamp : Gtk.Bin, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
@@ -727,23 +733,17 @@ namespace Hdy {
 		[Version (since = "0.0.10")]
 		public ViewSwitcher ();
 		[Version (since = "0.0.10")]
-		public Gtk.IconSize get_icon_size ();
-		[Version (since = "0.0.10")]
 		public Pango.EllipsizeMode get_narrow_ellipsize ();
 		[Version (since = "0.0.10")]
 		public Hdy.ViewSwitcherPolicy get_policy ();
 		[Version (since = "0.0.10")]
 		public unowned Gtk.Stack? get_stack ();
 		[Version (since = "0.0.10")]
-		public void set_icon_size (Gtk.IconSize icon_size);
-		[Version (since = "0.0.10")]
 		public void set_narrow_ellipsize (Pango.EllipsizeMode mode);
 		[Version (since = "0.0.10")]
 		public void set_policy (Hdy.ViewSwitcherPolicy policy);
 		[Version (since = "0.0.10")]
 		public void set_stack (Gtk.Stack? stack);
-		[Version (since = "0.0.10")]
-		public int icon_size { get; set; }
 		[Version (since = "0.0.10")]
 		public Pango.EllipsizeMode narrow_ellipsize { get; set; }
 		[Version (since = "0.0.10")]
@@ -757,23 +757,17 @@ namespace Hdy {
 		[Version (since = "0.0.10")]
 		public ViewSwitcherBar ();
 		[Version (since = "0.0.10")]
-		public Gtk.IconSize get_icon_size ();
-		[Version (since = "0.0.10")]
 		public Hdy.ViewSwitcherPolicy get_policy ();
 		[Version (since = "0.0.10")]
 		public bool get_reveal ();
 		[Version (since = "0.0.10")]
 		public unowned Gtk.Stack? get_stack ();
 		[Version (since = "0.0.10")]
-		public void set_icon_size (Gtk.IconSize icon_size);
-		[Version (since = "0.0.10")]
 		public void set_policy (Hdy.ViewSwitcherPolicy policy);
 		[Version (since = "0.0.10")]
 		public void set_reveal (bool reveal);
 		[Version (since = "0.0.10")]
 		public void set_stack (Gtk.Stack? stack);
-		[Version (since = "0.0.10")]
-		public int icon_size { get; set; }
 		[Version (since = "0.0.10")]
 		public Hdy.ViewSwitcherPolicy policy { get; set; }
 		[Version (since = "0.0.10")]
@@ -787,8 +781,6 @@ namespace Hdy {
 		[Version (since = "1.0")]
 		public ViewSwitcherTitle ();
 		[Version (since = "1.0")]
-		public Gtk.IconSize get_icon_size ();
-		[Version (since = "1.0")]
 		public Hdy.ViewSwitcherPolicy get_policy ();
 		[Version (since = "1.0")]
 		public unowned Gtk.Stack? get_stack ();
@@ -801,8 +793,6 @@ namespace Hdy {
 		[Version (since = "1.0")]
 		public bool get_view_switcher_enabled ();
 		[Version (since = "1.0")]
-		public void set_icon_size (Gtk.IconSize icon_size);
-		[Version (since = "1.0")]
 		public void set_policy (Hdy.ViewSwitcherPolicy policy);
 		[Version (since = "1.0")]
 		public void set_stack (Gtk.Stack? stack);
@@ -812,8 +802,6 @@ namespace Hdy {
 		public void set_title (string? title);
 		[Version (since = "1.0")]
 		public void set_view_switcher_enabled (bool enabled);
-		[Version (since = "1.0")]
-		public int icon_size { get; set; }
 		[Version (since = "1.0")]
 		public Hdy.ViewSwitcherPolicy policy { get; set; }
 		[Version (since = "1.0")]
@@ -860,12 +848,6 @@ namespace Hdy {
 		public abstract void switch_child (uint index, int64 duration);
 		[Version (since = "1.0")]
 		public signal void child_switched (uint index, int64 duration);
-	}
-	[CCode (cheader_filename = "handy.h", cprefix = "HDY_CAROUSEL_INDICATOR_STYLE_", type_id = "hdy_carousel_indicator_style_get_type ()")]
-	public enum CarouselIndicatorStyle {
-		NONE,
-		DOTS,
-		LINES
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_CENTERING_POLICY_", type_id = "hdy_centering_policy_get_type ()")]
 	public enum CenteringPolicy {
