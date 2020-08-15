@@ -1114,6 +1114,9 @@ namespace ECal {
 	[Version (since = "3.30")]
 	public static string? recur_describe_recurrence (ICal.Component icalcomp, GLib.DateWeekday week_start_day, uint32 flags);
 	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.38")]
+	public static string? recur_describe_recurrence_ex (ICal.Component icalcomp, GLib.DateWeekday week_start_day, uint32 flags, ECal.RecurFormatDateTimeFunc? datetime_fmt_func);
+	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.32")]
 	public static bool recur_ensure_end_dates (ECal.Component comp, bool refresh, [CCode (delegate_target_pos = 3.5)] ECal.RecurResolveTimezoneCb tz_cb, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libecal/libecal.h")]
