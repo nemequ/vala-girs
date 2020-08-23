@@ -50,6 +50,7 @@ namespace GUsb {
 		public async ssize_t bulk_transfer_async (uint8 endpoint, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, uint timeout, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "0.1.0")]
 		public bool claim_interface (int @interface, GUsb.DeviceClaimInterfaceFlags flags) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public bool close () throws GLib.Error;
 		[Version (since = "0.1.0")]
 		public bool control_transfer (GUsb.DeviceDirection direction, GUsb.DeviceRequestType request_type, GUsb.DeviceRecipient recipient, uint8 request, uint16 value, uint16 idx, [CCode (array_length_cname = "length", array_length_pos = 7.5, array_length_type = "gsize")] uint8[] data, out size_t actual_length, uint timeout, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -65,6 +66,8 @@ namespace GUsb {
 		public GLib.GenericArray<GUsb.Device> get_children ();
 		[Version (since = "0.1.0")]
 		public int get_configuration () throws GLib.Error;
+		[Version (since = "0.3.5")]
+		public uint8 get_configuration_index ();
 		[Version (since = "0.2.5")]
 		public uint8 get_custom_index (uint8 class_id, uint8 subclass_id, uint8 protocol_id) throws GLib.Error;
 		[Version (since = "0.1.7")]
@@ -111,6 +114,7 @@ namespace GUsb {
 		public bool open () throws GLib.Error;
 		[Version (since = "0.1.0")]
 		public bool release_interface (int @interface, GUsb.DeviceClaimInterfaceFlags flags) throws GLib.Error;
+		[Version (since = "0.1.0")]
 		public bool reset () throws GLib.Error;
 		[Version (since = "0.1.0")]
 		public bool set_configuration (int configuration) throws GLib.Error;
@@ -151,12 +155,17 @@ namespace GUsb {
 		public GUsb.DeviceDirection get_direction ();
 		[Version (since = "0.3.3")]
 		public unowned GLib.Bytes get_extra ();
+		[Version (since = "0.3.3")]
 		public uint8 get_kind ();
+		[Version (since = "0.3.3")]
 		public uint16 get_maximum_packet_size ();
 		[Version (since = "0.3.3")]
 		public uint8 get_number ();
+		[Version (since = "0.3.3")]
 		public uint8 get_polling_interval ();
+		[Version (since = "0.3.3")]
 		public uint8 get_refresh ();
+		[Version (since = "0.3.3")]
 		public uint8 get_synch_address ();
 	}
 	[CCode (cheader_filename = "gusb.h", type_id = "g_usb_interface_get_type ()")]
@@ -278,7 +287,9 @@ namespace GUsb {
 	[CCode (cheader_filename = "gusb.h", cname = "G_USB_MINOR_VERSION")]
 	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "gusb.h")]
+	[Version (since = "0.1.0")]
 	public static unowned string strerror (int error_code);
 	[CCode (cheader_filename = "gusb.h")]
+	[Version (since = "0.3.1")]
 	public static unowned string version_string ();
 }
