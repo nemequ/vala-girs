@@ -201,7 +201,11 @@ namespace E {
 		public virtual async bool delete_resource (E.Source source, GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual bool delete_resource_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual string dup_resource_id (E.Source child_source);
+		[Version (since = "3.38")]
+		public bool freeze_populate ();
 		public unowned string get_cache_dir ();
+		[Version (since = "3.38")]
+		public bool get_populate_frozen ();
 		[Version (since = "3.32")]
 		public bool is_new_source (E.Source source);
 		public GLib.List<E.Source> list_calendar_sources ();
@@ -215,6 +219,8 @@ namespace E {
 		public E.SourceRegistryServer ref_server ();
 		[Version (since = "3.30")]
 		public void schedule_populate ();
+		[Version (since = "3.38")]
+		public void thaw_populate ();
 		[NoAccessorMethod]
 		public GLib.ProxyResolver proxy_resolver { owned get; }
 		[NoAccessorMethod]

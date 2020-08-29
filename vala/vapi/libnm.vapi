@@ -3167,6 +3167,8 @@ namespace NM {
 		public const string DHCP_CLIENT_ID;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_DHCP_FQDN")]
 		public const string DHCP_FQDN;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_DHCP_VENDOR_CLASS_IDENTIFIER")]
+		public const string DHCP_VENDOR_CLASS_IDENTIFIER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_METHOD_AUTO")]
 		public const string METHOD_AUTO;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_METHOD_DISABLED")]
@@ -3184,11 +3186,15 @@ namespace NM {
 		public unowned string get_dhcp_client_id ();
 		[Version (since = "1.2")]
 		public unowned string get_dhcp_fqdn ();
+		[Version (since = "1.28")]
+		public unowned string get_dhcp_vendor_class_identifier ();
 		[NoAccessorMethod]
 		public string dhcp_client_id { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public string dhcp_fqdn { owned get; set; }
+		[NoAccessorMethod]
+		public string dhcp_vendor_class_identifier { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ip6_config_get_type ()")]
 	public class SettingIP6Config : NM.SettingIPConfig {
@@ -3259,6 +3265,8 @@ namespace NM {
 		public const string DHCP_HOSTNAME_FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_IAID")]
 		public const string DHCP_IAID;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_REJECT_SERVERS")]
+		public const string DHCP_REJECT_SERVERS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_SEND_HOSTNAME")]
 		public const string DHCP_SEND_HOSTNAME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_TIMEOUT")]
@@ -3294,6 +3302,8 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected SettingIPConfig ();
 		public bool add_address (NM.IPAddress address);
+		[Version (since = "1.28")]
+		public void add_dhcp_reject_server (string server);
 		public bool add_dns (string dns);
 		[Version (since = "1.2")]
 		public bool add_dns_option (string dns_option);
@@ -3302,6 +3312,8 @@ namespace NM {
 		[Version (since = "1.18")]
 		public void add_routing_rule (NM.IPRoutingRule routing_rule);
 		public void clear_addresses ();
+		[Version (since = "1.28")]
+		public void clear_dhcp_reject_servers ();
 		public void clear_dns ();
 		[Version (since = "1.2")]
 		public void clear_dns_options (bool is_set);
@@ -3317,6 +3329,9 @@ namespace NM {
 		public NM.DhcpHostnameFlags get_dhcp_hostname_flags ();
 		[Version (since = "1.22")]
 		public unowned string get_dhcp_iaid ();
+		[CCode (array_length = true, array_length_pos = 0.1, array_length_type = "guint", array_null_terminated = true)]
+		[Version (since = "1.28")]
+		public unowned string[] get_dhcp_reject_servers ();
 		public bool get_dhcp_send_hostname ();
 		[Version (since = "1.2")]
 		public int get_dhcp_timeout ();
@@ -3351,6 +3366,8 @@ namespace NM {
 		public int next_valid_dns_option (uint idx);
 		public void remove_address (int idx);
 		public bool remove_address_by_value (NM.IPAddress address);
+		[Version (since = "1.28")]
+		public void remove_dhcp_reject_server (uint idx);
 		public void remove_dns (int idx);
 		public bool remove_dns_by_value (string dns);
 		[Version (since = "1.2")]
@@ -3376,6 +3393,10 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.22")]
 		public string dhcp_iaid { owned get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		[Version (since = "1.28")]
+		public string[] dhcp_reject_servers { owned get; set; }
 		[NoAccessorMethod]
 		public bool dhcp_send_hostname { get; set; }
 		[NoAccessorMethod]

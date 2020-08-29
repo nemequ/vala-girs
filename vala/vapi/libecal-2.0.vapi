@@ -103,7 +103,7 @@ namespace ECal {
 		public unowned string get_object_path ();
 		public bool is_running ();
 		[Version (since = "3.10")]
-		public void* ref_client ();
+		public ECal.Client ref_client ();
 		public void set_fields_of_interest (GLib.SList<string>? fields_of_interest) throws GLib.Error;
 		[Version (since = "3.6")]
 		public void set_flags (ECal.ClientViewFlags flags) throws GLib.Error;
@@ -468,13 +468,13 @@ namespace ECal {
 	public class ComponentAlarms {
 		[CCode (has_construct_function = false)]
 		[Version (since = "3.34")]
-		public ComponentAlarms (void* comp);
+		public ComponentAlarms (ECal.Component comp);
 		[Version (since = "3.34")]
 		public void add_instance (ECal.ComponentAlarmInstance instance);
 		[Version (since = "3.34")]
 		public ECal.ComponentAlarms copy ();
 		[Version (since = "3.34")]
-		public void* get_component ();
+		public unowned ECal.Component get_component ();
 		[Version (since = "3.34")]
 		public unowned GLib.SList<ECal.ComponentAlarmInstance>? get_instances ();
 		[Version (since = "3.34")]
@@ -1240,17 +1240,20 @@ namespace ECal {
 	public static void* util_icaltime_to_tm_with_zone (ICal.Time itt, ICal.Timezone from_zone, ICal.Timezone to_zone);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.30")]
-	public static bool util_init_recur_task_sync (ICal.Component vtodo, void* cal_client, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	public static bool util_init_recur_task_sync (ICal.Component vtodo, ECal.Client cal_client, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.16")]
 	public static bool util_is_first_instance (ECal.Component comp, ICal.Time rid, ECal.RecurResolveTimezoneCb tz_cb);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.30")]
-	public static bool util_mark_task_complete_sync (ICal.Component vtodo, long completed_time, void* cal_client, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	public static bool util_mark_task_complete_sync (ICal.Component vtodo, long completed_time, ECal.Client cal_client, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	public static ICal.Component util_new_component (ICal.ComponentKind kind);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	public static ICal.Component util_new_top_level ();
+	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.38")]
+	public static void util_normalize_rrule_until_value (ICal.Component icalcomp, ICal.Time ttuntil, ECal.RecurResolveTimezoneCb tz_cb);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.34")]
 	public static E.ConflictResolution util_operation_flags_to_conflict_resolution (uint32 flags);
@@ -1266,13 +1269,20 @@ namespace ECal {
 	[Version (since = "3.34")]
 	public static bool util_property_has_parameter (ICal.Property prop, ICal.ParameterKind param_kind);
 	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (deprecated = true, deprecated_since = "3.38")]
 	public static void util_remove_instances (ICal.Component icalcomp, ICal.Time rid, ECal.ObjModType mod);
+	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.38")]
+	public static void util_remove_instances_ex (ICal.Component icalcomp, ICal.Time rid, ECal.ObjModType mod, ECal.RecurResolveTimezoneCb tz_cb);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.30")]
 	public static string util_seconds_to_string (int64 seconds);
 	[CCode (cheader_filename = "libecal/libecal.h")]
-	[Version (since = "3.16")]
+	[Version (deprecated = true, deprecated_since = "3.38", since = "3.16")]
 	public static ICal.Component? util_split_at_instance (ICal.Component icalcomp, ICal.Time rid, ICal.Time? master_dtstart);
+	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.38")]
+	public static ICal.Component? util_split_at_instance_ex (ICal.Component icalcomp, ICal.Time rid, ICal.Time? master_dtstart, ECal.RecurResolveTimezoneCb tz_cb);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.22")]
 	public static ICal.Time util_tm_to_icaltime (void* tm, bool is_date);

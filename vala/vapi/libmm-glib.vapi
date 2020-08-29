@@ -751,6 +751,9 @@ namespace MM {
 		public string dup_revision ();
 		[Version (since = "1.0")]
 		public string dup_sim_path ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.16")]
+		public string[] dup_sim_slot_paths ();
 		[Version (since = "1.0")]
 		public async bool enable (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
@@ -803,12 +806,17 @@ namespace MM {
 		public MM.ModemPowerState get_power_state ();
 		[Version (since = "1.0")]
 		public unowned string get_primary_port ();
+		[Version (since = "1.16")]
+		public uint get_primary_sim_slot ();
 		[Version (since = "1.0")]
 		public unowned string get_revision ();
 		[Version (since = "1.0")]
 		public uint get_signal_quality (out bool recent);
 		[Version (since = "1.0")]
 		public async MM.Sim get_sim (GLib.Cancellable? cancellable) throws GLib.Error;
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "1.16")]
+		public unowned string[] get_sim_slot_paths ();
 		[Version (since = "1.0")]
 		public MM.Sim get_sim_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.0")]
@@ -831,6 +839,10 @@ namespace MM {
 		public async GLib.List<MM.Bearer> list_bearers (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
 		public GLib.List<MM.Bearer> list_bearers_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.16")]
+		public async GLib.GenericArray<MM.Sim> list_sim_slots (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.16")]
+		public GLib.GenericArray<MM.Sim> list_sim_slots_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.0")]
 		public bool peek_current_bands ([CCode (array_length_cname = "n_bands", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemBand[] bands);
 		[Version (since = "1.2")]
@@ -865,6 +877,10 @@ namespace MM {
 		public async bool set_power_state (MM.ModemPowerState state, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
 		public bool set_power_state_sync (MM.ModemPowerState state, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.16")]
+		public async bool set_primary_sim_slot (uint sim_slot, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.16")]
+		public bool set_primary_sim_slot_sync (uint sim_slot, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", lower_case_csuffix = "modem_3gpp", type_id = "mm_modem_3gpp_get_type ()")]
 	public class Modem3gpp : MM.GdbusModem3gppProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusModem3gpp {
@@ -1384,6 +1400,8 @@ namespace MM {
 		public async bool enable_pin (string pin, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
 		public bool enable_pin_sync (string pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.16")]
+		public bool get_active ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "1.12")]
 		public unowned string[] get_emergency_numbers ();
@@ -1683,6 +1701,8 @@ namespace MM {
 		public bool call_set_current_modes_sync (GLib.Variant arg_modes, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_set_power_state (uint arg_state, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_set_power_state_sync (uint arg_state, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_set_primary_sim_slot (uint arg_sim_slot, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_set_primary_sim_slot_sync (uint arg_sim_slot, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_command (owned GLib.DBusMethodInvocation invocation, string response);
 		public void complete_create_bearer (owned GLib.DBusMethodInvocation invocation, string path);
 		public void complete_delete_bearer (owned GLib.DBusMethodInvocation invocation);
@@ -1694,6 +1714,7 @@ namespace MM {
 		public void complete_set_current_capabilities (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_current_modes (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_power_state (owned GLib.DBusMethodInvocation invocation);
+		public void complete_set_primary_sim_slot (owned GLib.DBusMethodInvocation invocation);
 		public void emit_state_changed (int arg_old, int arg_new, uint arg_reason);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
@@ -1743,11 +1764,16 @@ namespace MM {
 		[NoAccessorMethod]
 		public abstract string primary_port { owned get; set; }
 		[NoAccessorMethod]
+		public abstract uint primary_sim_slot { get; set; }
+		[NoAccessorMethod]
 		public abstract string revision { owned get; set; }
 		[NoAccessorMethod]
 		public abstract GLib.Variant signal_quality { owned get; set; }
 		[NoAccessorMethod]
 		public abstract string sim { owned get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		[NoAccessorMethod]
+		public abstract string[] sim_slots { owned get; set; }
 		[NoAccessorMethod]
 		public abstract int state { get; set; }
 		[NoAccessorMethod]
@@ -1775,6 +1801,7 @@ namespace MM {
 		public virtual signal bool handle_set_current_capabilities (GLib.DBusMethodInvocation invocation, uint arg_capabilities);
 		public virtual signal bool handle_set_current_modes (GLib.DBusMethodInvocation invocation, GLib.Variant arg_modes);
 		public virtual signal bool handle_set_power_state (GLib.DBusMethodInvocation invocation, uint arg_state);
+		public virtual signal bool handle_set_primary_sim_slot (GLib.DBusMethodInvocation invocation, uint arg_sim_slot);
 		public virtual signal void state_changed (int arg_old, int arg_new, uint arg_reason);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusModem3gpp", type_id = "mm_gdbus_modem3gpp_get_type ()")]
@@ -2180,6 +2207,8 @@ namespace MM {
 		public void complete_send_puk (owned GLib.DBusMethodInvocation invocation);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
+		[NoAccessorMethod]
+		public abstract bool active { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public abstract string[] emergency_numbers { owned get; set; }
@@ -3421,6 +3450,8 @@ namespace MM {
 	public const string MODEM_METHOD_SETCURRENTMODES;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_METHOD_SETPOWERSTATE")]
 	public const string MODEM_METHOD_SETPOWERSTATE;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_METHOD_SETPRIMARYSIMSLOT")]
+	public const string MODEM_METHOD_SETPRIMARYSIMSLOT;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_REGISTER")]
 	public const string MODEM_MODEM3GPP_METHOD_REGISTER;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_SCAN")]
@@ -3541,12 +3572,16 @@ namespace MM {
 	public const string MODEM_PROPERTY_POWERSTATE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_PRIMARYPORT")]
 	public const string MODEM_PROPERTY_PRIMARYPORT;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_PRIMARYSIMSLOT")]
+	public const string MODEM_PROPERTY_PRIMARYSIMSLOT;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_REVISION")]
 	public const string MODEM_PROPERTY_REVISION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_SIGNALQUALITY")]
 	public const string MODEM_PROPERTY_SIGNALQUALITY;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_SIM")]
 	public const string MODEM_PROPERTY_SIM;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_SIMSLOTS")]
+	public const string MODEM_PROPERTY_SIMSLOTS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_STATE")]
 	public const string MODEM_PROPERTY_STATE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_STATEFAILEDREASON")]
@@ -3645,6 +3680,8 @@ namespace MM {
 	public const string SIM_METHOD_SENDPIN;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_METHOD_SENDPUK")]
 	public const string SIM_METHOD_SENDPUK;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_ACTIVE")]
+	public const string SIM_PROPERTY_ACTIVE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_EMERGENCYNUMBERS")]
 	public const string SIM_PROPERTY_EMERGENCYNUMBERS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_IMSI")]
