@@ -265,6 +265,8 @@ namespace E {
 		public GLib.InputStream send_request_sync (Soup.RequestHTTP request, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void set_credentials (E.NamedParameters? credentials);
 		public void setup_logging (string? logging_level);
+		[Version (since = "3.38")]
+		public static bool util_normalize_uri_path (Soup.URI suri);
 		public static unowned string util_status_to_string (uint status_code, string? reason_phrase);
 		[NoAccessorMethod]
 		public E.NamedParameters credentials { owned get; set; }

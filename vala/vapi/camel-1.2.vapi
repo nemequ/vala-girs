@@ -2987,7 +2987,8 @@ namespace Camel {
 		CITE,
 		PRESERVE_8BIT,
 		FORMAT_FLOWED,
-		QUOTE_CITATION
+		QUOTE_CITATION,
+		DIV
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_YENC_DIRECTION_", type_id = "camel_mime_filter_yenc_direction_get_type ()")]
 	public enum MimeFilterYencDirection {
