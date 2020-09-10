@@ -6721,9 +6721,19 @@ the user requires to obtain a given #NMClientPermission</doc>
                glib:get-type="nm_connection_get_type"
                glib:type-struct="ConnectionInterface">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-connection.h"
-           line="37">NMConnection is the interface implemented by #NMRemoteConnection on the
-client side, and #NMSettingsConnection on the daemon side.</doc>
+           filename="libnm-core/nm-connection.c"
+           line="18">An #NMConnection describes all the settings and configuration values that
+are necessary to configure network devices for operation on a specific
+network.  Connections are the fundamental operating object for
+NetworkManager; no device is connected without a #NMConnection, or
+disconnected without having been connected with a #NMConnection.
+
+Each #NMConnection contains a list of #NMSetting objects usually referenced
+by name (using nm_connection_get_setting_by_name()) or by type (with
+nm_connection_get_setting()).  The settings describe the actual parameters
+with which the network devices are configured, including device-specific
+parameters (MTU, SSID, APN, channel, rate, etc) and IP-level parameters
+(addresses, routes, addressing methods, etc).</doc>
       <source-position filename="libnm-core/nm-connection.h" line="60"/>
       <virtual-method name="changed">
         <source-position filename="libnm-core/nm-connection.h" line="58"/>
@@ -24648,6 +24658,10 @@ whether the object is still alive/cached, check nm_object_get_client().</doc>
            glib:type-name="NMRemoteConnection"
            glib:get-type="nm_remote_connection_get_type"
            glib:type-struct="RemoteConnectionClass">
+      <doc xml:space="preserve"
+           filename="libnm/nm-remote-connection.c"
+           line="20">A #NMRemoteConnection represents a connection that is exported via
+NetworkManager D-Bus interface.</doc>
       <source-position filename="libnm/nm-remote-connection.h" line="36"/>
       <implements name="Connection"/>
       <method name="commit_changes"
@@ -31802,9 +31816,13 @@ has returned</doc>
            glib:get-type="nm_setting_get_type"
            glib:type-struct="SettingClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting.h"
-           line="131">The NMSetting struct contains only private data.
-It should only be accessed through the functions described below.</doc>
+           filename="libnm-core/nm-setting.c"
+           line="17">Each #NMSetting contains properties that describe configuration that applies
+to a specific network layer (like IPv4 or IPv6 configuration) or device type
+(like Ethernet, or Wi-Fi).  A collection of individual settings together
+make up an #NMConnection. Each property is strongly typed and usually has
+a number of allowed values.  See each #NMSetting subclass for a description
+of properties and allowed values.</doc>
       <source-position filename="libnm-core/nm-setting.h" line="267"/>
       <function name="lookup_type" c:identifier="nm_setting_lookup_type">
         <doc xml:space="preserve"
@@ -32706,7 +32724,8 @@ example "ppp" or "802-11-wireless" or "802-3-ethernet".</doc>
            glib:type-struct="Setting6LowpanClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-6lowpan.c"
-           line="30">6LoWPAN Settings</doc>
+           line="12">The #NMSetting6Lowpan object is a #NMSetting subclass that describes properties
+necessary for connection to 6LoWPAN interfaces.</doc>
       <source-position filename="libnm-core/nm-setting-6lowpan.h" line="28"/>
       <constructor name="new"
                    c:identifier="nm_setting_6lowpan_new"
@@ -32766,8 +32785,29 @@ from which this 6LowPAN interface should be created.</doc>
            glib:get-type="nm_setting_802_1x_get_type"
            glib:type-struct="Setting8021xClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-8021x.h"
-           line="164">IEEE 802.1x Authentication Settings</doc>
+           filename="libnm-core/nm-setting-8021x.c"
+           line="18">The #NMSetting8021x object is a #NMSetting subclass that describes
+properties necessary for connection to 802.1x-authenticated networks, such as
+WPA and WPA2 Enterprise Wi-Fi networks and wired 802.1x networks.  802.1x
+connections typically use certificates and/or EAP authentication methods to
+securely verify, identify, and authenticate the client to the network itself,
+instead of simply relying on a widely shared static key.
+
+It's a good idea to read up on wpa_supplicant configuration before using this
+setting extensively, since most of the options here correspond closely with
+the relevant wpa_supplicant configuration options.
+
+Furthermore, to get a good idea of 802.1x, EAP, TLS, TTLS, etc and their
+applications to Wi-Fi and wired networks, you'll want to get copies of the
+following books.
+
+ 802.11 Wireless Networks: The Definitive Guide, Second Edition
+      Author: Matthew Gast
+      ISBN: 978-0596100520
+
+ Cisco Wireless LAN Security
+      Authors: Krishna Sankar, Sri Sundaralingam, Darrin Miller, and Andrew Balinsky
+      ISBN: 978-1587051548</doc>
       <source-position filename="libnm-core/nm-setting-8021x.h" line="178"/>
       <constructor name="new" c:identifier="nm_setting_802_1x_new">
         <doc xml:space="preserve"
@@ -35799,8 +35839,9 @@ URI of an object on a PKCS#11 token</doc>
            glib:get-type="nm_setting_adsl_get_type"
            glib:type-struct="SettingAdslClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-adsl.h"
-           line="41">ADSL Settings</doc>
+           filename="libnm-core/nm-setting-adsl.c"
+           line="15">The #NMSettingAdsl object is a #NMSetting subclass that describes
+properties of ADSL connections.</doc>
       <source-position filename="libnm-core/nm-setting-adsl.h" line="55"/>
       <constructor name="new" c:identifier="nm_setting_adsl_new">
         <doc xml:space="preserve"
@@ -36002,8 +36043,11 @@ URI of an object on a PKCS#11 token</doc>
            glib:get-type="nm_setting_bluetooth_get_type"
            glib:type-struct="SettingBluetoothClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-bluetooth.h"
-           line="54">Bluetooth Settings</doc>
+           filename="libnm-core/nm-setting-bluetooth.c"
+           line="20">The #NMSettingBluetooth object is a #NMSetting subclass that describes
+properties necessary for connection to devices that provide network
+connections via the Bluetooth Dial-Up Networking (DUN) and Network Access
+Point (NAP) profiles.</doc>
       <source-position filename="libnm-core/nm-setting-bluetooth.h" line="68"/>
       <constructor name="new" c:identifier="nm_setting_bluetooth_new">
         <doc xml:space="preserve"
@@ -36102,8 +36146,9 @@ Area Networking connections to devices supporting the NAP profile.</doc>
            glib:get-type="nm_setting_bond_get_type"
            glib:type-struct="SettingBondClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-bond.h"
-           line="57">Bonding Settings</doc>
+           filename="libnm-core/nm-setting-bond.c"
+           line="23">The #NMSettingBond object is a #NMSetting subclass that describes properties
+necessary for bond connections.</doc>
       <source-position filename="libnm-core/nm-setting-bond.h" line="71"/>
       <constructor name="new" c:identifier="nm_setting_bond_new">
         <doc xml:space="preserve"
@@ -36437,7 +36482,8 @@ must be strings. Option names must contain only alphanumeric characters
            glib:type-struct="SettingBridgeClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-bridge.c"
-           line="88">Bridging Settings</doc>
+           line="18">The #NMSettingBridge object is a #NMSetting subclass that describes properties
+necessary for bridging connections.</doc>
       <source-position filename="libnm-core/nm-setting-bridge.h" line="57"/>
       <constructor name="new" c:identifier="nm_setting_bridge_new">
         <doc xml:space="preserve"
@@ -37382,8 +37428,9 @@ range, represented as a couple of ids separated by a dash.</doc>
            glib:get-type="nm_setting_bridge_port_get_type"
            glib:type-struct="SettingBridgePortClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-bridge-port.h"
-           line="32">Bridge Port Settings</doc>
+           filename="libnm-core/nm-setting-bridge-port.c"
+           line="19">The #NMSettingBridgePort object is a #NMSetting subclass that describes
+optional properties that apply to bridge ports.</doc>
       <source-position filename="libnm-core/nm-setting-bridge-port.h"
                        line="46"/>
       <constructor name="new" c:identifier="nm_setting_bridge_port_new">
@@ -37680,8 +37727,10 @@ range, represented as a couple of ids separated by a dash.</doc>
            glib:get-type="nm_setting_cdma_get_type"
            glib:type-struct="SettingCdmaClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-cdma.h"
-           line="33">CDMA-based Mobile Broadband Settings</doc>
+           filename="libnm-core/nm-setting-cdma.c"
+           line="14">The #NMSettingCdma object is a #NMSetting subclass that describes
+properties that allow connections to IS-95-based mobile broadband
+networks, including those using CDMA2000/EVDO technology.</doc>
       <source-position filename="libnm-core/nm-setting-cdma.h" line="47"/>
       <constructor name="new" c:identifier="nm_setting_cdma_new">
         <doc xml:space="preserve"
@@ -38336,8 +38385,11 @@ two connections.</doc>
            glib:get-type="nm_setting_connection_get_type"
            glib:type-struct="SettingConnectionClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-connection.h"
-           line="125">General Connection Profile Settings</doc>
+           filename="libnm-core/nm-setting-connection.c"
+           line="22">The #NMSettingConnection object is a #NMSetting subclass that describes
+properties that apply to all #NMConnection objects, regardless of what type
+of network connection they describe.  Each #NMConnection object must contain
+a #NMSettingConnection setting.</doc>
       <source-position filename="libnm-core/nm-setting-connection.h"
                        line="139"/>
       <constructor name="new" c:identifier="nm_setting_connection_new">
@@ -39748,8 +39800,12 @@ should be activated when master is activated.</doc>
            glib:get-type="nm_setting_dcb_get_type"
            glib:type-struct="SettingDcbClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-dcb.h"
-           line="78">Data Center Bridging Settings</doc>
+           filename="libnm-core/nm-setting-dcb.c"
+           line="15">The #NMSettingDcb object is a #NMSetting subclass that describes properties
+for enabling and using Data Center Bridging (DCB) on Ethernet networks.
+DCB is a set of protocols (including 802.1Qbb, 802.1Qaz, 802.1Qau, and
+802.1AB) to eliminate packet loss in Ethernet networks and support the use
+of storage technologies like Fibre Channel over Ethernet (FCoE) and iSCSI.</doc>
       <source-position filename="libnm-core/nm-setting-dcb.h" line="92"/>
       <constructor name="new" c:identifier="nm_setting_dcb_new">
         <doc xml:space="preserve"
@@ -40526,8 +40582,9 @@ if you specify @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT.</doc>
            glib:get-type="nm_setting_dummy_get_type"
            glib:type-struct="SettingDummyClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-dummy.h"
-           line="26">Dummy Link Settings</doc>
+           filename="libnm-core/nm-setting-dummy.c"
+           line="14">The #NMSettingDummy object is a #NMSetting subclass that describes properties
+necessary for connection to dummy devices</doc>
       <source-position filename="libnm-core/nm-setting-dummy.h" line="40"/>
       <constructor name="new"
                    c:identifier="nm_setting_dummy_new"
@@ -40570,7 +40627,8 @@ if you specify @NM_SETTING_COMPARE_FLAG_DIFF_RESULT_WITH_DEFAULT.</doc>
            glib:type-struct="SettingEthtoolClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-ethtool.c"
-           line="94">Ethtool Ethernet Settings</doc>
+           line="15">The #NMSettingEthtool object is a #NMSetting subclass that describes properties
+to control network driver and hardware settings.</doc>
       <source-position filename="libnm-core/nm-setting-ethtool.h" line="122"/>
       <constructor name="new"
                    c:identifier="nm_setting_ethtool_new"
@@ -40744,8 +40802,13 @@ nm_ethtool_optname_is_feature().</doc>
            glib:get-type="nm_setting_generic_get_type"
            glib:type-struct="SettingGenericClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-generic.h"
-           line="26">Generic Link Settings</doc>
+           filename="libnm-core/nm-setting-generic.c"
+           line="12">The #NMSettingGeneric object is a #NMSetting subclass that describes
+optional properties that apply to "generic" devices (ie, devices that
+NetworkManager does not specifically recognize).
+
+There are currently no properties on this object; it exists only to be
+the "connection type" setting on #NMConnections for generic devices.</doc>
       <source-position filename="libnm-core/nm-setting-generic.h" line="40"/>
       <constructor name="new" c:identifier="nm_setting_generic_new">
         <doc xml:space="preserve"
@@ -40784,8 +40847,10 @@ nm_ethtool_optname_is_feature().</doc>
            glib:get-type="nm_setting_gsm_get_type"
            glib:type-struct="SettingGsmClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-gsm.h"
-           line="44">GSM-based Mobile Broadband Settings</doc>
+           filename="libnm-core/nm-setting-gsm.c"
+           line="15">The #NMSettingGsm object is a #NMSetting subclass that describes
+properties that allow connections to 3GPP-based mobile broadband
+networks, including those using GPRS/EDGE and UMTS/HSPA technology.</doc>
       <source-position filename="libnm-core/nm-setting-gsm.h" line="58"/>
       <constructor name="new" c:identifier="nm_setting_gsm_new">
         <doc xml:space="preserve"
@@ -41212,8 +41277,25 @@ username is required, it is specified here.</doc>
            glib:get-type="nm_setting_ip4_config_get_type"
            glib:type-struct="SettingIP4ConfigClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ip4-config.h"
-           line="75">IPv4 Settings</doc>
+           filename="libnm-core/nm-setting-ip4-config.c"
+           line="12">The #NMSettingIP4Config object is a #NMSetting subclass that describes
+properties related to IPv4 addressing, routing, and Domain Name Service.
+
+#NMSettingIP4Config has few properties or methods of its own; it inherits
+almost everything from #NMSettingIPConfig.
+
+NetworkManager supports 5 values for the #NMSettingIPConfig:method property
+for IPv4.  If "auto" is specified then the appropriate automatic method
+(DHCP, PPP, etc) is used for the interface and most other properties can be
+left unset.  If "link-local" is specified, then a link-local address in the
+169.254/16 range will be assigned to the interface.  If "manual" is
+specified, static IP addressing is used and at least one IP address must be
+given in the "addresses" property.  If "shared" is specified (indicating that
+this connection will provide network access to other computers) then the
+interface is assigned an address in the 10.42.x.1/24 range and a DHCP and
+forwarding DNS server are started, and the interface is NAT-ed to the current
+default network connection.  "disabled" means IPv4 will not be used on this
+connection.</doc>
       <source-position filename="libnm-core/nm-setting-ip4-config.h"
                        line="89"/>
       <constructor name="new" c:identifier="nm_setting_ip4_config_new">
@@ -41384,8 +41466,24 @@ Since 1.28</doc>
            glib:get-type="nm_setting_ip6_config_get_type"
            glib:type-struct="SettingIP6ConfigClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ip6-config.h"
-           line="137">IPv6 Settings</doc>
+           filename="libnm-core/nm-setting-ip6-config.c"
+           line="16">The #NMSettingIP6Config object is a #NMSetting subclass that describes
+properties related to IPv6 addressing, routing, and Domain Name Service
+
+#NMSettingIP6Config has few properties or methods of its own; it inherits
+almost everything from #NMSettingIPConfig.
+
+NetworkManager supports 7 values for the #NMSettingIPConfig:method property
+for IPv6.  If "auto" is specified then the appropriate automatic method (PPP,
+router advertisement, etc) is used for the device and most other properties
+can be left unset.  To force the use of DHCP only, specify "dhcp"; this
+method is only valid for Ethernet- based hardware.  If "link-local" is
+specified, then an IPv6 link-local address will be assigned to the interface.
+If "manual" is specified, static IP addressing is used and at least one IP
+address must be given in the "addresses" property.  If "ignore" is specified,
+IPv6 configuration is not done. Note: the "shared" method is not yet
+supported. If "disabled" is specified, IPv6 is disabled completely for the
+interface.</doc>
       <source-position filename="libnm-core/nm-setting-ip6-config.h"
                        line="151"/>
       <constructor name="new" c:identifier="nm_setting_ip6_config_new">
@@ -41735,6 +41833,11 @@ are enabled and temporary addresses are preferred over public addresses</doc>
            glib:type-name="NMSettingIPConfig"
            glib:get-type="nm_setting_ip_config_get_type"
            glib:type-struct="SettingIPConfigClass">
+      <doc xml:space="preserve"
+           filename="libnm-core/nm-setting-ip-config.c"
+           line="21">#NMSettingIPConfig is the abstract base class of
+#NMSettingIP4Config and #NMSettingIP6Config, providing properties
+related to IP addressing, routing, and Domain Name Service.</doc>
       <source-position filename="libnm-core/nm-setting-ip-config.h"
                        line="388"/>
       <method name="add_address"
@@ -43918,8 +44021,9 @@ packets inherit the TTL value.</doc>
            glib:get-type="nm_setting_infiniband_get_type"
            glib:type-struct="SettingInfinibandClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-infiniband.h"
-           line="32">Infiniband Settings</doc>
+           filename="libnm-core/nm-setting-infiniband.c"
+           line="17">The #NMSettingInfiniband object is a #NMSetting subclass that describes properties
+necessary for connection to IP-over-InfiniBand networks.</doc>
       <source-position filename="libnm-core/nm-setting-infiniband.h"
                        line="46"/>
       <constructor name="new" c:identifier="nm_setting_infiniband_new">
@@ -44163,8 +44267,9 @@ overridden by user-controlled defaults configuration, is "never".</doc>
            glib:get-type="nm_setting_macsec_get_type"
            glib:type-struct="SettingMacsecClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-macsec.h"
-           line="36">MACSec Settings</doc>
+           filename="libnm-core/nm-setting-macsec.c"
+           line="21">The #NMSettingMacsec object is a #NMSetting subclass that describes properties
+necessary for connection to MACsec (IEEE 802.1AE) interfaces.</doc>
       <source-position filename="libnm-core/nm-setting-macsec.h" line="50"/>
       <constructor name="new"
                    c:identifier="nm_setting_macsec_new"
@@ -44528,8 +44633,9 @@ in MKA (MACsec Key Agreement) is obtained.</doc>
            glib:get-type="nm_setting_macvlan_get_type"
            glib:type-struct="SettingMacvlanClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-macvlan.h"
-           line="31">MAC VLAN Settings</doc>
+           filename="libnm-core/nm-setting-macvlan.c"
+           line="18">The #NMSettingMacvlan object is a #NMSetting subclass that describes properties
+necessary for connection to macvlan interfaces.</doc>
       <source-position filename="libnm-core/nm-setting-macvlan.h" line="45"/>
       <constructor name="new"
                    c:identifier="nm_setting_macvlan_new"
@@ -45568,8 +45674,9 @@ pattern.</doc>
            glib:get-type="nm_setting_olpc_mesh_get_type"
            glib:type-struct="SettingOlpcMeshClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-olpc-mesh.h"
-           line="32">OLPC Wireless Mesh Settings</doc>
+           filename="libnm-core/nm-setting-olpc-mesh.c"
+           line="16">The #NMSettingOlpcMesh object is a #NMSetting subclass that describes properties
+necessary for connection to OLPC-Mesh devices.</doc>
       <source-position filename="libnm-core/nm-setting-olpc-mesh.h" line="46"/>
       <constructor name="new" c:identifier="nm_setting_olpc_mesh_new">
         <doc xml:space="preserve"
@@ -45673,7 +45780,8 @@ answers the request.</doc>
            glib:type-struct="SettingOvsBridgeClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-ovs-bridge.c"
-           line="32">OvsBridge Link Settings</doc>
+           line="14">The #NMSettingOvsBridge object is a #NMSetting subclass that describes properties
+necessary for Open vSwitch bridges.</doc>
       <source-position filename="libnm-core/nm-setting-ovs-bridge.h"
                        line="32"/>
       <constructor name="new"
@@ -45853,7 +45961,8 @@ answers the request.</doc>
            glib:type-struct="SettingOvsDpdkClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-ovs-dpdk.c"
-           line="28">OvsDpdk Link Settings</doc>
+           line="14">The #NMSettingOvsDpdk object is a #NMSetting subclass that describes properties
+necessary for Open vSwitch interfaces of type "dpdk".</doc>
       <source-position filename="libnm-core/nm-setting-ovs-dpdk.h" line="28"/>
       <constructor name="new"
                    c:identifier="nm_setting_ovs_dpdk_new"
@@ -45915,7 +46024,8 @@ answers the request.</doc>
            glib:type-struct="SettingOvsInterfaceClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-ovs-interface.c"
-           line="28">Open vSwitch Interface Settings</doc>
+           line="14">The #NMSettingOvsInterface object is a #NMSetting subclass that describes properties
+necessary for Open vSwitch interfaces.</doc>
       <source-position filename="libnm-core/nm-setting-ovs-interface.h"
                        line="28"/>
       <constructor name="new"
@@ -45979,7 +46089,8 @@ answers the request.</doc>
            glib:type-struct="SettingOvsPatchClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-ovs-patch.c"
-           line="28">OvsPatch Link Settings</doc>
+           line="14">The #NMSettingOvsPatch object is a #NMSetting subclass that describes properties
+necessary for Open vSwitch interfaces of type "patch".</doc>
       <source-position filename="libnm-core/nm-setting-ovs-patch.h" line="28"/>
       <constructor name="new"
                    c:identifier="nm_setting_ovs_patch_new"
@@ -46042,7 +46153,8 @@ The patch on the other side must also set this interface as peer.</doc>
            glib:type-struct="SettingOvsPortClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-ovs-port.c"
-           line="33">OvsPort Link Settings</doc>
+           line="14">The #NMSettingOvsPort object is a #NMSetting subclass that describes properties
+necessary for Open vSwitch ports.</doc>
       <source-position filename="libnm-core/nm-setting-ovs-port.h" line="33"/>
       <constructor name="new"
                    c:identifier="nm_setting_ovs_port_new"
@@ -46249,8 +46361,10 @@ The patch on the other side must also set this interface as peer.</doc>
            glib:get-type="nm_setting_ppp_get_type"
            glib:type-struct="SettingPppClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ppp.h"
-           line="46">Point-to-Point Protocol Settings</doc>
+           filename="libnm-core/nm-setting-ppp.c"
+           line="13">The #NMSettingPpp object is a #NMSetting subclass that describes properties
+necessary for connection to networks that require PPP transport, like PPPoE
+cable and DSL modems and some mobile broadband devices.</doc>
       <source-position filename="libnm-core/nm-setting-ppp.h" line="60"/>
       <constructor name="new" c:identifier="nm_setting_ppp_new">
         <doc xml:space="preserve"
@@ -46737,8 +46851,10 @@ be set to %TRUE.  If 128-bit MPPE is not available the session will fail.</doc>
            glib:get-type="nm_setting_pppoe_get_type"
            glib:type-struct="SettingPppoeClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-pppoe.h"
-           line="33">PPP-over-Ethernet Settings</doc>
+           filename="libnm-core/nm-setting-pppoe.c"
+           line="15">The #NMSettingPppoe object is a #NMSetting subclass that describes
+properties necessary for connection to networks that require PPPoE connections
+to provide IP transport, for example cable or DSL modems.</doc>
       <source-position filename="libnm-core/nm-setting-pppoe.h" line="47"/>
       <constructor name="new" c:identifier="nm_setting_pppoe_new">
         <doc xml:space="preserve"
@@ -46904,8 +47020,15 @@ access concentrators or a specific service is known to be required.</doc>
            glib:get-type="nm_setting_proxy_get_type"
            glib:type-struct="SettingProxyClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-proxy.h"
-           line="45">WWW Proxy Settings</doc>
+           filename="libnm-core/nm-setting-proxy.c"
+           line="13">The #NMSettingProxy object is a #NMSetting subclass that describes properties
+related to Proxy settings like PAC URL, PAC script etc.
+
+NetworkManager support 2 values for the #NMSettingProxy:method property for
+proxy. If "auto" is specified then WPAD takes place and the appropriate details
+are pushed into PacRunner or user can override this URL with a new PAC URL or a
+PAC script. If "none" is selected then no proxy configuration is given to PacRunner
+to fulfill client queries.</doc>
       <source-position filename="libnm-core/nm-setting-proxy.h" line="58"/>
       <constructor name="new"
                    c:identifier="nm_setting_proxy_new"
@@ -47138,8 +47261,10 @@ secret is not required</doc>
            glib:get-type="nm_setting_serial_get_type"
            glib:type-struct="SettingSerialClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-serial.h"
-           line="47">Serial Link Settings</doc>
+           filename="libnm-core/nm-setting-serial.c"
+           line="13">The #NMSettingSerial object is a #NMSetting subclass that describes
+properties necessary for connections that may use serial communications,
+such as mobile broadband or analog telephone connections.</doc>
       <source-position filename="libnm-core/nm-setting-serial.h" line="61"/>
       <constructor name="new" c:identifier="nm_setting_serial_new">
         <doc xml:space="preserve"
@@ -47979,8 +48104,9 @@ tfilter is not added and the function returns %FALSE.</doc>
            glib:get-type="nm_setting_team_get_type"
            glib:type-struct="SettingTeamClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-team.h"
-           line="152">Teaming Settings</doc>
+           filename="libnm-core/nm-setting-team.c"
+           line="18">The #NMSettingTeam object is a #NMSetting subclass that describes properties
+necessary for team connections.</doc>
       <source-position filename="libnm-core/nm-setting-team.h" line="166"/>
       <constructor name="new" c:identifier="nm_setting_team_new">
         <doc xml:space="preserve"
@@ -48711,8 +48837,9 @@ Permitted values are: "roundrobin", "broadcast", "activebackup",
            glib:get-type="nm_setting_team_port_get_type"
            glib:type-struct="SettingTeamPortClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-team-port.h"
-           line="38">Team Port Settings</doc>
+           filename="libnm-core/nm-setting-team-port.c"
+           line="20">The #NMSettingTeamPort object is a #NMSetting subclass that describes
+optional properties that apply to team ports.</doc>
       <source-position filename="libnm-core/nm-setting-team-port.h" line="52"/>
       <constructor name="new" c:identifier="nm_setting_team_port_new">
         <doc xml:space="preserve"
@@ -49094,8 +49221,9 @@ When set to -1 means the parameter is skipped from the json config.</doc>
            glib:get-type="nm_setting_tun_get_type"
            glib:type-struct="SettingTunClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-tun.h"
-           line="47">Tunnel Settings</doc>
+           filename="libnm-core/nm-setting-tun.c"
+           line="17">The #NMSettingTun object is a #NMSetting subclass that describes properties
+necessary for connection to TUN/TAP interfaces.</doc>
       <source-position filename="libnm-core/nm-setting-tun.h" line="61"/>
       <constructor name="new" c:identifier="nm_setting_tun_new" version="1.2">
         <doc xml:space="preserve"
@@ -49340,7 +49468,8 @@ network header.</doc>
            glib:type-struct="SettingUserClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-user.c"
-           line="36">General User Profile Settings</doc>
+           line="14">The #NMSettingUser object is a #NMSetting subclass that allow to attach
+arbitrary user data to #NMConnection objects.</doc>
       <source-position filename="libnm-core/nm-setting-user.h" line="28"/>
       <constructor name="new" c:identifier="nm_setting_user_new">
         <doc xml:space="preserve"
@@ -49569,8 +49698,9 @@ nm_setting_enumerate_values()</doc>
            glib:get-type="nm_setting_vlan_get_type"
            glib:type-struct="SettingVlanClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-vlan.h"
-           line="33">VLAN Settings</doc>
+           filename="libnm-core/nm-setting-vlan.c"
+           line="20">The #NMSettingVlan object is a #NMSetting subclass that describes properties
+necessary for connection to VLAN interfaces.</doc>
       <source-position filename="libnm-core/nm-setting-vlan.h" line="47"/>
       <constructor name="new" c:identifier="nm_setting_vlan_new">
         <doc xml:space="preserve"
@@ -50016,8 +50146,14 @@ with a #NMSettingWired:mac-address property.</doc>
            glib:get-type="nm_setting_vpn_get_type"
            glib:type-struct="SettingVpnClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-vpn.h"
-           line="34">VPN Settings</doc>
+           filename="libnm-core/nm-setting-vpn.c"
+           line="18">The #NMSettingVpn object is a #NMSetting subclass that describes properties
+necessary for connection to Virtual Private Networks.  NetworkManager uses
+a plugin architecture to allow easier use of new VPN types, and this
+setting abstracts the configuration for those plugins.  Since the configuration
+options are only known to the VPN plugins themselves, the VPN configuration
+options are stored as key/value pairs of strings rather than GObject
+properties.</doc>
       <source-position filename="libnm-core/nm-setting-vpn.h" line="48"/>
       <constructor name="new" c:identifier="nm_setting_vpn_new">
         <doc xml:space="preserve"
@@ -50572,7 +50708,8 @@ VPN connection.</doc>
            glib:type-struct="SettingVrfClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-vrf.c"
-           line="25">VRF settings</doc>
+           line="11">The #NMSettingVrf object is a #NMSetting subclass that describes properties
+necessary for connection to vrf devices</doc>
       <source-position filename="libnm-core/nm-setting-vrf.h" line="25"/>
       <constructor name="new" c:identifier="nm_setting_vrf_new" version="1.24">
         <doc xml:space="preserve"
@@ -50629,8 +50766,9 @@ VPN connection.</doc>
            glib:get-type="nm_setting_vxlan_get_type"
            glib:type-struct="SettingVxlanClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-vxlan.h"
-           line="43">VXLAN Settings</doc>
+           filename="libnm-core/nm-setting-vxlan.c"
+           line="15">The #NMSettingVxlan object is a #NMSetting subclass that describes properties
+necessary for connection to VXLAN interfaces.</doc>
       <source-position filename="libnm-core/nm-setting-vxlan.h" line="57"/>
       <constructor name="new"
                    c:identifier="nm_setting_vxlan_new"
@@ -51126,7 +51264,8 @@ tunnel endpoint.</doc>
            glib:type-struct="SettingWifiP2PClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-wifi-p2p.c"
-           line="25">Wi-Fi P2P Settings</doc>
+           line="17">The #NMSettingWifiP2P object is a #NMSetting subclass that describes properties
+necessary for connection to 802.11 Wi-Fi P2P networks (aka Wi-Fi Direct).</doc>
       <source-position filename="libnm-core/nm-setting-wifi-p2p.h" line="36"/>
       <constructor name="new"
                    c:identifier="nm_setting_wifi_p2p_new"
@@ -51255,8 +51394,13 @@ automatically determine the best method to use.</doc>
            glib:get-type="nm_setting_wimax_get_type"
            glib:type-struct="SettingWimaxClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-wimax.h"
-           line="29">WiMax Settings</doc>
+           filename="libnm-core/nm-setting-wimax.c"
+           line="17">The #NMSettingWimax object is a #NMSetting subclass that describes properties
+necessary for connection to 802.16e Mobile WiMAX networks.
+
+NetworkManager no longer supports WiMAX; while this API remains available for
+backward-compatibility reasons, it serves no real purpose, since WiMAX
+connections cannot be activated.</doc>
       <source-position filename="libnm-core/nm-setting-wimax.h" line="43"/>
       <constructor name="new"
                    c:identifier="nm_setting_wimax_new"
@@ -51376,7 +51520,8 @@ should use.</doc>
            glib:type-struct="SettingWireGuardClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-wireguard.c"
-           line="922">WireGuard Settings</doc>
+           line="17">The #NMSettingWireGuard object is a #NMSetting subclass that contains settings
+for configuring WireGuard.</doc>
       <source-position filename="libnm-core/nm-setting-wireguard.h"
                        line="139"/>
       <constructor name="new"
@@ -51882,8 +52027,9 @@ property.</doc>
            glib:get-type="nm_setting_wired_get_type"
            glib:type-struct="SettingWiredClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-wired.h"
-           line="80">Wired Ethernet Settings</doc>
+           filename="libnm-core/nm-setting-wired.c"
+           line="18">The #NMSettingWired object is a #NMSetting subclass that describes properties
+necessary for connection to Ethernet networks.</doc>
       <source-position filename="libnm-core/nm-setting-wired.h" line="94"/>
       <constructor name="new" c:identifier="nm_setting_wired_new">
         <doc xml:space="preserve"
@@ -52798,8 +52944,9 @@ are supported by all devices.</doc>
            glib:get-type="nm_setting_wireless_get_type"
            glib:type-struct="SettingWirelessClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-wireless.h"
-           line="139">Wi-Fi Settings</doc>
+           filename="libnm-core/nm-setting-wireless.c"
+           line="18">The #NMSettingWireless object is a #NMSetting subclass that describes properties
+necessary for connection to 802.11 Wi-Fi networks.</doc>
       <source-position filename="libnm-core/nm-setting-wireless.h" line="153"/>
       <constructor name="new" c:identifier="nm_setting_wireless_new">
         <doc xml:space="preserve"
@@ -53741,8 +53888,22 @@ NetworkManager).</doc>
            glib:get-type="nm_setting_wireless_security_get_type"
            glib:type-struct="SettingWirelessSecurityClass">
       <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-wireless-security.h"
-           line="142">Wi-Fi Security Settings</doc>
+           filename="libnm-core/nm-setting-wireless-security.c"
+           line="18">The #NMSettingWirelessSecurity object is a #NMSetting subclass that describes
+properties necessary for connection to encrypted Wi-Fi networks.
+
+It's a good idea to read up on wpa_supplicant configuration before using this
+setting extensively, since most of the options here correspond closely with
+the relevant wpa_supplicant configuration options.  To get a better overview
+of how Wi-Fi security works, you may want to get copies of the following books.
+
+ 802.11 Wireless Networks: The Definitive Guide, Second Edition
+      Author: Matthew Gast
+      ISBN: 978-0596100520
+
+ Cisco Wireless LAN Security
+      Authors: Krishna Sankar, Sri Sundaralingam, Darrin Miller, and Andrew Balinsky
+      ISBN: 978-1587051548</doc>
       <source-position filename="libnm-core/nm-setting-wireless-security.h"
                        line="156"/>
       <constructor name="new" c:identifier="nm_setting_wireless_security_new">
@@ -55006,7 +55167,8 @@ are supported by all devices.</doc>
            glib:type-struct="SettingWpanClass">
       <doc xml:space="preserve"
            filename="libnm-core/nm-setting-wpan.c"
-           line="54">IEEE 802.15.4 (WPAN) MAC Settings</doc>
+           line="15">The #NMSettingWpan object is a #NMSetting subclass that describes properties
+necessary for configuring IEEE 802.15.4 (WPAN) MAC layer devices.</doc>
       <source-position filename="libnm-core/nm-setting-wpan.h" line="34"/>
       <constructor name="new"
                    c:identifier="nm_setting_wpan_new"
@@ -55464,6 +55626,10 @@ D-Bus errors in that namespace.</doc>
            glib:type-name="NMSimpleConnection"
            glib:get-type="nm_simple_connection_get_type"
            glib:type-struct="SimpleConnectionClass">
+      <doc xml:space="preserve"
+           filename="libnm-core/nm-simple-connection.c"
+           line="13">An #NMSimpleConnection does not directly represent a D-Bus-exported connection,
+but might be used in the process of creating a new one.</doc>
       <source-position filename="libnm-core/nm-simple-connection.h" line="36"/>
       <implements name="Connection"/>
       <function name="new" c:identifier="nm_simple_connection_new">
@@ -63460,411 +63626,7 @@ and the value is of the correct type and well-formed.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
-    <docsection name="nm-connection">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-connection.c"
-           line="18">An #NMConnection describes all the settings and configuration values that
-are necessary to configure network devices for operation on a specific
-network.  Connections are the fundamental operating object for
-NetworkManager; no device is connected without a #NMConnection, or
-disconnected without having been connected with a #NMConnection.
-
-Each #NMConnection contains a list of #NMSetting objects usually referenced
-by name (using nm_connection_get_setting_by_name()) or by type (with
-nm_connection_get_setting()).  The settings describe the actual parameters
-with which the network devices are configured, including device-specific
-parameters (MTU, SSID, APN, channel, rate, etc) and IP-level parameters
-(addresses, routes, addressing methods, etc).</doc>
-    </docsection>
-    <docsection name="nm-remote-connection">
-      <doc xml:space="preserve"
-           filename="libnm/nm-remote-connection.c"
-           line="20">A #NMRemoteConnection represents a connection that is exported via
-NetworkManager D-Bus interface.</doc>
-    </docsection>
-    <docsection name="nm-setting">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting.c"
-           line="17">Each #NMSetting contains properties that describe configuration that applies
-to a specific network layer (like IPv4 or IPv6 configuration) or device type
-(like Ethernet, or Wi-Fi).  A collection of individual settings together
-make up an #NMConnection. Each property is strongly typed and usually has
-a number of allowed values.  See each #NMSetting subclass for a description
-of properties and allowed values.</doc>
-    </docsection>
-    <docsection name="nm-setting-6lowpan">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-6lowpan.c"
-           line="12">The #NMSetting6Lowpan object is a #NMSetting subclass that describes properties
-necessary for connection to 6LoWPAN interfaces.</doc>
-    </docsection>
-    <docsection name="nm-setting-8021x">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-8021x.c"
-           line="18">The #NMSetting8021x object is a #NMSetting subclass that describes
-properties necessary for connection to 802.1x-authenticated networks, such as
-WPA and WPA2 Enterprise Wi-Fi networks and wired 802.1x networks.  802.1x
-connections typically use certificates and/or EAP authentication methods to
-securely verify, identify, and authenticate the client to the network itself,
-instead of simply relying on a widely shared static key.
-
-It's a good idea to read up on wpa_supplicant configuration before using this
-setting extensively, since most of the options here correspond closely with
-the relevant wpa_supplicant configuration options.
-
-Furthermore, to get a good idea of 802.1x, EAP, TLS, TTLS, etc and their
-applications to Wi-Fi and wired networks, you'll want to get copies of the
-following books.
-
- 802.11 Wireless Networks: The Definitive Guide, Second Edition
-      Author: Matthew Gast
-      ISBN: 978-0596100520
-
- Cisco Wireless LAN Security
-      Authors: Krishna Sankar, Sri Sundaralingam, Darrin Miller, and Andrew Balinsky
-      ISBN: 978-1587051548</doc>
-    </docsection>
-    <docsection name="nm-setting-adsl">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-adsl.c"
-           line="15">The #NMSettingAdsl object is a #NMSetting subclass that describes
-properties of ADSL connections.</doc>
-    </docsection>
-    <docsection name="nm-setting-bluetooth">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-bluetooth.c"
-           line="20">The #NMSettingBluetooth object is a #NMSetting subclass that describes
-properties necessary for connection to devices that provide network
-connections via the Bluetooth Dial-Up Networking (DUN) and Network Access
-Point (NAP) profiles.</doc>
-    </docsection>
-    <docsection name="nm-setting-bond">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-bond.c"
-           line="23">The #NMSettingBond object is a #NMSetting subclass that describes properties
-necessary for bond connections.</doc>
-    </docsection>
-    <docsection name="nm-setting-bridge">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-bridge.c"
-           line="18">The #NMSettingBridge object is a #NMSetting subclass that describes properties
-necessary for bridging connections.</doc>
-    </docsection>
-    <docsection name="nm-setting-bridge-port">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-bridge-port.c"
-           line="19">The #NMSettingBridgePort object is a #NMSetting subclass that describes
-optional properties that apply to bridge ports.</doc>
-    </docsection>
-    <docsection name="nm-setting-cdma">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-cdma.c"
-           line="14">The #NMSettingCdma object is a #NMSetting subclass that describes
-properties that allow connections to IS-95-based mobile broadband
-networks, including those using CDMA2000/EVDO technology.</doc>
-    </docsection>
-    <docsection name="nm-setting-connection">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-connection.c"
-           line="22">The #NMSettingConnection object is a #NMSetting subclass that describes
-properties that apply to all #NMConnection objects, regardless of what type
-of network connection they describe.  Each #NMConnection object must contain
-a #NMSettingConnection setting.</doc>
-    </docsection>
-    <docsection name="nm-setting-dcb">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-dcb.c"
-           line="15">The #NMSettingDcb object is a #NMSetting subclass that describes properties
-for enabling and using Data Center Bridging (DCB) on Ethernet networks.
-DCB is a set of protocols (including 802.1Qbb, 802.1Qaz, 802.1Qau, and
-802.1AB) to eliminate packet loss in Ethernet networks and support the use
-of storage technologies like Fibre Channel over Ethernet (FCoE) and iSCSI.</doc>
-    </docsection>
-    <docsection name="nm-setting-dummy">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-dummy.c"
-           line="14">The #NMSettingDummy object is a #NMSetting subclass that describes properties
-necessary for connection to dummy devices</doc>
-    </docsection>
-    <docsection name="nm-setting-ethtool">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ethtool.c"
-           line="15">The #NMSettingEthtool object is a #NMSetting subclass that describes properties
-to control network driver and hardware settings.</doc>
-    </docsection>
-    <docsection name="nm-setting-generic">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-generic.c"
-           line="12">The #NMSettingGeneric object is a #NMSetting subclass that describes
-optional properties that apply to "generic" devices (ie, devices that
-NetworkManager does not specifically recognize).
-
-There are currently no properties on this object; it exists only to be
-the "connection type" setting on #NMConnections for generic devices.</doc>
-    </docsection>
-    <docsection name="nm-setting-gsm">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-gsm.c"
-           line="15">The #NMSettingGsm object is a #NMSetting subclass that describes
-properties that allow connections to 3GPP-based mobile broadband
-networks, including those using GPRS/EDGE and UMTS/HSPA technology.</doc>
-    </docsection>
-    <docsection name="nm-setting-infiniband">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-infiniband.c"
-           line="17">The #NMSettingInfiniband object is a #NMSetting subclass that describes properties
-necessary for connection to IP-over-InfiniBand networks.</doc>
-    </docsection>
-    <docsection name="nm-setting-ip-config">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ip-config.c"
-           line="21">#NMSettingIPConfig is the abstract base class of
-#NMSettingIP4Config and #NMSettingIP6Config, providing properties
-related to IP addressing, routing, and Domain Name Service.</doc>
-    </docsection>
-    <docsection name="nm-setting-ip4-config">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ip4-config.c"
-           line="12">The #NMSettingIP4Config object is a #NMSetting subclass that describes
-properties related to IPv4 addressing, routing, and Domain Name Service.
-
-#NMSettingIP4Config has few properties or methods of its own; it inherits
-almost everything from #NMSettingIPConfig.
-
-NetworkManager supports 5 values for the #NMSettingIPConfig:method property
-for IPv4.  If "auto" is specified then the appropriate automatic method
-(DHCP, PPP, etc) is used for the interface and most other properties can be
-left unset.  If "link-local" is specified, then a link-local address in the
-169.254/16 range will be assigned to the interface.  If "manual" is
-specified, static IP addressing is used and at least one IP address must be
-given in the "addresses" property.  If "shared" is specified (indicating that
-this connection will provide network access to other computers) then the
-interface is assigned an address in the 10.42.x.1/24 range and a DHCP and
-forwarding DNS server are started, and the interface is NAT-ed to the current
-default network connection.  "disabled" means IPv4 will not be used on this
-connection.</doc>
-    </docsection>
-    <docsection name="nm-setting-ip6-config">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ip6-config.c"
-           line="16">The #NMSettingIP6Config object is a #NMSetting subclass that describes
-properties related to IPv6 addressing, routing, and Domain Name Service
-
-#NMSettingIP6Config has few properties or methods of its own; it inherits
-almost everything from #NMSettingIPConfig.
-
-NetworkManager supports 7 values for the #NMSettingIPConfig:method property
-for IPv6.  If "auto" is specified then the appropriate automatic method (PPP,
-router advertisement, etc) is used for the device and most other properties
-can be left unset.  To force the use of DHCP only, specify "dhcp"; this
-method is only valid for Ethernet- based hardware.  If "link-local" is
-specified, then an IPv6 link-local address will be assigned to the interface.
-If "manual" is specified, static IP addressing is used and at least one IP
-address must be given in the "addresses" property.  If "ignore" is specified,
-IPv6 configuration is not done. Note: the "shared" method is not yet
-supported. If "disabled" is specified, IPv6 is disabled completely for the
-interface.</doc>
-    </docsection>
-    <docsection name="nm-setting-macsec">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-macsec.c"
-           line="21">The #NMSettingMacsec object is a #NMSetting subclass that describes properties
-necessary for connection to MACsec (IEEE 802.1AE) interfaces.</doc>
-    </docsection>
-    <docsection name="nm-setting-macvlan">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-macvlan.c"
-           line="18">The #NMSettingMacvlan object is a #NMSetting subclass that describes properties
-necessary for connection to macvlan interfaces.</doc>
-    </docsection>
-    <docsection name="nm-setting-olpc-mesh">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-olpc-mesh.c"
-           line="16">The #NMSettingOlpcMesh object is a #NMSetting subclass that describes properties
-necessary for connection to OLPC-Mesh devices.</doc>
-    </docsection>
-    <docsection name="nm-setting-ovs-bridge">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ovs-bridge.c"
-           line="14">The #NMSettingOvsBridge object is a #NMSetting subclass that describes properties
-necessary for Open vSwitch bridges.</doc>
-    </docsection>
-    <docsection name="nm-setting-ovs-dpdk">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ovs-dpdk.c"
-           line="14">The #NMSettingOvsDpdk object is a #NMSetting subclass that describes properties
-necessary for Open vSwitch interfaces of type "dpdk".</doc>
-    </docsection>
-    <docsection name="nm-setting-ovs-interface">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ovs-interface.c"
-           line="14">The #NMSettingOvsInterface object is a #NMSetting subclass that describes properties
-necessary for Open vSwitch interfaces.</doc>
-    </docsection>
-    <docsection name="nm-setting-ovs-patch">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ovs-patch.c"
-           line="14">The #NMSettingOvsPatch object is a #NMSetting subclass that describes properties
-necessary for Open vSwitch interfaces of type "patch".</doc>
-    </docsection>
-    <docsection name="nm-setting-ovs-port">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ovs-port.c"
-           line="14">The #NMSettingOvsPort object is a #NMSetting subclass that describes properties
-necessary for Open vSwitch ports.</doc>
-    </docsection>
-    <docsection name="nm-setting-ppp">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-ppp.c"
-           line="13">The #NMSettingPpp object is a #NMSetting subclass that describes properties
-necessary for connection to networks that require PPP transport, like PPPoE
-cable and DSL modems and some mobile broadband devices.</doc>
-    </docsection>
-    <docsection name="nm-setting-pppoe">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-pppoe.c"
-           line="15">The #NMSettingPppoe object is a #NMSetting subclass that describes
-properties necessary for connection to networks that require PPPoE connections
-to provide IP transport, for example cable or DSL modems.</doc>
-    </docsection>
-    <docsection name="nm-setting-proxy">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-proxy.c"
-           line="13">The #NMSettingProxy object is a #NMSetting subclass that describes properties
-related to Proxy settings like PAC URL, PAC script etc.
-
-NetworkManager support 2 values for the #NMSettingProxy:method property for
-proxy. If "auto" is specified then WPAD takes place and the appropriate details
-are pushed into PacRunner or user can override this URL with a new PAC URL or a
-PAC script. If "none" is selected then no proxy configuration is given to PacRunner
-to fulfill client queries.</doc>
-    </docsection>
-    <docsection name="nm-setting-serial">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-serial.c"
-           line="13">The #NMSettingSerial object is a #NMSetting subclass that describes
-properties necessary for connections that may use serial communications,
-such as mobile broadband or analog telephone connections.</doc>
-    </docsection>
-    <docsection name="nm-setting-team">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-team.c"
-           line="18">The #NMSettingTeam object is a #NMSetting subclass that describes properties
-necessary for team connections.</doc>
-    </docsection>
-    <docsection name="nm-setting-team-port">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-team-port.c"
-           line="20">The #NMSettingTeamPort object is a #NMSetting subclass that describes
-optional properties that apply to team ports.</doc>
-    </docsection>
-    <docsection name="nm-setting-tun">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-tun.c"
-           line="17">The #NMSettingTun object is a #NMSetting subclass that describes properties
-necessary for connection to TUN/TAP interfaces.</doc>
-    </docsection>
-    <docsection name="nm-setting-user">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-user.c"
-           line="14">The #NMSettingUser object is a #NMSetting subclass that allow to attach
-arbitrary user data to #NMConnection objects.</doc>
-    </docsection>
-    <docsection name="nm-setting-vlan">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-vlan.c"
-           line="20">The #NMSettingVlan object is a #NMSetting subclass that describes properties
-necessary for connection to VLAN interfaces.</doc>
-    </docsection>
-    <docsection name="nm-setting-vpn">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-vpn.c"
-           line="18">The #NMSettingVpn object is a #NMSetting subclass that describes properties
-necessary for connection to Virtual Private Networks.  NetworkManager uses
-a plugin architecture to allow easier use of new VPN types, and this
-setting abstracts the configuration for those plugins.  Since the configuration
-options are only known to the VPN plugins themselves, the VPN configuration
-options are stored as key/value pairs of strings rather than GObject
-properties.</doc>
-    </docsection>
-    <docsection name="nm-setting-vrf">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-vrf.c"
-           line="11">The #NMSettingVrf object is a #NMSetting subclass that describes properties
-necessary for connection to vrf devices</doc>
-    </docsection>
-    <docsection name="nm-setting-vxlan">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-vxlan.c"
-           line="15">The #NMSettingVxlan object is a #NMSetting subclass that describes properties
-necessary for connection to VXLAN interfaces.</doc>
-    </docsection>
-    <docsection name="nm-setting-wifi-p2p">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-wifi-p2p.c"
-           line="17">The #NMSettingWifiP2P object is a #NMSetting subclass that describes properties
-necessary for connection to 802.11 Wi-Fi P2P networks (aka Wi-Fi Direct).</doc>
-    </docsection>
-    <docsection name="nm-setting-wimax">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-wimax.c"
-           line="17">The #NMSettingWimax object is a #NMSetting subclass that describes properties
-necessary for connection to 802.16e Mobile WiMAX networks.
-
-NetworkManager no longer supports WiMAX; while this API remains available for
-backward-compatibility reasons, it serves no real purpose, since WiMAX
-connections cannot be activated.</doc>
-    </docsection>
-    <docsection name="nm-setting-wired">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-wired.c"
-           line="18">The #NMSettingWired object is a #NMSetting subclass that describes properties
-necessary for connection to Ethernet networks.</doc>
-    </docsection>
-    <docsection name="nm-setting-wireguard">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-wireguard.c"
-           line="17">The #NMSettingWireGuard object is a #NMSetting subclass that contains settings
-for configuring WireGuard.</doc>
-    </docsection>
-    <docsection name="nm-setting-wireless">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-wireless.c"
-           line="18">The #NMSettingWireless object is a #NMSetting subclass that describes properties
-necessary for connection to 802.11 Wi-Fi networks.</doc>
-    </docsection>
-    <docsection name="nm-setting-wireless-security">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-wireless-security.c"
-           line="18">The #NMSettingWirelessSecurity object is a #NMSetting subclass that describes
-properties necessary for connection to encrypted Wi-Fi networks.
-
-It's a good idea to read up on wpa_supplicant configuration before using this
-setting extensively, since most of the options here correspond closely with
-the relevant wpa_supplicant configuration options.  To get a better overview
-of how Wi-Fi security works, you may want to get copies of the following books.
-
- 802.11 Wireless Networks: The Definitive Guide, Second Edition
-      Author: Matthew Gast
-      ISBN: 978-0596100520
-
- Cisco Wireless LAN Security
-      Authors: Krishna Sankar, Sri Sundaralingam, Darrin Miller, and Andrew Balinsky
-      ISBN: 978-1587051548</doc>
-    </docsection>
-    <docsection name="nm-setting-wpan">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-setting-wpan.c"
-           line="15">The #NMSettingWpan object is a #NMSetting subclass that describes properties
-necessary for configuring IEEE 802.15.4 (WPAN) MAC layer devices.</doc>
-    </docsection>
-    <docsection name="nm-simple-connection">
-      <doc xml:space="preserve"
-           filename="libnm-core/nm-simple-connection.c"
-           line="13">An #NMSimpleConnection does not directly represent a D-Bus-exported connection,
-but might be used in the process of creating a new one.</doc>
-    </docsection>
-    <docsection name="nm-utils">
+    <docsection name="nmutils">
       <doc xml:space="preserve"
            filename="libnm-core/nm-utils.c"
            line="39">A collection of utility functions for working with SSIDs, IP addresses, Wi-Fi

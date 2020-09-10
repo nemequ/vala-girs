@@ -183,6 +183,12 @@ notation.</doc>
            glib:type-name="CoglBitmap"
            glib:get-type="cogl_bitmap_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-bitmap.h"
+           line="66">Cogl allows loading image data into memory as CoglBitmaps without
+loading them immediately into GPU textures.
+
+#CoglBitmap is available since Cogl 1.0</doc>
       <constructor name="new_from_file"
                    c:identifier="cogl_bitmap_new_from_file"
                    version="1.0"
@@ -407,10 +413,9 @@ will be used directly.</doc>
             glib:get-type="cogl_color_get_gtype"
             c:symbol-prefix="color">
       <doc xml:space="preserve"
-           filename="cogl-types.h"
-           line="491">A structure for holding a color definition. The contents of
-the CoglColor structure are private and should never by accessed
-directly.</doc>
+           filename="cogl-color.h"
+           line="38">#CoglColor is a simple structure holding the definition of a color such
+that it can be efficiently used by GL</doc>
       <source-position filename="cogl-types.h" line="518"/>
       <field name="private_member_red" readable="0" private="1">
         <type name="guint8" c:type="uint8_t"/>
@@ -2234,8 +2239,37 @@ the fractional part without rounding.</doc>
            glib:get-type="cogl_fixed_get_type"
            glib:fundamental="1">
       <doc xml:space="preserve"
-           filename="cogl-types.h"
-           line="203">Fixed point number using a (16.16) notation.</doc>
+           filename="deprecated/cogl-fixed.h"
+           line="40">COGL has a fixed point API targeted at platforms without a floating
+point unit, such as embedded devices. On such platforms this API should
+be preferred to the floating point one as it does not trigger the slow
+path of software emulation, relying on integer math for fixed-to-floating
+and floating-to-fixed notations conversion.
+
+It is not recommened for use on platforms with a floating point unit
+(e.g. desktop systems), nor for use in language bindings.
+
+Basic rules of Fixed Point arithmethic:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;
+    &lt;para&gt;Two fixed point numbers can be directly added, subtracted and
+    have their modulus taken.&lt;/para&gt;
+  &lt;/listitem&gt;
+  &lt;listitem&gt;
+    &lt;para&gt;To add other numerical type to a fixed point number it has to
+    be first converted to fixed point.&lt;/para&gt;
+  &lt;/listitem&gt;
+  &lt;listitem&gt;
+    &lt;para&gt;A fixed point number can be directly multiplied or divided by
+    an integer.&lt;/para&gt;
+  &lt;/listitem&gt;
+  &lt;listitem&gt;
+    &lt;para&gt;Two fixed point numbers can only be multiplied and divided by
+    the provided %COGL_FIXED_MUL and %COGL_FIXED_DIV macros.&lt;/para&gt;
+  &lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+The fixed point API is available since COGL 1.0.</doc>
       <function name="log2"
                 c:identifier="cogl_fixed_log2"
                 version="1.0"
@@ -2580,6 +2614,12 @@ advertized.</doc>
       </parameters>
     </function-macro>
     <record name="Material" c:type="CoglMaterial" disguised="1">
+      <doc xml:space="preserve"
+           filename="deprecated/cogl-material-compat.h"
+           line="46">COGL allows creating and manipulating materials used to fill in
+geometry. Materials may simply be lighting attributes (such as an
+ambient and diffuse colour) or might represent one or more textures
+blended together.</doc>
       <source-position filename="deprecated/cogl-material-compat.h" line="56"/>
       <method name="copy"
               c:identifier="cogl_material_copy"
@@ -4641,30 +4681,9 @@ merged in if the wrap mode is set to repeat.</doc>
             c:symbol-prefix="matrix">
       <doc xml:space="preserve"
            filename="cogl-matrix.h"
-           line="64">A CoglMatrix holds a 4x4 transform matrix. This is a single precision,
-column-major matrix which means it is compatible with what OpenGL expects.
-
-A CoglMatrix can represent transforms such as, rotations, scaling,
-translation, sheering, and linear projections. You can combine these
-transforms by multiplying multiple matrices in the order you want them
-applied.
-
-The transformation of a vertex (x, y, z, w) by a CoglMatrix is given by:
-
-|[
-  x_new = xx * x + xy * y + xz * z + xw * w
-  y_new = yx * x + yy * y + yz * z + yw * w
-  z_new = zx * x + zy * y + zz * z + zw * w
-  w_new = wx * x + wy * y + wz * z + ww * w
-]|
-
-Where w is normally 1
-
-&lt;note&gt;You must consider the members of the CoglMatrix structure read only,
-and all matrix modifications must be done via the cogl_matrix API. This
-allows Cogl to annotate the matrices internally. Violation of this will give
-undefined results. If you need to initialize a matrix with a constant other
-than the identity matrix you can use cogl_matrix_init_from_array().&lt;/note&gt;</doc>
+           line="55">Matrices are used in Cogl to describe affine model-view transforms, texture
+transforms, and projective transforms. This exposes a utility API that can
+be used for direct manipulation of these matrices.</doc>
       <source-position filename="cogl-matrix.h" line="126"/>
       <field name="xx" writable="1">
         <type name="gfloat" c:type="float"/>
@@ -5476,6 +5495,9 @@ inverse matrix these are not considered in the comparison.</doc>
            glib:type-name="CoglOffscreen"
            glib:get-type="cogl_offscreen_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-offscreen.h"
+           line="47">Cogl allows creating and operating on offscreen framebuffers.</doc>
       <constructor name="new_to_texture"
                    c:identifier="cogl_offscreen_new_to_texture"
                    deprecated="1"
@@ -6114,6 +6136,11 @@ this enum should also be considered experimental.</doc>
                c:symbol-prefix="texture"
                glib:type-name="CoglTexture"
                glib:get-type="cogl_texture_get_gtype">
+      <doc xml:space="preserve"
+           filename="cogl-texture.h"
+           line="65">Cogl allows creating and manipulating textures using a uniform
+API that tries to hide all the various complexities of creating,
+loading and manipulating textures.</doc>
       <function name="ref"
                 c:identifier="cogl_texture_ref"
                 introspectable="0"
@@ -7631,89 +7658,21 @@ cogl_clip_stack_restore().</doc>
            filename="cogl.h"
            line="177">General utility functions for COGL.</doc>
     </docsection>
-    <docsection name="cogl-bitmap">
-      <doc xml:space="preserve"
-           filename="cogl-bitmap.h"
-           line="66">Cogl allows loading image data into memory as CoglBitmaps without
-loading them immediately into GPU textures.
-
-#CoglBitmap is available since Cogl 1.0</doc>
-    </docsection>
-    <docsection name="cogl-clipping">
+    <docsection name="coglclipping">
       <doc xml:space="preserve"
            filename="deprecated/cogl-clip-state.h"
            line="44">To support clipping your geometry to rectangles or paths Cogl exposes a
 stack based API whereby each clip region you push onto the stack is
 intersected with the previous region.</doc>
     </docsection>
-    <docsection name="cogl-color">
-      <doc xml:space="preserve"
-           filename="cogl-color.h"
-           line="38">#CoglColor is a simple structure holding the definition of a color such
-that it can be efficiently used by GL</doc>
-    </docsection>
-    <docsection name="cogl-fixed">
-      <doc xml:space="preserve"
-           filename="deprecated/cogl-fixed.h"
-           line="40">COGL has a fixed point API targeted at platforms without a floating
-point unit, such as embedded devices. On such platforms this API should
-be preferred to the floating point one as it does not trigger the slow
-path of software emulation, relying on integer math for fixed-to-floating
-and floating-to-fixed notations conversion.
-
-It is not recommened for use on platforms with a floating point unit
-(e.g. desktop systems), nor for use in language bindings.
-
-Basic rules of Fixed Point arithmethic:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;
-    &lt;para&gt;Two fixed point numbers can be directly added, subtracted and
-    have their modulus taken.&lt;/para&gt;
-  &lt;/listitem&gt;
-  &lt;listitem&gt;
-    &lt;para&gt;To add other numerical type to a fixed point number it has to
-    be first converted to fixed point.&lt;/para&gt;
-  &lt;/listitem&gt;
-  &lt;listitem&gt;
-    &lt;para&gt;A fixed point number can be directly multiplied or divided by
-    an integer.&lt;/para&gt;
-  &lt;/listitem&gt;
-  &lt;listitem&gt;
-    &lt;para&gt;Two fixed point numbers can only be multiplied and divided by
-    the provided %COGL_FIXED_MUL and %COGL_FIXED_DIV macros.&lt;/para&gt;
-  &lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-The fixed point API is available since COGL 1.0.</doc>
-    </docsection>
-    <docsection name="cogl-material">
-      <doc xml:space="preserve"
-           filename="deprecated/cogl-material-compat.h"
-           line="46">COGL allows creating and manipulating materials used to fill in
-geometry. Materials may simply be lighting attributes (such as an
-ambient and diffuse colour) or might represent one or more textures
-blended together.</doc>
-    </docsection>
-    <docsection name="cogl-matrix">
-      <doc xml:space="preserve"
-           filename="cogl-matrix.h"
-           line="55">Matrices are used in Cogl to describe affine model-view transforms, texture
-transforms, and projective transforms. This exposes a utility API that can
-be used for direct manipulation of these matrices.</doc>
-    </docsection>
-    <docsection name="cogl-offscreen">
-      <doc xml:space="preserve"
-           filename="cogl-offscreen.h"
-           line="47">Cogl allows creating and operating on offscreen framebuffers.</doc>
-    </docsection>
-    <docsection name="cogl-primitives">
+    <docsection name="coglprimitives">
       <doc xml:space="preserve"
            filename="cogl-primitives.h"
            line="38">The primitives API provides utilities for drawing some
 common 3D shapes in a more convenient way than the CoglVertexBuffer
 API provides.</doc>
     </docsection>
-    <docsection name="cogl-shaders">
+    <docsection name="coglshaders">
       <doc xml:space="preserve"
            filename="deprecated/cogl-shader.h"
            line="44">Cogl allows accessing the GL programmable pipeline in order to create
@@ -7895,19 +7854,12 @@ It's worth nothing that this API isn't what Cogl would like to have
 in the long term and it may be removed in Cogl 2.0. The
 experimental #CoglShader API is the proposed replacement.</doc>
     </docsection>
-    <docsection name="cogl-texture">
-      <doc xml:space="preserve"
-           filename="cogl-texture.h"
-           line="65">Cogl allows creating and manipulating textures using a uniform
-API that tries to hide all the various complexities of creating,
-loading and manipulating textures.</doc>
-    </docsection>
-    <docsection name="cogl-types">
+    <docsection name="cogltypes">
       <doc xml:space="preserve"
            filename="cogl-types.h"
            line="58">General types used by various Cogl functions.</doc>
     </docsection>
-    <docsection name="cogl-vertex-buffer">
+    <docsection name="coglvertexbuffer">
       <doc xml:space="preserve"
            filename="deprecated/cogl-vertex-buffer.h"
            line="48">For example to describe a textured triangle, you could create a new cogl

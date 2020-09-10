@@ -95,6 +95,25 @@ same key.</doc>
            glib:type-name="CoglAtlasTexture"
            glib:get-type="cogl_atlas_texture_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-atlas-texture.h"
+           line="46">A texture atlas is a texture that contains many smaller images that
+an application is interested in. These are packed together as a way
+of optimizing drawing with those images by avoiding the costs of
+repeatedly telling the hardware to change what texture it should
+sample from.  This can enable more geometry to be batched together
+into few draw calls.
+
+Each #CoglContext has an shared, pool of texture atlases that are
+are managed by Cogl.
+
+This api lets applications upload texture data into one of Cogl's
+shared texture atlases using a high-level #CoglAtlasTexture which
+represents a sub-region of one of these atlases.
+
+&lt;note&gt;A #CoglAtlasTexture is a high-level meta texture which has
+some limitations to be aware of. Please see the documentation for
+#CoglMetaTexture for more details.&lt;/note&gt;</doc>
       <constructor name="new_from_bitmap"
                    c:identifier="cogl_atlas_texture_new_from_bitmap"
                    version="1.16"
@@ -328,6 +347,9 @@ for more details.&lt;/note&gt;</doc>
            glib:type-name="CoglAttribute"
            glib:get-type="cogl_attribute_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-attribute.h"
+           line="55">FIXME</doc>
       <constructor name="new"
                    c:identifier="cogl_attribute_new"
                    version="1.4"
@@ -1090,6 +1112,9 @@ will default to FALSE.</doc>
            glib:type-name="CoglAttributeBuffer"
            glib:get-type="cogl_attribute_buffer_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-attribute-buffer.h"
+           line="54">FIXME</doc>
       <constructor name="new"
                    c:identifier="cogl_attribute_buffer_new"
                    version="1.4"
@@ -1256,6 +1281,12 @@ Note: You can assume this function always succeeds and won't return
            glib:type-name="CoglBitmap"
            glib:get-type="cogl_bitmap_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-bitmap.h"
+           line="66">Cogl allows loading image data into memory as CoglBitmaps without
+loading them immediately into GPU textures.
+
+#CoglBitmap is available since Cogl 1.0</doc>
       <constructor name="new_for_data"
                    c:identifier="cogl_bitmap_new_for_data"
                    version="1.10"
@@ -1868,10 +1899,9 @@ the buffer data is going to be updated.</doc>
             glib:get-type="cogl_color_get_gtype"
             c:symbol-prefix="color">
       <doc xml:space="preserve"
-           filename="cogl-types.h"
-           line="491">A structure for holding a color definition. The contents of
-the CoglColor structure are private and should never by accessed
-directly.</doc>
+           filename="cogl-color.h"
+           line="38">#CoglColor is a simple structure holding the definition of a color such
+that it can be efficiently used by GL</doc>
       <source-position filename="cogl-types.h" line="518"/>
       <field name="private_member_red" readable="0" private="1">
         <type name="guint8" c:type="uint8_t"/>
@@ -2948,6 +2978,44 @@ drawing something.</doc>
            glib:type-name="CoglContext"
            glib:get-type="cogl_context_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-context.h"
+           line="58">A #CoglContext is the top most sandbox of Cogl state for an
+application or toolkit. Its main purpose is to act as a sandbox
+for the memory management of state objects. Normally an application
+will only create a single context since there is no way to share
+resources between contexts.
+
+For those familiar with OpenGL or perhaps Cairo it should be
+understood that unlike these APIs a Cogl context isn't a rendering
+context as such. In other words Cogl doesn't aim to provide a state
+machine style model for configuring rendering parameters. Most
+rendering state in Cogl is directly associated with user managed
+objects called pipelines and geometry is drawn with a specific
+pipeline object to a framebuffer object and those 3 things fully
+define the state for drawing. This is an important part of Cogl's
+design since it helps you write orthogonal rendering components
+that can all access the same GPU without having to worry about
+what state other components have left you with.
+
+&lt;note&gt;&lt;para&gt;Cogl does not maintain internal references to the context for
+resources that depend on the context so applications. This is to
+help applications control the lifetime a context without us needing to
+introduce special api to handle the breakup of internal circular
+references due to internal resources and caches associated with the
+context.
+
+One a context has been destroyed then all directly or indirectly
+dependant resources will be in an inconsistent state and should not
+be manipulated or queried in any way.
+
+For applications that rely on the operating system to clean up
+resources this policy shouldn't affect them, but for applications
+that need to carefully destroy and re-create Cogl contexts multiple
+times throughout their lifetime (such as Android applications) they
+should be careful to destroy all context dependant resources, such as
+framebuffers or textures etc before unrefing and destroying the
+context.&lt;/para&gt;&lt;/note&gt;</doc>
       <constructor name="new"
                    c:identifier="cogl_context_new"
                    version="1.8"
@@ -3647,6 +3715,24 @@ value greater than or equal to the value currently in the depth buffer.</doc>
            glib:type-name="CoglDisplay"
            glib:get-type="cogl_display_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-display.h"
+           line="53">The basic intention for this object is to let the application
+configure common display preferences before creating a context, and
+there are a few different aspects to this...
+
+Firstly there are options directly relating to the physical display
+pipeline that is currently being used including the digital to
+analogue conversion hardware and the screens the user sees.
+
+Another aspect is that display options may constrain or affect how
+onscreen framebuffers should later be configured. The original
+rationale for the display object in fact was to let us handle GLX
+and EGLs requirements that framebuffers must be "compatible" with
+the config associated with the current context meaning we have to
+force the user to describe how they would like to create their
+onscreen windows before we can choose a suitable fbconfig and
+create a GLContext.</doc>
       <constructor name="new"
                    c:identifier="cogl_display_new"
                    version="1.10"
@@ -3858,19 +3944,82 @@ Cogl for rendering.</doc>
             c:symbol-prefix="euler">
       <doc xml:space="preserve"
            filename="cogl-euler.h"
-           line="130">Represents an ordered rotation first of @heading degrees around an
-object's y axis, then @pitch degrees around an object's x axis and
-finally @roll degrees around an object's z axis.
+           line="47">Euler angles are a simple representation of a 3 dimensional
+rotation; comprised of 3 ordered heading, pitch and roll rotations.
+An important thing to understand is that the axis of rotation
+belong to the object being rotated and so they also rotate as each
+of the heading, pitch and roll rotations are applied.
 
-&lt;note&gt;It's important to understand the that axis are associated
-with the object being rotated, so the axis also rotate in sequence
-with the rotations being applied.&lt;/note&gt;
+One way to consider euler angles is to imagine controlling an
+aeroplane, where you first choose a heading (Such as flying south
+east), then you set the pitch (such as 30 degrees to take off) and
+then you might set a roll, by dipping the left, wing as you prepare
+to turn.
 
-The members of a #CoglEuler can be initialized, for example, with
-cogl_euler_init() and cogl_euler_init_from_quaternion ().
+They have some advantages and limitations that it helps to be
+aware of:
 
-You may also want to look at cogl_quaternion_init_from_euler() if
-you want to do interpolation between 3d rotations.</doc>
+Advantages:
+&lt;itemizedlist&gt;
+&lt;listitem&gt;
+Easy to understand and use, compared to quaternions and matrices,
+so may be a good choice for a user interface.
+&lt;/listitem&gt;
+&lt;listitem&gt;
+Efficient storage, needing only 3 components any rotation can be
+represented.
+&lt;note&gt;Actually the #CoglEuler type isn't optimized for size because
+we may cache the equivalent #CoglQuaternion along with a euler
+rotation, but it would be trivial for an application to track the
+components of euler rotations in a packed float array if optimizing
+for size was important. The values could be passed to Cogl only when
+manipulation is necessary.&lt;/note&gt;
+&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+Disadvantages:
+&lt;itemizedlist&gt;
+&lt;listitem&gt;
+Aliasing: it's possible to represent some rotations with multiple
+different heading, pitch and roll rotations.
+&lt;/listitem&gt;
+&lt;listitem&gt;
+They can suffer from a problem called Gimbal Lock. A good
+explanation of this can be seen on wikipedia here:
+http://en.wikipedia.org/wiki/Gimbal_lock but basically two
+of the axis of rotation may become aligned and so you loose a
+degree of freedom. For example a pitch of +-90° would mean that
+heading and bank rotate around the same axis.
+&lt;/listitem&gt;
+&lt;listitem&gt;
+If you use euler angles to orient something in 3D space and try to
+transition between orientations by interpolating the component
+angles you probably wont get the transitions you expect as they may
+not follow the shortest path between the two orientations.
+&lt;/listitem&gt;
+&lt;listitem&gt;
+There's no standard to what order the component axis rotations are
+applied. The most common convention seems to be what we do in Cogl
+with heading (y-axis), pitch (x-axis) and then roll (z-axis), but
+other software might apply x-axis, y-axis then z-axis or any other
+order so you need to consider this if you are accepting euler
+rotations from some other software. Other software may also use
+slightly different aeronautical terms, such as "yaw" instead of
+"heading" or "bank" instead of "roll".
+&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+To minimize the aliasing issue we may refer to "Canonical Euler"
+angles where heading and roll are restricted to +- 180° and pitch is
+restricted to +- 90°. If pitch is +- 90° bank is set to 0°.
+
+Quaternions don't suffer from Gimbal Lock and they can be nicely
+interpolated between, their disadvantage is that they don't have an
+intuitive representation.
+
+A common practice is to accept angles in the intuitive Euler form
+and convert them to quaternions internally to avoid Gimbal Lock and
+handle interpolations. See cogl_quaternion_init_from_euler().</doc>
       <source-position filename="cogl-euler.h" line="166"/>
       <field name="heading" writable="1">
         <doc xml:space="preserve"
@@ -4551,9 +4700,9 @@ check for them using cogl_has_feature() or cogl_has_features().</doc>
             stability="Unstable">
       <doc xml:space="preserve"
            filename="cogl-fence.h"
-           line="50">An opaque object representing a fence. This type is currently
-unused but in the future may be used to pass extra information
-about the fence completion.</doc>
+           line="41">Cogl allows notification of GPU command completion; users may mark
+points in the GPU command stream and receive notification when the GPU
+has executed to that point.</doc>
       <source-position filename="cogl-fence.h" line="60"/>
     </record>
     <callback name="FenceCallback"
@@ -4931,6 +5080,40 @@ cogl_output_get_refresh_rate().&lt;/note&gt;</doc>
                c:symbol-prefix="framebuffer"
                glib:type-name="CoglFramebuffer"
                glib:get-type="cogl_framebuffer_get_gtype">
+      <doc xml:space="preserve"
+           filename="cogl-framebuffer.h"
+           line="68">Framebuffers are a collection of buffers that can be rendered too.
+A framebuffer may be comprised of one or more color buffers, an
+optional depth buffer and an optional stencil buffer. Other
+configuration parameters are associated with framebuffers too such
+as whether the framebuffer supports multi-sampling (an anti-aliasing
+technique) or dithering.
+
+There are two kinds of framebuffer in Cogl, #CoglOnscreen
+framebuffers and #CoglOffscreen framebuffers. As the names imply
+offscreen framebuffers are for rendering something offscreen
+(perhaps to a texture which is bound as one of the color buffers).
+The exact semantics of onscreen framebuffers depends on the window
+system backend that you are using, but typically you can expect
+rendering to a #CoglOnscreen framebuffer will be immediately
+visible to the user.
+
+If you want to create a new framebuffer then you should start by
+looking at the #CoglOnscreen and #CoglOffscreen constructor
+functions, such as cogl_offscreen_new_with_texture() or
+cogl_onscreen_new(). The #CoglFramebuffer interface deals with
+all aspects that are common between those two types of framebuffer.
+
+Setup of a new CoglFramebuffer happens in two stages. There is a
+configuration stage where you specify all the options and ancillary
+buffers you want associated with your framebuffer and then when you
+are happy with the configuration you can "allocate" the framebuffer
+using cogl_framebuffer_allocate(). Technically explicitly calling
+cogl_framebuffer_allocate() is optional for convenience and the
+framebuffer will automatically be allocated when you first try to
+draw to it, but if you do the allocation manually then you can
+also catch any possible errors that may arise from your
+configuration.</doc>
       <prerequisite name="Object"/>
       <function name="error_quark" c:identifier="cogl_framebuffer_error_quark">
         <source-position filename="cogl-framebuffer.h" line="1841"/>
@@ -10790,6 +10973,9 @@ GError api.</doc>
            glib:type-name="CoglIndexBuffer"
            glib:get-type="cogl_index_buffer_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-index-buffer.h"
+           line="49">FIXME</doc>
       <constructor name="new"
                    c:identifier="cogl_index_buffer_new"
                    version="1.4"
@@ -10830,6 +11016,60 @@ address space using cogl_buffer_map().</doc>
            glib:type-name="CoglIndices"
            glib:get-type="cogl_indices_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-indices.h"
+           line="54">Indices allow you to avoid duplicating vertices in your vertex data
+by virtualizing your data and instead providing a sequence of index
+values that tell the GPU which data should be used for each vertex.
+
+If the GPU is given a sequence of indices it doesn't simply walk
+through each vertex of your data in order it will instead walk
+through the indices which can provide random access to the
+underlying data.
+
+Since it's very common to have duplicate vertices when describing a
+shape as a list of triangles it can often be a significant space
+saving to describe geometry using indices. Reducing the size of
+your models can make it cheaper to map them into the GPU by
+reducing the demand on memory bandwidth and may help to make better
+use of your GPUs internal vertex caching.
+
+For example, to describe a quadrilateral as 2 triangles for the GPU
+you could either provide data with 6 vertices or instead with
+indices you can provide vertex data for just 4 vertices and an
+index buffer that specfies the 6 vertices by indexing the shared
+vertices multiple times.
+
+|[
+  CoglVertex2f quad_vertices[] = {
+    {x0, y0}, //0 = top left
+    {x1, y1}, //1 = bottom left
+    {x2, y2}, //2 = bottom right
+    {x3, y3}, //3 = top right
+  };
+  //tell the gpu how to interpret the quad as 2 triangles...
+  unsigned char indices[] = {0, 1, 2, 0, 2, 3};
+]|
+
+Even in the above illustration we see a saving of 10bytes for one
+quad compared to having data for 6 vertices and no indices but if
+you need to draw 100s or 1000s of quads then its really quite
+significant.
+
+Something else to consider is that often indices can be defined
+once and remain static while the vertex data may change for
+animations perhaps. That means you may be able to ignore the
+negligable cost of mapping your indices into the GPU if they don't
+ever change.
+
+The above illustration is actually a good example of static indices
+because it's really common that developers have quad mesh data that
+they need to display and we know exactly what that indices array
+needs to look like depending on the number of quads that need to be
+drawn. It doesn't matter how the quads might be animated and
+changed the indices will remain the same. Cogl even has a utility
+(cogl_get_rectangle_indices()) to get access to re-useable indices
+for drawing quads as above.</doc>
       <constructor name="new" c:identifier="cogl_indices_new">
         <source-position filename="cogl-indices.h" line="122"/>
         <return-value transfer-ownership="full">
@@ -11111,30 +11351,9 @@ advertized.</doc>
             c:symbol-prefix="matrix">
       <doc xml:space="preserve"
            filename="cogl-matrix.h"
-           line="64">A CoglMatrix holds a 4x4 transform matrix. This is a single precision,
-column-major matrix which means it is compatible with what OpenGL expects.
-
-A CoglMatrix can represent transforms such as, rotations, scaling,
-translation, sheering, and linear projections. You can combine these
-transforms by multiplying multiple matrices in the order you want them
-applied.
-
-The transformation of a vertex (x, y, z, w) by a CoglMatrix is given by:
-
-|[
-  x_new = xx * x + xy * y + xz * z + xw * w
-  y_new = yx * x + yy * y + yz * z + yw * w
-  z_new = zx * x + zy * y + zz * z + zw * w
-  w_new = wx * x + wy * y + wz * z + ww * w
-]|
-
-Where w is normally 1
-
-&lt;note&gt;You must consider the members of the CoglMatrix structure read only,
-and all matrix modifications must be done via the cogl_matrix API. This
-allows Cogl to annotate the matrices internally. Violation of this will give
-undefined results. If you need to initialize a matrix with a constant other
-than the identity matrix you can use cogl_matrix_init_from_array().&lt;/note&gt;</doc>
+           line="55">Matrices are used in Cogl to describe affine model-view transforms, texture
+transforms, and projective transforms. This exposes a utility API that can
+be used for direct manipulation of these matrices.</doc>
       <source-position filename="cogl-matrix.h" line="126"/>
       <field name="xx" writable="1">
         <type name="gfloat" c:type="float"/>
@@ -12683,37 +12902,53 @@ calling cogl_matrix_stack_get_entry().</doc>
            glib:fundamental="1">
       <doc xml:space="preserve"
            filename="cogl-matrix-stack.h"
-           line="100">Tracks your current position within a hierarchy and lets you build
-up a graph of transformations as you traverse through a hierarchy
-such as a scenegraph.
+           line="46">Matrices can be used (for example) to describe the model-view
+transforms of objects, texture transforms, and projective
+transforms.
 
-A #CoglMatrixStack always maintains a reference to a single
-transformation at any point in time, representing the
-transformation at the current position in the hierarchy. You can
-get a reference to the current transformation by calling
-cogl_matrix_stack_get_entry().
+The #CoglMatrix api provides a good way to manipulate individual
+matrices representing a single transformation but if you need to
+track many-many such transformations for many objects that are
+organized in a scenegraph for example then using a separate
+#CoglMatrix for each object may not be the most efficient way.
 
-When a #CoglMatrixStack is first created with
-cogl_matrix_stack_new() then it is conceptually positioned at the
-root of your hierarchy and the current transformation simply
-represents an identity transformation.
+A #CoglMatrixStack enables applications to track lots of
+transformations that are related to each other in some kind of
+hierarchy.  In a scenegraph for example if you want to know how to
+transform a particular node then you usually have to walk up
+through the ancestors and accumulate their transforms before
+finally applying the transform of the node itself. In this model
+things are grouped together spatially according to their ancestry
+and all siblings with the same parent share the same initial
+transformation. The #CoglMatrixStack API is suited to tracking lots
+of transformations that fit this kind of model.
 
-As you traverse your object hierarchy (your scenegraph) then you
-should call cogl_matrix_stack_push() whenever you move down one
-level and call cogl_matrix_stack_pop() whenever you move back up
-one level towards the root.
+Compared to using the #CoglMatrix api directly to track many
+related transforms, these can be some advantages to using a
+#CoglMatrixStack:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;Faster equality comparisons of transformations&lt;/listitem&gt;
+  &lt;listitem&gt;Efficient comparisons of the differences between arbitrary
+  transformations&lt;/listitem&gt;
+  &lt;listitem&gt;Avoid redundant arithmetic related to common transforms
+  &lt;/listitem&gt;
+  &lt;listitem&gt;Can be more space efficient (not always though)&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
 
-At any time you can apply a set of operations, such as "rotate",
-"scale", "translate" on top of the current transformation of a
-#CoglMatrixStack using functions such as
-cogl_matrix_stack_rotate(), cogl_matrix_stack_scale() and
-cogl_matrix_stack_translate(). These operations will derive a new
-current transformation and will never affect a transformation
-that you have referenced using cogl_matrix_stack_get_entry().
+For reference (to give an idea of when a #CoglMatrixStack can
+provide a space saving) a #CoglMatrix can be expected to take 72
+bytes whereas a single #CoglMatrixEntry in a #CoglMatrixStack is
+currently around 32 bytes on a 32bit CPU or 36 bytes on a 64bit
+CPU. An entry is needed for each individual operation applied to
+the stack (such as rotate, scale, translate) so if most of your
+leaf node transformations only need one or two simple operations
+relative to their parent then a matrix stack will likely take less
+space than having a #CoglMatrix for each node.
 
-Internally applying operations to a #CoglMatrixStack builds up a
-graph of #CoglMatrixEntry structures which each represent a single
-immutable transform.</doc>
+Even without any space saving though the ability to perform fast
+comparisons and avoid redundant arithmetic (especially sine and
+cosine calculations for rotations) can make using a matrix stack
+worthwhile.</doc>
       <constructor name="new" c:identifier="cogl_matrix_stack_new">
         <doc xml:space="preserve"
              filename="cogl-matrix-stack.h"
@@ -14727,6 +14962,24 @@ template should enable or disable swap throttling according to the given
            glib:type-name="CoglOutput"
            glib:get-type="cogl_output_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-output.h"
+           line="48">The #CoglOutput object holds information about an output device
+such as a monitor or laptop display. It can be queried to find
+out the position of the output with respect to the screen
+coordinate system and other information such as the resolution
+and refresh rate of the device.
+
+There can be any number of outputs which may overlap: the
+same area of the screen may be displayed by multiple output
+devices.
+
+XXX: though it's possible to query the position of the output
+with respect to screen coordinates, there is currently no way
+of finding out the position of a #CoglOnscreen in screen
+coordinates, at least without using windowing-system specific
+API's, so it's not easy to get the output positions relative
+to the #CoglOnscreen.</doc>
       <method name="get_height"
               c:identifier="cogl_output_get_height"
               version="1.14"
@@ -15008,6 +15261,15 @@ given renderer.</doc>
            glib:type-name="CoglPipeline"
            glib:get-type="cogl_pipeline_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-pipeline.h"
+           line="55">Cogl allows creating and manipulating objects representing the full
+configuration of the GPU pipeline. In simplified terms the GPU
+pipeline takes primitive geometry as the input, it first performs
+vertex processing, allowing you to deform your geometry, then
+rasterizes that (turning it from pure geometry into fragments) then
+performs fragment processing including depth testing and texture
+mapping. Finally it blends the result with the framebuffer.</doc>
       <constructor name="new"
                    c:identifier="cogl_pipeline_new"
                    version="2.0"
@@ -17982,6 +18244,9 @@ may be directly passed to poll.</doc>
            glib:type-name="CoglPrimitive"
            glib:get-type="cogl_primitive_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-primitive.h"
+           line="56">FIXME</doc>
       <constructor name="new"
                    c:identifier="cogl_primitive_new"
                    version="1.6"
@@ -19119,61 +19384,15 @@ stop.</doc>
             c:symbol-prefix="quaternion">
       <doc xml:space="preserve"
            filename="cogl-quaternion.h"
-           line="66">A quaternion is comprised of a scalar component and a 3D vector
-component. The scalar component is normally referred to as w and the
-vector might either be referred to as v or a (for axis) or expanded
-with the individual components: (x, y, z) A full quaternion would
-then be written as &lt;literal&gt;[w (x, y, z)]&lt;/literal&gt;.
-
-Quaternions can be considered to represent an axis and angle
-pair although sadly these numbers are buried somewhat under some
-maths...
-
-For the curious you can see here that a given axis (a) and angle (𝜃)
-pair are represented in a quaternion as follows:
-|[
-[w=cos(𝜃/2) ( x=sin(𝜃/2)*a.x, y=sin(𝜃/2)*a.y, z=sin(𝜃/2)*a.x )]
-]|
-
-Unit Quaternions:
-When using Quaternions to represent spatial orientations for 3D
-graphics it's always assumed you have a unit quaternion. The
-magnitude of a quaternion is defined as:
-|[
-sqrt (w² + x² + y² + z²)
-]|
-and a unit quaternion satisfies this equation:
-|[
-w² + x² + y² + z² = 1
-]|
-
-Thankfully most of the time we don't actually have to worry about
-the maths that goes on behind the scenes but if you are curious to
-learn more here are some external references:
-
-&lt;itemizedlist&gt;
-&lt;listitem&gt;
-&lt;ulink url="http://mathworld.wolfram.com/Quaternion.html"/&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-&lt;ulink url="http://www.gamedev.net/reference/articles/article1095.asp"/&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-&lt;ulink url="http://www.cprogramming.com/tutorial/3d/quaternions.html"/&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-&lt;ulink url="http://www.isner.com/tutorials/quatSpells/quaternion_spells_12.htm"/&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-3D Maths Primer for Graphics and Game Development ISBN-10: 1556229119
-&lt;/listitem&gt;
-&lt;listitem&gt;
-&lt;ulink url="http://www.cs.caltech.edu/courses/cs171/quatut.pdf"/&gt;
-&lt;/listitem&gt;
-&lt;listitem&gt;
-&lt;ulink url="http://www.j3d.org/matrix_faq/matrfaq_latest.html#Q56"/&gt;
-&lt;/listitem&gt;
-&lt;/itemizedlist&gt;</doc>
+           line="44">Quaternions have become a standard form for representing 3D
+rotations and have some nice properties when compared with other
+representation such as (roll,pitch,yaw) Euler angles. They can be
+used to interpolate between different rotations and they don't
+suffer from a problem called
+&lt;ulink url="http://en.wikipedia.org/wiki/Gimbal_lock"&gt;"Gimbal lock"&lt;/ulink&gt;
+where two of the axis of rotation may become aligned and you loose a
+degree of freedom.
+.</doc>
       <source-position filename="cogl-quaternion.h" line="147"/>
       <field name="w" writable="1">
         <doc xml:space="preserve"
@@ -19897,6 +20116,34 @@ equal.</doc>
            glib:type-name="CoglRenderer"
            glib:get-type="cogl_renderer_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-renderer.h"
+           line="47">A #CoglRenderer represents a means to render. It encapsulates the
+selection of an underlying driver, such as OpenGL or OpenGL-ES and
+a selection of a window system binding API such as GLX, or EGL or
+WGL.
+
+A #CoglRenderer has two states, "unconnected" and "connected". When
+a renderer is first instantiated using cogl_renderer_new() it is
+unconnected so that it can be configured and constraints can be
+specified for how the backend driver and window system should be
+chosen.
+
+After configuration a #CoglRenderer can (optionally) be explicitly
+connected using cogl_renderer_connect() which allows for the
+handling of connection errors so that fallback configurations can
+be tried if necessary. Applications that don't support any
+fallbacks though can skip using cogl_renderer_connect() and leave
+Cogl to automatically connect the renderer.
+
+Once you have a configured #CoglRenderer it can be used to create a
+#CoglDisplay object using cogl_display_new().
+
+&lt;note&gt;Many applications don't need to explicitly use
+cogl_renderer_new() or cogl_display_new() and can just jump
+straight to cogl_context_new() and pass a %NULL display argument so
+Cogl will automatically connect and setup a renderer and
+display.&lt;/note&gt;</doc>
       <constructor name="new"
                    c:identifier="cogl_renderer_new"
                    version="1.10"
@@ -20358,6 +20605,300 @@ they depend on to ensure maximum portability.</doc>
            glib:type-name="CoglSnippet"
            glib:get-type="cogl_snippet_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-snippet.h"
+           line="43">#CoglSnippet&lt;!-- --&gt;s are used to modify or replace parts of a
+#CoglPipeline using GLSL. GLSL is a programming language supported
+by OpenGL on programmable hardware to provide a more flexible
+description of what should be rendered. A description of GLSL
+itself is outside the scope of this documentation but any good
+OpenGL book should help to describe it.
+
+Unlike in OpenGL, when using GLSL with Cogl it is possible to write
+short snippets to replace small sections of the pipeline instead of
+having to replace the whole of either the vertex or fragment
+pipelines. Of course it is also possible to replace the whole of
+the pipeline if needed.
+
+Each snippet is a standalone chunk of code which would attach to
+the pipeline at a particular point. The code is split into four
+separate strings (all of which are optional):
+
+&lt;glosslist&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;declarations&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+The code in this string will be inserted outside of any function in
+the global scope of the shader. This can be used to declare
+uniforms, attributes, varyings and functions to be used by the
+snippet.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;pre&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+The code in this string will be inserted before the hook point.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;post&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+The code in this string will be inserted after the hook point. This
+can be used to modify the results of the builtin generated code for
+that hook point.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;replace&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+If present the code in this string will replace the generated code
+for the hook point.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+&lt;/glosslist&gt;
+
+All of the strings apart from the declarations string of a pipeline
+are generated in a single function so they can share variables
+declared from one string in another. The scope of the code is
+limited to each snippet so local variables declared in the snippet
+will not collide with variables declared in another
+snippet. However, code in the 'declarations' string is global to
+the shader so it is the application's responsibility to ensure that
+variables declared here will not collide with those from other
+snippets.
+
+The snippets can be added to a pipeline with
+cogl_pipeline_add_snippet() or
+cogl_pipeline_add_layer_snippet(). Which function to use depends on
+which hook the snippet is targetting. The snippets are all
+generated in the order they are added to the pipeline. That is, the
+post strings are executed in the order they are added to the
+pipeline and the pre strings are executed in reverse order. If any
+replace strings are given for a snippet then any other snippets
+with the same hook added before that snippet will be ignored. The
+different hooks are documented under #CoglSnippetHook.
+
+For portability with GLES2, it is recommended not to use the GLSL
+builtin names such as gl_FragColor. Instead there are replacement
+names under the cogl_* namespace which can be used instead. These
+are:
+
+&lt;glosslist&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;uniform mat4
+        &lt;emphasis&gt;cogl_modelview_matrix&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The current modelview matrix. This is equivalent to
+   #gl_ModelViewMatrix.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;uniform mat4
+        &lt;emphasis&gt;cogl_projection_matrix&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The current projection matrix. This is equivalent to
+   #gl_ProjectionMatrix.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;uniform mat4
+        &lt;emphasis&gt;cogl_modelview_projection_matrix&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The combined modelview and projection matrix. A vertex shader
+   would typically use this to transform the incoming vertex
+   position. The separate modelview and projection matrices are
+   usually only needed for lighting calculations. This is
+   equivalent to #gl_ModelViewProjectionMatrix.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;uniform mat4
+        &lt;emphasis&gt;cogl_texture_matrix&lt;/emphasis&gt;[]&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   An array of matrices for transforming the texture
+   coordinates. This is equivalent to #gl_TextureMatrix.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+&lt;/glosslist&gt;
+
+In a vertex shader, the following are also available:
+
+&lt;glosslist&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;attribute vec4
+        &lt;emphasis&gt;cogl_position_in&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The incoming vertex position. This is equivalent to #gl_Vertex.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;attribute vec4
+        &lt;emphasis&gt;cogl_color_in&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The incoming vertex color. This is equivalent to #gl_Color.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;attribute vec4
+        &lt;emphasis&gt;cogl_tex_coord_in&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The texture coordinate for layer 0. This is an alternative name
+   for #cogl_tex_coord0_in.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;attribute vec4
+        &lt;emphasis&gt;cogl_tex_coord0_in&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The texture coordinate for the layer 0. This is equivalent to
+   #gl_MultiTexCoord0. There will also be #cogl_tex_coord1_in and
+   so on if more layers are added to the pipeline.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;attribute vec3
+        &lt;emphasis&gt;cogl_normal_in&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The normal of the vertex. This is equivalent to #gl_Normal.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;vec4
+        &lt;emphasis&gt;cogl_position_out&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The calculated position of the vertex. This must be written to
+   in all vertex shaders. This is equivalent to #gl_Position.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;float
+        &lt;emphasis&gt;cogl_point_size_in&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The incoming point size from the cogl_point_size_in attribute.
+   This is only available if
+   cogl_pipeline_set_per_vertex_point_size() is set on the
+   pipeline.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;float
+        &lt;emphasis&gt;cogl_point_size_out&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The calculated size of a point. This is equivalent to #gl_PointSize.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;varying vec4
+        &lt;emphasis&gt;cogl_color_out&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The calculated color of a vertex. This is equivalent to #gl_FrontColor.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;varying vec4
+        &lt;emphasis&gt;cogl_tex_coord0_out&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The calculated texture coordinate for layer 0 of the pipeline.
+   This is equivalent to #gl_TexCoord[0]. There will also be
+   #cogl_tex_coord1_out and so on if more layers are added to the
+   pipeline. In the fragment shader, this varying is called
+   #cogl_tex_coord0_in.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+&lt;/glosslist&gt;
+
+In a fragment shader, the following are also available:
+
+&lt;glosslist&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;varying vec4 &lt;emphasis&gt;cogl_color_in&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The calculated color of a vertex. This is equivalent to #gl_FrontColor.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;varying vec4
+             &lt;emphasis&gt;cogl_tex_coord0_in&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The texture coordinate for layer 0. This is equivalent to
+   #gl_TexCoord[0]. There will also be #cogl_tex_coord1_in and so
+   on if more layers are added to the pipeline.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;vec4 &lt;emphasis&gt;cogl_color_out&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   The final calculated color of the fragment. All fragment shaders
+   must write to this variable. This is equivalent to
+   #gl_FrontColor.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;float &lt;emphasis&gt;cogl_depth_out&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   An optional output variable specifying the depth value to use
+   for this fragment. This is equivalent to #gl_FragDepth.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;bool &lt;emphasis&gt;cogl_front_facing&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   A readonly variable that will be true if the current primitive
+   is front facing. This can be used to implement two-sided
+   coloring algorithms. This is equivalent to #gl_FrontFacing.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+ &lt;glossentry&gt;
+  &lt;glossterm&gt;vec2 &lt;emphasis&gt;cogl_point_coord&lt;/emphasis&gt;&lt;/glossterm&gt;
+  &lt;glossdef&gt;&lt;para&gt;
+   When rendering points, this will contain a vec2 which represents
+   the position within the point of the current fragment.
+   vec2(0.0,0.0) will be the topleft of the point and vec2(1.0,1.0)
+   will be the bottom right. Note that there is currently a bug in
+   Cogl where when rendering to an offscreen buffer these
+   coordinates will be upside-down. The value is undefined when not
+   rendering points. This builtin can only be used if the
+   %COGL_FEATURE_ID_POINT_SPRITE feature is available.
+  &lt;/para&gt;&lt;/glossdef&gt;
+ &lt;/glossentry&gt;
+&lt;/glosslist&gt;
+
+Here is an example of using a snippet to add a desaturate effect to the
+generated color on a pipeline.
+
+&lt;programlisting&gt;
+  CoglPipeline *pipeline = cogl_pipeline_new ();
+
+  /&lt;!-- --&gt;* Set up the pipeline here, ie by adding a texture or other
+     layers *&lt;!-- --&gt;/
+
+  /&lt;!-- --&gt;* Create the snippet. The first string is the declarations which
+     we will use to add a uniform. The second is the 'post' string which
+     will contain the code to perform the desaturation. *&lt;!-- --&gt;/
+  CoglSnippet *snippet =
+    cogl_snippet_new (COGL_SNIPPET_HOOK_FRAGMENT,
+                      "uniform float factor;",
+                      "float gray = dot (vec3 (0.299, 0.587, 0.114), "
+                      "                  cogl_color_out.rgb);"
+                      "cogl_color_out.rgb = mix (vec3 (gray),"
+                      "                          cogl_color_out.rgb,"
+                      "                          factor);");
+
+  /&lt;!-- --&gt;* Add it to the pipeline *&lt;!-- --&gt;/
+  cogl_pipeline_add_snippet (pipeline, snippet);
+  /&lt;!-- --&gt;* The pipeline keeps a reference to the snippet
+     so we don't need to *&lt;!-- --&gt;/
+  cogl_object_unref (snippet);
+
+  /&lt;!-- --&gt;* Update the custom uniform on the pipeline *&lt;!-- --&gt;/
+  int location = cogl_pipeline_get_uniform_location (pipeline, "factor");
+  cogl_pipeline_set_uniform_1f (pipeline, location, 0.5f);
+
+  /&lt;!-- --&gt;* Now we can render with the snippet as usual *&lt;!-- --&gt;/
+  cogl_push_source (pipeline);
+  cogl_rectangle (0, 0, 10, 10);
+  cogl_pop_source ();
+&lt;/programlisting&gt;</doc>
       <constructor name="new"
                    c:identifier="cogl_snippet_new"
                    version="1.10"
@@ -21033,6 +21574,11 @@ of a stereo framebuffer. See cogl_framebuffer_set_stereo_mode().</doc>
            glib:type-name="CoglSubTexture"
            glib:get-type="cogl_sub_texture_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-sub-texture.h"
+           line="41">These functions allow high-level textures to be created that
+represent a sub-region of another texture. For example these
+can be used to implement custom texture atlasing schemes.</doc>
       <constructor name="new"
                    c:identifier="cogl_sub_texture_new"
                    version="1.10"
@@ -21365,6 +21911,11 @@ this enum should also be considered experimental.</doc>
                c:symbol-prefix="texture"
                glib:type-name="CoglTexture"
                glib:get-type="cogl_texture_get_gtype">
+      <doc xml:space="preserve"
+           filename="cogl-texture.h"
+           line="65">Cogl allows creating and manipulating textures using a uniform
+API that tries to hide all the various complexities of creating,
+loading and manipulating textures.</doc>
       <prerequisite name="Object"/>
       <method name="allocate" c:identifier="cogl_texture_allocate" throws="1">
         <doc xml:space="preserve"
@@ -21966,6 +22517,18 @@ bitmap&lt;/note&gt;</doc>
            glib:type-name="CoglTexture2D"
            glib:get-type="cogl_texture_2d_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-texture-2d.h"
+           line="45">These functions allow low-level 2D textures to be allocated. These
+differ from sliced textures for example which may internally be
+made up of multiple 2D textures, or atlas textures where Cogl must
+internally modify user texture coordinates before they can be used
+by the GPU.
+
+You should be aware that many GPUs only support power of two sizes
+for #CoglTexture2D textures. You can check support for non power of
+two textures by checking for the %COGL_FEATURE_ID_TEXTURE_NPOT feature
+via cogl_has_feature().</doc>
       <implements name="Texture"/>
       <constructor name="gl_new_from_foreign"
                    c:identifier="cogl_texture_2d_gl_new_from_foreign"
@@ -22243,6 +22806,31 @@ cogl_has_feature().&lt;/note&gt;</doc>
            glib:type-name="CoglTexture2DSliced"
            glib:get-type="cogl_texture_2d_sliced_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-texture-2d-sliced.h"
+           line="39">These functions allow high-level meta textures (See the
+#CoglMetaTexture interface) to be allocated that may internally be
+comprised of multiple 2D texture "slices" with power-of-two sizes.
+
+This API can be useful when working with GPUs that don't have
+native support for non-power-of-two textures or if you want to load
+a texture that is larger than the GPUs maximum texture size limits.
+
+The algorithm for slicing works by first trying to map a virtual
+size to the next larger power-of-two size and then seeing how many
+wasted pixels that would result in. For example if you have a
+virtual texture that's 259 texels wide, the next pot size = 512 and
+the amount of waste would be 253 texels. If the amount of waste is
+above a max-waste threshold then we would next slice that texture
+into one that's 256 texels and then looking at how many more texels
+remain unallocated after that we choose the next power-of-two size.
+For the example of a 259 texel image that would mean having a 256
+texel wide texture, leaving 3 texels unallocated so we'd then
+create a 4 texel wide texture - now there is only one texel of
+waste. The algorithm continues to slice the right most textures
+until the amount of waste is less than or equal to a specfied
+max-waste threshold. The same logic for slicing from left to right
+is also applied from top to bottom.</doc>
       <implements name="Texture"/>
       <constructor name="new_from_bitmap"
                    c:identifier="cogl_texture_2d_sliced_new_from_bitmap"
@@ -22539,6 +23127,12 @@ the texture size would be too large to handle.&lt;/note&gt;</doc>
            glib:type-name="CoglTexture3D"
            glib:get-type="cogl_texture_3d_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-texture-3d.h"
+           line="41">These functions allow 3D textures to be used. 3D textures can be
+thought of as layers of 2D images arranged into a cuboid
+shape. When choosing a texel from the texture, Cogl will take into
+account the 'r' texture coordinate to select one of the images.</doc>
       <implements name="Texture"/>
       <constructor name="new_from_bitmap"
                    c:identifier="cogl_texture_3d_new_from_bitmap"
@@ -22891,6 +23485,11 @@ GPU.&lt;/note&gt;</doc>
            glib:type-name="CoglTexturePixmapX11"
            glib:get-type="cogl_texture_pixmap_x11_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="winsys/cogl-texture-pixmap-x11.h"
+           line="61">These functions allow high-level meta textures (See the
+#CoglMetaTexture interface) that derive their contents from an X11
+pixmap.</doc>
       <constructor name="new"
                    c:identifier="cogl_texture_pixmap_x11_new"
                    version="1.10"
@@ -23186,6 +23785,30 @@ operations.</doc>
            glib:type-name="CoglTextureRectangle"
            glib:get-type="cogl_texture_rectangle_get_gtype"
            glib:fundamental="1">
+      <doc xml:space="preserve"
+           filename="cogl-texture-rectangle.h"
+           line="40">These functions allow low-level "rectangle" textures to be allocated.
+These textures are never constrained to power-of-two sizes but they
+also don't support having a mipmap and can only be wrapped with
+%COGL_PIPELINE_WRAP_MODE_CLAMP_TO_EDGE.
+
+The most notable difference between rectangle textures and 2D
+textures is that rectangle textures are sampled using un-normalized
+texture coordinates, so instead of using coordinates (0,0) and
+(1,1) to map to the top-left and bottom right corners of the
+texture you would instead use (0,0) and (width,height).
+
+The use of non-normalized coordinates can be particularly
+convenient when writing glsl shaders that use a texture as a lookup
+table since you don't need to upload separate uniforms to map
+normalized coordinates to texels.
+
+If you want to sample from a rectangle texture from GLSL you should
+use the sampler2DRect sampler type.
+
+Applications wanting to use #CoglTextureRectangle should first check
+for the %COGL_FEATURE_ID_TEXTURE_RECTANGLE feature using
+cogl_has_feature().</doc>
       <implements name="Texture"/>
       <constructor name="new_from_bitmap"
                    c:identifier="cogl_texture_rectangle_new_from_bitmap"
@@ -24512,46 +25135,7 @@ of the available hints.</doc>
         </parameter>
       </parameters>
     </function>
-    <docsection name="cogl-atlas-texture">
-      <doc xml:space="preserve"
-           filename="cogl-atlas-texture.h"
-           line="46">A texture atlas is a texture that contains many smaller images that
-an application is interested in. These are packed together as a way
-of optimizing drawing with those images by avoiding the costs of
-repeatedly telling the hardware to change what texture it should
-sample from.  This can enable more geometry to be batched together
-into few draw calls.
-
-Each #CoglContext has an shared, pool of texture atlases that are
-are managed by Cogl.
-
-This api lets applications upload texture data into one of Cogl's
-shared texture atlases using a high-level #CoglAtlasTexture which
-represents a sub-region of one of these atlases.
-
-&lt;note&gt;A #CoglAtlasTexture is a high-level meta texture which has
-some limitations to be aware of. Please see the documentation for
-#CoglMetaTexture for more details.&lt;/note&gt;</doc>
-    </docsection>
-    <docsection name="cogl-attribute">
-      <doc xml:space="preserve"
-           filename="cogl-attribute.h"
-           line="55">FIXME</doc>
-    </docsection>
-    <docsection name="cogl-attribute-buffer">
-      <doc xml:space="preserve"
-           filename="cogl-attribute-buffer.h"
-           line="54">FIXME</doc>
-    </docsection>
-    <docsection name="cogl-bitmap">
-      <doc xml:space="preserve"
-           filename="cogl-bitmap.h"
-           line="66">Cogl allows loading image data into memory as CoglBitmaps without
-loading them immediately into GPU textures.
-
-#CoglBitmap is available since Cogl 1.0</doc>
-    </docsection>
-    <docsection name="cogl-buffer">
+    <docsection name="coglbuffer">
       <doc xml:space="preserve"
            filename="cogl-buffer.h"
            line="47">The CoglBuffer API provides a common interface to manipulate
@@ -24570,73 +25154,7 @@ the CPU makes it possible for another thread to handle the IO
 of loading an image file and unpacking it into the mapped buffer
 without blocking other Cogl operations.</doc>
     </docsection>
-    <docsection name="cogl-color">
-      <doc xml:space="preserve"
-           filename="cogl-color.h"
-           line="38">#CoglColor is a simple structure holding the definition of a color such
-that it can be efficiently used by GL</doc>
-    </docsection>
-    <docsection name="cogl-context">
-      <doc xml:space="preserve"
-           filename="cogl-context.h"
-           line="58">A #CoglContext is the top most sandbox of Cogl state for an
-application or toolkit. Its main purpose is to act as a sandbox
-for the memory management of state objects. Normally an application
-will only create a single context since there is no way to share
-resources between contexts.
-
-For those familiar with OpenGL or perhaps Cairo it should be
-understood that unlike these APIs a Cogl context isn't a rendering
-context as such. In other words Cogl doesn't aim to provide a state
-machine style model for configuring rendering parameters. Most
-rendering state in Cogl is directly associated with user managed
-objects called pipelines and geometry is drawn with a specific
-pipeline object to a framebuffer object and those 3 things fully
-define the state for drawing. This is an important part of Cogl's
-design since it helps you write orthogonal rendering components
-that can all access the same GPU without having to worry about
-what state other components have left you with.
-
-&lt;note&gt;&lt;para&gt;Cogl does not maintain internal references to the context for
-resources that depend on the context so applications. This is to
-help applications control the lifetime a context without us needing to
-introduce special api to handle the breakup of internal circular
-references due to internal resources and caches associated with the
-context.
-
-One a context has been destroyed then all directly or indirectly
-dependant resources will be in an inconsistent state and should not
-be manipulated or queried in any way.
-
-For applications that rely on the operating system to clean up
-resources this policy shouldn't affect them, but for applications
-that need to carefully destroy and re-create Cogl contexts multiple
-times throughout their lifetime (such as Android applications) they
-should be careful to destroy all context dependant resources, such as
-framebuffers or textures etc before unrefing and destroying the
-context.&lt;/para&gt;&lt;/note&gt;</doc>
-    </docsection>
-    <docsection name="cogl-display">
-      <doc xml:space="preserve"
-           filename="cogl-display.h"
-           line="53">The basic intention for this object is to let the application
-configure common display preferences before creating a context, and
-there are a few different aspects to this...
-
-Firstly there are options directly relating to the physical display
-pipeline that is currently being used including the digital to
-analogue conversion hardware and the screens the user sees.
-
-Another aspect is that display options may constrain or affect how
-onscreen framebuffers should later be configured. The original
-rationale for the display object in fact was to let us handle GLX
-and EGLs requirements that framebuffers must be "compatible" with
-the config associated with the current context meaning we have to
-force the user to describe how they would like to create their
-onscreen windows before we can choose a suitable fbconfig and
-create a GLContext.</doc>
-    </docsection>
-    <docsection name="cogl-error">
+    <docsection name="coglerror">
       <doc xml:space="preserve"
            filename="cogl-error.h"
            line="40">As a general rule Cogl shields non-recoverable errors from
@@ -24708,130 +25226,7 @@ you are not trying to catch any exceptional errors the function might
 throw which will result in the program aborting with a log message
 if an error is thrown.&lt;/note&gt;</doc>
     </docsection>
-    <docsection name="cogl-euler">
-      <doc xml:space="preserve"
-           filename="cogl-euler.h"
-           line="47">Euler angles are a simple representation of a 3 dimensional
-rotation; comprised of 3 ordered heading, pitch and roll rotations.
-An important thing to understand is that the axis of rotation
-belong to the object being rotated and so they also rotate as each
-of the heading, pitch and roll rotations are applied.
-
-One way to consider euler angles is to imagine controlling an
-aeroplane, where you first choose a heading (Such as flying south
-east), then you set the pitch (such as 30 degrees to take off) and
-then you might set a roll, by dipping the left, wing as you prepare
-to turn.
-
-They have some advantages and limitations that it helps to be
-aware of:
-
-Advantages:
-&lt;itemizedlist&gt;
-&lt;listitem&gt;
-Easy to understand and use, compared to quaternions and matrices,
-so may be a good choice for a user interface.
-&lt;/listitem&gt;
-&lt;listitem&gt;
-Efficient storage, needing only 3 components any rotation can be
-represented.
-&lt;note&gt;Actually the #CoglEuler type isn't optimized for size because
-we may cache the equivalent #CoglQuaternion along with a euler
-rotation, but it would be trivial for an application to track the
-components of euler rotations in a packed float array if optimizing
-for size was important. The values could be passed to Cogl only when
-manipulation is necessary.&lt;/note&gt;
-&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-Disadvantages:
-&lt;itemizedlist&gt;
-&lt;listitem&gt;
-Aliasing: it's possible to represent some rotations with multiple
-different heading, pitch and roll rotations.
-&lt;/listitem&gt;
-&lt;listitem&gt;
-They can suffer from a problem called Gimbal Lock. A good
-explanation of this can be seen on wikipedia here:
-http://en.wikipedia.org/wiki/Gimbal_lock but basically two
-of the axis of rotation may become aligned and so you loose a
-degree of freedom. For example a pitch of +-90° would mean that
-heading and bank rotate around the same axis.
-&lt;/listitem&gt;
-&lt;listitem&gt;
-If you use euler angles to orient something in 3D space and try to
-transition between orientations by interpolating the component
-angles you probably wont get the transitions you expect as they may
-not follow the shortest path between the two orientations.
-&lt;/listitem&gt;
-&lt;listitem&gt;
-There's no standard to what order the component axis rotations are
-applied. The most common convention seems to be what we do in Cogl
-with heading (y-axis), pitch (x-axis) and then roll (z-axis), but
-other software might apply x-axis, y-axis then z-axis or any other
-order so you need to consider this if you are accepting euler
-rotations from some other software. Other software may also use
-slightly different aeronautical terms, such as "yaw" instead of
-"heading" or "bank" instead of "roll".
-&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-To minimize the aliasing issue we may refer to "Canonical Euler"
-angles where heading and roll are restricted to +- 180° and pitch is
-restricted to +- 90°. If pitch is +- 90° bank is set to 0°.
-
-Quaternions don't suffer from Gimbal Lock and they can be nicely
-interpolated between, their disadvantage is that they don't have an
-intuitive representation.
-
-A common practice is to accept angles in the intuitive Euler form
-and convert them to quaternions internally to avoid Gimbal Lock and
-handle interpolations. See cogl_quaternion_init_from_euler().</doc>
-    </docsection>
-    <docsection name="cogl-fence">
-      <doc xml:space="preserve"
-           filename="cogl-fence.h"
-           line="41">Cogl allows notification of GPU command completion; users may mark
-points in the GPU command stream and receive notification when the GPU
-has executed to that point.</doc>
-    </docsection>
-    <docsection name="cogl-framebuffer">
-      <doc xml:space="preserve"
-           filename="cogl-framebuffer.h"
-           line="68">Framebuffers are a collection of buffers that can be rendered too.
-A framebuffer may be comprised of one or more color buffers, an
-optional depth buffer and an optional stencil buffer. Other
-configuration parameters are associated with framebuffers too such
-as whether the framebuffer supports multi-sampling (an anti-aliasing
-technique) or dithering.
-
-There are two kinds of framebuffer in Cogl, #CoglOnscreen
-framebuffers and #CoglOffscreen framebuffers. As the names imply
-offscreen framebuffers are for rendering something offscreen
-(perhaps to a texture which is bound as one of the color buffers).
-The exact semantics of onscreen framebuffers depends on the window
-system backend that you are using, but typically you can expect
-rendering to a #CoglOnscreen framebuffer will be immediately
-visible to the user.
-
-If you want to create a new framebuffer then you should start by
-looking at the #CoglOnscreen and #CoglOffscreen constructor
-functions, such as cogl_offscreen_new_with_texture() or
-cogl_onscreen_new(). The #CoglFramebuffer interface deals with
-all aspects that are common between those two types of framebuffer.
-
-Setup of a new CoglFramebuffer happens in two stages. There is a
-configuration stage where you specify all the options and ancillary
-buffers you want associated with your framebuffer and then when you
-are happy with the configuration you can "allocate" the framebuffer
-using cogl_framebuffer_allocate(). Technically explicitly calling
-cogl_framebuffer_allocate() is optional for convenience and the
-framebuffer will automatically be allocated when you first try to
-draw to it, but if you do the allocation manually then you can
-also catch any possible errors that may arise from your
-configuration.</doc>
-    </docsection>
-    <docsection name="cogl-gles2">
+    <docsection name="coglgles2">
       <doc xml:space="preserve"
            filename="cogl-gles2.h"
            line="76">Cogl provides portable access to the OpenGLES api through a single
@@ -24856,126 +25251,7 @@ incorporate content rendered with Cogl.
 Applications can check for OpenGLES 2.0 api support by checking for
 %COGL_FEATURE_ID_GLES2_CONTEXT support with cogl_has_feature().</doc>
     </docsection>
-    <docsection name="cogl-index-buffer">
-      <doc xml:space="preserve"
-           filename="cogl-index-buffer.h"
-           line="49">FIXME</doc>
-    </docsection>
-    <docsection name="cogl-indices">
-      <doc xml:space="preserve"
-           filename="cogl-indices.h"
-           line="54">Indices allow you to avoid duplicating vertices in your vertex data
-by virtualizing your data and instead providing a sequence of index
-values that tell the GPU which data should be used for each vertex.
-
-If the GPU is given a sequence of indices it doesn't simply walk
-through each vertex of your data in order it will instead walk
-through the indices which can provide random access to the
-underlying data.
-
-Since it's very common to have duplicate vertices when describing a
-shape as a list of triangles it can often be a significant space
-saving to describe geometry using indices. Reducing the size of
-your models can make it cheaper to map them into the GPU by
-reducing the demand on memory bandwidth and may help to make better
-use of your GPUs internal vertex caching.
-
-For example, to describe a quadrilateral as 2 triangles for the GPU
-you could either provide data with 6 vertices or instead with
-indices you can provide vertex data for just 4 vertices and an
-index buffer that specfies the 6 vertices by indexing the shared
-vertices multiple times.
-
-|[
-  CoglVertex2f quad_vertices[] = {
-    {x0, y0}, //0 = top left
-    {x1, y1}, //1 = bottom left
-    {x2, y2}, //2 = bottom right
-    {x3, y3}, //3 = top right
-  };
-  //tell the gpu how to interpret the quad as 2 triangles...
-  unsigned char indices[] = {0, 1, 2, 0, 2, 3};
-]|
-
-Even in the above illustration we see a saving of 10bytes for one
-quad compared to having data for 6 vertices and no indices but if
-you need to draw 100s or 1000s of quads then its really quite
-significant.
-
-Something else to consider is that often indices can be defined
-once and remain static while the vertex data may change for
-animations perhaps. That means you may be able to ignore the
-negligable cost of mapping your indices into the GPU if they don't
-ever change.
-
-The above illustration is actually a good example of static indices
-because it's really common that developers have quad mesh data that
-they need to display and we know exactly what that indices array
-needs to look like depending on the number of quads that need to be
-drawn. It doesn't matter how the quads might be animated and
-changed the indices will remain the same. Cogl even has a utility
-(cogl_get_rectangle_indices()) to get access to re-useable indices
-for drawing quads as above.</doc>
-    </docsection>
-    <docsection name="cogl-matrix">
-      <doc xml:space="preserve"
-           filename="cogl-matrix.h"
-           line="55">Matrices are used in Cogl to describe affine model-view transforms, texture
-transforms, and projective transforms. This exposes a utility API that can
-be used for direct manipulation of these matrices.</doc>
-    </docsection>
-    <docsection name="cogl-matrix-stack">
-      <doc xml:space="preserve"
-           filename="cogl-matrix-stack.h"
-           line="46">Matrices can be used (for example) to describe the model-view
-transforms of objects, texture transforms, and projective
-transforms.
-
-The #CoglMatrix api provides a good way to manipulate individual
-matrices representing a single transformation but if you need to
-track many-many such transformations for many objects that are
-organized in a scenegraph for example then using a separate
-#CoglMatrix for each object may not be the most efficient way.
-
-A #CoglMatrixStack enables applications to track lots of
-transformations that are related to each other in some kind of
-hierarchy.  In a scenegraph for example if you want to know how to
-transform a particular node then you usually have to walk up
-through the ancestors and accumulate their transforms before
-finally applying the transform of the node itself. In this model
-things are grouped together spatially according to their ancestry
-and all siblings with the same parent share the same initial
-transformation. The #CoglMatrixStack API is suited to tracking lots
-of transformations that fit this kind of model.
-
-Compared to using the #CoglMatrix api directly to track many
-related transforms, these can be some advantages to using a
-#CoglMatrixStack:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;Faster equality comparisons of transformations&lt;/listitem&gt;
-  &lt;listitem&gt;Efficient comparisons of the differences between arbitrary
-  transformations&lt;/listitem&gt;
-  &lt;listitem&gt;Avoid redundant arithmetic related to common transforms
-  &lt;/listitem&gt;
-  &lt;listitem&gt;Can be more space efficient (not always though)&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-For reference (to give an idea of when a #CoglMatrixStack can
-provide a space saving) a #CoglMatrix can be expected to take 72
-bytes whereas a single #CoglMatrixEntry in a #CoglMatrixStack is
-currently around 32 bytes on a 32bit CPU or 36 bytes on a 64bit
-CPU. An entry is needed for each individual operation applied to
-the stack (such as rotate, scale, translate) so if most of your
-leaf node transformations only need one or two simple operations
-relative to their parent then a matrix stack will likely take less
-space than having a #CoglMatrix for each node.
-
-Even without any space saving though the ability to perform fast
-comparisons and avoid redundant arithmetic (especially sine and
-cosine calculations for rotations) can make using a matrix stack
-worthwhile.</doc>
-    </docsection>
-    <docsection name="cogl-meta-texture">
+    <docsection name="coglmetatexture">
       <doc xml:space="preserve"
            filename="cogl-meta-texture.h"
            line="42">Cogl helps to make it easy to deal with high level textures such
@@ -25024,38 +25300,7 @@ low-level and meta textures because you may find other references
 in the documentation that detail limitations of using
 meta-textures.&lt;/note&gt;</doc>
     </docsection>
-    <docsection name="cogl-output">
-      <doc xml:space="preserve"
-           filename="cogl-output.h"
-           line="48">The #CoglOutput object holds information about an output device
-such as a monitor or laptop display. It can be queried to find
-out the position of the output with respect to the screen
-coordinate system and other information such as the resolution
-and refresh rate of the device.
-
-There can be any number of outputs which may overlap: the
-same area of the screen may be displayed by multiple output
-devices.
-
-XXX: though it's possible to query the position of the output
-with respect to screen coordinates, there is currently no way
-of finding out the position of a #CoglOnscreen in screen
-coordinates, at least without using windowing-system specific
-API's, so it's not easy to get the output positions relative
-to the #CoglOnscreen.</doc>
-    </docsection>
-    <docsection name="cogl-pipeline">
-      <doc xml:space="preserve"
-           filename="cogl-pipeline.h"
-           line="55">Cogl allows creating and manipulating objects representing the full
-configuration of the GPU pipeline. In simplified terms the GPU
-pipeline takes primitive geometry as the input, it first performs
-vertex processing, allowing you to deform your geometry, then
-rasterizes that (turning it from pure geometry into fragments) then
-performs fragment processing including depth testing and texture
-mapping. Finally it blends the result with the framebuffer.</doc>
-    </docsection>
-    <docsection name="cogl-poll">
+    <docsection name="coglpoll">
       <doc xml:space="preserve"
            filename="cogl-poll.h"
            line="45">Cogl needs to integrate with the application's main loop so that it
@@ -25066,12 +25311,7 @@ on. An application using the GLib main loop can instead use
 cogl_glib_source_new() which provides a #GSource ready to be added
 to the main loop.</doc>
     </docsection>
-    <docsection name="cogl-primitive">
-      <doc xml:space="preserve"
-           filename="cogl-primitive.h"
-           line="56">FIXME</doc>
-    </docsection>
-    <docsection name="cogl-primitive-texture">
+    <docsection name="coglprimitivetexture">
       <doc xml:space="preserve"
            filename="cogl-primitive-texture.h"
            line="42">A #CoglPrimitiveTexture is a texture that is directly represented
@@ -25092,453 +25332,18 @@ and primitive textures because you may find other references in the
 documentation that detail limitations of using
 primitive textures.&lt;/note&gt;</doc>
     </docsection>
-    <docsection name="cogl-quaternion">
-      <doc xml:space="preserve"
-           filename="cogl-quaternion.h"
-           line="44">Quaternions have become a standard form for representing 3D
-rotations and have some nice properties when compared with other
-representation such as (roll,pitch,yaw) Euler angles. They can be
-used to interpolate between different rotations and they don't
-suffer from a problem called
-&lt;ulink url="http://en.wikipedia.org/wiki/Gimbal_lock"&gt;"Gimbal lock"&lt;/ulink&gt;
-where two of the axis of rotation may become aligned and you loose a
-degree of freedom.
-.</doc>
-    </docsection>
-    <docsection name="cogl-renderer">
-      <doc xml:space="preserve"
-           filename="cogl-renderer.h"
-           line="47">A #CoglRenderer represents a means to render. It encapsulates the
-selection of an underlying driver, such as OpenGL or OpenGL-ES and
-a selection of a window system binding API such as GLX, or EGL or
-WGL.
-
-A #CoglRenderer has two states, "unconnected" and "connected". When
-a renderer is first instantiated using cogl_renderer_new() it is
-unconnected so that it can be configured and constraints can be
-specified for how the backend driver and window system should be
-chosen.
-
-After configuration a #CoglRenderer can (optionally) be explicitly
-connected using cogl_renderer_connect() which allows for the
-handling of connection errors so that fallback configurations can
-be tried if necessary. Applications that don't support any
-fallbacks though can skip using cogl_renderer_connect() and leave
-Cogl to automatically connect the renderer.
-
-Once you have a configured #CoglRenderer it can be used to create a
-#CoglDisplay object using cogl_display_new().
-
-&lt;note&gt;Many applications don't need to explicitly use
-cogl_renderer_new() or cogl_display_new() and can just jump
-straight to cogl_context_new() and pass a %NULL display argument so
-Cogl will automatically connect and setup a renderer and
-display.&lt;/note&gt;</doc>
-    </docsection>
-    <docsection name="cogl-snippet">
-      <doc xml:space="preserve"
-           filename="cogl-snippet.h"
-           line="43">#CoglSnippet&lt;!-- --&gt;s are used to modify or replace parts of a
-#CoglPipeline using GLSL. GLSL is a programming language supported
-by OpenGL on programmable hardware to provide a more flexible
-description of what should be rendered. A description of GLSL
-itself is outside the scope of this documentation but any good
-OpenGL book should help to describe it.
-
-Unlike in OpenGL, when using GLSL with Cogl it is possible to write
-short snippets to replace small sections of the pipeline instead of
-having to replace the whole of either the vertex or fragment
-pipelines. Of course it is also possible to replace the whole of
-the pipeline if needed.
-
-Each snippet is a standalone chunk of code which would attach to
-the pipeline at a particular point. The code is split into four
-separate strings (all of which are optional):
-
-&lt;glosslist&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;declarations&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-The code in this string will be inserted outside of any function in
-the global scope of the shader. This can be used to declare
-uniforms, attributes, varyings and functions to be used by the
-snippet.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;pre&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-The code in this string will be inserted before the hook point.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;post&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-The code in this string will be inserted after the hook point. This
-can be used to modify the results of the builtin generated code for
-that hook point.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;replace&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-If present the code in this string will replace the generated code
-for the hook point.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
-&lt;/glosslist&gt;
-
-All of the strings apart from the declarations string of a pipeline
-are generated in a single function so they can share variables
-declared from one string in another. The scope of the code is
-limited to each snippet so local variables declared in the snippet
-will not collide with variables declared in another
-snippet. However, code in the 'declarations' string is global to
-the shader so it is the application's responsibility to ensure that
-variables declared here will not collide with those from other
-snippets.
-
-The snippets can be added to a pipeline with
-cogl_pipeline_add_snippet() or
-cogl_pipeline_add_layer_snippet(). Which function to use depends on
-which hook the snippet is targetting. The snippets are all
-generated in the order they are added to the pipeline. That is, the
-post strings are executed in the order they are added to the
-pipeline and the pre strings are executed in reverse order. If any
-replace strings are given for a snippet then any other snippets
-with the same hook added before that snippet will be ignored. The
-different hooks are documented under #CoglSnippetHook.
-
-For portability with GLES2, it is recommended not to use the GLSL
-builtin names such as gl_FragColor. Instead there are replacement
-names under the cogl_* namespace which can be used instead. These
-are:
-
-&lt;glosslist&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;uniform mat4
-        &lt;emphasis&gt;cogl_modelview_matrix&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The current modelview matrix. This is equivalent to
-   #gl_ModelViewMatrix.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;uniform mat4
-        &lt;emphasis&gt;cogl_projection_matrix&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The current projection matrix. This is equivalent to
-   #gl_ProjectionMatrix.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;uniform mat4
-        &lt;emphasis&gt;cogl_modelview_projection_matrix&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The combined modelview and projection matrix. A vertex shader
-   would typically use this to transform the incoming vertex
-   position. The separate modelview and projection matrices are
-   usually only needed for lighting calculations. This is
-   equivalent to #gl_ModelViewProjectionMatrix.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;uniform mat4
-        &lt;emphasis&gt;cogl_texture_matrix&lt;/emphasis&gt;[]&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   An array of matrices for transforming the texture
-   coordinates. This is equivalent to #gl_TextureMatrix.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
-&lt;/glosslist&gt;
-
-In a vertex shader, the following are also available:
-
-&lt;glosslist&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;attribute vec4
-        &lt;emphasis&gt;cogl_position_in&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The incoming vertex position. This is equivalent to #gl_Vertex.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;attribute vec4
-        &lt;emphasis&gt;cogl_color_in&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The incoming vertex color. This is equivalent to #gl_Color.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;attribute vec4
-        &lt;emphasis&gt;cogl_tex_coord_in&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The texture coordinate for layer 0. This is an alternative name
-   for #cogl_tex_coord0_in.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;attribute vec4
-        &lt;emphasis&gt;cogl_tex_coord0_in&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The texture coordinate for the layer 0. This is equivalent to
-   #gl_MultiTexCoord0. There will also be #cogl_tex_coord1_in and
-   so on if more layers are added to the pipeline.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;attribute vec3
-        &lt;emphasis&gt;cogl_normal_in&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The normal of the vertex. This is equivalent to #gl_Normal.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;vec4
-        &lt;emphasis&gt;cogl_position_out&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The calculated position of the vertex. This must be written to
-   in all vertex shaders. This is equivalent to #gl_Position.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;float
-        &lt;emphasis&gt;cogl_point_size_in&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The incoming point size from the cogl_point_size_in attribute.
-   This is only available if
-   cogl_pipeline_set_per_vertex_point_size() is set on the
-   pipeline.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;float
-        &lt;emphasis&gt;cogl_point_size_out&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The calculated size of a point. This is equivalent to #gl_PointSize.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;varying vec4
-        &lt;emphasis&gt;cogl_color_out&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The calculated color of a vertex. This is equivalent to #gl_FrontColor.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;varying vec4
-        &lt;emphasis&gt;cogl_tex_coord0_out&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The calculated texture coordinate for layer 0 of the pipeline.
-   This is equivalent to #gl_TexCoord[0]. There will also be
-   #cogl_tex_coord1_out and so on if more layers are added to the
-   pipeline. In the fragment shader, this varying is called
-   #cogl_tex_coord0_in.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
-&lt;/glosslist&gt;
-
-In a fragment shader, the following are also available:
-
-&lt;glosslist&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;varying vec4 &lt;emphasis&gt;cogl_color_in&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The calculated color of a vertex. This is equivalent to #gl_FrontColor.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;varying vec4
-             &lt;emphasis&gt;cogl_tex_coord0_in&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The texture coordinate for layer 0. This is equivalent to
-   #gl_TexCoord[0]. There will also be #cogl_tex_coord1_in and so
-   on if more layers are added to the pipeline.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;vec4 &lt;emphasis&gt;cogl_color_out&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   The final calculated color of the fragment. All fragment shaders
-   must write to this variable. This is equivalent to
-   #gl_FrontColor.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;float &lt;emphasis&gt;cogl_depth_out&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   An optional output variable specifying the depth value to use
-   for this fragment. This is equivalent to #gl_FragDepth.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;bool &lt;emphasis&gt;cogl_front_facing&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   A readonly variable that will be true if the current primitive
-   is front facing. This can be used to implement two-sided
-   coloring algorithms. This is equivalent to #gl_FrontFacing.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
- &lt;glossentry&gt;
-  &lt;glossterm&gt;vec2 &lt;emphasis&gt;cogl_point_coord&lt;/emphasis&gt;&lt;/glossterm&gt;
-  &lt;glossdef&gt;&lt;para&gt;
-   When rendering points, this will contain a vec2 which represents
-   the position within the point of the current fragment.
-   vec2(0.0,0.0) will be the topleft of the point and vec2(1.0,1.0)
-   will be the bottom right. Note that there is currently a bug in
-   Cogl where when rendering to an offscreen buffer these
-   coordinates will be upside-down. The value is undefined when not
-   rendering points. This builtin can only be used if the
-   %COGL_FEATURE_ID_POINT_SPRITE feature is available.
-  &lt;/para&gt;&lt;/glossdef&gt;
- &lt;/glossentry&gt;
-&lt;/glosslist&gt;
-
-Here is an example of using a snippet to add a desaturate effect to the
-generated color on a pipeline.
-
-&lt;programlisting&gt;
-  CoglPipeline *pipeline = cogl_pipeline_new ();
-
-  /&lt;!-- --&gt;* Set up the pipeline here, ie by adding a texture or other
-     layers *&lt;!-- --&gt;/
-
-  /&lt;!-- --&gt;* Create the snippet. The first string is the declarations which
-     we will use to add a uniform. The second is the 'post' string which
-     will contain the code to perform the desaturation. *&lt;!-- --&gt;/
-  CoglSnippet *snippet =
-    cogl_snippet_new (COGL_SNIPPET_HOOK_FRAGMENT,
-                      "uniform float factor;",
-                      "float gray = dot (vec3 (0.299, 0.587, 0.114), "
-                      "                  cogl_color_out.rgb);"
-                      "cogl_color_out.rgb = mix (vec3 (gray),"
-                      "                          cogl_color_out.rgb,"
-                      "                          factor);");
-
-  /&lt;!-- --&gt;* Add it to the pipeline *&lt;!-- --&gt;/
-  cogl_pipeline_add_snippet (pipeline, snippet);
-  /&lt;!-- --&gt;* The pipeline keeps a reference to the snippet
-     so we don't need to *&lt;!-- --&gt;/
-  cogl_object_unref (snippet);
-
-  /&lt;!-- --&gt;* Update the custom uniform on the pipeline *&lt;!-- --&gt;/
-  int location = cogl_pipeline_get_uniform_location (pipeline, "factor");
-  cogl_pipeline_set_uniform_1f (pipeline, location, 0.5f);
-
-  /&lt;!-- --&gt;* Now we can render with the snippet as usual *&lt;!-- --&gt;/
-  cogl_push_source (pipeline);
-  cogl_rectangle (0, 0, 10, 10);
-  cogl_pop_source ();
-&lt;/programlisting&gt;</doc>
-    </docsection>
-    <docsection name="cogl-sub-texture">
-      <doc xml:space="preserve"
-           filename="cogl-sub-texture.h"
-           line="41">These functions allow high-level textures to be created that
-represent a sub-region of another texture. For example these
-can be used to implement custom texture atlasing schemes.</doc>
-    </docsection>
-    <docsection name="cogl-texture">
-      <doc xml:space="preserve"
-           filename="cogl-texture.h"
-           line="65">Cogl allows creating and manipulating textures using a uniform
-API that tries to hide all the various complexities of creating,
-loading and manipulating textures.</doc>
-    </docsection>
-    <docsection name="cogl-texture-2d">
-      <doc xml:space="preserve"
-           filename="cogl-texture-2d.h"
-           line="45">These functions allow low-level 2D textures to be allocated. These
-differ from sliced textures for example which may internally be
-made up of multiple 2D textures, or atlas textures where Cogl must
-internally modify user texture coordinates before they can be used
-by the GPU.
-
-You should be aware that many GPUs only support power of two sizes
-for #CoglTexture2D textures. You can check support for non power of
-two textures by checking for the %COGL_FEATURE_ID_TEXTURE_NPOT feature
-via cogl_has_feature().</doc>
-    </docsection>
-    <docsection name="cogl-texture-2d-sliced">
-      <doc xml:space="preserve"
-           filename="cogl-texture-2d-sliced.h"
-           line="39">These functions allow high-level meta textures (See the
-#CoglMetaTexture interface) to be allocated that may internally be
-comprised of multiple 2D texture "slices" with power-of-two sizes.
-
-This API can be useful when working with GPUs that don't have
-native support for non-power-of-two textures or if you want to load
-a texture that is larger than the GPUs maximum texture size limits.
-
-The algorithm for slicing works by first trying to map a virtual
-size to the next larger power-of-two size and then seeing how many
-wasted pixels that would result in. For example if you have a
-virtual texture that's 259 texels wide, the next pot size = 512 and
-the amount of waste would be 253 texels. If the amount of waste is
-above a max-waste threshold then we would next slice that texture
-into one that's 256 texels and then looking at how many more texels
-remain unallocated after that we choose the next power-of-two size.
-For the example of a 259 texel image that would mean having a 256
-texel wide texture, leaving 3 texels unallocated so we'd then
-create a 4 texel wide texture - now there is only one texel of
-waste. The algorithm continues to slice the right most textures
-until the amount of waste is less than or equal to a specfied
-max-waste threshold. The same logic for slicing from left to right
-is also applied from top to bottom.</doc>
-    </docsection>
-    <docsection name="cogl-texture-3d">
-      <doc xml:space="preserve"
-           filename="cogl-texture-3d.h"
-           line="41">These functions allow 3D textures to be used. 3D textures can be
-thought of as layers of 2D images arranged into a cuboid
-shape. When choosing a texel from the texture, Cogl will take into
-account the 'r' texture coordinate to select one of the images.</doc>
-    </docsection>
-    <docsection name="cogl-texture-pixmap-x11">
-      <doc xml:space="preserve"
-           filename="winsys/cogl-texture-pixmap-x11.h"
-           line="61">These functions allow high-level meta textures (See the
-#CoglMetaTexture interface) that derive their contents from an X11
-pixmap.</doc>
-    </docsection>
-    <docsection name="cogl-texture-rectangle">
-      <doc xml:space="preserve"
-           filename="cogl-texture-rectangle.h"
-           line="40">These functions allow low-level "rectangle" textures to be allocated.
-These textures are never constrained to power-of-two sizes but they
-also don't support having a mipmap and can only be wrapped with
-%COGL_PIPELINE_WRAP_MODE_CLAMP_TO_EDGE.
-
-The most notable difference between rectangle textures and 2D
-textures is that rectangle textures are sampled using un-normalized
-texture coordinates, so instead of using coordinates (0,0) and
-(1,1) to map to the top-left and bottom right corners of the
-texture you would instead use (0,0) and (width,height).
-
-The use of non-normalized coordinates can be particularly
-convenient when writing glsl shaders that use a texture as a lookup
-table since you don't need to upload separate uniforms to map
-normalized coordinates to texels.
-
-If you want to sample from a rectangle texture from GLSL you should
-use the sampler2DRect sampler type.
-
-Applications wanting to use #CoglTextureRectangle should first check
-for the %COGL_FEATURE_ID_TEXTURE_RECTANGLE feature using
-cogl_has_feature().</doc>
-    </docsection>
-    <docsection name="cogl-types">
+    <docsection name="cogltypes">
       <doc xml:space="preserve"
            filename="cogl-types.h"
            line="58">General types used by various Cogl functions.</doc>
     </docsection>
-    <docsection name="cogl-vector">
+    <docsection name="coglvector">
       <doc xml:space="preserve"
            filename="cogl-vector.h"
            line="41">This exposes a utility API that can be used for basic manipulation of 3
 component float vectors.</doc>
     </docsection>
-    <docsection name="cogl-version">
+    <docsection name="coglversion">
       <doc xml:space="preserve"
            filename="cogl-version.h"
            line="36">Cogl offers a set of macros for checking the version of the library

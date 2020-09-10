@@ -100,6 +100,14 @@ and/or use gtk-doc annotations.  -->
             glib:type-name="AmtkActionInfo"
             glib:get-type="amtk_action_info_get_type"
             c:symbol-prefix="action_info">
+      <doc xml:space="preserve"
+           filename="amtk-action-info.c"
+           line="25">An #AmtkActionInfo instance contains a set of information about a #GAction.
+Those pieces of information are useful to create UI elements that trigger the
+#GAction, for example a menu item or a toolbar item.
+
+The recommended way to create a set of #AmtkActionInfo's is to use the
+amtk_action_info_store_add_entries() function.</doc>
       <source-position filename="amtk-types.h" line="31"/>
       <constructor name="new"
                    c:identifier="amtk_action_info_new"
@@ -497,6 +505,11 @@ to 0, @info is freed.</doc>
            glib:type-name="AmtkActionInfoCentralStore"
            glib:get-type="amtk_action_info_central_store_get_type"
            glib:type-struct="ActionInfoCentralStoreClass">
+      <doc xml:space="preserve"
+           filename="amtk-action-info-central-store.c"
+           line="23">#AmtkActionInfoCentralStore is a singleton class containing the aggregation
+of all #AmtkActionInfoStore's. Each time an #AmtkActionInfo is added to an
+#AmtkActionInfoStore, it is also added to the #AmtkActionInfoCentralStore.</doc>
       <source-position filename="amtk-action-info-central-store.h" line="54"/>
       <function name="get_singleton"
                 c:identifier="amtk_action_info_central_store_get_singleton"
@@ -619,6 +632,27 @@ may be added in the future.</doc>
            glib:type-name="AmtkActionInfoStore"
            glib:get-type="amtk_action_info_store_get_type"
            glib:type-struct="ActionInfoStoreClass">
+      <doc xml:space="preserve"
+           filename="amtk-action-info-store.c"
+           line="24">#AmtkActionInfoStore contains a set of #AmtkActionInfo's. It is add-only, an
+#AmtkActionInfo cannot be removed.
+
+#AmtkActionInfoStore is designed so that libraries can provide their own
+store, to share action information (with translations) and possibly the
+#GAction implementations as well.
+
+A library #AmtkActionInfoStore must namespace the action names to not have
+conflicts when an #AmtkActionInfo is added to the
+#AmtkActionInfoCentralStore. Examples of namespaced action names:
+`"win.amtk-save"` or `"app.amtk-quit"`.
+
+An #AmtkActionInfoStore is meant to be something static, created on
+application startup. See the [paragraph about static objects in
+AmtkFactory][amtk-factory-static-objects]. So once an #AmtkActionInfo has
+been added to an #AmtkActionInfoStore, it is discouraged to modify it
+afterwards; an exception is to call amtk_action_info_set_accels() with
+several accelerators after using amtk_action_info_store_add_entries()
+(because an #AmtkActionInfoEntry can contain only one accelerator).</doc>
       <source-position filename="amtk-action-info-store.h" line="54"/>
       <constructor name="new"
                    c:identifier="amtk_action_info_store_new"
@@ -838,6 +872,16 @@ menu or toolbar.</doc>
            glib:type-name="AmtkApplicationWindow"
            glib:get-type="amtk_application_window_get_type"
            glib:type-struct="ApplicationWindowClass">
+      <doc xml:space="preserve"
+           filename="amtk-application-window.c"
+           line="29">#AmtkApplicationWindow extends the #GtkApplicationWindow class with a
+#AmtkApplicationWindow:statusbar property and functions to show longer
+descriptions of #GtkMenuItem's to the #GtkStatusbar.
+
+Note that #AmtkApplicationWindow extends the #GtkApplicationWindow class but
+without subclassing it, because several libraries might want to extend
+#GtkApplicationWindow and an application needs to be able to use all those
+extensions at the same time.</doc>
       <source-position filename="amtk-application-window.h" line="54"/>
       <function name="get_from_gtk_application_window"
                 c:identifier="amtk_application_window_get_from_gtk_application_window"
@@ -1127,6 +1171,161 @@ amtk_application_window_create_open_recent_menu().</doc>
            glib:type-name="AmtkFactory"
            glib:get-type="amtk_factory_get_type"
            glib:type-struct="FactoryClass">
+      <doc xml:space="preserve"
+           filename="amtk-factory.c"
+           line="27">#AmtkFactory contains functions to create various objects such as a menu
+item, a toolbar item or a #GtkShortcutsShortcut, from the information
+provided by an #AmtkActionInfo. A factory function accesses an
+#AmtkActionInfo from the #AmtkActionInfoCentralStore.
+
+A #GtkApplication can be associated so that factory functions can call
+gtk_application_set_accels_for_action() with the accelerators returned by
+amtk_action_info_get_accels(). Note that
+gtk_application_set_accels_for_action() is called by factory functions and
+not by amtk_action_info_store_add(), so that libraries can provide their own
+store and the accelerators are set to the #GtkApplication only if an
+#AmtkActionInfo is actually used. For an application store,
+amtk_action_info_store_set_all_accels_to_app() is an alternative.
+
+#AmtkFactoryFlags permits to control how a factory function creates the
+object, to ignore some steps. Factory functions are declined in two variants:
+a simple form which takes the value of the #AmtkFactory:default-flags
+property, and the same function with the `_full` suffix which takes an
+#AmtkFactoryFlags argument and ignores the #AmtkFactory:default-flags. See
+for example amtk_factory_create_menu_item() and
+amtk_factory_create_menu_item_full().
+
+# Static objects # {#amtk-factory-static-objects}
+
+An important detail is that once a factory function has created an object,
+the object is not updated if the corresponding #AmtkActionInfo is modified
+afterwards. #AmtkActionInfo doesn't have a notify signal, and it is anyway
+discouraged to modify an #AmtkActionInfo after being added to an
+#AmtkActionInfoStore. An #AmtkActionInfoStore is meant to be something
+static, created on application startup. Updating automatically menu and
+toolbar items is out of scope for the Amtk library. If for example action
+accelerators can be modified at run-time, the menu needs to be re-generated.
+
+# Menus
+
+Some general notes about the functions that create #GtkMenuItem's:
+- If not ignored by an #AmtkFactoryFlags, the first accelerator returned by
+  amtk_action_info_get_accels() is set to the #GtkAccelLabel of the
+  #GtkMenuItem.
+- If not ignored by an #AmtkFactoryFlags, the tooltip is set with
+  amtk_menu_item_set_long_description(), which permits to display it in a
+  #GtkStatusbar with amtk_application_window_connect_menu_to_statusbar().
+
+## Code example to create a menu
+
+How to create a #GtkMenuBar with #AmtkFactory. Each submenu is created by a
+separate function, to make the code clearer.
+
+|[
+static GtkWidget *
+create_file_submenu (void)
+{
+  GtkMenuShell *file_submenu;
+  AmtkFactory *factory;
+
+  file_submenu = GTK_MENU_SHELL (gtk_menu_new ());
+
+  factory = amtk_factory_new_with_default_application ();
+  gtk_menu_shell_append (file_submenu, amtk_factory_create_menu_item (factory, "win.open"));
+  gtk_menu_shell_append (file_submenu, amtk_factory_create_menu_item (factory, "win.save"));
+  gtk_menu_shell_append (file_submenu, gtk_separator_menu_item_new ());
+  gtk_menu_shell_append (file_submenu, amtk_factory_create_menu_item (factory, "app.quit"));
+  g_object_unref (factory);
+
+  return GTK_WIDGET (file_submenu);
+}
+
+static GtkWidget *
+create_help_submenu (void)
+{
+  GtkMenuShell *help_submenu;
+  AmtkFactory *factory;
+
+  help_submenu = GTK_MENU_SHELL (gtk_menu_new ());
+
+  factory = amtk_factory_new_with_default_application ();
+  gtk_menu_shell_append (help_submenu, amtk_factory_create_menu_item (factory, "app.about"));
+  g_object_unref (factory);
+
+  return GTK_WIDGET (help_submenu);
+}
+
+static GtkWidget *
+create_menu_bar (void)
+{
+  GtkWidget *file_menu_item;
+  GtkWidget *help_menu_item;
+  GtkWidget *menu_bar;
+
+  file_menu_item = gtk_menu_item_new_with_mnemonic ("_File");
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (file_menu_item),
+                             create_file_submenu ());
+
+  help_menu_item = gtk_menu_item_new_with_mnemonic ("_Help");
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (help_menu_item),
+                             create_help_submenu ());
+
+  menu_bar = gtk_menu_bar_new ();
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu_bar), file_menu_item);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu_bar), help_menu_item);
+
+  // Additionally, it is a good place to call
+  // amtk_action_info_store_check_all_used() here.
+
+  return menu_bar;
+}
+]|
+
+# Toolbars
+
+Some general notes about the functions that create #GtkToolItem's:
+- The accelerators returned by amtk_action_info_get_accels() are not used for
+  documentation purposes in a toolbar, so the
+  %AMTK_FACTORY_IGNORE_ACCELS_FOR_DOC flag has no impact. The accelerators
+  are documented only in menu items.
+
+## Code example to create a toolbar
+
+How to create a basic #GtkToolbar with #AmtkFactory.
+
+|[
+static GtkWidget *
+create_toolbar (void)
+{
+  GtkToolbar *toolbar;
+  AmtkFactory *factory;
+
+  toolbar = GTK_TOOLBAR (gtk_toolbar_new ());
+
+  // Small performance improvement:
+  // Do not associate a GtkApplication, because the menu has already been
+  // generated, the menu contains all actions, so
+  // gtk_application_set_accels_for_action() has already been called for all
+  // actions. Another way is to set the AMTK_FACTORY_IGNORE_ACCELS_FOR_APP
+  // flag.
+  factory = amtk_factory_new (NULL);
+  gtk_toolbar_insert (toolbar, amtk_factory_create_tool_button (factory, "win.new-file"), -1);
+  gtk_toolbar_insert (toolbar, amtk_factory_create_tool_button (factory, "win.open"), -1);
+  gtk_toolbar_insert (toolbar, amtk_factory_create_tool_button (factory, "win.save"), -1);
+  gtk_toolbar_insert (toolbar, gtk_separator_tool_item_new (), -1);
+  gtk_toolbar_insert (toolbar, amtk_factory_create_tool_button (factory, "win.cut"), -1);
+  gtk_toolbar_insert (toolbar, amtk_factory_create_tool_button (factory, "win.copy"), -1);
+  gtk_toolbar_insert (toolbar, amtk_factory_create_tool_button (factory, "win.paste"), -1);
+  g_object_unref (factory);
+
+  return GTK_WIDGET (toolbar);
+}
+]|
+
+# Modern UI with a GtkHeaderBar
+
+To have an example code, see `tests/test-headerbar.c` in the git repository
+of Amtk.</doc>
       <source-position filename="amtk-factory.h" line="54"/>
       <constructor name="new" c:identifier="amtk_factory_new" version="3.0">
         <doc xml:space="preserve"
@@ -1993,6 +2192,15 @@ object, to ignore some steps.</doc>
            glib:type-name="AmtkMenuShell"
            glib:get-type="amtk_menu_shell_get_type"
            glib:type-struct="MenuShellClass">
+      <doc xml:space="preserve"
+           filename="amtk-menu-shell.c"
+           line="22">#AmtkMenuShell extends the #GtkMenuShell abstract class with the
+#AmtkMenuShell::menu-item-selected and #AmtkMenuShell::menu-item-deselected
+convenience signals.
+
+One possible use-case is to push/pop longer descriptions of menu items to a
+#GtkStatusbar, exactly like
+amtk_application_window_connect_menu_to_statusbar() does.</doc>
       <source-position filename="amtk-menu-shell.h" line="62"/>
       <function name="get_from_gtk_menu_shell"
                 c:identifier="amtk_menu_shell_get_from_gtk_menu_shell"
@@ -2220,242 +2428,22 @@ itself.</doc>
         </parameter>
       </parameters>
     </function>
-    <docsection name="amtk-action-info">
-      <doc xml:space="preserve"
-           filename="amtk-action-info.c"
-           line="25">An #AmtkActionInfo instance contains a set of information about a #GAction.
-Those pieces of information are useful to create UI elements that trigger the
-#GAction, for example a menu item or a toolbar item.
-
-The recommended way to create a set of #AmtkActionInfo's is to use the
-amtk_action_info_store_add_entries() function.</doc>
-    </docsection>
-    <docsection name="amtk-action-info-central-store">
-      <doc xml:space="preserve"
-           filename="amtk-action-info-central-store.c"
-           line="23">#AmtkActionInfoCentralStore is a singleton class containing the aggregation
-of all #AmtkActionInfoStore's. Each time an #AmtkActionInfo is added to an
-#AmtkActionInfoStore, it is also added to the #AmtkActionInfoCentralStore.</doc>
-    </docsection>
-    <docsection name="amtk-action-info-store">
-      <doc xml:space="preserve"
-           filename="amtk-action-info-store.c"
-           line="24">#AmtkActionInfoStore contains a set of #AmtkActionInfo's. It is add-only, an
-#AmtkActionInfo cannot be removed.
-
-#AmtkActionInfoStore is designed so that libraries can provide their own
-store, to share action information (with translations) and possibly the
-#GAction implementations as well.
-
-A library #AmtkActionInfoStore must namespace the action names to not have
-conflicts when an #AmtkActionInfo is added to the
-#AmtkActionInfoCentralStore. Examples of namespaced action names:
-`"win.amtk-save"` or `"app.amtk-quit"`.
-
-An #AmtkActionInfoStore is meant to be something static, created on
-application startup. See the [paragraph about static objects in
-AmtkFactory][amtk-factory-static-objects]. So once an #AmtkActionInfo has
-been added to an #AmtkActionInfoStore, it is discouraged to modify it
-afterwards; an exception is to call amtk_action_info_set_accels() with
-several accelerators after using amtk_action_info_store_add_entries()
-(because an #AmtkActionInfoEntry can contain only one accelerator).</doc>
-    </docsection>
-    <docsection name="amtk-action-map">
+    <docsection name="amtkactionmap">
       <doc xml:space="preserve"
            filename="amtk-action-map.c"
            line="22">#GActionMap wrapper functions.</doc>
     </docsection>
-    <docsection name="amtk-application-window">
-      <doc xml:space="preserve"
-           filename="amtk-application-window.c"
-           line="29">#AmtkApplicationWindow extends the #GtkApplicationWindow class with a
-#AmtkApplicationWindow:statusbar property and functions to show longer
-descriptions of #GtkMenuItem's to the #GtkStatusbar.
-
-Note that #AmtkApplicationWindow extends the #GtkApplicationWindow class but
-without subclassing it, because several libraries might want to extend
-#GtkApplicationWindow and an application needs to be able to use all those
-extensions at the same time.</doc>
-    </docsection>
-    <docsection name="amtk-factory">
-      <doc xml:space="preserve"
-           filename="amtk-factory.c"
-           line="27">#AmtkFactory contains functions to create various objects such as a menu
-item, a toolbar item or a #GtkShortcutsShortcut, from the information
-provided by an #AmtkActionInfo. A factory function accesses an
-#AmtkActionInfo from the #AmtkActionInfoCentralStore.
-
-A #GtkApplication can be associated so that factory functions can call
-gtk_application_set_accels_for_action() with the accelerators returned by
-amtk_action_info_get_accels(). Note that
-gtk_application_set_accels_for_action() is called by factory functions and
-not by amtk_action_info_store_add(), so that libraries can provide their own
-store and the accelerators are set to the #GtkApplication only if an
-#AmtkActionInfo is actually used. For an application store,
-amtk_action_info_store_set_all_accels_to_app() is an alternative.
-
-#AmtkFactoryFlags permits to control how a factory function creates the
-object, to ignore some steps. Factory functions are declined in two variants:
-a simple form which takes the value of the #AmtkFactory:default-flags
-property, and the same function with the `_full` suffix which takes an
-#AmtkFactoryFlags argument and ignores the #AmtkFactory:default-flags. See
-for example amtk_factory_create_menu_item() and
-amtk_factory_create_menu_item_full().
-
-# Static objects # {#amtk-factory-static-objects}
-
-An important detail is that once a factory function has created an object,
-the object is not updated if the corresponding #AmtkActionInfo is modified
-afterwards. #AmtkActionInfo doesn't have a notify signal, and it is anyway
-discouraged to modify an #AmtkActionInfo after being added to an
-#AmtkActionInfoStore. An #AmtkActionInfoStore is meant to be something
-static, created on application startup. Updating automatically menu and
-toolbar items is out of scope for the Amtk library. If for example action
-accelerators can be modified at run-time, the menu needs to be re-generated.
-
-# Menus
-
-Some general notes about the functions that create #GtkMenuItem's:
-- If not ignored by an #AmtkFactoryFlags, the first accelerator returned by
-  amtk_action_info_get_accels() is set to the #GtkAccelLabel of the
-  #GtkMenuItem.
-- If not ignored by an #AmtkFactoryFlags, the tooltip is set with
-  amtk_menu_item_set_long_description(), which permits to display it in a
-  #GtkStatusbar with amtk_application_window_connect_menu_to_statusbar().
-
-## Code example to create a menu
-
-How to create a #GtkMenuBar with #AmtkFactory. Each submenu is created by a
-separate function, to make the code clearer.
-
-|[
-static GtkWidget *
-create_file_submenu (void)
-{
-  GtkMenuShell *file_submenu;
-  AmtkFactory *factory;
-
-  file_submenu = GTK_MENU_SHELL (gtk_menu_new ());
-
-  factory = amtk_factory_new_with_default_application ();
-  gtk_menu_shell_append (file_submenu, amtk_factory_create_menu_item (factory, "win.open"));
-  gtk_menu_shell_append (file_submenu, amtk_factory_create_menu_item (factory, "win.save"));
-  gtk_menu_shell_append (file_submenu, gtk_separator_menu_item_new ());
-  gtk_menu_shell_append (file_submenu, amtk_factory_create_menu_item (factory, "app.quit"));
-  g_object_unref (factory);
-
-  return GTK_WIDGET (file_submenu);
-}
-
-static GtkWidget *
-create_help_submenu (void)
-{
-  GtkMenuShell *help_submenu;
-  AmtkFactory *factory;
-
-  help_submenu = GTK_MENU_SHELL (gtk_menu_new ());
-
-  factory = amtk_factory_new_with_default_application ();
-  gtk_menu_shell_append (help_submenu, amtk_factory_create_menu_item (factory, "app.about"));
-  g_object_unref (factory);
-
-  return GTK_WIDGET (help_submenu);
-}
-
-static GtkWidget *
-create_menu_bar (void)
-{
-  GtkWidget *file_menu_item;
-  GtkWidget *help_menu_item;
-  GtkWidget *menu_bar;
-
-  file_menu_item = gtk_menu_item_new_with_mnemonic ("_File");
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (file_menu_item),
-                             create_file_submenu ());
-
-  help_menu_item = gtk_menu_item_new_with_mnemonic ("_Help");
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (help_menu_item),
-                             create_help_submenu ());
-
-  menu_bar = gtk_menu_bar_new ();
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu_bar), file_menu_item);
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu_bar), help_menu_item);
-
-  // Additionally, it is a good place to call
-  // amtk_action_info_store_check_all_used() here.
-
-  return menu_bar;
-}
-]|
-
-# Toolbars
-
-Some general notes about the functions that create #GtkToolItem's:
-- The accelerators returned by amtk_action_info_get_accels() are not used for
-  documentation purposes in a toolbar, so the
-  %AMTK_FACTORY_IGNORE_ACCELS_FOR_DOC flag has no impact. The accelerators
-  are documented only in menu items.
-
-## Code example to create a toolbar
-
-How to create a basic #GtkToolbar with #AmtkFactory.
-
-|[
-static GtkWidget *
-create_toolbar (void)
-{
-  GtkToolbar *toolbar;
-  AmtkFactory *factory;
-
-  toolbar = GTK_TOOLBAR (gtk_toolbar_new ());
-
-  // Small performance improvement:
-  // Do not associate a GtkApplication, because the menu has already been
-  // generated, the menu contains all actions, so
-  // gtk_application_set_accels_for_action() has already been called for all
-  // actions. Another way is to set the AMTK_FACTORY_IGNORE_ACCELS_FOR_APP
-  // flag.
-  factory = amtk_factory_new (NULL);
-  gtk_toolbar_insert (toolbar, amtk_factory_create_tool_button (factory, "win.new-file"), -1);
-  gtk_toolbar_insert (toolbar, amtk_factory_create_tool_button (factory, "win.open"), -1);
-  gtk_toolbar_insert (toolbar, amtk_factory_create_tool_button (factory, "win.save"), -1);
-  gtk_toolbar_insert (toolbar, gtk_separator_tool_item_new (), -1);
-  gtk_toolbar_insert (toolbar, amtk_factory_create_tool_button (factory, "win.cut"), -1);
-  gtk_toolbar_insert (toolbar, amtk_factory_create_tool_button (factory, "win.copy"), -1);
-  gtk_toolbar_insert (toolbar, amtk_factory_create_tool_button (factory, "win.paste"), -1);
-  g_object_unref (factory);
-
-  return GTK_WIDGET (toolbar);
-}
-]|
-
-# Modern UI with a GtkHeaderBar
-
-To have an example code, see `tests/test-headerbar.c` in the git repository
-of Amtk.</doc>
-    </docsection>
-    <docsection name="amtk-gmenu">
+    <docsection name="amtkgmenu">
       <doc xml:space="preserve"
            filename="amtk-gmenu.c"
            line="22">#GMenu convenience functions.</doc>
     </docsection>
-    <docsection name="amtk-menu-item">
+    <docsection name="amtkmenuitem">
       <doc xml:space="preserve"
            filename="amtk-menu-item.c"
            line="22">#GtkMenuItem functions.</doc>
     </docsection>
-    <docsection name="amtk-menu-shell">
-      <doc xml:space="preserve"
-           filename="amtk-menu-shell.c"
-           line="22">#AmtkMenuShell extends the #GtkMenuShell abstract class with the
-#AmtkMenuShell::menu-item-selected and #AmtkMenuShell::menu-item-deselected
-convenience signals.
-
-One possible use-case is to push/pop longer descriptions of menu items to a
-#GtkStatusbar, exactly like
-amtk_application_window_connect_menu_to_statusbar() does.</doc>
-    </docsection>
-    <docsection name="amtk-shortcuts">
+    <docsection name="amtkshortcuts">
       <doc xml:space="preserve"
            filename="amtk-shortcuts.c"
            line="22">Convenience functions to create a #GtkShortcutsWindow. At the time of writing
@@ -2464,7 +2452,7 @@ the GtkShortcuts* classes don't provide any function.
 You need to also use gtk_container_add(), and g_object_set() to set other
 properties.</doc>
     </docsection>
-    <docsection name="amtk-utils">
+    <docsection name="amtkutils">
       <doc xml:space="preserve"
            filename="amtk-utils.c"
            line="25">Utility functions.</doc>

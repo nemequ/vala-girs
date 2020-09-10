@@ -271,6 +271,10 @@ a newly allocated list of #GeditView objects</doc>
                glib:type-name="GeditAppActivatable"
                glib:get-type="gedit_app_activatable_get_type"
                glib:type-struct="AppActivatableInterface">
+      <doc xml:space="preserve"
+           filename="../gedit/gedit-app-activatable.c"
+           line="28">#GeditAppActivatable is an interface which should be implemented by
+extensions that should be activated on a gedit application.</doc>
       <source-position filename="../gedit/gedit-app-activatable.h" line="41"/>
       <virtual-method name="activate" invoker="activate">
         <doc xml:space="preserve"
@@ -1491,6 +1495,16 @@ and the row "Automatically Detected" is added.</doc>
            glib:type-name="GeditMessage"
            glib:get-type="gedit_message_get_type"
            glib:type-struct="MessageClass">
+      <doc xml:space="preserve"
+           filename="../gedit/gedit-message.c"
+           line="27">Communication on a #GeditMessageBus is done through messages. Messages are
+sent over the bus and received by connecting callbacks on the message bus.
+A #GeditMessage is an instantiation of a #GeditMessageType, containing
+values for the arguments as specified in the message type.
+
+A message can be seen as a method call, or signal emission depending on
+who is the sender and who is the receiver. There is no explicit distinction
+between methods and signals.</doc>
       <source-position filename="../gedit/gedit-message.h" line="52"/>
       <function name="is_valid_object_path"
                 c:identifier="gedit_message_is_valid_object_path">
@@ -1676,6 +1690,74 @@ and the row "Automatically Detected" is added.</doc>
            glib:type-name="GeditMessageBus"
            glib:get-type="gedit_message_bus_get_type"
            glib:type-struct="MessageBusClass">
+      <doc xml:space="preserve"
+           filename="../gedit/gedit-message-bus.c"
+           line="40">gedit has a communication bus very similar to DBus. Its primary use is to
+allow easy communication between plugins, but it can also be used to expose
+gedit functionality to external applications by providing DBus bindings for
+the internal gedit message bus.
+
+There are two different communication busses available. The default bus
+(see gedit_message_bus_get_default()) is an application wide communication
+bus. In addition, each #GeditWindow has a separate, private bus
+(see gedit_window_get_message_bus()). This makes it easier for plugins to
+communicate to other plugins in the same window.
+
+The concept of the message bus is very simple. You can register a message
+type on the bus, specified as a Method at a specific Object Path with a
+certain set of Method Arguments. You can then connect callback functions
+for this message type on the bus. Whenever a message with the Object Path
+and Method for which callbacks are connected is sent over the bus, the
+callbacks are called. There is no distinction between Methods and Signals
+(signals are simply messages where sender and receiver have switched places).
+
+&lt;example&gt;
+&lt;title&gt;Registering a message type&lt;/title&gt;
+&lt;programlisting&gt;
+GeditMessageBus *bus = gedit_message_bus_get_default ();
+
+// Register 'method' at '/plugins/example' with one required
+// string argument 'arg1'
+gedit_message_bus_register (bus, EXAMPLE_TYPE_METHOD_MESSAGE,
+                            "/plugins/example", "method");
+&lt;/programlisting&gt;
+&lt;/example&gt;
+&lt;example&gt;
+&lt;title&gt;Connecting a callback&lt;/title&gt;
+&lt;programlisting&gt;
+static void
+example_method_cb (GeditMessageBus *bus,
+                   GeditMessage    *message,
+                   gpointer         user_data)
+{
+	gchar *arg1 = NULL;
+
+	gedit_message_get (message, "arg1", &amp;arg1, NULL);
+	g_message ("Evoked /plugins/example.method with: %s", arg1);
+	g_free (arg1);
+}
+
+GeditMessageBus *bus = gedit_message_bus_get_default ();
+
+guint id = gedit_message_bus_connect (bus,
+                                      "/plugins/example", "method",
+                                      example_method_cb,
+                                      NULL,
+                                      NULL);
+
+&lt;/programlisting&gt;
+&lt;/example&gt;
+&lt;example&gt;
+&lt;title&gt;Sending a message&lt;/title&gt;
+&lt;programlisting&gt;
+GeditMessageBus *bus = gedit_message_bus_get_default ();
+
+gedit_message_bus_send (bus,
+                        "/plugins/example", "method",
+                        "arg1", "Hello World",
+                        NULL);
+&lt;/programlisting&gt;
+&lt;/example&gt;</doc>
       <source-position filename="../gedit/gedit-message-bus.h" line="62"/>
       <constructor name="new" c:identifier="gedit_message_bus_new">
         <doc xml:space="preserve"
@@ -3404,6 +3486,10 @@ loading the URI.</doc>
                glib:type-name="GeditViewActivatable"
                glib:get-type="gedit_view_activatable_get_type"
                glib:type-struct="ViewActivatableInterface">
+      <doc xml:space="preserve"
+           filename="../gedit/gedit-view-activatable.c"
+           line="27">#GeditViewActivatable is an interface which should be implemented by
+extensions that should be activated on a gedit view.</doc>
       <source-position filename="../gedit/gedit-view-activatable.h" line="39"/>
       <virtual-method name="activate" invoker="activate">
         <doc xml:space="preserve"
@@ -4232,6 +4318,10 @@ list with all the views in the window</doc>
                glib:type-name="GeditWindowActivatable"
                glib:get-type="gedit_window_activatable_get_type"
                glib:type-struct="WindowActivatableInterface">
+      <doc xml:space="preserve"
+           filename="../gedit/gedit-window-activatable.c"
+           line="29">#GeditWindowActivatable is an interface which should be implemented by
+extensions that should be activated on a gedit main window.</doc>
       <source-position filename="../gedit/gedit-window-activatable.h"
                        line="40"/>
       <virtual-method name="activate" invoker="activate">
@@ -4931,106 +5021,6 @@ by &lt;ulink url="http://docs.python.org/library/stdtypes.html#string-formatting
         </parameter>
       </parameters>
     </function>
-    <docsection name="gedit-app-activatable">
-      <doc xml:space="preserve"
-           filename="../gedit/gedit-app-activatable.c"
-           line="28">#GeditAppActivatable is an interface which should be implemented by
-extensions that should be activated on a gedit application.</doc>
-    </docsection>
-    <docsection name="gedit-message">
-      <doc xml:space="preserve"
-           filename="../gedit/gedit-message.c"
-           line="27">Communication on a #GeditMessageBus is done through messages. Messages are
-sent over the bus and received by connecting callbacks on the message bus.
-A #GeditMessage is an instantiation of a #GeditMessageType, containing
-values for the arguments as specified in the message type.
-
-A message can be seen as a method call, or signal emission depending on
-who is the sender and who is the receiver. There is no explicit distinction
-between methods and signals.</doc>
-    </docsection>
-    <docsection name="gedit-message-bus">
-      <doc xml:space="preserve"
-           filename="../gedit/gedit-message-bus.c"
-           line="40">gedit has a communication bus very similar to DBus. Its primary use is to
-allow easy communication between plugins, but it can also be used to expose
-gedit functionality to external applications by providing DBus bindings for
-the internal gedit message bus.
-
-There are two different communication busses available. The default bus
-(see gedit_message_bus_get_default()) is an application wide communication
-bus. In addition, each #GeditWindow has a separate, private bus
-(see gedit_window_get_message_bus()). This makes it easier for plugins to
-communicate to other plugins in the same window.
-
-The concept of the message bus is very simple. You can register a message
-type on the bus, specified as a Method at a specific Object Path with a
-certain set of Method Arguments. You can then connect callback functions
-for this message type on the bus. Whenever a message with the Object Path
-and Method for which callbacks are connected is sent over the bus, the
-callbacks are called. There is no distinction between Methods and Signals
-(signals are simply messages where sender and receiver have switched places).
-
-&lt;example&gt;
-&lt;title&gt;Registering a message type&lt;/title&gt;
-&lt;programlisting&gt;
-GeditMessageBus *bus = gedit_message_bus_get_default ();
-
-// Register 'method' at '/plugins/example' with one required
-// string argument 'arg1'
-gedit_message_bus_register (bus, EXAMPLE_TYPE_METHOD_MESSAGE,
-                            "/plugins/example", "method");
-&lt;/programlisting&gt;
-&lt;/example&gt;
-&lt;example&gt;
-&lt;title&gt;Connecting a callback&lt;/title&gt;
-&lt;programlisting&gt;
-static void
-example_method_cb (GeditMessageBus *bus,
-                   GeditMessage    *message,
-                   gpointer         user_data)
-{
-	gchar *arg1 = NULL;
-
-	gedit_message_get (message, "arg1", &amp;arg1, NULL);
-	g_message ("Evoked /plugins/example.method with: %s", arg1);
-	g_free (arg1);
-}
-
-GeditMessageBus *bus = gedit_message_bus_get_default ();
-
-guint id = gedit_message_bus_connect (bus,
-                                      "/plugins/example", "method",
-                                      example_method_cb,
-                                      NULL,
-                                      NULL);
-
-&lt;/programlisting&gt;
-&lt;/example&gt;
-&lt;example&gt;
-&lt;title&gt;Sending a message&lt;/title&gt;
-&lt;programlisting&gt;
-GeditMessageBus *bus = gedit_message_bus_get_default ();
-
-gedit_message_bus_send (bus,
-                        "/plugins/example", "method",
-                        "arg1", "Hello World",
-                        NULL);
-&lt;/programlisting&gt;
-&lt;/example&gt;</doc>
-    </docsection>
-    <docsection name="gedit-view-activatable">
-      <doc xml:space="preserve"
-           filename="../gedit/gedit-view-activatable.c"
-           line="27">#GeditViewActivatable is an interface which should be implemented by
-extensions that should be activated on a gedit view.</doc>
-    </docsection>
-    <docsection name="gedit-window-activatable">
-      <doc xml:space="preserve"
-           filename="../gedit/gedit-window-activatable.c"
-           line="29">#GeditWindowActivatable is an interface which should be implemented by
-extensions that should be activated on a gedit main window.</doc>
-    </docsection>
     <function name="utils_basename_for_display"
               c:identifier="gedit_utils_basename_for_display">
       <source-position filename="../gedit/gedit-utils.h" line="41"/>

@@ -192,9 +192,9 @@ and/or use gtk-doc annotations.  -->
            glib:get-type="e_cal_backend_get_type"
            glib:type-struct="CalBackendClass">
       <doc xml:space="preserve"
-           filename="e-cal-backend.h"
-           line="55">Contains only private data that should be read and manipulated using the
-functions below.</doc>
+           filename="e-cal-backend.c"
+           line="18">This is the main server facing API for interfacing with calendar backends,
+calendar backends must implement methods on this class.</doc>
       <source-position filename="e-cal-backend.h" line="211"/>
       <implements name="ECal.TimezoneCache"/>
       <function name="mail_account_get_default"
@@ -4358,9 +4358,9 @@ by e_cal_backend_schedule_custom_operation().</doc>
            glib:get-type="e_cal_backend_factory_get_type"
            glib:type-struct="CalBackendFactoryClass">
       <doc xml:space="preserve"
-           filename="e-cal-backend-factory.h"
-           line="56">Contains only private data that should be read and manipulated using the
-functions below.</doc>
+           filename="e-cal-backend-factory.c"
+           line="20">This class handles creation of new calendars of various
+backend types.</doc>
       <source-position filename="e-cal-backend-factory.h" line="90"/>
       <field name="parent" readable="0" private="1">
         <type name="EBackend.BackendFactory" c:type="EBackendFactory"/>
@@ -4457,6 +4457,10 @@ backends of the specified type on demand.</doc>
            glib:type-name="ECalBackendSExp"
            glib:get-type="e_cal_backend_sexp_get_type"
            glib:type-struct="CalBackendSExpClass">
+      <doc xml:space="preserve"
+           filename="e-cal-backend-sexp.c"
+           line="18">This API is an all purpose utility for comparing #ECalComponent(s) with search expressions
+and is used by various backends to implement component filtering and searching.</doc>
       <source-position filename="e-cal-backend-sexp.h" line="74"/>
       <constructor name="new" c:identifier="e_cal_backend_sexp_new">
         <source-position filename="e-cal-backend-sexp.h" line="78"/>
@@ -4890,9 +4894,9 @@ it's unlocked with e_cal_backend_sexp_unlock().</doc>
            glib:get-type="e_cal_backend_sync_get_type"
            glib:type-struct="CalBackendSyncClass">
       <doc xml:space="preserve"
-           filename="e-cal-backend-sync.h"
-           line="51">Contains only private data that should be read and manipulated using the
-functions below.</doc>
+           filename="e-cal-backend-sync.c"
+           line="20">This class can be subclassed in place of the #ECalBackend
+abstract backend for easier implementation of calendar backends.</doc>
       <source-position filename="e-cal-backend-sync.h" line="190"/>
       <implements name="ECal.TimezoneCache"/>
       <virtual-method name="add_timezone_sync" throws="1">
@@ -6601,9 +6605,14 @@ or just create it when it does not exist.</doc>
            glib:get-type="e_cal_cache_get_type"
            glib:type-struct="CalCacheClass">
       <doc xml:space="preserve"
-           filename="e-cal-cache.h"
-           line="155">Contains only private data that should be read and manipulated using
-the functions below.</doc>
+           filename="e-cal-cache.c"
+           line="18">The #ECalCache is an API for storing and looking up calendar
+components in an #ECache.
+
+The API is thread safe, in the similar way as the #ECache is.
+
+Any operations which can take a lot of time to complete (depending
+on the size of your calendar) can be cancelled using a #GCancellable.</doc>
       <source-position filename="e-cal-cache.h" line="189"/>
       <implements name="ECal.TimezoneCache"/>
       <implements name="EDataServer.Extensible"/>
@@ -8781,9 +8790,18 @@ e_cal_cache_search_with_callback() function.</doc>
            glib:get-type="e_cal_meta_backend_get_type"
            glib:type-struct="CalMetaBackendClass">
       <doc xml:space="preserve"
-           filename="e-cal-meta-backend.h"
-           line="75">Contains only private data that should be read and manipulated using
-the functions below.</doc>
+           filename="e-cal-meta-backend.c"
+           line="18">The #ECalMetaBackend is an abstract #ECalBackend descendant which
+aims to implement all evolution-data-server internals for the backend
+itself and lefts the backend do as minimum work as possible, like
+loading and saving components, listing available components and so on,
+thus the backend implementation can focus on things like converting
+(possibly) remote data into iCalendar objects and back.
+
+As the #ECalMetaBackend uses an #ECalCache, the offline support
+is provided by default.
+
+The structure is thread safe.</doc>
       <source-position filename="e-cal-meta-backend.h" line="175"/>
       <implements name="ECal.TimezoneCache"/>
       <virtual-method name="connect_sync"
@@ -11915,6 +11933,10 @@ or e_cal_meta_backend_info_copy().</doc>
            glib:type-name="EDataCal"
            glib:get-type="e_data_cal_get_type"
            glib:type-struct="DataCalClass">
+      <doc xml:space="preserve"
+           filename="e-data-cal.c"
+           line="18">This class communicates with #ECalClients over the bus and accesses
+an #ECalBackend to satisfy client requests.</doc>
       <source-position filename="e-data-cal.h" line="62"/>
       <implements name="Gio.Initable"/>
       <constructor name="new" c:identifier="e_data_cal_new" throws="1">
@@ -12691,6 +12713,11 @@ all the objects being used in e_data_cal_report_free_busy_data().</doc>
            glib:type-name="EDataCalFactory"
            glib:get-type="e_data_cal_factory_get_type"
            glib:type-struct="DataCalFactoryClass">
+      <doc xml:space="preserve"
+           filename="e-data-cal-factory.c"
+           line="24">This class handles incomming D-Bus connections and creates
+the #EDataCal layer for server side calendars to communicate
+with client side #ECalClient objects.</doc>
       <source-position filename="e-data-cal-factory.h" line="78"/>
       <implements name="EDataServer.Extensible"/>
       <implements name="Gio.Initable"/>
@@ -12741,6 +12768,13 @@ all the objects being used in e_data_cal_report_free_busy_data().</doc>
            glib:type-name="EDataCalView"
            glib:get-type="e_data_cal_view_get_type"
            glib:type-struct="DataCalViewClass">
+      <doc xml:space="preserve"
+           filename="e-data-cal-view.c"
+           line="23">This class communicates with #ECalClientViews over the bus.
+
+Calendar backends can automatically own a number of views requested
+by the client, this API can be used by the backend to issue notifications
+which will be delivered to the #ECalClientView</doc>
       <source-position filename="e-data-cal-view.h" line="64"/>
       <implements name="Gio.Initable"/>
       <constructor name="new" c:identifier="e_data_cal_view_new" throws="1">
@@ -13926,19 +13960,7 @@ or e_cal_meta_backend_info_copy().</doc>
         </parameter>
       </parameters>
     </function>
-    <docsection name="e-cal-backend">
-      <doc xml:space="preserve"
-           filename="e-cal-backend.c"
-           line="18">This is the main server facing API for interfacing with calendar backends,
-calendar backends must implement methods on this class.</doc>
-    </docsection>
-    <docsection name="e-cal-backend-factory">
-      <doc xml:space="preserve"
-           filename="e-cal-backend-factory.c"
-           line="20">This class handles creation of new calendars of various
-backend types.</doc>
-    </docsection>
-    <docsection name="e-cal-backend-intervaltree">
+    <docsection name="ecalbackendintervaltree">
       <doc xml:space="preserve"
            filename="e-cal-backend-intervaltree.c"
            line="20">Implementation of the interval node as described in Introduction to
@@ -13946,66 +13968,6 @@ Algorithms book by Cormen et al, chapter 14.3.
 
 Basically, the interval tree is the red-black tree, the node key is
 the start of the interval.</doc>
-    </docsection>
-    <docsection name="e-cal-backend-sexp">
-      <doc xml:space="preserve"
-           filename="e-cal-backend-sexp.c"
-           line="18">This API is an all purpose utility for comparing #ECalComponent(s) with search expressions
-and is used by various backends to implement component filtering and searching.</doc>
-    </docsection>
-    <docsection name="e-cal-backend-sync">
-      <doc xml:space="preserve"
-           filename="e-cal-backend-sync.c"
-           line="20">This class can be subclassed in place of the #ECalBackend
-abstract backend for easier implementation of calendar backends.</doc>
-    </docsection>
-    <docsection name="e-cal-cache">
-      <doc xml:space="preserve"
-           filename="e-cal-cache.c"
-           line="18">The #ECalCache is an API for storing and looking up calendar
-components in an #ECache.
-
-The API is thread safe, in the similar way as the #ECache is.
-
-Any operations which can take a lot of time to complete (depending
-on the size of your calendar) can be cancelled using a #GCancellable.</doc>
-    </docsection>
-    <docsection name="e-cal-meta-backend">
-      <doc xml:space="preserve"
-           filename="e-cal-meta-backend.c"
-           line="18">The #ECalMetaBackend is an abstract #ECalBackend descendant which
-aims to implement all evolution-data-server internals for the backend
-itself and lefts the backend do as minimum work as possible, like
-loading and saving components, listing available components and so on,
-thus the backend implementation can focus on things like converting
-(possibly) remote data into iCalendar objects and back.
-
-As the #ECalMetaBackend uses an #ECalCache, the offline support
-is provided by default.
-
-The structure is thread safe.</doc>
-    </docsection>
-    <docsection name="e-data-cal">
-      <doc xml:space="preserve"
-           filename="e-data-cal.c"
-           line="18">This class communicates with #ECalClients over the bus and accesses
-an #ECalBackend to satisfy client requests.</doc>
-    </docsection>
-    <docsection name="e-data-cal-factory">
-      <doc xml:space="preserve"
-           filename="e-data-cal-factory.c"
-           line="24">This class handles incomming D-Bus connections and creates
-the #EDataCal layer for server side calendars to communicate
-with client side #ECalClient objects.</doc>
-    </docsection>
-    <docsection name="e-data-cal-view">
-      <doc xml:space="preserve"
-           filename="e-data-cal-view.c"
-           line="23">This class communicates with #ECalClientViews over the bus.
-
-Calendar backends can automatically own a number of views requested
-by the client, this API can be used by the backend to issue notifications
-which will be delivered to the #ECalClientView</doc>
     </docsection>
   </namespace>
 </repository>

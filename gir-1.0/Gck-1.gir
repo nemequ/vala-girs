@@ -55,7 +55,12 @@ are valid.</doc>
             c:symbol-prefix="attribute">
       <doc xml:space="preserve"
            filename="../gck/gck-attributes.c"
-           line="1369">This structure represents a PKCS11 CK_ATTRIBUTE.</doc>
+           line="34">This structure represents a PKCS11 CK_ATTRIBUTE. These attributes contain i
+about a PKCS11 object. Use gck_object_get() or gck_object_set() to set and
+attributes on an object.
+
+Although you are free to allocate a #GckAttribute in your own code, no functions in
+this library will operate on such an attribute.</doc>
       <source-position filename="../gck/gck.h" line="101"/>
       <field name="type" writable="1">
         <doc xml:space="preserve"
@@ -831,7 +836,9 @@ of (CK_ULONG)-1.</doc>
             c:symbol-prefix="attributes">
       <doc xml:space="preserve"
            filename="../gck/gck-attributes.c"
-           line="2024">A set of GckAttribute structures.</doc>
+           line="2014">A set of GckAttribute structures. These attributes contain information
+about a PKCS11 object. Use gck_object_get() or gck_object_set() to set and retrieve
+attributes on an object.</doc>
       <source-position filename="../gck/gck.h" line="208"/>
       <constructor name="new" c:identifier="gck_attributes_new">
         <doc xml:space="preserve"
@@ -2581,7 +2588,12 @@ against.
            glib:type-struct="EnumeratorClass">
       <doc xml:space="preserve"
            filename="../gck/gck-enumerator.c"
-           line="50">An object that allows enumerating of objects across modules, tokens.</doc>
+           line="30">A GckEnumerator can be used to enumerate through PKCS\#11 objects. It will
+automatically create sessions as necessary.
+
+Use gck_modules_enumerate_objects() or gck_modules_enumerate_uri() to create
+an enumerator. To get the objects use gck_enumerator_next() or
+gck_enumerator_next_async() functions.</doc>
       <source-position filename="../gck/gck.h" line="563"/>
       <method name="get_chained" c:identifier="gck_enumerator_get_chained">
         <doc xml:space="preserve"
@@ -3293,7 +3305,11 @@ gck_mechanism_info_free().</doc>
            glib:type-struct="ModuleClass">
       <doc xml:space="preserve"
            filename="../gck/gck-module.c"
-           line="49">Holds a loaded and initialized PKCS\#11 module.</doc>
+           line="37">A GckModule object holds a loaded PKCS\#11 module. A PKCS\#11 module is a shared library.
+
+You can load and initialize a PKCS\#11 module with the gck_module_initialize() call. If you already
+have a loaded and initialized module that you'd like to use with the various gck functions, then
+you can use gck_module_new().</doc>
       <source-position filename="../gck/gck.h" line="458"/>
       <constructor name="new" c:identifier="gck_module_new" introspectable="0">
         <doc xml:space="preserve"
@@ -3932,7 +3948,8 @@ Use gck_module_info_free() to release this structure when done with it.</doc>
            glib:type-struct="ObjectClass">
       <doc xml:space="preserve"
            filename="../gck/gck-object.c"
-           line="39">Represents a PKCS11 object handle such as a key or certifiacte.</doc>
+           line="30">A GckObject holds a handle to a PKCS11 object such as a key or certificate. Token objects
+are stored on the token persistently. Others are transient and are called session objects.</doc>
       <source-position filename="../gck/gck.h" line="1295"/>
       <function name="from_handle" c:identifier="gck_object_from_handle">
         <doc xml:space="preserve"
@@ -5177,7 +5194,10 @@ such as gck_object_get(), gck_object_set() or gck_object_destroy().</doc>
                glib:type-struct="ObjectCacheIface">
       <doc xml:space="preserve"
            filename="../gck/gck-object-cache.c"
-           line="41">An interface implemented on an #GckObject which contains a cache of attributes.</doc>
+           line="30">#GckObjectCache is an interface implemented by derived classes of
+#GckObject to indicate which attributes they'd like an enumerator to retrieve.
+These attributes are then cached on the object and can be retrieved through
+the #GckObjectCache:attributes property.</doc>
       <source-position filename="../gck/gck.h" line="1448"/>
       <prerequisite name="Object"/>
       <virtual-method name="fill" invoker="fill">
@@ -5557,8 +5577,9 @@ GCK_TYPE_ATTRIBUTES.</doc>
            glib:type-struct="PasswordClass">
       <doc xml:space="preserve"
            filename="../gck/gck-password.c"
-           line="42">A #GTlsPasswordClass that contains information about the PKCS\#11 token
-or key the password is being requested for.</doc>
+           line="32">This is used in conjuction with GTlsInteraction. #GckPassword is a
+GTlsPassword which contains additional information about which PKCS\#11
+token or key the password is being requested for.</doc>
       <source-position filename="../gck/gck.h" line="1524"/>
       <method name="get_key" c:identifier="gck_password_get_key">
         <doc xml:space="preserve"
@@ -5746,7 +5767,8 @@ the GckPassword:object property will be %NULL</doc>
            glib:type-struct="SessionClass">
       <doc xml:space="preserve"
            filename="../gck/gck-session.c"
-           line="43">Represents an open PKCS11 session.</doc>
+           line="34">Before performing any PKCS11 operations, a session must be opened. This is
+analogous to an open database handle, or a file handle.</doc>
       <source-position filename="../gck/gck.h" line="838"/>
       <implements name="Gio.AsyncInitable"/>
       <implements name="Gio.Initable"/>
@@ -9445,7 +9467,8 @@ When done with this structure, release it using gck_session_info_free().</doc>
            glib:type-struct="SlotClass">
       <doc xml:space="preserve"
            filename="../gck/gck-slot.c"
-           line="42">Represents a PKCS11 slot.</doc>
+           line="33">A PKCS11 slot can contain a token. As an example, a slot might be a card reader, and the token
+the card. If the PKCS\#11 module is not a hardware driver, often the slot and token are equivalent.</doc>
       <source-position filename="../gck/gck.h" line="717"/>
       <function name="from_handle" c:identifier="gck_slot_from_handle">
         <doc xml:space="preserve"
@@ -10593,104 +10616,35 @@ stack.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
-    <docsection name="gck-attribute">
-      <doc xml:space="preserve"
-           filename="../gck/gck-attributes.c"
-           line="34">This structure represents a PKCS11 CK_ATTRIBUTE. These attributes contain i
-about a PKCS11 object. Use gck_object_get() or gck_object_set() to set and
-attributes on an object.
-
-Although you are free to allocate a #GckAttribute in your own code, no functions in
-this library will operate on such an attribute.</doc>
-    </docsection>
-    <docsection name="gck-attributes">
-      <doc xml:space="preserve"
-           filename="../gck/gck-attributes.c"
-           line="2014">A set of GckAttribute structures. These attributes contain information
-about a PKCS11 object. Use gck_object_get() or gck_object_set() to set and retrieve
-attributes on an object.</doc>
-    </docsection>
-    <docsection name="gck-enumerator">
-      <doc xml:space="preserve"
-           filename="../gck/gck-enumerator.c"
-           line="30">A GckEnumerator can be used to enumerate through PKCS\#11 objects. It will
-automatically create sessions as necessary.
-
-Use gck_modules_enumerate_objects() or gck_modules_enumerate_uri() to create
-an enumerator. To get the objects use gck_enumerator_next() or
-gck_enumerator_next_async() functions.</doc>
-    </docsection>
-    <docsection name="gck-error">
+    <docsection name="gckerror">
       <doc xml:space="preserve"
            filename="../gck/gck-misc.c"
            line="86">Errors are returned as GError structures. The code member of GError
 contains the raw PKCS11 CK_RV result value.</doc>
     </docsection>
-    <docsection name="gck-library">
+    <docsection name="gcklibrary">
       <doc xml:space="preserve"
            filename="../gck/gck-misc.c"
            line="38">Basic library utilities such as version checks.</doc>
     </docsection>
-    <docsection name="gck-misc">
+    <docsection name="gckmisc">
       <doc xml:space="preserve"
            filename="../gck/gck-misc.c"
            line="290">A few supporting functions that come in handy when dealing with the gck
 library or PKCS11 in general.</doc>
     </docsection>
-    <docsection name="gck-module">
-      <doc xml:space="preserve"
-           filename="../gck/gck-module.c"
-           line="37">A GckModule object holds a loaded PKCS\#11 module. A PKCS\#11 module is a shared library.
-
-You can load and initialize a PKCS\#11 module with the gck_module_initialize() call. If you already
-have a loaded and initialized module that you'd like to use with the various gck functions, then
-you can use gck_module_new().</doc>
-    </docsection>
-    <docsection name="gck-modules">
+    <docsection name="gckmodules">
       <doc xml:space="preserve"
            filename="../gck/gck-modules.c"
            line="38">These functions are useful for dealing with lists of modules, and performing
 operations on all of them.</doc>
     </docsection>
-    <docsection name="gck-object">
-      <doc xml:space="preserve"
-           filename="../gck/gck-object.c"
-           line="30">A GckObject holds a handle to a PKCS11 object such as a key or certificate. Token objects
-are stored on the token persistently. Others are transient and are called session objects.</doc>
-    </docsection>
-    <docsection name="gck-object-cache">
-      <doc xml:space="preserve"
-           filename="../gck/gck-object-cache.c"
-           line="30">#GckObjectCache is an interface implemented by derived classes of
-#GckObject to indicate which attributes they'd like an enumerator to retrieve.
-These attributes are then cached on the object and can be retrieved through
-the #GckObjectCache:attributes property.</doc>
-    </docsection>
-    <docsection name="gck-password">
-      <doc xml:space="preserve"
-           filename="../gck/gck-password.c"
-           line="32">This is used in conjuction with GTlsInteraction. #GckPassword is a
-GTlsPassword which contains additional information about which PKCS\#11
-token or key the password is being requested for.</doc>
-    </docsection>
-    <docsection name="gck-private">
+    <docsection name="gckprivate">
       <doc xml:space="preserve"
            filename="../gck/gck-misc.c"
            line="95">Should not show up in the docs</doc>
     </docsection>
-    <docsection name="gck-session">
-      <doc xml:space="preserve"
-           filename="../gck/gck-session.c"
-           line="34">Before performing any PKCS11 operations, a session must be opened. This is
-analogous to an open database handle, or a file handle.</doc>
-    </docsection>
-    <docsection name="gck-slot">
-      <doc xml:space="preserve"
-           filename="../gck/gck-slot.c"
-           line="33">A PKCS11 slot can contain a token. As an example, a slot might be a card reader, and the token
-the card. If the PKCS\#11 module is not a hardware driver, often the slot and token are equivalent.</doc>
-    </docsection>
-    <docsection name="gck-uri">
+    <docsection name="gckuri">
       <doc xml:space="preserve"
            filename="../gck/gck-uri.c"
            line="37">&lt;ulink href='http://tools.ietf.org/html/draft-pechanec-pkcs11uri-03'&gt;PKCS\#11 URIs&lt;/ulink&gt;

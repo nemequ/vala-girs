@@ -642,6 +642,7 @@ namespace GMime {
 		public string to_string (GMime.FormatOptions? options);
 		public static void type_registry_init ();
 		public static void type_registry_shutdown ();
+		public ssize_t write_content_to_stream (GMime.FormatOptions? options, GMime.Stream stream);
 		public ssize_t write_to_stream (GMime.FormatOptions? options, GMime.Stream stream);
 		[CCode (vfunc_name = "write_to_stream")]
 		[NoWrapper]

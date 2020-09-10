@@ -22,6 +22,21 @@ and/or use gtk-doc annotations.  -->
            glib:type-name="AutoarCompressor"
            glib:get-type="autoar_compressor_get_type"
            glib:type-struct="CompressorClass">
+      <doc xml:space="preserve"
+           filename="autoar-compressor.c"
+           line="43">The #AutoarCompressor object is used to automatically compress files and
+directories into an archive. The new archive can contain a top-level directory.
+Applying multiple filters is currently not supported because most
+applications do not need this function. GIO is used for both read and write
+operations. A few POSIX functions are also used to get more information from
+files if GIO does not provide relevant functions.
+
+When #AutoarCompressor stop all work, it will emit one of the three signals:
+#AutoarCompressor::cancelled, #AutoarCompressor::error, and
+#AutoarCompressor::completed. After one of these signals is received, the
+#AutoarCompressor object should be destroyed because it cannot be used to
+start another archive operation. An #AutoarCompressor object can only be
+used once and create one archive.</doc>
       <source-position filename="autoar-compressor.h" line="38"/>
       <constructor name="new"
                    c:identifier="autoar_compressor_new"
@@ -602,6 +617,34 @@ respectively.</doc>
            glib:type-name="AutoarExtractor"
            glib:get-type="autoar_extractor_get_type"
            glib:type-struct="ExtractorClass">
+      <doc xml:space="preserve"
+           filename="autoar-extractor.c"
+           line="54">The #AutoarExtractor object is used to automatically extract files and
+directories from an archive. By default, it will only create one file or
+directory in the output directory. This is done to avoid clutter on the
+user's output directory. If the archive contains only one file, the file
+will be extracted to the output directory. If the archive has more than one
+file, the files will be extracted in a directory having the same name as the
+archive, except the extension. It is also possible to just extract all files
+to the output directory (note that this will not perform any checks) by
+using autoar_extractor_set_output_is_dest().
+
+#AutoarExtractor will not attempt to solve any name conflicts. If the
+destination directory already exists, it will proceed normally. If the
+destionation directory cannot be created, it will fail with an error.
+It is possible however to change the destination, when
+#AutoarExtractor::decide-destination is emitted. The signal provides the decided
+destination and the list of files to be extracted. The signal also allows a
+new output destination to be used instead of the one provided by
+#AutoarExtractor. This is convenient for solving name conflicts and
+implementing specific logic based on the contents of the archive.
+
+When #AutoarExtractor stops all work, it will emit one of the three signals:
+#AutoarExtractor::cancelled, #AutoarExtractor::error, and
+#AutoarExtractor::completed. After one of these signals is received,
+the #AutoarExtractor object should be destroyed because it cannot be used to
+start another archive operation. An #AutoarExtractor object can only be used
+once and extract one archive.</doc>
       <source-position filename="autoar-extractor.h" line="36"/>
       <constructor name="new" c:identifier="autoar_extractor_new">
         <doc xml:space="preserve"
@@ -1334,60 +1377,13 @@ files as a archive file.</doc>
         </parameter>
       </parameters>
     </callback>
-    <docsection name="autoar-compressor">
-      <doc xml:space="preserve"
-           filename="autoar-compressor.c"
-           line="43">The #AutoarCompressor object is used to automatically compress files and
-directories into an archive. The new archive can contain a top-level directory.
-Applying multiple filters is currently not supported because most
-applications do not need this function. GIO is used for both read and write
-operations. A few POSIX functions are also used to get more information from
-files if GIO does not provide relevant functions.
-
-When #AutoarCompressor stop all work, it will emit one of the three signals:
-#AutoarCompressor::cancelled, #AutoarCompressor::error, and
-#AutoarCompressor::completed. After one of these signals is received, the
-#AutoarCompressor object should be destroyed because it cannot be used to
-start another archive operation. An #AutoarCompressor object can only be
-used once and create one archive.</doc>
-    </docsection>
-    <docsection name="autoar-extractor">
-      <doc xml:space="preserve"
-           filename="autoar-extractor.c"
-           line="54">The #AutoarExtractor object is used to automatically extract files and
-directories from an archive. By default, it will only create one file or
-directory in the output directory. This is done to avoid clutter on the
-user's output directory. If the archive contains only one file, the file
-will be extracted to the output directory. If the archive has more than one
-file, the files will be extracted in a directory having the same name as the
-archive, except the extension. It is also possible to just extract all files
-to the output directory (note that this will not perform any checks) by
-using autoar_extractor_set_output_is_dest().
-
-#AutoarExtractor will not attempt to solve any name conflicts. If the
-destination directory already exists, it will proceed normally. If the
-destionation directory cannot be created, it will fail with an error.
-It is possible however to change the destination, when
-#AutoarExtractor::decide-destination is emitted. The signal provides the decided
-destination and the list of files to be extracted. The signal also allows a
-new output destination to be used instead of the one provided by
-#AutoarExtractor. This is convenient for solving name conflicts and
-implementing specific logic based on the contents of the archive.
-
-When #AutoarExtractor stops all work, it will emit one of the three signals:
-#AutoarExtractor::cancelled, #AutoarExtractor::error, and
-#AutoarExtractor::completed. After one of these signals is received,
-the #AutoarExtractor object should be destroyed because it cannot be used to
-start another archive operation. An #AutoarExtractor object can only be used
-once and extract one archive.</doc>
-    </docsection>
-    <docsection name="autoar-format-filter">
+    <docsection name="autoarformatfilter">
       <doc xml:space="preserve"
            filename="autoar-format-filter.c"
            line="34">autoar-format-filter is a collection of functions providing information
 of archive formats and filters.</doc>
     </docsection>
-    <docsection name="autoar-misc">
+    <docsection name="autoarmisc">
       <doc xml:space="preserve"
            filename="autoar-misc.c"
            line="31">Public utility functions and data types used by gnome-autoar;</doc>

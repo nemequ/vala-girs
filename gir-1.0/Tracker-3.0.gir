@@ -95,9 +95,17 @@ if (!TRACKER_CHECK_VERSION (0, 10, 7)) {
            glib:get-type="tracker_endpoint_get_type"
            glib:type-struct="EndpointClass">
       <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-endpoint.h"
-           line="33">The &lt;structname&gt;TrackerEndpoint&lt;/structname&gt; object represents a public
-connection to a #TrackerSparqlConnection.</doc>
+           filename="../src/libtracker-sparql/tracker-endpoint.c"
+           line="41">&lt;para&gt;
+#TrackerEndpoint allows sharing data with other processes on the system,
+using a Tracker-specific D-Bus API.
+&lt;/para&gt;
+&lt;para&gt;
+When it is shared in this way, processes can connect to your database using
+tracker_sparql_connection_bus_new() and can also fetch data directly from
+SPARQL queries using the &lt;userinput&gt;SELECT { SERVICE ... }&lt;/userinput&gt;
+syntax.
+&lt;/para&gt;</doc>
       <source-position filename="../src/libtracker-sparql/tracker-endpoint.h"
                        line="41"/>
       <method name="get_sparql_connection"
@@ -239,9 +247,18 @@ The default object path is "/org/freedesktop/Tracker3/Endpoint".</doc>
            glib:get-type="tracker_namespace_manager_get_type"
            glib:type-struct="NamespaceManagerClass">
       <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-namespace-manager.h"
-           line="33">The &lt;structname&gt;TrackerNamespaceManager&lt;/structname&gt; object represents a
-mapping of prefixes and namespaces.</doc>
+           filename="../src/libtracker-sparql/tracker-namespace-manager.c"
+           line="44">&lt;para&gt;
+#TrackerNamespaceManager keeps track of namespaces. It allows you to assign
+short prefixes for them to avoid typing full URLs all the time.
+
+The syntax used is that of Compact URIs (CURIEs) as defined here:
+(https://www.w3.org/TR/2010/NOTE-curie-20101216)
+
+Usually you will want to use the default namespace manager, as returned by
+tracker_namespace_manager_get_default(). This has a set of well-known
+prefixes predefined.
+&lt;/para&gt;</doc>
       <source-position filename="../src/libtracker-sparql/tracker-namespace-manager.h"
                        line="41"/>
       <constructor name="new"
@@ -483,9 +500,25 @@ is not known.</doc>
            glib:get-type="tracker_notifier_get_type"
            glib:type-struct="NotifierClass">
       <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-notifier.h"
-           line="33">The &lt;structname&gt;TrackerNotifier&lt;/structname&gt; object allows subscribing
-to changes in the stored data.</doc>
+           filename="../src/libtracker-sparql/tracker-notifier.c"
+           line="20">#TrackerNotifier is an object that receives notifications about
+changes to the Tracker database. A #TrackerNotifier is created
+through tracker_sparql_connection_create_notifier(), after the notifier
+is created, events can be listened for by connecting to the
+#TrackerNotifier::events signal. This object was added in Tracker 1.12.
+
+# Known caveats # {#trackernotifier-caveats}
+
+* The %TRACKER_NOTIFIER_EVENT_DELETE events will be received after the
+  resource has been deleted. At that time queries on those elements will
+  not bring any metadata. Only the ID/URN obtained through the event
+  remain meaningful.
+* Notifications of files being moved across indexed folders will
+  appear as %TRACKER_NOTIFIER_EVENT_UPDATE events, containing
+  the new location (if requested). The older location is no longer
+  known to Tracker, this may make tracking of elements in specific
+  folders hard using solely the #TrackerNotifier/Tracker data
+  available at event notification time.</doc>
       <source-position filename="../src/libtracker-sparql/tracker-notifier.h"
                        line="40"/>
       <method name="signal_subscribe"
@@ -881,8 +914,10 @@ notified upon, typically of the form "urn:uuid:...".</doc>
            glib:type-struct="ResourceClass">
       <doc xml:space="preserve"
            filename="../src/libtracker-sparql/tracker-resource.c"
-           line="66">The &lt;structname&gt;TrackerResource&lt;/structname&gt; object represents information
-about a given resource.</doc>
+           line="45">&lt;para&gt;
+#TrackerResource keeps track of a set of properties for a given resource.
+The resulting data can be serialized in several ways.
+&lt;/para&gt;</doc>
       <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                        line="31"/>
       <constructor name="new"
@@ -2077,9 +2112,46 @@ blank node.</doc>
            glib:get-type="tracker_sparql_connection_get_type"
            glib:type-struct="SparqlConnectionClass">
       <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-connection.h"
-           line="51">The &lt;structname&gt;TrackerSparqlConnection&lt;/structname&gt; object represents a
-SPARQL connection.</doc>
+           filename="../src/libtracker-sparql/tracker-connection.c"
+           line="20">&lt;para&gt;
+#TrackerSparqlConnection is an object that represents a connection to a
+SPARQL triple store. This store may be local and private (see
+tracker_sparql_connection_new()), or it may be a remote connection to a
+public endpoint (See tracker_sparql_connection_bus_new() and
+tracker_sparql_connection_remote_new()).
+&lt;/para&gt;
+
+&lt;para&gt;
+A #TrackerSparqlConnection is private to the calling process, it can be
+exposed publicly via a #TrackerEndpoint, see tracker_endpoint_dbus_new().
+&lt;/para&gt;
+
+&lt;para&gt;
+Updates on a connection are performed via the tracker_sparql_connection_update()
+family of calls. tracker_sparql_connection_update_array() may be used for batched
+updates. All functions have asynchronous variants.
+&lt;/para&gt;
+
+&lt;para&gt;
+Queries on a connection are performed via tracker_sparql_connection_query()
+and tracker_sparql_connection_query_statement(). The first call receives a
+query string and returns a #TrackerSparqlCursor to iterate the results. The
+second call returns a #TrackerSparqlStatement object that may be reused for
+repeatable queries with variable parameters. tracker_sparql_statement_execute()
+will returns a #TrackerSparqlCursor.
+&lt;/para&gt;
+
+&lt;para&gt;
+Depending on the ontology definition, #TrackerSparqlConnection may emit
+notifications whenever changes happen in the stored data. These notifications
+can be processed via a #TrackerNotifier obtained with
+tracker_sparql_connection_create_notifier().
+&lt;/para&gt;
+
+&lt;para&gt;
+After use, a #TrackerSparqlConnection should be closed. See
+tracker_sparql_connection_close() and tracker_sparql_connection_close_async().
+&lt;/para&gt;</doc>
       <source-position filename="../src/libtracker-sparql/tracker-connection.h"
                        line="61"/>
       <constructor name="bus_new"
@@ -3077,9 +3149,11 @@ g_variant_unref() when no longer used.</doc>
            glib:get-type="tracker_sparql_cursor_get_type"
            glib:type-struct="SparqlCursorClass">
       <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-cursor.h"
-           line="29">The &lt;structname&gt;TrackerSparqlCursor&lt;/structname&gt; object represents an
-iterator of results.</doc>
+           filename="../src/libtracker-sparql/tracker-cursor.c"
+           line="19">&lt;para&gt;
+#TrackerSparqlCursor is an object which provides methods to iterate the
+results of a query to the Tracker Store.
+&lt;/para&gt;</doc>
       <source-position filename="../src/libtracker-sparql/tracker-cursor.h"
                        line="38"/>
       <method name="close" c:identifier="tracker_sparql_cursor_close">
@@ -3619,9 +3693,23 @@ domains.</doc>
            glib:get-type="tracker_sparql_statement_get_type"
            glib:type-struct="SparqlStatementClass">
       <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-statement.h"
-           line="29">The &lt;structname&gt;TrackerSparqlStatement&lt;/structname&gt; object represents
-a prepared query statement.</doc>
+           filename="../src/libtracker-sparql/tracker-statement.c"
+           line="19">The &lt;structname&gt;TrackerSparqlStatement&lt;/structname&gt; object represents
+a SPARQL query. This query may contain parameterized variables
+(expressed as ~var in the syntax), which may be mapped to arbitrary
+values prior to execution. This statement may be reused for future
+queries with different values.
+
+The argument bindings may be changed through tracker_sparql_statement_bind_int(),
+tracker_sparql_statement_bind_boolean(), tracker_sparql_statement_bind_double()
+and tracker_sparql_statement_bind_string(). Those functions receive
+a @name argument corresponding for the variable name in the SPARQL query
+(eg. "var" for ~var) and a @value to map the variable to.
+
+Once all arguments have a value, the query may be executed through
+tracker_sparql_statement_execute() or tracker_sparql_statement_execute_async().
+
+This object was added in Tracker 2.2.</doc>
       <source-position filename="../src/libtracker-sparql/tracker-statement.h"
                        line="38"/>
       <method name="bind_boolean"
@@ -4217,142 +4305,12 @@ should be freed with g_free() when no longer needed.</doc>
         <type name="utf8" c:type="gchar*"/>
       </return-value>
     </function>
-    <docsection name="tracker-endpoint">
-      <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-endpoint.c"
-           line="41">&lt;para&gt;
-#TrackerEndpoint allows sharing data with other processes on the system,
-using a Tracker-specific D-Bus API.
-&lt;/para&gt;
-&lt;para&gt;
-When it is shared in this way, processes can connect to your database using
-tracker_sparql_connection_bus_new() and can also fetch data directly from
-SPARQL queries using the &lt;userinput&gt;SELECT { SERVICE ... }&lt;/userinput&gt;
-syntax.
-&lt;/para&gt;</doc>
-    </docsection>
-    <docsection name="tracker-misc">
+    <docsection name="trackermisc">
       <doc xml:space="preserve"
            filename="../src/libtracker-sparql/tracker-utils.c"
            line="19">Collection of Tracker utility functions.</doc>
     </docsection>
-    <docsection name="tracker-namespace-manager">
-      <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-           line="44">&lt;para&gt;
-#TrackerNamespaceManager keeps track of namespaces. It allows you to assign
-short prefixes for them to avoid typing full URLs all the time.
-
-The syntax used is that of Compact URIs (CURIEs) as defined here:
-(https://www.w3.org/TR/2010/NOTE-curie-20101216)
-
-Usually you will want to use the default namespace manager, as returned by
-tracker_namespace_manager_get_default(). This has a set of well-known
-prefixes predefined.
-&lt;/para&gt;</doc>
-    </docsection>
-    <docsection name="tracker-notifier">
-      <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-notifier.c"
-           line="20">#TrackerNotifier is an object that receives notifications about
-changes to the Tracker database. A #TrackerNotifier is created
-through tracker_sparql_connection_create_notifier(), after the notifier
-is created, events can be listened for by connecting to the
-#TrackerNotifier::events signal. This object was added in Tracker 1.12.
-
-# Known caveats # {#trackernotifier-caveats}
-
-* The %TRACKER_NOTIFIER_EVENT_DELETE events will be received after the
-  resource has been deleted. At that time queries on those elements will
-  not bring any metadata. Only the ID/URN obtained through the event
-  remain meaningful.
-* Notifications of files being moved across indexed folders will
-  appear as %TRACKER_NOTIFIER_EVENT_UPDATE events, containing
-  the new location (if requested). The older location is no longer
-  known to Tracker, this may make tracking of elements in specific
-  folders hard using solely the #TrackerNotifier/Tracker data
-  available at event notification time.</doc>
-    </docsection>
-    <docsection name="tracker-resource">
-      <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-resource.c"
-           line="45">&lt;para&gt;
-#TrackerResource keeps track of a set of properties for a given resource.
-The resulting data can be serialized in several ways.
-&lt;/para&gt;</doc>
-    </docsection>
-    <docsection name="tracker-sparql-connection">
-      <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-connection.c"
-           line="20">&lt;para&gt;
-#TrackerSparqlConnection is an object that represents a connection to a
-SPARQL triple store. This store may be local and private (see
-tracker_sparql_connection_new()), or it may be a remote connection to a
-public endpoint (See tracker_sparql_connection_bus_new() and
-tracker_sparql_connection_remote_new()).
-&lt;/para&gt;
-
-&lt;para&gt;
-A #TrackerSparqlConnection is private to the calling process, it can be
-exposed publicly via a #TrackerEndpoint, see tracker_endpoint_dbus_new().
-&lt;/para&gt;
-
-&lt;para&gt;
-Updates on a connection are performed via the tracker_sparql_connection_update()
-family of calls. tracker_sparql_connection_update_array() may be used for batched
-updates. All functions have asynchronous variants.
-&lt;/para&gt;
-
-&lt;para&gt;
-Queries on a connection are performed via tracker_sparql_connection_query()
-and tracker_sparql_connection_query_statement(). The first call receives a
-query string and returns a #TrackerSparqlCursor to iterate the results. The
-second call returns a #TrackerSparqlStatement object that may be reused for
-repeatable queries with variable parameters. tracker_sparql_statement_execute()
-will returns a #TrackerSparqlCursor.
-&lt;/para&gt;
-
-&lt;para&gt;
-Depending on the ontology definition, #TrackerSparqlConnection may emit
-notifications whenever changes happen in the stored data. These notifications
-can be processed via a #TrackerNotifier obtained with
-tracker_sparql_connection_create_notifier().
-&lt;/para&gt;
-
-&lt;para&gt;
-After use, a #TrackerSparqlConnection should be closed. See
-tracker_sparql_connection_close() and tracker_sparql_connection_close_async().
-&lt;/para&gt;</doc>
-    </docsection>
-    <docsection name="tracker-sparql-cursor">
-      <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-cursor.c"
-           line="19">&lt;para&gt;
-#TrackerSparqlCursor is an object which provides methods to iterate the
-results of a query to the Tracker Store.
-&lt;/para&gt;</doc>
-    </docsection>
-    <docsection name="tracker-sparql-statement">
-      <doc xml:space="preserve"
-           filename="../src/libtracker-sparql/tracker-statement.c"
-           line="19">The &lt;structname&gt;TrackerSparqlStatement&lt;/structname&gt; object represents
-a SPARQL query. This query may contain parameterized variables
-(expressed as ~var in the syntax), which may be mapped to arbitrary
-values prior to execution. This statement may be reused for future
-queries with different values.
-
-The argument bindings may be changed through tracker_sparql_statement_bind_int(),
-tracker_sparql_statement_bind_boolean(), tracker_sparql_statement_bind_double()
-and tracker_sparql_statement_bind_string(). Those functions receive
-a @name argument corresponding for the variable name in the SPARQL query
-(eg. "var" for ~var) and a @value to map the variable to.
-
-Once all arguments have a value, the query may be executed through
-tracker_sparql_statement_execute() or tracker_sparql_statement_execute_async().
-
-This object was added in Tracker 2.2.</doc>
-    </docsection>
-    <docsection name="tracker-version">
+    <docsection name="trackerversion">
       <doc xml:space="preserve"
            filename="../src/libtracker-sparql/tracker-version.c"
            line="19">Tracker provides version information, primarily useful in configure checks

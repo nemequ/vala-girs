@@ -183,14 +183,13 @@ namespace Tracker {
 		public virtual signal string remove_file (GLib.File file);
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", type_id = "tracker_miner_online_get_type ()")]
+	[Version (since = "0.18")]
 	public abstract class MinerOnline : Tracker.Miner, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected MinerOnline ();
 		[NoWrapper]
 		public virtual bool connected (Tracker.NetworkType network);
-		[Version (since = "0.18")]
 		public Tracker.NetworkType get_network_type ();
-		[Version (since = "0.18")]
 		public virtual signal void disconnected ();
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", type_id = "tracker_miner_proxy_get_type ()")]
@@ -205,10 +204,9 @@ namespace Tracker {
 		public Tracker.Miner miner { owned get; construct; }
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", type_id = "tracker_data_provider_get_type ()")]
+	[Version (since = "1.2")]
 	public interface DataProvider : GLib.Object {
-		[Version (since = "1.2")]
 		public abstract GLib.FileEnumerator begin (GLib.File url, string attributes, Tracker.DirectoryFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "1.2")]
 		public abstract async GLib.FileEnumerator begin_async (GLib.File url, string attributes, Tracker.DirectoryFlags flags, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libtracker-miner/tracker-miner.h", cprefix = "TRACKER_DECORATOR_ERROR_", has_type_id = false)]

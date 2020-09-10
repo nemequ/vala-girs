@@ -421,6 +421,15 @@ authentication scheme name.)</doc>
            glib:type-name="SoupAddress"
            glib:get-type="soup_address_get_type"
            glib:type-struct="AddressClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-address.c"
+           line="20">#SoupAddress represents the address of a TCP connection endpoint:
+both the IP address and the port. (It is somewhat like an
+object-oriented version of struct sockaddr.)
+
+Although #SoupAddress is still used in some libsoup API's, it
+should not be used in new code; use GLib's #GNetworkAddress or
+#GSocketAddress instead.</doc>
       <source-position filename="../libsoup/soup-address.h" line="35"/>
       <implements name="Gio.SocketConnectable"/>
       <constructor name="new" c:identifier="soup_address_new">
@@ -1056,10 +1065,9 @@ soup_address_resolve_async()</doc>
            glib:type-struct="AuthClass">
       <doc xml:space="preserve"
            filename="../libsoup/soup-auth.c"
-           line="28">The abstract base class for handling authentication. Specific HTTP
-Authentication mechanisms are implemented by its subclasses, but
-applications never need to be aware of the specific subclasses
-being used.</doc>
+           line="18">#SoupAuth objects store the authentication data associated with a
+given bit of web space. They are created automatically by
+#SoupSession.</doc>
       <source-position filename="../libsoup/soup-auth.h" line="56"/>
       <constructor name="new" c:identifier="soup_auth_new">
         <doc xml:space="preserve"
@@ -1953,6 +1961,25 @@ response to.</doc>
            glib:type-name="SoupAuthDomain"
            glib:get-type="soup_auth_domain_get_type"
            glib:type-struct="AuthDomainClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-auth-domain.c"
+           line="18">A #SoupAuthDomain manages authentication for all or part of a
+#SoupServer. To make a server require authentication, first create
+an appropriate subclass of #SoupAuthDomain, and then add it to the
+server with soup_server_add_auth_domain().
+
+In order for an auth domain to have any effect, you must add one or
+more paths to it (via soup_auth_domain_add_path() or the
+%SOUP_AUTH_DOMAIN_ADD_PATH property). To require authentication for
+all ordinary requests, add the path "/". (Note that this does not
+include the special "*" URI (eg, "OPTIONS *"), which must be added
+as a separate path if you want to cover it.)
+
+If you need greater control over which requests should and
+shouldn't be authenticated, add paths covering everything you
+&lt;emphasis&gt;might&lt;/emphasis&gt; want authenticated, and then use a
+filter (soup_auth_domain_set_filter()) to bypass authentication for
+those requests that don't need it.</doc>
       <source-position filename="../libsoup/soup-auth-domain.h" line="42"/>
       <virtual-method name="accepts">
         <source-position filename="../libsoup/soup-auth-domain.h" line="28"/>
@@ -2449,6 +2476,10 @@ is destroyed</doc>
            glib:type-name="SoupAuthDomainBasic"
            glib:get-type="soup_auth_domain_basic_get_type"
            glib:type-struct="AuthDomainBasicClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-auth-domain-basic.c"
+           line="17">#SoupAuthDomainBasic handles the server side of HTTP "Basic" (ie,
+cleartext password) authentication.</doc>
       <source-position filename="../libsoup/soup-auth-domain-basic.h"
                        line="33"/>
       <constructor name="new"
@@ -2778,6 +2809,10 @@ as well.</doc>
            glib:type-name="SoupAuthDomainDigest"
            glib:get-type="soup_auth_domain_digest_get_type"
            glib:type-struct="AuthDomainDigestClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-auth-domain-digest.c"
+           line="19">#SoupAuthDomainDigest handles the server side of HTTP "Digest"
+authentication.</doc>
       <source-position filename="../libsoup/soup-auth-domain-digest.h"
                        line="33"/>
       <constructor name="new"
@@ -3121,10 +3156,21 @@ soup_auth_domain_set_generic_auth_callback()</doc>
     <class name="AuthManager"
            c:symbol-prefix="auth_manager"
            c:type="SoupAuthManager"
+           version="2.42"
            parent="GObject.Object"
            glib:type-name="SoupAuthManager"
            glib:get-type="soup_auth_manager_get_type"
            glib:type-struct="AuthManagerClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-auth-manager.c"
+           line="22">#SoupAuthManager is the #SoupSessionFeature that handles HTTP
+authentication for a #SoupSession.
+
+A #SoupAuthManager is added to the session by default, and normally
+you don't need to worry about it at all. However, if you want to
+disable HTTP authentication, you can remove the feature from the
+session with soup_session_remove_feature_by_type(), or disable it on
+individual requests with soup_message_disable_feature().</doc>
       <source-position filename="../libsoup/soup-auth-manager.h" line="34"/>
       <implements name="SessionFeature"/>
       <virtual-method name="authenticate">
@@ -3946,6 +3992,9 @@ and soup_cookie_set_max_age().</doc>
            glib:type-name="SoupCache"
            glib:get-type="soup_cache_get_type"
            glib:type-struct="CacheClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-cache.c"
+           line="45">#SoupCache implements a file-based cache for HTTP resources.</doc>
       <source-position filename="../libsoup/soup-cache.h" line="76"/>
       <implements name="SessionFeature"/>
       <constructor name="new" c:identifier="soup_cache_new" version="2.34">
@@ -4619,10 +4668,41 @@ likely be freed as a side effect.</doc>
     <class name="ContentDecoder"
            c:symbol-prefix="content_decoder"
            c:type="SoupContentDecoder"
+           version="2.30"
            parent="GObject.Object"
            glib:type-name="SoupContentDecoder"
            glib:get-type="soup_content_decoder_get_type"
            glib:type-struct="ContentDecoderClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-content-decoder.c"
+           line="20">#SoupContentDecoder handles adding the "Accept-Encoding" header on
+outgoing messages, and processing the "Content-Encoding" header on
+incoming ones. Currently it supports the "gzip", "deflate", and "br"
+content codings.
+
+If you are using a plain #SoupSession (ie, not #SoupSessionAsync or
+#SoupSessionSync), then a #SoupContentDecoder will automatically be
+added to the session by default. (You can use
+%SOUP_SESSION_REMOVE_FEATURE_BY_TYPE at construct time if you don't
+want this.) If you are using one of the deprecated #SoupSession
+subclasses, you can add a #SoupContentDecoder to your session with
+soup_session_add_feature() or soup_session_add_feature_by_type().
+
+If #SoupContentDecoder successfully decodes the Content-Encoding,
+it will set the %SOUP_MESSAGE_CONTENT_DECODED flag on the message,
+and the message body and the chunks in the #SoupMessage::got_chunk
+signals will contain the decoded data; however, the message headers
+will be unchanged (and so "Content-Encoding" will still be present,
+"Content-Length" will describe the original encoded length, etc).
+
+If "Content-Encoding" contains any encoding types that
+#SoupContentDecoder doesn't recognize, then none of the encodings
+will be decoded (and the %SOUP_MESSAGE_CONTENT_DECODED flag will
+not be set).
+
+(Note that currently there is no way to (automatically) use
+Content-Encoding when sending a request body, or to pick specific
+encoding types to support.)</doc>
       <source-position filename="../libsoup/soup-content-decoder.h" line="38"/>
       <implements name="SessionFeature"/>
       <field name="parent">
@@ -4694,10 +4774,19 @@ likely be freed as a side effect.</doc>
     <class name="ContentSniffer"
            c:symbol-prefix="content_sniffer"
            c:type="SoupContentSniffer"
+           version="2.28"
            parent="GObject.Object"
            glib:type-name="SoupContentSniffer"
            glib:get-type="soup_content_sniffer_get_type"
            glib:type-struct="ContentSnifferClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-content-sniffer.c"
+           line="24">A #SoupContentSniffer tries to detect the actual content type of
+the files that are being downloaded by looking at some of the data
+before the #SoupMessage emits its #SoupMessage::got-headers signal.
+#SoupContentSniffer implements #SoupSessionFeature, so you can add
+content sniffing to a session with soup_session_add_feature() or
+soup_session_add_feature_by_type().</doc>
       <source-position filename="../libsoup/soup-content-sniffer.h" line="44"/>
       <implements name="SessionFeature"/>
       <constructor name="new"
@@ -5009,26 +5098,11 @@ headers.</doc>
             c:symbol-prefix="cookie">
       <doc xml:space="preserve"
            filename="../libsoup/soup-cookie.c"
-           line="31">An HTTP cookie.
+           line="19">#SoupCookie implements HTTP cookies, as described by &lt;ulink
+url="http://tools.ietf.org/html/rfc6265.txt"&gt;RFC 6265&lt;/ulink&gt;.
 
-@name and @value will be set for all cookies. If the cookie is
-generated from a string that appears to have no name, then @name
-will be the empty string.
-
-@domain and @path give the host or domain, and path within that
-host/domain, to restrict this cookie to. If @domain starts with
-".", that indicates a domain (which matches the string after the
-".", or any hostname that has @domain as a suffix). Otherwise, it
-is a hostname and must match exactly.
-
-@expires will be non-%NULL if the cookie uses either the original
-"expires" attribute, or the newer "max-age" attribute. If @expires
-is %NULL, it indicates that neither "expires" nor "max-age" was
-specified, and the cookie expires at the end of the session.
-
-If @http_only is set, the cookie should not be exposed to untrusted
-code (eg, javascript), so as to minimize the danger posed by
-cross-site scripting attacks.</doc>
+To have a #SoupSession handle cookies for your appliction
+automatically, use a #SoupCookieJar.</doc>
       <source-position filename="../libsoup/soup-cookie.h" line="35"/>
       <field name="name" writable="1">
         <doc xml:space="preserve"
@@ -5770,6 +5844,16 @@ cookie originating from @origin.</doc>
            glib:type-name="SoupCookieJar"
            glib:get-type="soup_cookie_jar_get_type"
            glib:type-struct="CookieJarClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-cookie-jar.c"
+           line="19">A #SoupCookieJar stores #SoupCookie&lt;!-- --&gt;s and arrange for them
+to be sent with the appropriate #SoupMessage&lt;!-- --&gt;s.
+#SoupCookieJar implements #SoupSessionFeature, so you can add a
+cookie jar to a session with soup_session_add_feature() or
+soup_session_add_feature_by_type().
+
+Note that the base #SoupCookieJar class does not support any form
+of long-term cookie persistence.</doc>
       <source-position filename="../libsoup/soup-cookie-jar.h" line="39"/>
       <implements name="SessionFeature"/>
       <constructor name="new"
@@ -6554,6 +6638,14 @@ be assumed to be third party by default. Since 2.72.</doc>
            glib:type-name="SoupCookieJarDB"
            glib:get-type="soup_cookie_jar_db_get_type"
            glib:type-struct="CookieJarDBClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-cookie-jar-db.c"
+           line="21">#SoupCookieJarDB is a #SoupCookieJar that reads cookies from and
+writes them to a sqlite database in the new Mozilla format.
+
+(This is identical to &lt;literal&gt;SoupCookieJarSqlite&lt;/literal&gt; in
+libsoup-gnome; it has just been moved into libsoup proper, and
+renamed to avoid conflicting.)</doc>
       <source-position filename="../libsoup/soup-cookie-jar-db.h" line="33"/>
       <implements name="SessionFeature"/>
       <constructor name="new"
@@ -6652,6 +6744,10 @@ jar is destroyed.)</doc>
            glib:type-name="SoupCookieJarText"
            glib:get-type="soup_cookie_jar_text_get_type"
            glib:type-struct="CookieJarTextClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-cookie-jar-text.c"
+           line="19">#SoupCookieJarText is a #SoupCookieJar that reads cookies from and
+writes them to a text file in the Mozilla "cookies.txt" format.</doc>
       <source-position filename="../libsoup/soup-cookie-jar-text.h" line="33"/>
       <implements name="SessionFeature"/>
       <constructor name="new"
@@ -7615,6 +7711,28 @@ MIME type for POSTing HTML form data.</doc>
            glib:type-name="SoupHSTSEnforcer"
            glib:get-type="soup_hsts_enforcer_get_type"
            glib:type-struct="HSTSEnforcerClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-hsts-enforcer.c"
+           line="16">A #SoupHSTSEnforcer stores HSTS policies and enforces them when
+required. #SoupHSTSEnforcer implements #SoupSessionFeature, so you
+can add an HSTS enforcer to a session with
+soup_session_add_feature() or soup_session_add_feature_by_type().
+
+#SoupHSTSEnforcer keeps track of all the HTTPS destinations that,
+when connected to, return the Strict-Transport-Security header with
+valid values. #SoupHSTSEnforcer will forget those destinations
+upon expiry or when the server requests it.
+
+When the #SoupSession the #SoupHSTSEnforcer is attached to queues
+or restarts a message, the #SoupHSTSEnforcer will rewrite the URI
+to HTTPS if the destination is a known HSTS host and is contacted
+over an insecure transport protocol (HTTP). Users of
+#SoupHSTSEnforcer are advised to listen to changes in
+SoupMessage:uri in order to be aware of changes in the message URI.
+
+Note that #SoupHSTSEnforcer does not support any form of long-term
+HSTS policy persistence. See #SoupHSTSDBEnforcer for a persistent
+enforcer.</doc>
       <source-position filename="../libsoup/soup-hsts-enforcer.h" line="60"/>
       <implements name="SessionFeature"/>
       <constructor name="new"
@@ -8088,6 +8206,10 @@ otherwise.</doc>
            glib:type-name="SoupHSTSEnforcerDB"
            glib:get-type="soup_hsts_enforcer_db_get_type"
            glib:type-struct="HSTSEnforcerDBClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-hsts-enforcer-db.c"
+           line="21">#SoupHSTSEnforcerDB is a #SoupHSTSEnforcer that uses a SQLite
+database as a backend for persistency.</doc>
       <source-position filename="../libsoup/soup-hsts-enforcer-db.h"
                        line="38"/>
       <implements name="SessionFeature"/>
@@ -8202,22 +8324,11 @@ and initialized. Changes to the policies during the lifetime of a
             c:symbol-prefix="hsts_policy">
       <doc xml:space="preserve"
            filename="../libsoup/soup-hsts-policy.c"
-           line="32">An HTTP Strict Transport Security policy.
+           line="20">#SoupHSTSPolicy implements HTTP policies, as described by &lt;ulink
+url="http://tools.ietf.org/html/rfc6797"&gt;RFC 6797&lt;/ulink&gt;.
 
-@domain represents the host that this policy applies to. The domain
-must be IDNA-canonicalized. soup_hsts_policy_new() and related methods
-will do this for you.
-
-@max_age contains the 'max-age' value from the Strict Transport
-Security header and indicates the time to live of this policy,
-in seconds.
-
-@expires will be non-%NULL if the policy has been set by the host and
-hence has an expiry time. If @expires is %NULL, it indicates that the
-policy is a permanent session policy set by the user agent.
-
-If @include_subdomains is %TRUE, the Strict Transport Security policy
-must also be enforced on subdomains of @domain.</doc>
+To have a #SoupSession handle HSTS policies for your appliction
+automatically, use a #SoupHSTSEnforcer.</doc>
       <source-position filename="../libsoup/soup-hsts-policy.h" line="19"/>
       <field name="domain" writable="1">
         <doc xml:space="preserve"
@@ -9685,6 +9796,71 @@ see soup_hsts_policy_new_session_policy() for details.</doc>
            glib:type-name="SoupLogger"
            glib:get-type="soup_logger_get_type"
            glib:type-struct="LoggerClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-logger.c"
+           line="22">#SoupLogger watches a #SoupSession and logs the HTTP traffic that
+it generates, for debugging purposes. Many applications use an
+environment variable to determine whether or not to use
+#SoupLogger, and to determine the amount of debugging output.
+
+To use #SoupLogger, first create a logger with soup_logger_new(),
+optionally configure it with soup_logger_set_request_filter(),
+soup_logger_set_response_filter(), and soup_logger_set_printer(),
+and then attach it to a session (or multiple sessions) with
+soup_session_add_feature().
+
+By default, the debugging output is sent to
+&lt;literal&gt;stdout&lt;/literal&gt;, and looks something like:
+
+&lt;informalexample&gt;&lt;screen&gt;
+&gt; POST /unauth HTTP/1.1
+&gt; Soup-Debug-Timestamp: 1200171744
+&gt; Soup-Debug: SoupSessionAsync 1 (0x612190), SoupMessage 1 (0x617000), SoupSocket 1 (0x612220)
+&gt; Host: localhost
+&gt; Content-Type: text/plain
+&gt; Connection: close
+&gt;
+&gt; This is a test.
+
+&amp;lt; HTTP/1.1 201 Created
+&amp;lt; Soup-Debug-Timestamp: 1200171744
+&amp;lt; Soup-Debug: SoupMessage 1 (0x617000)
+&amp;lt; Date: Sun, 12 Jan 2008 21:02:24 GMT
+&amp;lt; Content-Length: 0
+&lt;/screen&gt;&lt;/informalexample&gt;
+
+The &lt;literal&gt;Soup-Debug-Timestamp&lt;/literal&gt; line gives the time (as
+a &lt;type&gt;time_t&lt;/type&gt;) when the request was sent, or the response fully
+received.
+
+The &lt;literal&gt;Soup-Debug&lt;/literal&gt; line gives further debugging
+information about the #SoupSession, #SoupMessage, and #SoupSocket
+involved; the hex numbers are the addresses of the objects in
+question (which may be useful if you are running in a debugger).
+The decimal IDs are simply counters that uniquely identify objects
+across the lifetime of the #SoupLogger. In particular, this can be
+used to identify when multiple messages are sent across the same
+connection.
+
+Currently, the request half of the message is logged just before
+the first byte of the request gets written to the network (from the
+#SoupMessage::starting signal), which means that if you have
+not made the complete request body available at that point, it will
+not be logged.
+
+The response is logged just after the last byte of the response
+body is read from the network (from the #SoupMessage::got_body or
+#SoupMessage::got_informational signal), which means that the
+#SoupMessage::got_headers signal, and anything triggered off it
+(such as #SoupSession::authenticate) will be emitted
+&lt;emphasis&gt;before&lt;/emphasis&gt; the response headers are actually
+logged.
+
+If the response doesn't happen to trigger the
+#SoupMessage::got_body nor #SoupMessage::got_informational signals
+due to, for example, a cancellation before receiving the last byte
+of the response body, the response will still be logged on the
+event of the #SoupMessage::finished signal.</doc>
       <source-position filename="../libsoup/soup-logger.h" line="40"/>
       <implements name="SessionFeature"/>
       <constructor name="new" c:identifier="soup_logger_new">
@@ -10339,7 +10515,7 @@ verification errors on #SoupMessage:tls-certificate.)</doc>
       <type name="utf8" c:type="gchar*"/>
     </constant>
     <constant name="MICRO_VERSION"
-              value="0"
+              value="1"
               c:type="SOUP_MICRO_VERSION"
               version="2.42">
       <doc xml:space="preserve"
@@ -10455,46 +10631,29 @@ as well, rather than reusing the original memory.</doc>
            glib:type-struct="MessageClass">
       <doc xml:space="preserve"
            filename="../libsoup/soup-message.c"
-           line="49">Represents an HTTP message being sent or received.
+           line="19">A #SoupMessage represents an HTTP message that is being sent or
+received.
 
-@status_code will normally be a #SoupStatus value, eg,
-%SOUP_STATUS_OK, though of course it might actually be an unknown
-status code. @reason_phrase is the actual text returned from the
-server, which may or may not correspond to the "standard"
-description of @status_code. At any rate, it is almost certainly
-not localized, and not very descriptive even if it is in the user's
-language; you should not use @reason_phrase in user-visible
-messages. Rather, you should look at @status_code, and determine an
-end-user-appropriate message based on that and on what you were
-trying to do.
+For client-side usage, if you are using the traditional
+#SoupSession APIs (soup_session_queue_message() and
+soup_session_send_message()), you would create a #SoupMessage with
+soup_message_new() or soup_message_new_from_uri(), set up its
+fields appropriately, and send it. If you are using the newer
+#SoupRequest API, you would create a request with
+soup_session_request_http() or soup_session_request_http_uri(), and
+the returned #SoupRequestHTTP will already have an associated
+#SoupMessage that you can retrieve via
+soup_request_http_get_message().
 
-As described in the #SoupMessageBody documentation, the
-@request_body and @response_body &lt;literal&gt;data&lt;/literal&gt; fields
-will not necessarily be filled in at all times. When the body
-fields are filled in, they will be terminated with a '\0' byte
-(which is not included in the &lt;literal&gt;length&lt;/literal&gt;), so you
-can use them as ordinary C strings (assuming that you know that the
-body doesn't have any other '\0' bytes).
+For server-side usage, #SoupServer will create #SoupMessage&lt;!--
+--&gt;s automatically for incoming requests, which your application
+will receive via handlers.
 
-For a client-side #SoupMessage, @request_body's
-&lt;literal&gt;data&lt;/literal&gt; is usually filled in right before libsoup
-writes the request to the network, but you should not count on
-this; use soup_message_body_flatten() if you want to ensure that
-&lt;literal&gt;data&lt;/literal&gt; is filled in. If you are not using
-#SoupRequest to read the response, then @response_body's
-&lt;literal&gt;data&lt;/literal&gt; will be filled in before
-#SoupMessage::finished is emitted. (If you are using #SoupRequest,
-then the message body is not accumulated by default, so
-@response_body's &lt;literal&gt;data&lt;/literal&gt; will always be %NULL.)
-
-For a server-side #SoupMessage, @request_body's %data will be
-filled in before #SoupMessage::got_body is emitted.
-
-To prevent the %data field from being filled in at all (eg, if you
-are handling the data from a #SoupMessage::got_chunk, and so don't
-need to see it all at the end), call
-soup_message_body_set_accumulate() on @response_body or
-@request_body as appropriate, passing %FALSE.</doc>
+Note that libsoup's terminology here does not quite match the HTTP
+specification: in RFC 2616, an "HTTP-message" is
+&lt;emphasis&gt;either&lt;/emphasis&gt; a Request, &lt;emphasis&gt;or&lt;/emphasis&gt; a
+Response. In libsoup, a #SoupMessage combines both the request and
+the response.</doc>
       <source-position filename="../libsoup/soup-message.h" line="59"/>
       <constructor name="new" c:identifier="soup_message_new">
         <doc xml:space="preserve"
@@ -12142,19 +12301,14 @@ response for a (server-side) message.</doc>
             c:symbol-prefix="message_body">
       <doc xml:space="preserve"
            filename="../libsoup/soup-message-body.c"
-           line="343">A #SoupMessage request or response body.
+           line="17">#SoupMessageBody represents the request or response body of a
+#SoupMessage.
 
-Note that while @length always reflects the full length of the
-message body, @data is normally %NULL, and will only be filled in
-after soup_message_body_flatten() is called. For client-side
-messages, this automatically happens for the response body after it
-has been fully read, unless you set the
-%SOUP_MESSAGE_OVERWRITE_CHUNKS flags. Likewise, for server-side
-messages, the request body is automatically filled in after being
-read.
-
-As an added bonus, when @data is filled in, it is always terminated
-with a '\0' byte (which is not reflected in @length).</doc>
+In addition to #SoupMessageBody, libsoup also defines a "smaller"
+data buffer type, #SoupBuffer, which is primarily used as a
+component of #SoupMessageBody. In particular, when using chunked
+encoding to transmit or receive a message, each chunk is
+represented as a #SoupBuffer.</doc>
       <source-position filename="../libsoup/soup-message-body.h" line="63"/>
       <field name="data" writable="1">
         <doc xml:space="preserve"
@@ -12835,7 +12989,8 @@ behavior.</doc>
             c:symbol-prefix="message_headers">
       <doc xml:space="preserve"
            filename="../libsoup/soup-message-headers.c"
-           line="27">The HTTP message headers associated with a request or response.</doc>
+           line="18">#SoupMessageHeaders represents the HTTP message headers associated
+with a request or response.</doc>
       <source-position filename="../libsoup/soup-message-headers.h" line="13"/>
       <constructor name="new" c:identifier="soup_message_headers_new">
         <doc xml:space="preserve"
@@ -14447,10 +14602,22 @@ body</doc>
     <class name="MultipartInputStream"
            c:symbol-prefix="multipart_input_stream"
            c:type="SoupMultipartInputStream"
+           version="2.40"
            parent="Gio.FilterInputStream"
            glib:type-name="SoupMultipartInputStream"
            glib:get-type="soup_multipart_input_stream_get_type"
            glib:type-struct="MultipartInputStreamClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-multipart-input-stream.c"
+           line="23">This adds support for the multipart responses. For handling the
+multiple parts the user needs to wrap the #GInputStream obtained by
+sending the request with a #SoupMultipartInputStream and use
+soup_multipart_input_stream_next_part() before reading. Responses
+which are not wrapped will be treated like non-multipart responses.
+
+Note that although #SoupMultipartInputStream is a #GInputStream,
+you should not read directly from it, and the results are undefined
+if you do.</doc>
       <source-position filename="../libsoup/soup-multipart-input-stream.h"
                        line="34"/>
       <implements name="Gio.PollableInputStream"/>
@@ -15254,10 +15421,24 @@ more parts.</doc>
     <class name="ProxyResolverDefault"
            c:symbol-prefix="proxy_resolver_default"
            c:type="SoupProxyResolverDefault"
+           version="2.34"
+           deprecated="1"
            parent="GObject.Object"
            glib:type-name="SoupProxyResolverDefault"
            glib:get-type="soup_proxy_resolver_default_get_type"
            glib:type-struct="ProxyResolverDefaultClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-proxy-resolver-default.c"
+           line="18">#SoupProxyResolverDefault is a &lt;type&gt;SoupProxyURIResolver&lt;/type&gt;
+implementation that uses the default gio #GProxyResolver to resolve
+proxies.
+
+In libsoup 2.44 and later, you can set the session's
+#SoupSession:proxy-resolver property to the resolver returned by
+g_proxy_resolver_get_default() to get the same effect. Note that
+for "plain" #SoupSessions (ie, not #SoupSessionAsync or
+#SoupSessionSync), this is done for you automatically.</doc>
+      <doc-deprecated xml:space="preserve">Use #SoupSession:proxy-resolver</doc-deprecated>
       <source-position filename="../libsoup/soup-proxy-resolver-default.h"
                        line="25"/>
       <implements name="ProxyURIResolver"/>
@@ -15361,9 +15542,21 @@ more parts.</doc>
     <interface name="ProxyURIResolver"
                c:symbol-prefix="proxy_uri_resolver"
                c:type="SoupProxyURIResolver"
+               deprecated="1"
                glib:type-name="SoupProxyURIResolver"
                glib:get-type="soup_proxy_uri_resolver_get_type"
                glib:type-struct="ProxyURIResolverInterface">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-proxy-uri-resolver.c"
+           line="18">#SoupProxyURIResolver is an interface for finding appropriate HTTP
+proxies to use.</doc>
+      <doc-deprecated xml:space="preserve">#SoupSession now has a #SoupSession:proxy-resolver
+property that takes a #GProxyResolver (which is semantically
+identical to #SoupProxyURIResolver).
+
+Even in older releases of libsoup, you are not likely to have to
+implement this interface on your own; instead, you should usually
+just be able to use #SoupProxyResolverDefault.</doc-deprecated>
       <source-position filename="../libsoup/soup-proxy-uri-resolver.h"
                        line="44"/>
       <prerequisite name="SessionFeature"/>
@@ -16002,7 +16195,8 @@ range", referring to the last -@start bytes of the resource body.
            glib:type-struct="RequestClass">
       <doc xml:space="preserve"
            filename="../libsoup/soup-request.c"
-           line="42">A request to retrieve a particular URI.</doc>
+           line="34">A #SoupRequest is created by #SoupSession, and represents a request
+to retrieve a particular URI.</doc>
       <source-position filename="../libsoup/soup-request.h" line="69"/>
       <implements name="Gio.Initable"/>
       <virtual-method name="check_uri" throws="1">
@@ -16606,6 +16800,9 @@ a #SoupSessionSync.</doc>
            glib:type-name="SoupRequestData"
            glib:get-type="soup_request_data_get_type"
            glib:type-struct="RequestDataClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-request-data.c"
+           line="34">#SoupRequestData implements #SoupRequest for "data" URIs.</doc>
       <source-position filename="../libsoup/soup-request-data.h" line="46"/>
       <implements name="Gio.Initable"/>
       <field name="parent">
@@ -16685,6 +16882,10 @@ a #SoupSessionSync.</doc>
            glib:type-name="SoupRequestFile"
            glib:get-type="soup_request_file_get_type"
            glib:type-struct="RequestFileClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-request-file.c"
+           line="35">#SoupRequestFile implements #SoupRequest for "file" and "resource"
+URIs.</doc>
       <source-position filename="../libsoup/soup-request-file.h" line="46"/>
       <implements name="Gio.Initable"/>
       <method name="get_file"
@@ -16736,6 +16937,14 @@ a #SoupSessionSync.</doc>
            glib:type-name="SoupRequestHTTP"
            glib:get-type="soup_request_http_get_type"
            glib:type-struct="RequestHTTPClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-request-http.c"
+           line="35">#SoupRequestHTTP implements #SoupRequest for "http" and "https"
+URIs.
+
+To do more complicated HTTP operations using the #SoupRequest APIs,
+call soup_request_http_get_message() to get the request's
+#SoupMessage.</doc>
       <source-position filename="../libsoup/soup-request-http.h" line="46"/>
       <implements name="Gio.Initable"/>
       <method name="get_message"
@@ -17655,6 +17864,97 @@ g_main_context_get_thread_default())</doc>
            glib:type-name="SoupServer"
            glib:get-type="soup_server_get_type"
            glib:type-struct="ServerClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-server.c"
+           line="26">#SoupServer implements a simple HTTP server.
+
+(The following documentation describes the current #SoupServer API,
+available in &lt;application&gt;libsoup&lt;/application&gt; 2.48 and later. See
+the section "&lt;link linkend="soup-server-old-api"&gt;The Old SoupServer
+Listening API&lt;/link&gt;" in the server how-to documentation for
+details on the older #SoupServer API.)
+
+To begin, create a server using soup_server_new(). Add at least one
+handler by calling soup_server_add_handler() or
+soup_server_add_early_handler(); the handler will be called to
+process any requests underneath the path you pass. (If you want all
+requests to go to the same handler, just pass "/" (or %NULL) for
+the path.)
+
+When a new connection is accepted (or a new request is started on
+an existing persistent connection), the #SoupServer will emit
+#SoupServer::request-started and then begin processing the request
+as described below, but note that once the message is assigned a
+#SoupMessage:status-code, then callbacks after that point will be
+skipped. Note also that it is not defined when the callbacks happen
+relative to various #SoupMessage signals.
+
+Once the headers have been read, #SoupServer will check if there is
+a #SoupAuthDomain (qv) covering the Request-URI; if so, and if the
+message does not contain suitable authorization, then the
+#SoupAuthDomain will set a status of %SOUP_STATUS_UNAUTHORIZED on
+the message.
+
+After checking for authorization, #SoupServer will look for "early"
+handlers (added with soup_server_add_early_handler()) matching the
+Request-URI. If one is found, it will be run; in particular, this
+can be used to connect to signals to do a streaming read of the
+request body.
+
+(At this point, if the request headers contain "&lt;literal&gt;Expect:
+100-continue&lt;/literal&gt;", and a status code has been set, then
+#SoupServer will skip the remaining steps and return the response.
+If the request headers contain "&lt;literal&gt;Expect:
+100-continue&lt;/literal&gt;" and no status code has been set,
+#SoupServer will return a %SOUP_STATUS_CONTINUE status before
+continuing.)
+
+The server will then read in the response body (if present). At
+this point, if there are no handlers at all defined for the
+Request-URI, then the server will return %SOUP_STATUS_NOT_FOUND to
+the client.
+
+Otherwise (assuming no previous step assigned a status to the
+message) any "normal" handlers (added with
+soup_server_add_handler()) for the message's Request-URI will be
+run.
+
+Then, if the path has a WebSocket handler registered (and has
+not yet been assigned a status), #SoupServer will attempt to
+validate the WebSocket handshake, filling in the response and
+setting a status of %SOUP_STATUS_SWITCHING_PROTOCOLS or
+%SOUP_STATUS_BAD_REQUEST accordingly.
+
+If the message still has no status code at this point (and has not
+been paused with soup_server_pause_message()), then it will be
+given a status of %SOUP_STATUS_INTERNAL_SERVER_ERROR (because at
+least one handler ran, but returned without assigning a status).
+
+Finally, the server will emit #SoupServer::request-finished (or
+#SoupServer::request-aborted if an I/O error occurred before
+handling was completed).
+
+If you want to handle the special "*" URI (eg, "OPTIONS *"), you
+must explicitly register a handler for "*"; the default handler
+will not be used for that case.
+
+If you want to process https connections in addition to (or instead
+of) http connections, you can either set the
+%SOUP_SERVER_TLS_CERTIFICATE property when creating the server, or
+else call soup_server_set_ssl_certificate() after creating it.
+
+Once the server is set up, make one or more calls to
+soup_server_listen(), soup_server_listen_local(), or
+soup_server_listen_all() to tell it where to listen for
+connections. (All ports on a #SoupServer use the same handlers; if
+you need to handle some ports differently, such as returning
+different data for http and https, you'll need to create multiple
+#SoupServers, or else check the passed-in URI in the handler
+function.).
+
+#SoupServer will begin processing connections as soon as you return
+to (or start) the main loop for the current thread-default
+#GMainContext.</doc>
       <source-position filename="../libsoup/soup-server.h" line="56"/>
       <constructor name="new"
                    c:identifier="soup_server_new"
@@ -19430,6 +19730,52 @@ rules as #SoupServerCallback (qv).</doc>
            glib:type-name="SoupSession"
            glib:get-type="soup_session_get_type"
            glib:type-struct="SessionClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-session.c"
+           line="31">#SoupSession is the object that controls client-side HTTP. A
+#SoupSession encapsulates all of the state that libsoup is keeping
+on behalf of your program; cached HTTP connections, authentication
+information, etc. It also keeps track of various global options
+and features that you are using.
+
+Most applications will only need a single #SoupSession; the primary
+reason you might need multiple sessions is if you need to have
+multiple independent authentication contexts. (Eg, you are
+connecting to a server and authenticating as two different users at
+different times; the easiest way to ensure that each #SoupMessage
+is sent with the authentication information you intended is to use
+one session for the first user, and a second session for the other
+user.)
+
+In the past, #SoupSession was an abstract class, and users needed
+to choose between #SoupSessionAsync (which always uses
+#GMainLoop&lt;!-- --&gt;-based I/O), or #SoupSessionSync (which always uses
+blocking I/O and can be used from multiple threads simultaneously).
+This is no longer necessary; you can (and should) use a plain
+#SoupSession, which supports both synchronous and asynchronous use.
+(When using a plain #SoupSession, soup_session_queue_message()
+behaves like it traditionally did on a #SoupSessionAsync, and
+soup_session_send_message() behaves like it traditionally did on a
+#SoupSessionSync.)
+
+Additional #SoupSession functionality is provided by
+#SoupSessionFeature objects, which can be added to a session with
+soup_session_add_feature() or soup_session_add_feature_by_type()
+(or at construct time with the %SOUP_SESSION_ADD_FEATURE_BY_TYPE
+pseudo-property). For example, #SoupLogger provides support for
+logging HTTP traffic, #SoupContentDecoder provides support for
+compressed response handling, and #SoupContentSniffer provides
+support for HTML5-style response body content sniffing.
+Additionally, subtypes of #SoupAuth and #SoupRequest can be added
+as features, to add support for additional authentication and URI
+types.
+
+All #SoupSessions are created with a #SoupAuthManager, and support
+for %SOUP_TYPE_AUTH_BASIC and %SOUP_TYPE_AUTH_DIGEST. For
+#SoupRequest types, #SoupRequestHTTP, #SoupRequestFile, and
+#SoupRequestData are supported. Additionally, sessions using the
+plain #SoupSession class (rather than one of its deprecated
+subtypes) have a #SoupContentDecoder by default.</doc>
       <source-position filename="../libsoup/soup-session.h" line="60"/>
       <constructor name="new" c:identifier="soup_session_new" version="2.42">
         <doc xml:space="preserve"
@@ -21577,10 +21923,19 @@ used for debugging purposes, and may go away in the future.</doc>
     <class name="SessionAsync"
            c:symbol-prefix="session_async"
            c:type="SoupSessionAsync"
+           deprecated="1"
+           deprecated-version="2.42"
            parent="Session"
            glib:type-name="SoupSessionAsync"
            glib:get-type="soup_session_async_get_type"
            glib:type-struct="SessionAsyncClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-session-async.c"
+           line="19">#SoupSessionAsync is an implementation of #SoupSession that uses
+non-blocking I/O via the glib main loop for all I/O.</doc>
+      <doc-deprecated xml:space="preserve">Use the #SoupSession class (which uses both asynchronous
+and synchronous I/O, depending on the API used). See the
+&lt;link linkend="libsoup-session-porting"&gt;porting guide&lt;/link&gt;.</doc-deprecated>
       <source-position filename="../libsoup/soup-session-async.h" line="34"/>
       <constructor name="new"
                    c:identifier="soup_session_async_new"
@@ -21988,8 +22343,13 @@ be called after the message completes or when an unrecoverable error occurs.</do
                glib:type-struct="SessionFeatureInterface">
       <doc xml:space="preserve"
            filename="../libsoup/soup-session-feature.c"
-           line="29">An object that implement some sort of optional feature for
-#SoupSession.</doc>
+           line="16">#SoupSessionFeature is the interface used by classes that extend
+the functionality of a #SoupSession. Some features like HTTP
+authentication handling are implemented internally via
+#SoupSessionFeature&lt;!-- --&gt;s. Other features can be added to the session
+by the application. (Eg, #SoupLogger, #SoupCookieJar.)
+
+See soup_session_add_feature(), etc, to add a feature to a session.</doc>
       <source-position filename="../libsoup/soup-session-feature.h" line="47"/>
       <virtual-method name="add_feature" invoker="add_feature" version="2.34">
         <doc xml:space="preserve"
@@ -22482,10 +22842,19 @@ soup_session_feature_add_feature().</doc>
     <class name="SessionSync"
            c:symbol-prefix="session_sync"
            c:type="SoupSessionSync"
+           deprecated="1"
+           deprecated-version="2.42"
            parent="Session"
            glib:type-name="SoupSessionSync"
            glib:get-type="soup_session_sync_get_type"
            glib:type-struct="SessionSyncClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-session-sync.c"
+           line="18">#SoupSessionSync is an implementation of #SoupSession that uses
+synchronous I/O, intended for use in multi-threaded programs.</doc>
+      <doc-deprecated xml:space="preserve">Use the #SoupSession class (which uses both asynchronous
+and synchronous I/O, depending on the API used). See the
+&lt;link linkend="libsoup-session-porting"&gt;porting guide&lt;/link&gt;.</doc-deprecated>
       <source-position filename="../libsoup/soup-session-sync.h" line="34"/>
       <constructor name="new"
                    c:identifier="soup_session_sync_new"
@@ -22591,6 +22960,12 @@ linkend="libsoup-session-porting"&gt;porting guide&lt;/link&gt;.</doc-deprecated
            glib:type-name="SoupSocket"
            glib:get-type="soup_socket_get_type"
            glib:type-struct="SocketClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-socket.c"
+           line="23">#SoupSocket is libsoup's TCP socket type. While it is primarily
+intended for internal use, #SoupSocket&lt;!-- --&gt;s are exposed in the
+API in various places, and some of their methods (eg,
+soup_socket_get_remote_address()) may be useful to applications.</doc>
       <source-position filename="../libsoup/soup-socket.h" line="40"/>
       <implements name="Gio.Initable"/>
       <constructor name="new"
@@ -24213,47 +24588,12 @@ through unchanged.</doc>
             c:symbol-prefix="uri">
       <doc xml:space="preserve"
            filename="../libsoup/soup-uri.c"
-           line="31">A #SoupURI represents a (parsed) URI. #SoupURI supports RFC 3986
-(URI Generic Syntax), and can parse any valid URI. However, libsoup
-only uses "http" and "https" URIs internally; You can use
-SOUP_URI_VALID_FOR_HTTP() to test if a #SoupURI is a valid HTTP
-URI.
+           line="19">A #SoupURI represents a (parsed) URI.
 
-@scheme will always be set in any URI. It is an interned string and
-is always all lowercase. (If you parse a URI with a non-lowercase
-scheme, it will be converted to lowercase.) The macros
-%SOUP_URI_SCHEME_HTTP and %SOUP_URI_SCHEME_HTTPS provide the
-interned values for "http" and "https" and can be compared against
-URI @scheme values.
-
-@user and @password are parsed as defined in the older URI specs
-(ie, separated by a colon; RFC 3986 only talks about a single
-"userinfo" field). Note that @password is not included in the
-output of soup_uri_to_string(). libsoup does not normally use these
-fields; authentication is handled via #SoupSession signals.
-
-@host contains the hostname, and @port the port specified in the
-URI. If the URI doesn't contain a hostname, @host will be %NULL,
-and if it doesn't specify a port, @port may be 0. However, for
-"http" and "https" URIs, @host is guaranteed to be non-%NULL
-(trying to parse an http URI with no @host will return %NULL), and
-@port will always be non-0 (because libsoup knows the default value
-to use when it is not specified in the URI).
-
-@path is always non-%NULL. For http/https URIs, @path will never be
-an empty string either; if the input URI has no path, the parsed
-#SoupURI will have a @path of "/".
-
-@query and @fragment are optional for all URI types.
-soup_form_decode() may be useful for parsing @query.
-
-Note that @path, @query, and @fragment may contain
-%&lt;!-- --&gt;-encoded characters. soup_uri_new() calls
-soup_uri_normalize() on them, but not soup_uri_decode(). This is
-necessary to ensure that soup_uri_to_string() will generate a URI
-that has exactly the same meaning as the original. (In theory,
-#SoupURI should leave @user, @password, and @host partially-encoded
-as well, but this would be more annoying than useful.)</doc>
+Many applications will not need to use #SoupURI directly at all; on
+the client side, soup_message_new() takes a stringified URI, and on
+the server side, the path and query components are provided for you
+in the server callback.</doc>
       <source-position filename="../libsoup/soup-uri.h" line="29"/>
       <field name="scheme" writable="1">
         <doc xml:space="preserve"
@@ -26552,11 +26892,15 @@ signal.</doc>
     <class name="WebsocketExtension"
            c:symbol-prefix="websocket_extension"
            c:type="SoupWebsocketExtension"
+           version="2.68"
            parent="GObject.Object"
            abstract="1"
            glib:type-name="SoupWebsocketExtension"
            glib:get-type="soup_websocket_extension_get_type"
            glib:type-struct="WebsocketExtensionClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-websocket-extension.c"
+           line="29">SoupWebsocketExtension is the base class for WebSocket extension objects.</doc>
       <source-position filename="../libsoup/soup-websocket-extension.h"
                        line="71"/>
       <virtual-method name="configure" invoker="configure" throws="1">
@@ -27148,10 +27492,21 @@ Extensions using reserved bits of the header will change them in @header.</doc>
     <class name="WebsocketExtensionManager"
            c:symbol-prefix="websocket_extension_manager"
            c:type="SoupWebsocketExtensionManager"
+           version="2.68"
            parent="GObject.Object"
            glib:type-name="SoupWebsocketExtensionManager"
            glib:get-type="soup_websocket_extension_manager_get_type"
            glib:type-struct="WebsocketExtensionManagerClass">
+      <doc xml:space="preserve"
+           filename="../libsoup/soup-websocket-extension-manager.c"
+           line="35">SoupWebsocketExtensionManager is the #SoupSessionFeature that handles WebSockets
+extensions for a #SoupSession.
+
+A SoupWebsocketExtensionManager is added to the session by default, and normally
+you don't need to worry about it at all. However, if you want to
+disable WebSocket extensions, you can remove the feature from the
+session with soup_session_remove_feature_by_type(), or disable it on
+individual requests with soup_message_disable_feature().</doc>
       <source-position filename="../libsoup/soup-websocket-extension-manager.h"
                        line="43"/>
       <implements name="SessionFeature"/>
@@ -28994,154 +29349,7 @@ structure</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
-    <docsection name="soup-address">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-address.c"
-           line="20">#SoupAddress represents the address of a TCP connection endpoint:
-both the IP address and the port. (It is somewhat like an
-object-oriented version of struct sockaddr.)
-
-Although #SoupAddress is still used in some libsoup API's, it
-should not be used in new code; use GLib's #GNetworkAddress or
-#GSocketAddress instead.</doc>
-    </docsection>
-    <docsection name="soup-auth">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-auth.c"
-           line="18">#SoupAuth objects store the authentication data associated with a
-given bit of web space. They are created automatically by
-#SoupSession.</doc>
-    </docsection>
-    <docsection name="soup-auth-domain">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-auth-domain.c"
-           line="18">A #SoupAuthDomain manages authentication for all or part of a
-#SoupServer. To make a server require authentication, first create
-an appropriate subclass of #SoupAuthDomain, and then add it to the
-server with soup_server_add_auth_domain().
-
-In order for an auth domain to have any effect, you must add one or
-more paths to it (via soup_auth_domain_add_path() or the
-%SOUP_AUTH_DOMAIN_ADD_PATH property). To require authentication for
-all ordinary requests, add the path "/". (Note that this does not
-include the special "*" URI (eg, "OPTIONS *"), which must be added
-as a separate path if you want to cover it.)
-
-If you need greater control over which requests should and
-shouldn't be authenticated, add paths covering everything you
-&lt;emphasis&gt;might&lt;/emphasis&gt; want authenticated, and then use a
-filter (soup_auth_domain_set_filter()) to bypass authentication for
-those requests that don't need it.</doc>
-    </docsection>
-    <docsection name="soup-auth-domain-basic">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-auth-domain-basic.c"
-           line="17">#SoupAuthDomainBasic handles the server side of HTTP "Basic" (ie,
-cleartext password) authentication.</doc>
-    </docsection>
-    <docsection name="soup-auth-domain-digest">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-auth-domain-digest.c"
-           line="19">#SoupAuthDomainDigest handles the server side of HTTP "Digest"
-authentication.</doc>
-    </docsection>
-    <docsection name="soup-auth-manager">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-auth-manager.c"
-           line="22">#SoupAuthManager is the #SoupSessionFeature that handles HTTP
-authentication for a #SoupSession.
-
-A #SoupAuthManager is added to the session by default, and normally
-you don't need to worry about it at all. However, if you want to
-disable HTTP authentication, you can remove the feature from the
-session with soup_session_remove_feature_by_type(), or disable it on
-individual requests with soup_message_disable_feature().</doc>
-    </docsection>
-    <docsection name="soup-cache">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-cache.c"
-           line="45">#SoupCache implements a file-based cache for HTTP resources.</doc>
-    </docsection>
-    <docsection name="soup-content-decoder">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-content-decoder.c"
-           line="20">#SoupContentDecoder handles adding the "Accept-Encoding" header on
-outgoing messages, and processing the "Content-Encoding" header on
-incoming ones. Currently it supports the "gzip", "deflate", and "br"
-content codings.
-
-If you are using a plain #SoupSession (ie, not #SoupSessionAsync or
-#SoupSessionSync), then a #SoupContentDecoder will automatically be
-added to the session by default. (You can use
-%SOUP_SESSION_REMOVE_FEATURE_BY_TYPE at construct time if you don't
-want this.) If you are using one of the deprecated #SoupSession
-subclasses, you can add a #SoupContentDecoder to your session with
-soup_session_add_feature() or soup_session_add_feature_by_type().
-
-If #SoupContentDecoder successfully decodes the Content-Encoding,
-it will set the %SOUP_MESSAGE_CONTENT_DECODED flag on the message,
-and the message body and the chunks in the #SoupMessage::got_chunk
-signals will contain the decoded data; however, the message headers
-will be unchanged (and so "Content-Encoding" will still be present,
-"Content-Length" will describe the original encoded length, etc).
-
-If "Content-Encoding" contains any encoding types that
-#SoupContentDecoder doesn't recognize, then none of the encodings
-will be decoded (and the %SOUP_MESSAGE_CONTENT_DECODED flag will
-not be set).
-
-(Note that currently there is no way to (automatically) use
-Content-Encoding when sending a request body, or to pick specific
-encoding types to support.)</doc>
-    </docsection>
-    <docsection name="soup-content-sniffer">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-content-sniffer.c"
-           line="24">A #SoupContentSniffer tries to detect the actual content type of
-the files that are being downloaded by looking at some of the data
-before the #SoupMessage emits its #SoupMessage::got-headers signal.
-#SoupContentSniffer implements #SoupSessionFeature, so you can add
-content sniffing to a session with soup_session_add_feature() or
-soup_session_add_feature_by_type().</doc>
-    </docsection>
-    <docsection name="soup-cookie">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-cookie.c"
-           line="19">#SoupCookie implements HTTP cookies, as described by &lt;ulink
-url="http://tools.ietf.org/html/rfc6265.txt"&gt;RFC 6265&lt;/ulink&gt;.
-
-To have a #SoupSession handle cookies for your appliction
-automatically, use a #SoupCookieJar.</doc>
-    </docsection>
-    <docsection name="soup-cookie-jar">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-cookie-jar.c"
-           line="19">A #SoupCookieJar stores #SoupCookie&lt;!-- --&gt;s and arrange for them
-to be sent with the appropriate #SoupMessage&lt;!-- --&gt;s.
-#SoupCookieJar implements #SoupSessionFeature, so you can add a
-cookie jar to a session with soup_session_add_feature() or
-soup_session_add_feature_by_type().
-
-Note that the base #SoupCookieJar class does not support any form
-of long-term cookie persistence.</doc>
-    </docsection>
-    <docsection name="soup-cookie-jar-db">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-cookie-jar-db.c"
-           line="21">#SoupCookieJarDB is a #SoupCookieJar that reads cookies from and
-writes them to a sqlite database in the new Mozilla format.
-
-(This is identical to &lt;literal&gt;SoupCookieJarSqlite&lt;/literal&gt; in
-libsoup-gnome; it has just been moved into libsoup proper, and
-renamed to avoid conflicting.)</doc>
-    </docsection>
-    <docsection name="soup-cookie-jar-text">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-cookie-jar-text.c"
-           line="19">#SoupCookieJarText is a #SoupCookieJar that reads cookies from and
-writes them to a text file in the Mozilla "cookies.txt" format.</doc>
-    </docsection>
-    <docsection name="soup-form">
+    <docsection name="soupform">
       <doc xml:space="preserve"
            filename="../libsoup/soup-form.c"
            line="17">libsoup contains several help methods for processing HTML forms as
@@ -29149,158 +29357,7 @@ defined by &lt;ulink
 url="http://www.w3.org/TR/html401/interact/forms.html#h-17.13"&gt;the
 HTML 4.01 specification&lt;/ulink&gt;.</doc>
     </docsection>
-    <docsection name="soup-hsts-enforcer">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-hsts-enforcer.c"
-           line="16">A #SoupHSTSEnforcer stores HSTS policies and enforces them when
-required. #SoupHSTSEnforcer implements #SoupSessionFeature, so you
-can add an HSTS enforcer to a session with
-soup_session_add_feature() or soup_session_add_feature_by_type().
-
-#SoupHSTSEnforcer keeps track of all the HTTPS destinations that,
-when connected to, return the Strict-Transport-Security header with
-valid values. #SoupHSTSEnforcer will forget those destinations
-upon expiry or when the server requests it.
-
-When the #SoupSession the #SoupHSTSEnforcer is attached to queues
-or restarts a message, the #SoupHSTSEnforcer will rewrite the URI
-to HTTPS if the destination is a known HSTS host and is contacted
-over an insecure transport protocol (HTTP). Users of
-#SoupHSTSEnforcer are advised to listen to changes in
-SoupMessage:uri in order to be aware of changes in the message URI.
-
-Note that #SoupHSTSEnforcer does not support any form of long-term
-HSTS policy persistence. See #SoupHSTSDBEnforcer for a persistent
-enforcer.</doc>
-    </docsection>
-    <docsection name="soup-hsts-enforcer-db">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-hsts-enforcer-db.c"
-           line="21">#SoupHSTSEnforcerDB is a #SoupHSTSEnforcer that uses a SQLite
-database as a backend for persistency.</doc>
-    </docsection>
-    <docsection name="soup-hsts-policy">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-hsts-policy.c"
-           line="20">#SoupHSTSPolicy implements HTTP policies, as described by &lt;ulink
-url="http://tools.ietf.org/html/rfc6797"&gt;RFC 6797&lt;/ulink&gt;.
-
-To have a #SoupSession handle HSTS policies for your appliction
-automatically, use a #SoupHSTSEnforcer.</doc>
-    </docsection>
-    <docsection name="soup-logger">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-logger.c"
-           line="22">#SoupLogger watches a #SoupSession and logs the HTTP traffic that
-it generates, for debugging purposes. Many applications use an
-environment variable to determine whether or not to use
-#SoupLogger, and to determine the amount of debugging output.
-
-To use #SoupLogger, first create a logger with soup_logger_new(),
-optionally configure it with soup_logger_set_request_filter(),
-soup_logger_set_response_filter(), and soup_logger_set_printer(),
-and then attach it to a session (or multiple sessions) with
-soup_session_add_feature().
-
-By default, the debugging output is sent to
-&lt;literal&gt;stdout&lt;/literal&gt;, and looks something like:
-
-&lt;informalexample&gt;&lt;screen&gt;
-&gt; POST /unauth HTTP/1.1
-&gt; Soup-Debug-Timestamp: 1200171744
-&gt; Soup-Debug: SoupSessionAsync 1 (0x612190), SoupMessage 1 (0x617000), SoupSocket 1 (0x612220)
-&gt; Host: localhost
-&gt; Content-Type: text/plain
-&gt; Connection: close
-&gt;
-&gt; This is a test.
-
-&amp;lt; HTTP/1.1 201 Created
-&amp;lt; Soup-Debug-Timestamp: 1200171744
-&amp;lt; Soup-Debug: SoupMessage 1 (0x617000)
-&amp;lt; Date: Sun, 12 Jan 2008 21:02:24 GMT
-&amp;lt; Content-Length: 0
-&lt;/screen&gt;&lt;/informalexample&gt;
-
-The &lt;literal&gt;Soup-Debug-Timestamp&lt;/literal&gt; line gives the time (as
-a &lt;type&gt;time_t&lt;/type&gt;) when the request was sent, or the response fully
-received.
-
-The &lt;literal&gt;Soup-Debug&lt;/literal&gt; line gives further debugging
-information about the #SoupSession, #SoupMessage, and #SoupSocket
-involved; the hex numbers are the addresses of the objects in
-question (which may be useful if you are running in a debugger).
-The decimal IDs are simply counters that uniquely identify objects
-across the lifetime of the #SoupLogger. In particular, this can be
-used to identify when multiple messages are sent across the same
-connection.
-
-Currently, the request half of the message is logged just before
-the first byte of the request gets written to the network (from the
-#SoupMessage::starting signal), which means that if you have
-not made the complete request body available at that point, it will
-not be logged.
-
-The response is logged just after the last byte of the response
-body is read from the network (from the #SoupMessage::got_body or
-#SoupMessage::got_informational signal), which means that the
-#SoupMessage::got_headers signal, and anything triggered off it
-(such as #SoupSession::authenticate) will be emitted
-&lt;emphasis&gt;before&lt;/emphasis&gt; the response headers are actually
-logged.
-
-If the response doesn't happen to trigger the
-#SoupMessage::got_body nor #SoupMessage::got_informational signals
-due to, for example, a cancellation before receiving the last byte
-of the response body, the response will still be logged on the
-event of the #SoupMessage::finished signal.</doc>
-    </docsection>
-    <docsection name="soup-message">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-message.c"
-           line="19">A #SoupMessage represents an HTTP message that is being sent or
-received.
-
-For client-side usage, if you are using the traditional
-#SoupSession APIs (soup_session_queue_message() and
-soup_session_send_message()), you would create a #SoupMessage with
-soup_message_new() or soup_message_new_from_uri(), set up its
-fields appropriately, and send it. If you are using the newer
-#SoupRequest API, you would create a request with
-soup_session_request_http() or soup_session_request_http_uri(), and
-the returned #SoupRequestHTTP will already have an associated
-#SoupMessage that you can retrieve via
-soup_request_http_get_message().
-
-For server-side usage, #SoupServer will create #SoupMessage&lt;!--
---&gt;s automatically for incoming requests, which your application
-will receive via handlers.
-
-Note that libsoup's terminology here does not quite match the HTTP
-specification: in RFC 2616, an "HTTP-message" is
-&lt;emphasis&gt;either&lt;/emphasis&gt; a Request, &lt;emphasis&gt;or&lt;/emphasis&gt; a
-Response. In libsoup, a #SoupMessage combines both the request and
-the response.</doc>
-    </docsection>
-    <docsection name="soup-message-body">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-message-body.c"
-           line="17">#SoupMessageBody represents the request or response body of a
-#SoupMessage.
-
-In addition to #SoupMessageBody, libsoup also defines a "smaller"
-data buffer type, #SoupBuffer, which is primarily used as a
-component of #SoupMessageBody. In particular, when using chunked
-encoding to transmit or receive a message, each chunk is
-represented as a #SoupBuffer.</doc>
-    </docsection>
-    <docsection name="soup-message-headers">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-message-headers.c"
-           line="18">#SoupMessageHeaders represents the HTTP message headers associated
-with a request or response.</doc>
-    </docsection>
-    <docsection name="soup-method">
+    <docsection name="soupmethod">
       <doc xml:space="preserve"
            filename="../libsoup/soup-method.h"
            line="14">soup-method.h contains a number of defines for standard HTTP and
@@ -29321,255 +29378,14 @@ most useful in SoupServer handlers. Eg:
 	}
 &lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
     </docsection>
-    <docsection name="soup-multipart-input-stream">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-multipart-input-stream.c"
-           line="23">This adds support for the multipart responses. For handling the
-multiple parts the user needs to wrap the #GInputStream obtained by
-sending the request with a #SoupMultipartInputStream and use
-soup_multipart_input_stream_next_part() before reading. Responses
-which are not wrapped will be treated like non-multipart responses.
-
-Note that although #SoupMultipartInputStream is a #GInputStream,
-you should not read directly from it, and the results are undefined
-if you do.</doc>
-    </docsection>
-    <docsection name="soup-proxy-resolver-default">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-proxy-resolver-default.c"
-           line="18">#SoupProxyResolverDefault is a &lt;type&gt;SoupProxyURIResolver&lt;/type&gt;
-implementation that uses the default gio #GProxyResolver to resolve
-proxies.
-
-In libsoup 2.44 and later, you can set the session's
-#SoupSession:proxy-resolver property to the resolver returned by
-g_proxy_resolver_get_default() to get the same effect. Note that
-for "plain" #SoupSessions (ie, not #SoupSessionAsync or
-#SoupSessionSync), this is done for you automatically.</doc>
-    </docsection>
-    <docsection name="soup-proxy-uri-resolver">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-proxy-uri-resolver.c"
-           line="18">#SoupProxyURIResolver is an interface for finding appropriate HTTP
-proxies to use.</doc>
-    </docsection>
-    <docsection name="soup-request">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-request.c"
-           line="34">A #SoupRequest is created by #SoupSession, and represents a request
-to retrieve a particular URI.</doc>
-    </docsection>
-    <docsection name="soup-request-data">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-request-data.c"
-           line="34">#SoupRequestData implements #SoupRequest for "data" URIs.</doc>
-    </docsection>
-    <docsection name="soup-request-file">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-request-file.c"
-           line="35">#SoupRequestFile implements #SoupRequest for "file" and "resource"
-URIs.</doc>
-    </docsection>
-    <docsection name="soup-request-http">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-request-http.c"
-           line="35">#SoupRequestHTTP implements #SoupRequest for "http" and "https"
-URIs.
-
-To do more complicated HTTP operations using the #SoupRequest APIs,
-call soup_request_http_get_message() to get the request's
-#SoupMessage.</doc>
-    </docsection>
-    <docsection name="soup-server">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-server.c"
-           line="26">#SoupServer implements a simple HTTP server.
-
-(The following documentation describes the current #SoupServer API,
-available in &lt;application&gt;libsoup&lt;/application&gt; 2.48 and later. See
-the section "&lt;link linkend="soup-server-old-api"&gt;The Old SoupServer
-Listening API&lt;/link&gt;" in the server how-to documentation for
-details on the older #SoupServer API.)
-
-To begin, create a server using soup_server_new(). Add at least one
-handler by calling soup_server_add_handler() or
-soup_server_add_early_handler(); the handler will be called to
-process any requests underneath the path you pass. (If you want all
-requests to go to the same handler, just pass "/" (or %NULL) for
-the path.)
-
-When a new connection is accepted (or a new request is started on
-an existing persistent connection), the #SoupServer will emit
-#SoupServer::request-started and then begin processing the request
-as described below, but note that once the message is assigned a
-#SoupMessage:status-code, then callbacks after that point will be
-skipped. Note also that it is not defined when the callbacks happen
-relative to various #SoupMessage signals.
-
-Once the headers have been read, #SoupServer will check if there is
-a #SoupAuthDomain (qv) covering the Request-URI; if so, and if the
-message does not contain suitable authorization, then the
-#SoupAuthDomain will set a status of %SOUP_STATUS_UNAUTHORIZED on
-the message.
-
-After checking for authorization, #SoupServer will look for "early"
-handlers (added with soup_server_add_early_handler()) matching the
-Request-URI. If one is found, it will be run; in particular, this
-can be used to connect to signals to do a streaming read of the
-request body.
-
-(At this point, if the request headers contain "&lt;literal&gt;Expect:
-100-continue&lt;/literal&gt;", and a status code has been set, then
-#SoupServer will skip the remaining steps and return the response.
-If the request headers contain "&lt;literal&gt;Expect:
-100-continue&lt;/literal&gt;" and no status code has been set,
-#SoupServer will return a %SOUP_STATUS_CONTINUE status before
-continuing.)
-
-The server will then read in the response body (if present). At
-this point, if there are no handlers at all defined for the
-Request-URI, then the server will return %SOUP_STATUS_NOT_FOUND to
-the client.
-
-Otherwise (assuming no previous step assigned a status to the
-message) any "normal" handlers (added with
-soup_server_add_handler()) for the message's Request-URI will be
-run.
-
-Then, if the path has a WebSocket handler registered (and has
-not yet been assigned a status), #SoupServer will attempt to
-validate the WebSocket handshake, filling in the response and
-setting a status of %SOUP_STATUS_SWITCHING_PROTOCOLS or
-%SOUP_STATUS_BAD_REQUEST accordingly.
-
-If the message still has no status code at this point (and has not
-been paused with soup_server_pause_message()), then it will be
-given a status of %SOUP_STATUS_INTERNAL_SERVER_ERROR (because at
-least one handler ran, but returned without assigning a status).
-
-Finally, the server will emit #SoupServer::request-finished (or
-#SoupServer::request-aborted if an I/O error occurred before
-handling was completed).
-
-If you want to handle the special "*" URI (eg, "OPTIONS *"), you
-must explicitly register a handler for "*"; the default handler
-will not be used for that case.
-
-If you want to process https connections in addition to (or instead
-of) http connections, you can either set the
-%SOUP_SERVER_TLS_CERTIFICATE property when creating the server, or
-else call soup_server_set_ssl_certificate() after creating it.
-
-Once the server is set up, make one or more calls to
-soup_server_listen(), soup_server_listen_local(), or
-soup_server_listen_all() to tell it where to listen for
-connections. (All ports on a #SoupServer use the same handlers; if
-you need to handle some ports differently, such as returning
-different data for http and https, you'll need to create multiple
-#SoupServers, or else check the passed-in URI in the handler
-function.).
-
-#SoupServer will begin processing connections as soon as you return
-to (or start) the main loop for the current thread-default
-#GMainContext.</doc>
-    </docsection>
-    <docsection name="soup-session">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-session.c"
-           line="31">#SoupSession is the object that controls client-side HTTP. A
-#SoupSession encapsulates all of the state that libsoup is keeping
-on behalf of your program; cached HTTP connections, authentication
-information, etc. It also keeps track of various global options
-and features that you are using.
-
-Most applications will only need a single #SoupSession; the primary
-reason you might need multiple sessions is if you need to have
-multiple independent authentication contexts. (Eg, you are
-connecting to a server and authenticating as two different users at
-different times; the easiest way to ensure that each #SoupMessage
-is sent with the authentication information you intended is to use
-one session for the first user, and a second session for the other
-user.)
-
-In the past, #SoupSession was an abstract class, and users needed
-to choose between #SoupSessionAsync (which always uses
-#GMainLoop&lt;!-- --&gt;-based I/O), or #SoupSessionSync (which always uses
-blocking I/O and can be used from multiple threads simultaneously).
-This is no longer necessary; you can (and should) use a plain
-#SoupSession, which supports both synchronous and asynchronous use.
-(When using a plain #SoupSession, soup_session_queue_message()
-behaves like it traditionally did on a #SoupSessionAsync, and
-soup_session_send_message() behaves like it traditionally did on a
-#SoupSessionSync.)
-
-Additional #SoupSession functionality is provided by
-#SoupSessionFeature objects, which can be added to a session with
-soup_session_add_feature() or soup_session_add_feature_by_type()
-(or at construct time with the %SOUP_SESSION_ADD_FEATURE_BY_TYPE
-pseudo-property). For example, #SoupLogger provides support for
-logging HTTP traffic, #SoupContentDecoder provides support for
-compressed response handling, and #SoupContentSniffer provides
-support for HTML5-style response body content sniffing.
-Additionally, subtypes of #SoupAuth and #SoupRequest can be added
-as features, to add support for additional authentication and URI
-types.
-
-All #SoupSessions are created with a #SoupAuthManager, and support
-for %SOUP_TYPE_AUTH_BASIC and %SOUP_TYPE_AUTH_DIGEST. For
-#SoupRequest types, #SoupRequestHTTP, #SoupRequestFile, and
-#SoupRequestData are supported. Additionally, sessions using the
-plain #SoupSession class (rather than one of its deprecated
-subtypes) have a #SoupContentDecoder by default.</doc>
-    </docsection>
-    <docsection name="soup-session-async">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-session-async.c"
-           line="19">#SoupSessionAsync is an implementation of #SoupSession that uses
-non-blocking I/O via the glib main loop for all I/O.</doc>
-    </docsection>
-    <docsection name="soup-session-feature">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-session-feature.c"
-           line="16">#SoupSessionFeature is the interface used by classes that extend
-the functionality of a #SoupSession. Some features like HTTP
-authentication handling are implemented internally via
-#SoupSessionFeature&lt;!-- --&gt;s. Other features can be added to the session
-by the application. (Eg, #SoupLogger, #SoupCookieJar.)
-
-See soup_session_add_feature(), etc, to add a feature to a session.</doc>
-    </docsection>
-    <docsection name="soup-session-sync">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-session-sync.c"
-           line="18">#SoupSessionSync is an implementation of #SoupSession that uses
-synchronous I/O, intended for use in multi-threaded programs.</doc>
-    </docsection>
-    <docsection name="soup-socket">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-socket.c"
-           line="23">#SoupSocket is libsoup's TCP socket type. While it is primarily
-intended for internal use, #SoupSocket&lt;!-- --&gt;s are exposed in the
-API in various places, and some of their methods (eg,
-soup_socket_get_remote_address()) may be useful to applications.</doc>
-    </docsection>
-    <docsection name="soup-tld">
+    <docsection name="souptld">
       <doc xml:space="preserve"
            filename="../libsoup/soup-tld.c"
            line="20">These functions can be used to parse hostnames to attempt to determine
 what part of the name belongs to the domain owner, and what part is
 simply a "public suffix" such as ".com".</doc>
     </docsection>
-    <docsection name="soup-uri">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-uri.c"
-           line="19">A #SoupURI represents a (parsed) URI.
-
-Many applications will not need to use #SoupURI directly at all; on
-the client side, soup_message_new() takes a stringified URI, and on
-the server side, the path and query components are provided for you
-in the server callback.</doc>
-    </docsection>
-    <docsection name="soup-value-utils">
+    <docsection name="soupvalueutils">
       <doc xml:space="preserve"
            filename="../libsoup/soup-value-utils.c"
            line="16">These methods are useful for manipulating #GValue&lt;!-- --&gt;s, and in
@@ -29579,7 +29395,7 @@ slightly nicer way than the standard #GValue API.
 They are written for use with soup-xmlrpc, but they also work with
 types not used by XML-RPC.</doc>
     </docsection>
-    <docsection name="soup-websocket">
+    <docsection name="soupwebsocket">
       <doc xml:space="preserve"
            filename="../libsoup/soup-websocket.c"
            line="34">#SoupWebsocketConnection provides support for the &lt;ulink
@@ -29603,23 +29419,6 @@ and soup_websocket_connection_send_binary() to send data, and the
 #SoupWebsocketConnection::message signal to receive data.
 (#SoupWebsocketConnection currently only supports asynchronous
 I/O.)</doc>
-    </docsection>
-    <docsection name="soup-websocket-extension">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-websocket-extension.c"
-           line="29">SoupWebsocketExtension is the base class for WebSocket extension objects.</doc>
-    </docsection>
-    <docsection name="soup-websocket-extension-manager">
-      <doc xml:space="preserve"
-           filename="../libsoup/soup-websocket-extension-manager.c"
-           line="35">SoupWebsocketExtensionManager is the #SoupSessionFeature that handles WebSockets
-extensions for a #SoupSession.
-
-A SoupWebsocketExtensionManager is added to the session by default, and normally
-you don't need to worry about it at all. However, if you want to
-disable WebSocket extensions, you can remove the feature from the
-session with soup_session_remove_feature_by_type(), or disable it on
-individual requests with soup_message_disable_feature().</doc>
     </docsection>
     <function name="status_get_phrase"
               c:identifier="soup_status_get_phrase"

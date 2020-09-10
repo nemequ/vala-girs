@@ -35,17 +35,14 @@ namespace Dazzle {
 		public Dazzle.ThemeManager theme_manager { get; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_application_window_get_type ()")]
+	[Version (since = "3.26")]
 	public class ApplicationWindow : Gtk.ApplicationWindow, Atk.Implementor, GLib.ActionGroup, GLib.ActionMap, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected ApplicationWindow ();
-		[Version (since = "3.26")]
 		public virtual bool get_fullscreen ();
-		[Version (since = "3.26")]
 		public unowned Gtk.Widget get_titlebar ();
 		public Dazzle.TitlebarAnimation get_titlebar_animation ();
-		[Version (since = "3.26")]
 		public virtual void set_fullscreen (bool fullscreen);
-		[Version (since = "3.26")]
 		public void set_titlebar (Gtk.Widget titlebar);
 		public bool fullscreen { get; set; }
 		public Dazzle.TitlebarAnimation titlebar_animation { get; }
@@ -906,19 +903,15 @@ namespace Dazzle {
 		public uint transition_duration { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_properties_group_get_type ()")]
+	[Version (since = "3.26")]
 	public class PropertiesGroup : GLib.Object, GLib.ActionGroup {
 		[CCode (has_construct_function = false)]
-		[Version (since = "3.26")]
 		public PropertiesGroup (GLib.Object object);
-		[Version (since = "3.26")]
 		public void add_all_properties ();
-		[Version (since = "3.26")]
 		public void add_property (string name, string property_name);
-		[Version (since = "3.26")]
 		public void add_property_full (string name, string property_name, Dazzle.PropertiesFlags flags);
 		[CCode (has_construct_function = false)]
 		public PropertiesGroup.for_type (GLib.Type object_type);
-		[Version (since = "3.26")]
 		public void remove (string name);
 		[NoAccessorMethod]
 		public GLib.Object object { owned get; set; }
@@ -951,18 +944,15 @@ namespace Dazzle {
 		public GLib.ListModel base_model { construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_recursive_file_monitor_get_type ()")]
+	[Version (since = "3.28")]
 	public class RecursiveFileMonitor : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public RecursiveFileMonitor (GLib.File root);
-		[Version (since = "3.28")]
 		public void cancel ();
-		[Version (since = "3.28")]
 		public unowned GLib.File get_root ();
-		[Version (since = "3.28")]
 		public void set_ignore_func (owned Dazzle.RecursiveIgnoreFunc ignore_func);
 		public async bool start_async (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public GLib.File root { get; construct; }
-		[Version (since = "3.28")]
 		public signal void changed (GLib.File file, GLib.File? other_file, GLib.FileMonitorEvent event);
 	}
 	[CCode (cheader_filename = "dazzle.h", ref_function = "dzl_ring_ref", type_id = "dzl_ring_get_type ()", unref_function = "dzl_ring_unref")]
@@ -1245,29 +1235,20 @@ namespace Dazzle {
 		public signal void changed ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcut_tooltip_get_type ()")]
+	[Version (since = "3.32")]
 	public class ShortcutTooltip : GLib.Object {
 		[CCode (has_construct_function = false)]
-		[Version (since = "3.32")]
 		public ShortcutTooltip ();
-		[Version (since = "3.32")]
 		public unowned string? get_accel ();
-		[Version (since = "3.32")]
 		public unowned string? get_command_id ();
-		[Version (since = "3.32")]
 		public unowned string? get_title ();
-		[Version (since = "3.32")]
 		public unowned Gtk.Widget? get_widget ();
-		[Version (since = "3.32")]
 		public void set_accel (string? accel);
-		[Version (since = "3.32")]
 		public void set_command_id (string command_id);
-		[Version (since = "3.32")]
 		public void set_title (string? title);
-		[Version (since = "3.32")]
 		public void set_widget (Gtk.Widget? widget);
 		public string accel { get; set; }
 		public string command_id { get; set; }
-		[Version (since = "3.32")]
 		public string title { get; set; }
 		public Gtk.Widget widget { get; set; }
 	}

@@ -90,7 +90,7 @@ is the same as or newer than the passed-in version.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MICRO_VERSION"
-              value="0"
+              value="3"
               c:type="UHM_MICRO_VERSION"
               version="0.1.0">
       <doc xml:space="preserve"
@@ -101,7 +101,7 @@ is the same as or newer than the passed-in version.</doc>
       <type name="gint" c:type="gint"/>
     </constant>
     <constant name="MINOR_VERSION"
-              value="6"
+              value="5"
               c:type="UHM_MINOR_VERSION"
               version="0.1.0">
       <doc xml:space="preserve"
@@ -147,8 +147,9 @@ is the same as or newer than the passed-in version.</doc>
            glib:get-type="uhm_resolver_get_type"
            glib:type-struct="ResolverClass">
       <doc xml:space="preserve"
-           filename="uhm-resolver.h"
-           line="38">All the fields in the #UhmResolver structure are private and should never be accessed directly.</doc>
+           filename="uhm-resolver.c"
+           line="29">A mock DNS resolver which resolves according to specified host-name–IP-address pairs, and raises an error for all non-specified host name requests.
+This allows network connections for expected services to be redirected to a different server, such as a local mock server on a loopback interface.</doc>
       <source-position filename="uhm-resolver.h" line="61"/>
       <constructor name="new" c:identifier="uhm_resolver_new">
         <doc xml:space="preserve"
@@ -319,18 +320,37 @@ is the same as or newer than the passed-in version.</doc>
            glib:get-type="uhm_server_get_type"
            glib:type-struct="ServerClass">
       <doc xml:space="preserve"
-           filename="uhm-server.h"
-           line="55">All the fields in the #UhmServer structure are private and should never be accessed directly.</doc>
+           filename="uhm-server.c"
+           line="20">This is a mock HTTPS server which can be used to run unit tests of network client code on a loopback interface rather than on the real Internet.
+At its core, it's a simple HTTPS server which runs on a loopback address on an arbitrary port. The code under test must be modified to send its
+requests to this port, although #UhmResolver may be used to transparently redirect all IP addresses to the mock server.
+A convenience layer on the mock server provides loading of and recording to trace files, which are sequences of request–response HTTPS message pairs
+where each request is expected by the server (in order). On receiving an expected request, the mock server will return the relevant response and move
+to expecting the next request in the trace file.
+
+The mock server currently only operates on a single network interface, on HTTPS (if #UhmServer:tls-certificate is set) or HTTP otherwise.
+This may change in future. Your own TLS certificate can be provided to authenticate the server using #UhmServer:tls-certificate, or a dummy
+TLS certificate can be used by calling uhm_server_set_default_tls_certificate(). This certificate is not signed by a CA, so the
+#SoupSession:ssl-strict property must be set to %FALSE in client code
+during (and only during!) testing.
+
+The server can operate in three modes: logging, testing, and comparing. These are set by #UhmServer:enable-logging and #UhmServer:enable-online.
+ • Logging mode (#UhmServer:enable-logging: %TRUE, #UhmServer:enable-online: %TRUE): Requests are sent to the real server online, and the
+   request–response pairs recorded to a log file.
+ • Testing mode (#UhmServer:enable-logging: %FALSE, #UhmServer:enable-online: %FALSE): Requests are sent to the mock server, which responds
+   from the trace file.
+ • Comparing mode (#UhmServer:enable-logging: %FALSE, #UhmServer:enable-online: %TRUE): Requests are sent to the real server online, and
+   the request–response pairs are compared against those in an existing log file to see if the log file is up-to-date.</doc>
       <source-position filename="uhm-server.h" line="88"/>
       <constructor name="new" c:identifier="uhm_server_new" version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="683">Creates a new #UhmServer with default properties.</doc>
+             line="685">Creates a new #UhmServer with default properties.</doc>
         <source-position filename="uhm-server.h" line="92"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="uhm-server.c"
-               line="688">a new #UhmServer; unref with g_object_unref()</doc>
+               line="690">a new #UhmServer; unref with g_object_unref()</doc>
           <type name="Server" c:type="UhmServer*"/>
         </return-value>
       </constructor>
@@ -344,7 +364,7 @@ is the same as or newer than the passed-in version.</doc>
                 version="0.3.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1970">Convenience version of uhm_server_received_message_chunk() which can be passed directly to soup_logger_set_printer()
+             line="1972">Convenience version of uhm_server_received_message_chunk() which can be passed directly to soup_logger_set_printer()
 to forward all libsoup traffic logging to a #UhmServer. The #UhmServer must be passed to soup_logger_set_printer() as
 its user data.
 
@@ -371,25 +391,25 @@ g_object_unref (logger);
           <parameter name="logger" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1972">a #SoupLogger</doc>
+                 line="1974">a #SoupLogger</doc>
             <type name="Soup.Logger" c:type="SoupLogger*"/>
           </parameter>
           <parameter name="level" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1973">the detail level of this log message</doc>
+                 line="1975">the detail level of this log message</doc>
             <type name="Soup.LoggerLogLevel" c:type="SoupLoggerLogLevel"/>
           </parameter>
           <parameter name="direction" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1974">the transmission direction of the message</doc>
+                 line="1976">the transmission direction of the message</doc>
             <type name="gchar" c:type="char"/>
           </parameter>
           <parameter name="data" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1975">message data</doc>
+                 line="1977">message data</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="user_data"
@@ -398,7 +418,7 @@ g_object_unref (logger);
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1976">user data passed to the #SoupLogger, or %NULL</doc>
+                 line="1978">user data passed to the #SoupLogger, or %NULL</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -445,7 +465,7 @@ g_object_unref (logger);
               version="0.5.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="2336">Remove a #UhmServer:compare-messages filter function installed previously by
+             line="2338">Remove a #UhmServer:compare-messages filter function installed previously by
 calling something like uhm_server_filter_ignore_parameter_values().
 
 It is an error to call this function with an invalid @filter_id.</doc>
@@ -457,13 +477,13 @@ It is an error to call this function with an invalid @filter_id.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2338">a #UhmServer</doc>
+                 line="2340">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="filter_id" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2339">filter ID returned by the filter addition function</doc>
+                 line="2341">filter ID returned by the filter addition function</doc>
             <type name="gulong" c:type="gulong"/>
           </parameter>
         </parameters>
@@ -473,7 +493,7 @@ It is an error to call this function with an invalid @filter_id.</doc>
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1669">Convenience function to finish logging to or reading from a trace file previously passed to uhm_server_start_trace() or
+             line="1671">Convenience function to finish logging to or reading from a trace file previously passed to uhm_server_start_trace() or
 uhm_server_start_trace_full().
 
 If #UhmServer:enable-online is %FALSE, this will shut down the mock server (as if uhm_server_stop() had been called).</doc>
@@ -485,7 +505,7 @@ If #UhmServer:enable-online is %FALSE, this will shut down the mock server (as i
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1671">a #UhmServer</doc>
+                 line="1673">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
         </parameters>
@@ -495,7 +515,7 @@ If #UhmServer:enable-online is %FALSE, this will shut down the mock server (as i
               version="0.5.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="2298">Install a #UhmServer:compare-messages filter function which will override the
+             line="2300">Install a #UhmServer:compare-messages filter function which will override the
 default comparison function to one which ignores differences in the values of
 the given query @parameter_names. The named parameters must still be present
 in the query, however.
@@ -510,7 +530,7 @@ used. This may change in future.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="uhm-server.c"
-               line="2316">opaque filter ID used with
+               line="2318">opaque filter ID used with
    uhm_server_compare_messages_remove_filter() to remove the filter later</doc>
           <type name="gulong" c:type="gulong"/>
         </return-value>
@@ -518,13 +538,13 @@ used. This may change in future.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2300">a #UhmServer</doc>
+                 line="2302">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="parameter_names" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2301">%NULL-terminated array of
+                 line="2303">%NULL-terminated array of
    parameter names to ignore</doc>
             <array c:type="const gchar* const*">
               <type name="utf8" c:type="gchar*"/>
@@ -537,19 +557,19 @@ used. This may change in future.</doc>
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="2008">Gets the value of the #UhmServer:address property.</doc>
+             line="2010">Gets the value of the #UhmServer:address property.</doc>
         <source-position filename="uhm-server.h" line="119"/>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="uhm-server.c"
-               line="2014">the physical address of the listening socket the server is currently bound to; or %NULL if the server is not running</doc>
+               line="2016">the physical address of the listening socket the server is currently bound to; or %NULL if the server is not running</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2010">a #UhmServer</doc>
+                 line="2012">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
         </parameters>
@@ -559,19 +579,19 @@ used. This may change in future.</doc>
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1734">Gets the value of the #UhmServer:enable-logging property.</doc>
+             line="1736">Gets the value of the #UhmServer:enable-logging property.</doc>
         <source-position filename="uhm-server.h" line="112"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="uhm-server.c"
-               line="1740">%TRUE if client network traffic is being logged to a trace file; %FALSE otherwise</doc>
+               line="1742">%TRUE if client network traffic is being logged to a trace file; %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1736">a #UhmServer</doc>
+                 line="1738">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
         </parameters>
@@ -581,19 +601,19 @@ used. This may change in future.</doc>
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1698">Gets the value of the #UhmServer:enable-online property.</doc>
+             line="1700">Gets the value of the #UhmServer:enable-online property.</doc>
         <source-position filename="uhm-server.h" line="109"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="uhm-server.c"
-               line="1704">%TRUE if the server does not intercept and handle network connections from client code; %FALSE otherwise</doc>
+               line="1706">%TRUE if the server does not intercept and handle network connections from client code; %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1700">a #UhmServer</doc>
+                 line="1702">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
         </parameters>
@@ -603,19 +623,19 @@ used. This may change in future.</doc>
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="2041">Gets the value of the #UhmServer:port property.</doc>
+             line="2043">Gets the value of the #UhmServer:port property.</doc>
         <source-position filename="uhm-server.h" line="120"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="uhm-server.c"
-               line="2047">the port of the listening socket the server is currently bound to; or &lt;code class="literal"&gt;0&lt;/code&gt; if the server is not running</doc>
+               line="2049">the port of the listening socket the server is currently bound to; or &lt;code class="literal"&gt;0&lt;/code&gt; if the server is not running</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2043">a #UhmServer</doc>
+                 line="2045">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
         </parameters>
@@ -625,19 +645,19 @@ used. This may change in future.</doc>
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="2059">Gets the value of the #UhmServer:resolver property.</doc>
+             line="2061">Gets the value of the #UhmServer:resolver property.</doc>
         <source-position filename="uhm-server.h" line="122"/>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="uhm-server.c"
-               line="2065">the mock resolver in use by the mock server, or %NULL if no resolver is active</doc>
+               line="2067">the mock resolver in use by the mock server, or %NULL if no resolver is active</doc>
           <type name="Resolver" c:type="UhmResolver*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2061">a #UhmServer</doc>
+                 line="2063">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
         </parameters>
@@ -647,19 +667,19 @@ used. This may change in future.</doc>
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="2077">Gets the value of the #UhmServer:tls-certificate property.</doc>
+             line="2079">Gets the value of the #UhmServer:tls-certificate property.</doc>
         <source-position filename="uhm-server.h" line="124"/>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="uhm-server.c"
-               line="2083">the server's current TLS certificate; or %NULL if it's serving HTTP only</doc>
+               line="2085">the server's current TLS certificate; or %NULL if it's serving HTTP only</doc>
           <type name="Gio.TlsCertificate" c:type="GTlsCertificate*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2079">a #UhmServer</doc>
+                 line="2081">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
         </parameters>
@@ -669,19 +689,19 @@ used. This may change in future.</doc>
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1500">Gets the value of the #UhmServer:trace-directory property.</doc>
+             line="1502">Gets the value of the #UhmServer:trace-directory property.</doc>
         <source-position filename="uhm-server.h" line="102"/>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="uhm-server.c"
-               line="1506">the directory to load/store trace files from, or %NULL</doc>
+               line="1508">the directory to load/store trace files from, or %NULL</doc>
           <type name="Gio.File" c:type="GFile*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1502">a #UhmServer</doc>
+                 line="1504">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
         </parameters>
@@ -692,7 +712,7 @@ used. This may change in future.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1135">Synchronously loads the given @trace_file of network messages, ready to simulate a network conversation by matching
+             line="1137">Synchronously loads the given @trace_file of network messages, ready to simulate a network conversation by matching
 requests against the file and returning the associated responses. Call uhm_server_run() to start the mock
 server afterwards.
 
@@ -708,13 +728,13 @@ a problem reading the trace file.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1137">a #UhmServer</doc>
+                 line="1139">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="trace_file" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1138">trace file to load</doc>
+                 line="1140">trace file to load</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
           <parameter name="cancellable"
@@ -723,7 +743,7 @@ a problem reading the trace file.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1139">a #GCancellable, or %NULL</doc>
+                 line="1141">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -733,7 +753,7 @@ a problem reading the trace file.</doc>
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1230">Asynchronous version of uhm_server_load_trace(). In @callback, call uhm_server_load_trace_finish() to complete the operation.</doc>
+             line="1232">Asynchronous version of uhm_server_load_trace(). In @callback, call uhm_server_load_trace_finish() to complete the operation.</doc>
         <source-position filename="uhm-server.h" line="95"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -742,13 +762,13 @@ a problem reading the trace file.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1232">a #UhmServer</doc>
+                 line="1234">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="trace_file" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1233">trace file to load</doc>
+                 line="1235">trace file to load</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
           <parameter name="cancellable"
@@ -757,7 +777,7 @@ a problem reading the trace file.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1234">a #GCancellable, or %NULL</doc>
+                 line="1236">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -768,7 +788,7 @@ a problem reading the trace file.</doc>
                      closure="3">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1235">function to call once the async operation is complete</doc>
+                 line="1237">function to call once the async operation is complete</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -777,7 +797,7 @@ a problem reading the trace file.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1236">user data to pass to @callback, or %NULL</doc>
+                 line="1238">user data to pass to @callback, or %NULL</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -788,7 +808,7 @@ a problem reading the trace file.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1266">Finishes an asynchronous operation started by uhm_server_load_trace_async().
+             line="1268">Finishes an asynchronous operation started by uhm_server_load_trace_async().
 
 On error, @error will be set and the state of the #UhmServer will not change.
 See uhm_server_load_trace() for details on the error domains used.</doc>
@@ -800,13 +820,13 @@ See uhm_server_load_trace() for details on the error domains used.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1268">a #UhmServer</doc>
+                 line="1270">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1269">asynchronous operation result passed to the callback</doc>
+                 line="1271">asynchronous operation result passed to the callback</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -817,7 +837,7 @@ See uhm_server_load_trace() for details on the error domains used.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1770">Indicates to the mock server that a single new line of a message was received from the real server. The message line may be
+             line="1772">Indicates to the mock server that a single new line of a message was received from the real server. The message line may be
 appended to the current trace file if logging is enabled (#UhmServer:enable-logging is %TRUE), adding a newline character
 at the end. If logging is disabled but online mode is enabled (#UhmServer:enable-online is %TRUE), the message line will
 be compared to the next expected line in the existing trace file. Otherwise, this function is a no-op.
@@ -838,19 +858,19 @@ it directly to soup_logger_set_printer(). See the documentation for uhm_server_r
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1772">a #UhmServer</doc>
+                 line="1774">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="message_chunk" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1773">single line of a message which was received</doc>
+                 line="1775">single line of a message which was received</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="message_chunk_length" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1774">length of @message_chunk in bytes</doc>
+                 line="1776">length of @message_chunk in bytes</doc>
             <type name="gint64" c:type="goffset"/>
           </parameter>
         </parameters>
@@ -861,7 +881,7 @@ it directly to soup_logger_set_printer(). See the documentation for uhm_server_r
               throws="1">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1915">Convenience version of uhm_server_received_message_chunk() which takes the
+             line="1917">Convenience version of uhm_server_received_message_chunk() which takes the
 message @direction and @data separately, as provided by libsoup in a
 #SoupLoggerPrinter callback.
 
@@ -896,25 +916,25 @@ g_object_unref (logger);
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1917">a #UhmServer</doc>
+                 line="1919">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="direction" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1918">single character indicating the direction of message transmission</doc>
+                 line="1920">single character indicating the direction of message transmission</doc>
             <type name="gchar" c:type="char"/>
           </parameter>
           <parameter name="data" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1919">single line of a message which was received</doc>
+                 line="1921">single line of a message which was received</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="data_length" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1920">length of @data in bytes</doc>
+                 line="1922">length of @data in bytes</doc>
             <type name="gint64" c:type="goffset"/>
           </parameter>
         </parameters>
@@ -922,7 +942,7 @@ g_object_unref (logger);
       <method name="run" c:identifier="uhm_server_run" version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1329">Runs the mock server, binding to a loopback TCP/IP interface and preparing a HTTPS server which is ready to accept requests.
+             line="1331">Runs the mock server, binding to a loopback TCP/IP interface and preparing a HTTPS server which is ready to accept requests.
 The TCP/IP address and port number are chosen randomly out of the loopback addresses, and are exposed as #UhmServer:address and #UhmServer:port
 once this function has returned. A #UhmResolver (exposed as #UhmServer:resolver) is set as the default #GResolver while the server is running.
 
@@ -938,7 +958,7 @@ This function always succeeds.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1331">a #UhmServer</doc>
+                 line="1333">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
         </parameters>
@@ -948,7 +968,7 @@ This function always succeeds.</doc>
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="2123">Sets the value of the #UhmServer:tls-certificate property to the default TLS certificate built in to libuhttpmock.
+             line="2125">Sets the value of the #UhmServer:tls-certificate property to the default TLS certificate built in to libuhttpmock.
 This default certificate is not signed by any certificate authority, and contains minimal metadata details. It may
 be used by clients which have no special certificate requirements; clients which have special requirements should
 construct a custom #GTlsCertificate and pass it to uhm_server_set_tls_certificate().</doc>
@@ -956,14 +976,14 @@ construct a custom #GTlsCertificate and pass it to uhm_server_set_tls_certificat
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="uhm-server.c"
-               line="2132">the default certificate set as #UhmServer:tls-certificate</doc>
+               line="2134">the default certificate set as #UhmServer:tls-certificate</doc>
           <type name="Gio.TlsCertificate" c:type="GTlsCertificate*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2125">a #UhmServer</doc>
+                 line="2127">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
         </parameters>
@@ -973,7 +993,7 @@ construct a custom #GTlsCertificate and pass it to uhm_server_set_tls_certificat
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1752">Sets the value of the #UhmServer:enable-logging property.</doc>
+             line="1754">Sets the value of the #UhmServer:enable-logging property.</doc>
         <source-position filename="uhm-server.h" line="113"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -982,13 +1002,13 @@ construct a custom #GTlsCertificate and pass it to uhm_server_set_tls_certificat
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1754">a #UhmServer</doc>
+                 line="1756">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="enable_logging" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1755">%TRUE to log client network traffic to a trace file; %FALSE otherwise</doc>
+                 line="1757">%TRUE to log client network traffic to a trace file; %FALSE otherwise</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -998,7 +1018,7 @@ construct a custom #GTlsCertificate and pass it to uhm_server_set_tls_certificat
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1716">Sets the value of the #UhmServer:enable-online property.</doc>
+             line="1718">Sets the value of the #UhmServer:enable-online property.</doc>
         <source-position filename="uhm-server.h" line="110"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1007,13 +1027,13 @@ construct a custom #GTlsCertificate and pass it to uhm_server_set_tls_certificat
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1718">a #UhmServer</doc>
+                 line="1720">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="enable_online" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1719">%TRUE to not intercept and handle network connections from client code; %FALSE otherwise</doc>
+                 line="1721">%TRUE to not intercept and handle network connections from client code; %FALSE otherwise</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -1023,7 +1043,7 @@ construct a custom #GTlsCertificate and pass it to uhm_server_set_tls_certificat
               version="0.3.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="2180">Set the domain names which are expected to have requests made of them by the client code interacting with this #UhmServer.
+             line="2182">Set the domain names which are expected to have requests made of them by the client code interacting with this #UhmServer.
 This is a convenience method which calls uhm_resolver_add_A() on the server’s #UhmResolver for each of the domain names
 listed in @domain_names. It associates them with the server’s current IP address, and automatically updates the mappings
 if the IP address or resolver change.
@@ -1040,7 +1060,7 @@ that signal is emitted after the resolver is cleared and these @domain_names are
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2182">a #UhmServer</doc>
+                 line="2184">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="domain_names"
@@ -1049,7 +1069,7 @@ that signal is emitted after the resolver is cleared and these @domain_names are
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2183">%NULL-terminated array of domain names to expect, or %NULL to not expect any</doc>
+                 line="2185">%NULL-terminated array of domain names to expect, or %NULL to not expect any</doc>
             <array c:type="const gchar* const*">
               <type name="utf8"/>
             </array>
@@ -1061,7 +1081,7 @@ that signal is emitted after the resolver is cleared and these @domain_names are
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="2095">Sets the value of the #UhmServer:tls-certificate property.</doc>
+             line="2097">Sets the value of the #UhmServer:tls-certificate property.</doc>
         <source-position filename="uhm-server.h" line="125"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1070,7 +1090,7 @@ that signal is emitted after the resolver is cleared and these @domain_names are
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2097">a #UhmServer</doc>
+                 line="2099">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="tls_certificate"
@@ -1079,7 +1099,7 @@ that signal is emitted after the resolver is cleared and these @domain_names are
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="2098">TLS certificate for the server to use; or %NULL to serve HTTP only</doc>
+                 line="2100">TLS certificate for the server to use; or %NULL to serve HTTP only</doc>
             <type name="Gio.TlsCertificate" c:type="GTlsCertificate*"/>
           </parameter>
         </parameters>
@@ -1089,7 +1109,7 @@ that signal is emitted after the resolver is cleared and these @domain_names are
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1518">Sets the value of the #UhmServer:trace-directory property.</doc>
+             line="1520">Sets the value of the #UhmServer:trace-directory property.</doc>
         <source-position filename="uhm-server.h" line="103"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1098,7 +1118,7 @@ that signal is emitted after the resolver is cleared and these @domain_names are
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1520">a #UhmServer</doc>
+                 line="1522">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="trace_directory"
@@ -1107,7 +1127,7 @@ that signal is emitted after the resolver is cleared and these @domain_names are
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1521">a directory to load/store trace files from, or %NULL to unset it</doc>
+                 line="1523">a directory to load/store trace files from, or %NULL to unset it</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
         </parameters>
@@ -1118,7 +1138,7 @@ that signal is emitted after the resolver is cleared and these @domain_names are
               throws="1">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1542">Starts a mock server which follows the trace file of filename @trace_name in the #UhmServer:trace-directory directory.
+             line="1544">Starts a mock server which follows the trace file of filename @trace_name in the #UhmServer:trace-directory directory.
 See uhm_server_start_trace_full() for further documentation.
 
 This function has undefined behaviour if #UhmServer:trace-directory is %NULL.
@@ -1133,13 +1153,13 @@ details of the error domains used.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1544">a #UhmServer</doc>
+                 line="1546">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="trace_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1545">name of the trace</doc>
+                 line="1547">name of the trace</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -1150,7 +1170,7 @@ details of the error domains used.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1574">Convenience function to start logging to or reading from the given @trace_file, depending on the values of #UhmServer:enable-logging and
+             line="1576">Convenience function to start logging to or reading from the given @trace_file, depending on the values of #UhmServer:enable-logging and
 #UhmServer:enable-online.
 
 If #UhmServer:enable-logging is %TRUE, a log handler will be set up to redirect all client network activity into the given @trace_file.
@@ -1170,13 +1190,13 @@ reading from the trace file.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1576">a #UhmServer</doc>
+                 line="1578">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
           <parameter name="trace_file" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1577">a trace file to load</doc>
+                 line="1579">a trace file to load</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
         </parameters>
@@ -1184,7 +1204,7 @@ reading from the trace file.</doc>
       <method name="stop" c:identifier="uhm_server_stop" version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1443">Stops a mock server started by calling uhm_server_run(). This shuts down the server's worker thread and unbinds it from its TCP/IP socket.
+             line="1445">Stops a mock server started by calling uhm_server_run(). This shuts down the server's worker thread and unbinds it from its TCP/IP socket.
 
 This unloads any trace file loaded by calling uhm_server_load_trace() (or its asynchronous counterpart). It also resets the set of domain
 names loaded into the #UhmServer:resolver.
@@ -1198,7 +1218,7 @@ This function always succeeds.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1445">a #UhmServer</doc>
+                 line="1447">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
         </parameters>
@@ -1208,7 +1228,7 @@ This function always succeeds.</doc>
               version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="1112">Unloads the current trace file of network messages, as loaded by uhm_server_load_trace() or uhm_server_load_trace_async().</doc>
+             line="1114">Unloads the current trace file of network messages, as loaded by uhm_server_load_trace() or uhm_server_load_trace_async().</doc>
         <source-position filename="uhm-server.h" line="97"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -1217,7 +1237,7 @@ This function always succeeds.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="1114">a #UhmServer</doc>
+                 line="1116">a #UhmServer</doc>
             <type name="Server" c:type="UhmServer*"/>
           </instance-parameter>
         </parameters>
@@ -1225,7 +1245,7 @@ This function always succeeds.</doc>
       <property name="address" version="0.1.0" transfer-ownership="none">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="213">Address of the local mock server if it's running, or %NULL otherwise. This will be non-%NULL between calls to uhm_server_run() and
+             line="215">Address of the local mock server if it's running, or %NULL otherwise. This will be non-%NULL between calls to uhm_server_run() and
 uhm_server_stop(). The address is a physical IP address, e.g. &lt;code class="literal"&gt;127.0.0.1&lt;/code&gt;.
 
 This should not normally need to be passed into client code under test, unless the code references IP addresses specifically. The mock server
@@ -1238,7 +1258,7 @@ runs a DNS resolver which automatically redirects client requests for known doma
                 transfer-ownership="none">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="198">%TRUE if network traffic should be logged to a trace file (specified by calling uhm_server_start_trace()). This operates independently
+             line="200">%TRUE if network traffic should be logged to a trace file (specified by calling uhm_server_start_trace()). This operates independently
 of whether traffic is online or being handled locally by the mock server.
 Use this in conjunction with #UhmServer:enable-online to either log online traffic, or replay logged traffic locally.</doc>
         <type name="gboolean" c:type="gboolean"/>
@@ -1249,14 +1269,14 @@ Use this in conjunction with #UhmServer:enable-online to either log online traff
                 transfer-ownership="none">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="184">%TRUE if network traffic should reach the Internet as normal; %FALSE to redirect it to the local mock server.
+             line="186">%TRUE if network traffic should reach the Internet as normal; %FALSE to redirect it to the local mock server.
 Use this in conjunction with #UhmServer:enable-logging to either log online traffic, or replay logged traffic locally.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="port" version="0.1.0" transfer-ownership="none">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="230">Port of the local mock server if it's running, or &lt;code class="literal"&gt;0&lt;/code&gt; otherwise. This will be non-&lt;code class="literal"&gt;0&lt;/code&gt; between
+             line="232">Port of the local mock server if it's running, or &lt;code class="literal"&gt;0&lt;/code&gt; otherwise. This will be non-&lt;code class="literal"&gt;0&lt;/code&gt; between
 calls to uhm_server_run() and uhm_server_stop().
 
 It is intended that this port be passed into the client code under test, to substitute for the default HTTPS port (443) which it would otherwise
@@ -1266,7 +1286,7 @@ use.</doc>
       <property name="resolver" version="0.1.0" transfer-ownership="none">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="247">Mock resolver used to redirect HTTP requests from specified domain names to the local mock server instance. This will always be set while the
+             line="249">Mock resolver used to redirect HTTP requests from specified domain names to the local mock server instance. This will always be set while the
 server is running (between calls to uhm_server_run() and uhm_server_stop()), and is %NULL otherwise.
 
 Use the resolver specified in this property to add domain names which are expected to be requested by the current trace. Domain names not added
@@ -1280,7 +1300,7 @@ called.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="265">TLS certificate for the mock server to use when serving HTTPS pages. If this is non-%NULL, the server will always use HTTPS. If it is %NULL,
+             line="267">TLS certificate for the mock server to use when serving HTTPS pages. If this is non-%NULL, the server will always use HTTPS. If it is %NULL,
 the server will always use HTTP. The TLS certificate may be changed after constructing the #UhmServer, but changes to the property will not
 take effect until the next call to uhm_server_run().
 
@@ -1299,7 +1319,7 @@ requirements of the certificate used by the mock server it's tested against.</do
                 transfer-ownership="none">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="170">Directory relative to which all trace files specified in calls to uhm_server_start_trace() will be resolved.
+             line="172">Directory relative to which all trace files specified in calls to uhm_server_start_trace() will be resolved.
 This is not used for any other methods, but must be non-%NULL if uhm_server_start_trace() is called.</doc>
         <type name="Gio.File"/>
       </property>
@@ -1312,7 +1332,7 @@ This is not used for any other methods, but must be non-%NULL if uhm_server_star
       <glib:signal name="compare-messages" when="last" version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="309">Emitted whenever the mock server must compare two #SoupMessage&lt;!-- --&gt;s for equality; e.g. when in the testing or comparison modes.
+             line="311">Emitted whenever the mock server must compare two #SoupMessage&lt;!-- --&gt;s for equality; e.g. when in the testing or comparison modes.
 Test code may connect to this signal and implement a handler which checks custom properties of the messages. The default handler compares
 the URI and method of the messages, but no headers and not the message bodies.
 
@@ -1325,19 +1345,19 @@ this signal is emitted wins.</doc>
           <parameter name="expected_message" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="312">a message containing the expected HTTP(S) message provided by #UhmServer::handle-message</doc>
+                 line="314">a message containing the expected HTTP(S) message provided by #UhmServer::handle-message</doc>
             <type name="Soup.Message"/>
           </parameter>
           <parameter name="actual_message" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="313">a message containing the incoming HTTP(S) request</doc>
+                 line="315">a message containing the incoming HTTP(S) request</doc>
             <type name="Soup.Message"/>
           </parameter>
           <parameter name="actual_client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="314">additional data about the HTTP client making the request</doc>
+                 line="316">additional data about the HTTP client making the request</doc>
             <type name="Soup.ClientContext"/>
           </parameter>
         </parameters>
@@ -1345,7 +1365,7 @@ this signal is emitted wins.</doc>
       <glib:signal name="handle-message" when="last" version="0.1.0">
         <doc xml:space="preserve"
              filename="uhm-server.c"
-             line="288">Emitted whenever the mock server is running and receives a request from a client. Test code may connect to this signal and implement a handler
+             line="290">Emitted whenever the mock server is running and receives a request from a client. Test code may connect to this signal and implement a handler
 which builds and returns a suitable response for a given message. The default handler reads a request–response pair from the current trace file,
 matches the requests and then returns the given response. If the requests don't match, an error is raised.
 
@@ -1357,13 +1377,13 @@ Signal handlers should return %TRUE if they have handled the request and set an 
           <parameter name="message" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="291">a message containing the incoming HTTP(S) request, and which the outgoing HTTP(S) response should be set on</doc>
+                 line="293">a message containing the incoming HTTP(S) request, and which the outgoing HTTP(S) response should be set on</doc>
             <type name="Soup.Message"/>
           </parameter>
           <parameter name="client" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="uhm-server.c"
-                 line="292">additional data about the HTTP client making the request</doc>
+                 line="294">additional data about the HTTP client making the request</doc>
             <type name="Soup.ClientContext"/>
           </parameter>
         </parameters>
@@ -1438,35 +1458,7 @@ Signal handlers should return %TRUE if they have handled the request and set an 
     <record name="ServerPrivate" c:type="UhmServerPrivate" disguised="1">
       <source-position filename="uhm-server.h" line="53"/>
     </record>
-    <docsection name="uhm-resolver">
-      <doc xml:space="preserve"
-           filename="uhm-resolver.c"
-           line="29">A mock DNS resolver which resolves according to specified host-name–IP-address pairs, and raises an error for all non-specified host name requests.
-This allows network connections for expected services to be redirected to a different server, such as a local mock server on a loopback interface.</doc>
-    </docsection>
-    <docsection name="uhm-server">
-      <doc xml:space="preserve"
-           filename="uhm-server.c"
-           line="20">This is a mock HTTPS server which can be used to run unit tests of network client code on a loopback interface rather than on the real Internet.
-At its core, it's a simple HTTPS server which runs on a loopback address on an arbitrary port. The code under test must be modified to send its
-requests to this port, although #UhmResolver may be used to transparently redirect all IP addresses to the mock server.
-A convenience layer on the mock server provides loading of and recording to trace files, which are sequences of request–response HTTPS message pairs
-where each request is expected by the server (in order). On receiving an expected request, the mock server will return the relevant response and move
-to expecting the next request in the trace file.
-
-The mock server currently only operates on a single network interface, on HTTPS only. This may change in future. A dummy TLS certificate is used
-to authenticate the server. This certificate is not signed by a CA, so the #SoupSession:ssl-strict property must be set to %FALSE in client code
-during (and only during!) testing.
-
-The server can operate in three modes: logging, testing, and comparing. These are set by #UhmServer:enable-logging and #UhmServer:enable-online.
- • Logging mode (#UhmServer:enable-logging: %TRUE, #UhmServer:enable-online: %TRUE): Requests are sent to the real server online, and the
-   request–response pairs recorded to a log file.
- • Testing mode (#UhmServer:enable-logging: %FALSE, #UhmServer:enable-online: %FALSE): Requests are sent to the mock server, which responds
-   from the trace file.
- • Comparing mode (#UhmServer:enable-logging: %FALSE, #UhmServer:enable-online: %TRUE): Requests are sent to the real server online, and
-   the request–response pairs are compared against those in an existing log file to see if the log file is up-to-date.</doc>
-    </docsection>
-    <docsection name="uhm-version">
+    <docsection name="uhmversion">
       <doc xml:space="preserve"
            filename="uhm-version.h"
            line="24">uhttpmock provides compile-time version information.</doc>

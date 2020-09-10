@@ -55,9 +55,42 @@ and/or use gtk-doc annotations.  -->
                glib:get-type="geocode_backend_get_type"
                glib:type-struct="BackendInterface">
       <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-backend.h"
-           line="34">All the fields in the #GeocodeBackend structure are private and should
-never be accessed directly.</doc>
+           filename="../geocode-glib/geocode-backend.c"
+           line="26">The #GeocodeBackend interface defines the operations that a resolver
+service must implement.
+
+geocode-glib supports multiple backends which provide the underlying
+geocoding database and functionality. By default, the #GeocodeNominatim
+backend is used with
+[GNOME’s Nominatim server](https://nominatim.gnome.org/). If you are using
+geocode-glib in some GNOME software, this is the correct backend to use.
+Otherwise, you should use a new #GeocodeNominatim instance with your own
+Nominatim server, or a custom #GeocodeBackend implementation to use geocoding
+data from a non-Nominatim service. In all cases, please respect the terms of
+use of the service you are using.
+
+If you are writing a library which uses geocode-glib, consider exposing the
+choice of #GeocodeBackend in your library API, so that applications can make
+the best choice about which geocoding backend to use.
+
+Custom backends can be implemented by subclassing #GeocodeBackend and
+implementing the synchronous `forward_search` and `reverse_resolve` methods.
+The asynchronous versions may be implemented as well; the default
+implementations run the synchronous version in a thread.
+
+In order to use a custom backend, either instantiate the backend directly
+and do forward and reverse queries on it using the #GeocodeBackend interface;
+or create #GeocodeForward and #GeocodeReverse objects as normal, and set
+the backend they use with geocode_forward_set_backend() and
+geocode_reverse_set_backend(). They default to using the GNOME Nominatim
+backend.
+
+#GeocodeMockBackend is intended to be used in unit tests for applications
+which use geocode-glib — it allows them to set the geocode results they
+expect their application to query, and check afterwards that the queries
+were performed. Additionally, it works offline, which allows application
+unit tests to be run on integration and build machines which are not online.
+It is not expected that #GeocodeMockBackend will be used in production code.</doc>
       <source-position filename="../geocode-glib/geocode-backend.h"
                        line="103"/>
       <virtual-method name="forward_search"
@@ -991,9 +1024,9 @@ g_object_unref() and the list with g_list_free() when done.</doc>
            glib:get-type="geocode_bounding_box_get_type"
            glib:type-struct="BoundingBoxClass">
       <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-bounding-box.h"
-           line="44">All the fields in the #GeocodeLocation structure are private and should
-never be accessed directly.</doc>
+           filename="../geocode-glib/geocode-bounding-box.c"
+           line="25">The #GeocodeBoundingBox represents a geographical area on earth, bounded
+by top, bottom, left and right coordinates.</doc>
       <source-position filename="../geocode-glib/geocode-bounding-box.h"
                        line="65"/>
       <constructor name="new" c:identifier="geocode_bounding_box_new">
@@ -1308,8 +1341,9 @@ should never be accessed directly.</doc>
            glib:get-type="geocode_forward_get_type"
            glib:type-struct="ForwardClass">
       <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-forward.h"
-           line="43">All the fields in the #GeocodeForward structure are private and should never be accessed directly.</doc>
+           filename="../geocode-glib/geocode-forward.c"
+           line="35">Contains functions for geocoding using the
+&lt;ulink url="http://wiki.openstreetmap.org/wiki/Nominatim"&gt;OSM Nominatim APIs&lt;/ulink&gt;</doc>
       <source-position filename="../geocode-glib/geocode-forward.h" line="66"/>
       <constructor name="new_for_params"
                    c:identifier="geocode_forward_new_for_params">
@@ -1882,8 +1916,9 @@ this area is returned.</doc>
            glib:get-type="geocode_location_get_type"
            glib:type-struct="LocationClass">
       <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-location.h"
-           line="44">All the fields in the #GeocodeLocation structure are private and should never be accessed directly.</doc>
+           filename="../geocode-glib/geocode-location.c"
+           line="32">The #GeocodeLocation instance represents a location on earth, with an
+optional description.</doc>
       <source-position filename="../geocode-glib/geocode-location.h"
                        line="63"/>
       <constructor name="new" c:identifier="geocode_location_new">
@@ -2392,9 +2427,79 @@ A value of 0 (zero) will be interpreted as the current time.</doc>
            glib:get-type="geocode_mock_backend_get_type"
            glib:type-struct="MockBackendClass">
       <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-mock-backend.h"
-           line="30">All the fields in the #GeocodeMockBackend structure are private and should
-never be accessed directly.</doc>
+           filename="../geocode-glib/geocode-mock-backend.c"
+           line="32">#GeocodeMockBackend is intended to be used in unit tests for applications
+which use geocode-glib — it allows them to set the geocode results they
+expect their application to query, and check afterwards that the queries
+were performed. It works offline, which allows application unit tests to be
+run on integration and build machines which are not online. It is not
+expected that #GeocodeMockBackend will be used in production code.
+
+To use it, create the backend instance, add the query results to it which
+you want to be returned to your application’s queries, then use it as the
+#GeocodeBackend for geocode_forward_set_backend() or
+geocode_reverse_set_backend(). After a test has been run, the set of queries
+which the code under test actually made on the backend can be checked using
+geocode_mock_backend_get_query_log(). The backend can be reset using
+geocode_mock_backend_clear() and new queries added for the next test.
+
+|[&lt;!-- language="C" --&gt;
+static void
+place_list_free (GList *l)
+{
+  g_list_free_full (l, g_object_unref);
+}
+
+typedef GList PlaceList;
+G_DEFINE_AUTOPTR_CLEANUP_FUNC (PlaceList, place_list_free)
+
+g_autoptr (GeocodeForward) forward = NULL;
+g_autoptr (GeocodeMockBackend) backend = NULL;
+g_autoptr (GHashTable) params = NULL;
+GValue location = G_VALUE_INIT;
+g_autoptr (PlaceList) results = NULL;
+g_autoptr (PlaceList) expected_results = NULL;
+g_autoptr (GError) error = NULL;
+g_autoptr (GeocodePlace) expected_place = NULL;
+g_autoptr (GeocodeLocation) expected_location = NULL;
+GPtrArray *query_log;  /&lt;!-- --&gt;* (element-type GeocodeMockBackendQuery) *&lt;!-- --&gt;/
+
+backend = geocode_mock_backend_new ();
+
+/&lt;!-- --&gt;* Build the set of parameters the mock backend expects to receive from
+ * the #GeocodeForward instance. *&lt;!-- --&gt;/
+params = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL);
+
+g_value_init (&amp;location, G_TYPE_STRING);
+g_value_set_static_string (&amp;location, "Bullpot Farm");
+g_hash_table_insert (params, (gpointer) "location", &amp;location);
+
+/&lt;!-- --&gt;* Build the set of results the mock backend should return. *&lt;!-- --&gt;/
+expected_location = geocode_location_new_with_description (
+    54.22759825, -2.51857179181113, 5.0,
+    "Bullpot Farm, Fell Road, South Lakeland, Cumbria, "
+    "North West England, England, United Kingdom");
+expected_place = geocode_place_new_with_location (
+    "Bullpot Farm", GEOCODE_PLACE_TYPE_BUILDING, expected_location);
+expected_results = g_list_prepend (expected_results,
+                                   g_steal_pointer (&amp;expected_place));
+
+geocode_mock_backend_add_forward_result (backend, params,
+                                         expected_results, NULL);
+
+/&lt;!-- --&gt;* Do the search. This would typically call the application code
+ * under test, rather than geocode-glib directly. *&lt;!-- --&gt;/
+forward = geocode_forward_new_for_string ("Bullpot Farm");
+geocode_forward_set_backend (forward, GEOCODE_BACKEND (backend));
+results = geocode_forward_search (forward, &amp;error);
+
+g_assert_no_error (error);
+assert_place_list_equal (results, expected_results);
+
+/&lt;!-- --&gt;* Check the application made the expected query. *&lt;!-- --&gt;/
+query_log = geocode_mock_backend_get_query_log (backend);
+g_assert_cmpuint (query_log-&gt;len, ==, 1);
+]|</doc>
       <source-position filename="../geocode-glib/geocode-mock-backend.h"
                        line="39"/>
       <implements name="Backend"/>
@@ -2668,9 +2773,12 @@ queries), rather than an empty @results list.</doc>
            glib:get-type="geocode_nominatim_get_type"
            glib:type-struct="NominatimClass">
       <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-nominatim.h"
-           line="34">All the fields in the #GeocodeNominatim structure are private and should
-never be accessed directly.</doc>
+           filename="../geocode-glib/geocode-nominatim.c"
+           line="35">Contains functions for geocoding using the
+[OSM Nominatim APIs](http://wiki.openstreetmap.org/wiki/Nominatim) exposed
+by a Nominatim server at a given URI. By default, the GNOME Nominatim server
+is used, but other server details may be given when constructing a
+#GeocodeNominatim.</doc>
       <source-position filename="../geocode-glib/geocode-nominatim.h"
                        line="87"/>
       <implements name="Backend"/>
@@ -2974,8 +3082,11 @@ virtual methods are mainly intended for testing.</doc>
            glib:get-type="geocode_place_get_type"
            glib:type-struct="PlaceClass">
       <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-place.h"
-           line="47">All the fields in the #GeocodePlace structure are private and should never be accessed directly.</doc>
+           filename="../geocode-glib/geocode-place.c"
+           line="30">The #GeocodePlace instance represents a place on earth. While
+#GeocodeLocation represents a point on the planet, #GeocodePlace represents
+places, e.g street, town, village, county, country or points of interest
+(POI) etc.</doc>
       <source-position filename="../geocode-glib/geocode-place.h" line="66"/>
       <constructor name="new" c:identifier="geocode_place_new">
         <doc xml:space="preserve"
@@ -4345,8 +4456,9 @@ unknown.</doc>
            glib:get-type="geocode_reverse_get_type"
            glib:type-struct="ReverseClass">
       <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-reverse.h"
-           line="42">All the fields in the #GeocodeReverse structure are private and should never be accessed directly.</doc>
+           filename="../geocode-glib/geocode-reverse.c"
+           line="36">Contains functions for reverse geocoding using the
+&lt;ulink url="http://wiki.openstreetmap.org/wiki/Nominatim"&gt;OSM Nominatim APIs&lt;/ulink&gt;</doc>
       <source-position filename="../geocode-glib/geocode-reverse.h" line="65"/>
       <constructor name="new_for_location"
                    c:identifier="geocode_reverse_new_for_location">
@@ -4548,171 +4660,15 @@ If none is given, the default GNOME Nominatim server is used.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
-    <docsection name="geocode-backend">
-      <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-backend.c"
-           line="26">The #GeocodeBackend interface defines the operations that a resolver
-service must implement.
-
-geocode-glib supports multiple backends which provide the underlying
-geocoding database and functionality. By default, the #GeocodeNominatim
-backend is used with
-[GNOME’s Nominatim server](https://nominatim.gnome.org/). If you are using
-geocode-glib in some GNOME software, this is the correct backend to use.
-Otherwise, you should use a new #GeocodeNominatim instance with your own
-Nominatim server, or a custom #GeocodeBackend implementation to use geocoding
-data from a non-Nominatim service. In all cases, please respect the terms of
-use of the service you are using.
-
-If you are writing a library which uses geocode-glib, consider exposing the
-choice of #GeocodeBackend in your library API, so that applications can make
-the best choice about which geocoding backend to use.
-
-Custom backends can be implemented by subclassing #GeocodeBackend and
-implementing the synchronous `forward_search` and `reverse_resolve` methods.
-The asynchronous versions may be implemented as well; the default
-implementations run the synchronous version in a thread.
-
-In order to use a custom backend, either instantiate the backend directly
-and do forward and reverse queries on it using the #GeocodeBackend interface;
-or create #GeocodeForward and #GeocodeReverse objects as normal, and set
-the backend they use with geocode_forward_set_backend() and
-geocode_reverse_set_backend(). They default to using the GNOME Nominatim
-backend.
-
-#GeocodeMockBackend is intended to be used in unit tests for applications
-which use geocode-glib — it allows them to set the geocode results they
-expect their application to query, and check afterwards that the queries
-were performed. Additionally, it works offline, which allows application
-unit tests to be run on integration and build machines which are not online.
-It is not expected that #GeocodeMockBackend will be used in production code.</doc>
-    </docsection>
-    <docsection name="geocode-bounding-box">
-      <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-bounding-box.c"
-           line="25">The #GeocodeBoundingBox represents a geographical area on earth, bounded
-by top, bottom, left and right coordinates.</doc>
-    </docsection>
-    <docsection name="geocode-error">
+    <docsection name="geocodeerror">
       <doc xml:space="preserve"
            filename="../geocode-glib/geocode-error.c"
            line="25">Contains helper functions for reporting errors to the user.</doc>
     </docsection>
-    <docsection name="geocode-forward">
-      <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-forward.c"
-           line="35">Contains functions for geocoding using the
-&lt;ulink url="http://wiki.openstreetmap.org/wiki/Nominatim"&gt;OSM Nominatim APIs&lt;/ulink&gt;</doc>
-    </docsection>
-    <docsection name="geocode-glib">
+    <docsection name="geocodeglib">
       <doc xml:space="preserve"
            filename="../geocode-glib/geocode-glib.c"
            line="33">Contains functions for geocoding and reverse geocoding using the
-&lt;ulink url="http://wiki.openstreetmap.org/wiki/Nominatim"&gt;OSM Nominatim APIs&lt;/ulink&gt;</doc>
-    </docsection>
-    <docsection name="geocode-location">
-      <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-location.c"
-           line="32">The #GeocodeLocation instance represents a location on earth, with an
-optional description.</doc>
-    </docsection>
-    <docsection name="geocode-mock-backend">
-      <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-mock-backend.c"
-           line="32">#GeocodeMockBackend is intended to be used in unit tests for applications
-which use geocode-glib — it allows them to set the geocode results they
-expect their application to query, and check afterwards that the queries
-were performed. It works offline, which allows application unit tests to be
-run on integration and build machines which are not online. It is not
-expected that #GeocodeMockBackend will be used in production code.
-
-To use it, create the backend instance, add the query results to it which
-you want to be returned to your application’s queries, then use it as the
-#GeocodeBackend for geocode_forward_set_backend() or
-geocode_reverse_set_backend(). After a test has been run, the set of queries
-which the code under test actually made on the backend can be checked using
-geocode_mock_backend_get_query_log(). The backend can be reset using
-geocode_mock_backend_clear() and new queries added for the next test.
-
-|[&lt;!-- language="C" --&gt;
-static void
-place_list_free (GList *l)
-{
-  g_list_free_full (l, g_object_unref);
-}
-
-typedef GList PlaceList;
-G_DEFINE_AUTOPTR_CLEANUP_FUNC (PlaceList, place_list_free)
-
-g_autoptr (GeocodeForward) forward = NULL;
-g_autoptr (GeocodeMockBackend) backend = NULL;
-g_autoptr (GHashTable) params = NULL;
-GValue location = G_VALUE_INIT;
-g_autoptr (PlaceList) results = NULL;
-g_autoptr (PlaceList) expected_results = NULL;
-g_autoptr (GError) error = NULL;
-g_autoptr (GeocodePlace) expected_place = NULL;
-g_autoptr (GeocodeLocation) expected_location = NULL;
-GPtrArray *query_log;  /&lt;!-- --&gt;* (element-type GeocodeMockBackendQuery) *&lt;!-- --&gt;/
-
-backend = geocode_mock_backend_new ();
-
-/&lt;!-- --&gt;* Build the set of parameters the mock backend expects to receive from
- * the #GeocodeForward instance. *&lt;!-- --&gt;/
-params = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, NULL);
-
-g_value_init (&amp;location, G_TYPE_STRING);
-g_value_set_static_string (&amp;location, "Bullpot Farm");
-g_hash_table_insert (params, (gpointer) "location", &amp;location);
-
-/&lt;!-- --&gt;* Build the set of results the mock backend should return. *&lt;!-- --&gt;/
-expected_location = geocode_location_new_with_description (
-    54.22759825, -2.51857179181113, 5.0,
-    "Bullpot Farm, Fell Road, South Lakeland, Cumbria, "
-    "North West England, England, United Kingdom");
-expected_place = geocode_place_new_with_location (
-    "Bullpot Farm", GEOCODE_PLACE_TYPE_BUILDING, expected_location);
-expected_results = g_list_prepend (expected_results,
-                                   g_steal_pointer (&amp;expected_place));
-
-geocode_mock_backend_add_forward_result (backend, params,
-                                         expected_results, NULL);
-
-/&lt;!-- --&gt;* Do the search. This would typically call the application code
- * under test, rather than geocode-glib directly. *&lt;!-- --&gt;/
-forward = geocode_forward_new_for_string ("Bullpot Farm");
-geocode_forward_set_backend (forward, GEOCODE_BACKEND (backend));
-results = geocode_forward_search (forward, &amp;error);
-
-g_assert_no_error (error);
-assert_place_list_equal (results, expected_results);
-
-/&lt;!-- --&gt;* Check the application made the expected query. *&lt;!-- --&gt;/
-query_log = geocode_mock_backend_get_query_log (backend);
-g_assert_cmpuint (query_log-&gt;len, ==, 1);
-]|</doc>
-    </docsection>
-    <docsection name="geocode-nominatim">
-      <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-nominatim.c"
-           line="35">Contains functions for geocoding using the
-[OSM Nominatim APIs](http://wiki.openstreetmap.org/wiki/Nominatim) exposed
-by a Nominatim server at a given URI. By default, the GNOME Nominatim server
-is used, but other server details may be given when constructing a
-#GeocodeNominatim.</doc>
-    </docsection>
-    <docsection name="geocode-place">
-      <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-place.c"
-           line="30">The #GeocodePlace instance represents a place on earth. While
-#GeocodeLocation represents a point on the planet, #GeocodePlace represents
-places, e.g street, town, village, county, country or points of interest
-(POI) etc.</doc>
-    </docsection>
-    <docsection name="geocode-reverse">
-      <doc xml:space="preserve"
-           filename="../geocode-glib/geocode-reverse.c"
-           line="36">Contains functions for reverse geocoding using the
 &lt;ulink url="http://wiki.openstreetmap.org/wiki/Nominatim"&gt;OSM Nominatim APIs&lt;/ulink&gt;</doc>
     </docsection>
   </namespace>

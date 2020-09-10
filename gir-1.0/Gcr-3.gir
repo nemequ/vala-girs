@@ -140,7 +140,25 @@ against.
                glib:type-struct="CertificateIface">
       <doc xml:space="preserve"
            filename="../gcr/gcr-certificate.c"
-           line="65">An object which holds a certificate.</doc>
+           line="39">This is an interface that represents an X.509 certificate. Objects can
+implement this interface to make a certificate usable with the GCR
+library.
+
+Various methods are available to parse out relevant bits of the certificate.
+However no verification of the validity of a certificate is done here. Use
+your favorite crypto library to do this.
+
+You can use #GcrSimpleCertificate to simply load a certificate for which
+you already have the raw certificate data.
+
+The #GcrCertificate interface has several properties that must be implemented.
+You can use a mixin to implement these properties if desired. See the
+gcr_certificate_mixin_class_init() and gcr_certificate_mixin_get_property()
+functions.
+
+All certificates are comparable. If implementing a #GcrCertificate, you can
+use GCR_CERTIFICATE_MIXIN_IMPLEMENT_COMPARABLE() to implement the #GcrComparable
+interface.</doc>
       <source-position filename="../gcr/gcr-certificate.h" line="70"/>
       <prerequisite name="Comparable"/>
       <function name="compare" c:identifier="gcr_certificate_compare">
@@ -1045,7 +1063,35 @@ properties.</doc>
            glib:type-struct="CertificateChainClass">
       <doc xml:space="preserve"
            filename="../gcr/gcr-certificate-chain.c"
-           line="72">A chain of certificates.</doc>
+           line="35">#GcrCertificateChain represents a chain of certificates, normally used to
+validate the trust in a certificate. An X.509 certificate chain has one
+endpoint certificate (the one for which trust is being verified) and then
+in turn the certificate that issued each previous certificate in the chain.
+
+This functionality is for building of certificate chains not for validating
+them. Use your favorite crypto library to validate trust in a certificate
+chain once its built.
+
+The order of certificates in the chain should be first the endpoint
+certificates and then the signing certificates.
+
+Create a new certificate chain with gcr_certificate_chain_new() and then
+add the certificates with gcr_certificate_chain_add().
+
+You can then use gcr_certificate_chain_build() to build the remainder of
+the chain. This will lookup missing certificates in PKCS\#11 modules and
+also check that each certificate in the chain is the signer of the previous
+one. If a trust anchor, pinned certificate, or self-signed certificate is
+found, then the chain is considered built. Any extra certificates are
+removed from the chain.
+
+Once the certificate chain has been built, you can access its status
+through gcr_certificate_chain_get_status(). The status signifies whether
+the chain is anchored on a trust root, self-signed, incomplete etc. See
+#GcrCertificateChainStatus for information on the various statuses.
+
+It's important to understand that the building of a certificate chain is
+merely the first step towards verifying trust in a certificate.</doc>
       <source-position filename="../gcr/gcr-certificate-chain.h" line="70"/>
       <constructor name="new" c:identifier="gcr_certificate_chain_new">
         <doc xml:space="preserve"
@@ -1618,7 +1664,14 @@ certificate. The anchored certificate is not necessarily self-signed.</doc>
            glib:type-struct="CertificateRequestClass">
       <doc xml:space="preserve"
            filename="../gcr/gcr-certificate-request.c"
-           line="51">Represents a certificate request.</doc>
+           line="36">This is an object that allows creation of certificate requests. A
+certificate request is sent to a certificate authority to request an
+X.509 certificate.
+
+Use gcr_certificate_request_prepare() to create a blank certificate
+request for a given private key. Set the common name on the certificate
+request with gcr_certificate_request_set_cn(), and then sign the request
+with gcr_certificate_request_complete_async().</doc>
       <source-position filename="../gcr/gcr-certificate-request.h" line="38"/>
       <function name="capable"
                 c:identifier="gcr_certificate_request_capable"
@@ -2033,7 +2086,12 @@ is done using the OpenSSL style PEM encoding.</doc>
                glib:type-struct="CollectionIface">
       <doc xml:space="preserve"
            filename="../gcr/gcr-collection.c"
-           line="37">A #GcrCollection is used to group a set of objects.</doc>
+           line="24">A #GcrCollection is used to group a set of objects. This is an abstract
+interface which can be used to determine which objects show up in a selector
+or other user interface element.
+
+Use gcr_simple_collection_new() to create a concrete implementation of this
+interface which you can add objects to.</doc>
       <source-position filename="../gcr/gcr-collection.h" line="61"/>
       <virtual-method name="added">
         <source-position filename="../gcr/gcr-collection.h" line="41"/>
@@ -2453,7 +2511,8 @@ is used by implementors of this interface.</doc>
                glib:type-struct="ComparableIface">
       <doc xml:space="preserve"
            filename="../gcr/gcr-comparable.c"
-           line="35">The #GcrComparable interface is implemented by comparable objects.</doc>
+           line="26">The #GcrComparable interface is implemented by objects when they should be
+comparable against one another.</doc>
       <source-position filename="../gcr/gcr-comparable.h" line="38"/>
       <function name="memcmp"
                 c:identifier="gcr_comparable_memcmp"
@@ -2879,7 +2938,12 @@ also be used to sort the objects.</doc>
            glib:type-struct="FilterCollectionClass">
       <doc xml:space="preserve"
            filename="../gcr/gcr-filter-collection.c"
-           line="40">A filter implementation of #GcrCollection.</doc>
+           line="27">An implementation of #GcrCollection which filters objects from another
+underlying collection. Use gcr_filter_collection_new_with_callback()
+to create a new filter collection.
+
+The callback will determine the criteria for whether an object shows through
+the filter or not.</doc>
       <source-position filename="../gcr/gcr-filter-collection.h" line="51"/>
       <implements name="Collection"/>
       <constructor name="new_with_callback"
@@ -3414,7 +3478,10 @@ whether an object should show through the filter or not.</doc>
                glib:type-struct="ImportInteractionIface">
       <doc xml:space="preserve"
            filename="../gcr/gcr-import-interaction.c"
-           line="37">Interface implemented by the caller performing an import.</doc>
+           line="26">This is an interface implemented by a caller performing an import. It allows
+the importer to ask the caller for further information about the import.
+
+It must be implemented on a derived class of #GTlsInteraction</doc>
       <source-position filename="../gcr/gcr-import-interaction.h" line="68"/>
       <prerequisite name="Gio.TlsInteraction"/>
       <virtual-method name="supplement" invoker="supplement" throws="1">
@@ -3906,7 +3973,20 @@ interaction that these are the attributes that are needed.</doc>
                glib:type-struct="ImporterIface">
       <doc xml:space="preserve"
            filename="../gcr/gcr-importer.c"
-           line="56">Imports certificates and keys</doc>
+           line="35">An interface which allows importing of certificates and keys. Each
+#GcrImporter is registered with a set of PKCS\#11 attributes to match
+stuff that it can import.
+
+An importer gets passed a #GcrParser and accesses the currently parsed
+item. To create a set of importers that can import the currently parsed
+item in a #GcrParser, use gcr_importer_create_for_parsed(). The list of
+importers returned has the parsed item queued for import.
+
+To queue additional items with a importer use gcr_importer_queue_for_parsed().
+In addition you can try and queue an additional item with a set of importers
+using the gcr_importer_queue_and_filter_for_parsed().
+
+To start the import use gcr_importer_import() or the async variants.</doc>
       <source-position filename="../gcr/gcr-importer.h" line="68"/>
       <function name="create_for_parsed"
                 c:identifier="gcr_importer_create_for_parsed">
@@ -4827,7 +4907,18 @@ until it has been referenced at least once.</doc>
            glib:type-struct="ParserClass">
       <doc xml:space="preserve"
            filename="../gcr/gcr-parser.c"
-           line="66">A parser for parsing various types of files or data.</doc>
+           line="47">A #GcrParser can parse various certificate and key files such as OpenSSL
+PEM files, DER encoded certifictes, PKCS\#8 keys and so on. Each various
+format is identified by a value in the #GcrDataFormat enumeration.
+
+In order to parse data, a new parser is created with gcr_parser_new() and
+then the #GcrParser::authenticate and #GcrParser::parsed signals should be
+connected to. Data is then fed to the parser via gcr_parser_parse_data()
+or gcr_parser_parse_stream().
+
+During the #GcrParser::parsed signal the attributes that make up the currently
+parsed item can be retrieved using the gcr_parser_get_parsed_attributes()
+function.</doc>
       <source-position filename="../gcr/gcr-parser.h" line="62"/>
       <constructor name="new" c:identifier="gcr_parser_new">
         <doc xml:space="preserve"
@@ -5500,7 +5591,14 @@ functions.</doc>
            glib:type-struct="Pkcs11CertificateClass">
       <doc xml:space="preserve"
            filename="../gcr/gcr-pkcs11-certificate.c"
-           line="49">A certificate loaded from PKCS\#11 storage.</doc>
+           line="34">A #GcrPkcs11Certificate is a certificate loaded from a PKCS\#11 storage.
+It is also a valid #GckObject and can be used as such.
+
+Use gcr_pkcs11_certificate_lookup_issuer() to lookup the issuer of a given
+certificate in the PKCS\#11 store.
+
+Various common PKCS\#11 certificate attributes are automatically loaded and
+are available via gcr_pkcs11_certificate_get_attributes().</doc>
       <source-position filename="../gcr/gcr-pkcs11-certificate.h" line="57"/>
       <implements name="Certificate"/>
       <implements name="Comparable"/>
@@ -5684,7 +5782,23 @@ if an error occurred.</doc>
                glib:type-struct="PromptIface">
       <doc xml:space="preserve"
            filename="../gcr/gcr-prompt.c"
-           line="52">Represents a #GcrPrompt displayed to the user.</doc>
+           line="28">A #GcrPrompt represents a prompt displayed to the user. It is an interface
+with various implementations.
+
+Various properties are set on the prompt, and then the prompt is displayed
+the various prompt methods like gcr_prompt_password_run().
+
+A #GcrPrompt may be used to display multiple related prompts. Most
+implemantions do not hide the window between display of multiple related
+prompts, and the #GcrPrompt must be closed or destroyed in order to make
+it go away. This allows the user to see that the prompts are related.
+
+Use #GcrPromptDialog to create an in-process GTK+ dialog prompt. Use
+#GcrSystemPrompt to create a system prompt in a prompter process.
+
+The prompt implementation will always display the GcrPrompt:message property,
+but may choose not to display the GcrPrompt:description or GcrPrompt:title
+properties.</doc>
       <source-position filename="../gcr/gcr-prompt.h" line="70"/>
       <virtual-method name="prompt_close">
         <source-position filename="../gcr/gcr-prompt.h" line="69"/>
@@ -7142,7 +7256,27 @@ transport encryption is done with 128 bit AES.</doc>
            glib:type-struct="SecretExchangeClass">
       <doc xml:space="preserve"
            filename="../gcr/gcr-secret-exchange.c"
-           line="63">An object representing one side of a secret exchange.</doc>
+           line="35">Allows exchange of secrets between two processes on the same system without
+exposing those secrets to things like loggers, non-pageable memory etc.
+
+This does not protect against active attacks like MITM attacks.
+
+Each side creates a #GcrSecretExchange object, and one of the sides calls
+gcr_secret_exchange_begin(). This creates a string, which should be passed
+to the other side. Each side passes the strings it receives into
+gcr_secret_exchange_receive().
+
+In order to send a reply (either with or without a secret) use
+gcr_secret_exchange_send(). A side must have had gcr_secret_exchange_receive()
+successfully called before it can use gcr_secret_exchange_send().
+
+The #GcrSecretExchange objects can be used for multiple iterations of the
+conversation, or for just one request/reply. The only limitation being that
+the initial request cannot contain a secret.
+
+Caveat: Information about the approximate length (rounded up to the nearest
+16 bytes) may be leaked. If this is considered inacceptable, do not use
+#GcrSecretExchange.</doc>
       <source-position filename="../gcr/gcr-secret-exchange.h" line="87"/>
       <constructor name="new" c:identifier="gcr_secret_exchange_new">
         <doc xml:space="preserve"
@@ -7591,7 +7725,12 @@ have not been called successfully.</doc>
            glib:type-struct="SimpleCertificateClass">
       <doc xml:space="preserve"
            filename="../gcr/gcr-simple-certificate.c"
-           line="42">A #GcrCertificate which represents a certificate already in memory.</doc>
+           line="29">An implementation of #GcrCertificate which loads a certificate from DER
+data already located in memory.
+
+To create a #GcrSimpleCertificate object use the
+gcr_simple_certificate_new() or gcr_simple_certificate_new_static()
+functions.</doc>
       <source-position filename="../gcr/gcr-simple-certificate.h" line="53"/>
       <implements name="Certificate"/>
       <implements name="Comparable"/>
@@ -7692,7 +7831,9 @@ destroyed.</doc>
            glib:type-struct="SimpleCollectionClass">
       <doc xml:space="preserve"
            filename="../gcr/gcr-simple-collection.c"
-           line="39">A simple implementation of #GcrCollection.</doc>
+           line="29">A simple implementation of #GcrCollection, which you can add and remove
+objects from. Use gcr_simple_collection_add() to do this
+gcr_simple_collection_remove().</doc>
       <source-position filename="../gcr/gcr-simple-collection.h" line="49"/>
       <implements name="Collection"/>
       <constructor name="new" c:identifier="gcr_simple_collection_new">
@@ -7790,7 +7931,8 @@ destroyed.</doc>
            glib:type-struct="SshAskpassClass">
       <doc xml:space="preserve"
            filename="../gcr/gcr-ssh-askpass.c"
-           line="46">An object containing the password prompting state.</doc>
+           line="37">When used as the setup function while spawning an ssh command like ssh-add
+or ssh, this allows callbacks for passwords on the provided interaction.</doc>
       <source-position filename="../gcr/gcr-ssh-askpass.h" line="34"/>
       <constructor name="new" c:identifier="gcr_ssh_askpass_new">
         <doc xml:space="preserve"
@@ -7888,8 +8030,17 @@ g_spawn_async(), g_spawn_async_with_pipes().</doc>
            glib:type-struct="SystemPromptClass">
       <doc xml:space="preserve"
            filename="../gcr/gcr-system-prompt.c"
-           line="55">A #GcrPrompt which shows a system prompt. This is usually a system modal
-dialog.</doc>
+           line="37">A #GcrPrompt implementation which calls to the system prompter to
+display prompts in a system modal fashion.
+
+Since the system prompter usually only displays one prompt at a time, you
+may have to wait for the prompt to be displayed. Use gcr_system_prompt_open()
+or a related function to open a prompt. Since this can take a long time, you
+should always check that the prompt is still needed after it is opened. A
+previous prompt may have already provided the information needed and you
+may no longer need to prompt.
+
+Use gcr_system_prompt_close() to close the prompt when you're done with it.</doc>
       <source-position filename="../gcr/gcr-system-prompt.h" line="64"/>
       <implements name="Prompt"/>
       <implements name="Gio.AsyncInitable"/>
@@ -8346,7 +8497,13 @@ prompt expires, then %GCR_SYSTEM_PROMPT_IN_PROGRESS is returned.</doc>
            glib:type-struct="SystemPrompterClass">
       <doc xml:space="preserve"
            filename="../gcr/gcr-system-prompter.c"
-           line="54">A prompter used by implementations of system prompts.</doc>
+           line="40">This is a DBus service which is rarely implemented. Use #GcrSystemPrompt
+to display system prompts.
+
+The GcrSystemPrompter service responds to dbus requests to create system
+prompts and creates #GcrPrompt type objects to display those prompts.
+
+Pass the GType of the implementation of #GcrPrompt to gcr_system_prompter_new().</doc>
       <source-position filename="../gcr/gcr-system-prompter.h" line="69"/>
       <constructor name="new" c:identifier="gcr_system_prompter_new">
         <doc xml:space="preserve"
@@ -8682,7 +8839,9 @@ one prompt at a time and would use the %GCR_SYSTEM_PROMPTER_SINGLE mode.</doc>
            glib:type-struct="UnionCollectionClass">
       <doc xml:space="preserve"
            filename="../gcr/gcr-union-collection.c"
-           line="40">A union implementation of #GcrCollection.</doc>
+           line="30">An implementation of #GcrCollection, which combines the objects in
+other #GcrCollections. Use gcr_union_collection_add() to add and
+gcr_union_collection_remove() to remove them.</doc>
       <source-position filename="../gcr/gcr-union-collection.h" line="51"/>
       <implements name="Collection"/>
       <constructor name="new" c:identifier="gcr_union_collection_new">
@@ -9177,101 +9336,7 @@ use gcr_certificate_get_fingerprint() for.</doc>
         </parameter>
       </parameters>
     </function>
-    <docsection name="gcr-certificate">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-certificate.c"
-           line="39">This is an interface that represents an X.509 certificate. Objects can
-implement this interface to make a certificate usable with the GCR
-library.
-
-Various methods are available to parse out relevant bits of the certificate.
-However no verification of the validity of a certificate is done here. Use
-your favorite crypto library to do this.
-
-You can use #GcrSimpleCertificate to simply load a certificate for which
-you already have the raw certificate data.
-
-The #GcrCertificate interface has several properties that must be implemented.
-You can use a mixin to implement these properties if desired. See the
-gcr_certificate_mixin_class_init() and gcr_certificate_mixin_get_property()
-functions.
-
-All certificates are comparable. If implementing a #GcrCertificate, you can
-use GCR_CERTIFICATE_MIXIN_IMPLEMENT_COMPARABLE() to implement the #GcrComparable
-interface.</doc>
-    </docsection>
-    <docsection name="gcr-certificate-chain">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-certificate-chain.c"
-           line="35">#GcrCertificateChain represents a chain of certificates, normally used to
-validate the trust in a certificate. An X.509 certificate chain has one
-endpoint certificate (the one for which trust is being verified) and then
-in turn the certificate that issued each previous certificate in the chain.
-
-This functionality is for building of certificate chains not for validating
-them. Use your favorite crypto library to validate trust in a certificate
-chain once its built.
-
-The order of certificates in the chain should be first the endpoint
-certificates and then the signing certificates.
-
-Create a new certificate chain with gcr_certificate_chain_new() and then
-add the certificates with gcr_certificate_chain_add().
-
-You can then use gcr_certificate_chain_build() to build the remainder of
-the chain. This will lookup missing certificates in PKCS\#11 modules and
-also check that each certificate in the chain is the signer of the previous
-one. If a trust anchor, pinned certificate, or self-signed certificate is
-found, then the chain is considered built. Any extra certificates are
-removed from the chain.
-
-Once the certificate chain has been built, you can access its status
-through gcr_certificate_chain_get_status(). The status signifies whether
-the chain is anchored on a trust root, self-signed, incomplete etc. See
-#GcrCertificateChainStatus for information on the various statuses.
-
-It's important to understand that the building of a certificate chain is
-merely the first step towards verifying trust in a certificate.</doc>
-    </docsection>
-    <docsection name="gcr-certificate-request">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-certificate-request.c"
-           line="36">This is an object that allows creation of certificate requests. A
-certificate request is sent to a certificate authority to request an
-X.509 certificate.
-
-Use gcr_certificate_request_prepare() to create a blank certificate
-request for a given private key. Set the common name on the certificate
-request with gcr_certificate_request_set_cn(), and then sign the request
-with gcr_certificate_request_complete_async().</doc>
-    </docsection>
-    <docsection name="gcr-collection">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-collection.c"
-           line="24">A #GcrCollection is used to group a set of objects. This is an abstract
-interface which can be used to determine which objects show up in a selector
-or other user interface element.
-
-Use gcr_simple_collection_new() to create a concrete implementation of this
-interface which you can add objects to.</doc>
-    </docsection>
-    <docsection name="gcr-comparable">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-comparable.c"
-           line="26">The #GcrComparable interface is implemented by objects when they should be
-comparable against one another.</doc>
-    </docsection>
-    <docsection name="gcr-filter-collection">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-filter-collection.c"
-           line="27">An implementation of #GcrCollection which filters objects from another
-underlying collection. Use gcr_filter_collection_new_with_callback()
-to create a new filter collection.
-
-The callback will determine the criteria for whether an object shows through
-the filter or not.</doc>
-    </docsection>
-    <docsection name="gcr-fingerprint">
+    <docsection name="gcrfingerprint">
       <doc xml:space="preserve"
            filename="../gcr/gcr-fingerprint.c"
            line="34">These functions generate key fingerprints for public keys, certificates and
@@ -9284,38 +9349,12 @@ certificate.
 
 These fingerprints are created using the subjectPublicKeyInfo ASN.1 structure.</doc>
     </docsection>
-    <docsection name="gcr-import-interaction">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-import-interaction.c"
-           line="26">This is an interface implemented by a caller performing an import. It allows
-the importer to ask the caller for further information about the import.
-
-It must be implemented on a derived class of #GTlsInteraction</doc>
-    </docsection>
-    <docsection name="gcr-importer">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-importer.c"
-           line="35">An interface which allows importing of certificates and keys. Each
-#GcrImporter is registered with a set of PKCS\#11 attributes to match
-stuff that it can import.
-
-An importer gets passed a #GcrParser and accesses the currently parsed
-item. To create a set of importers that can import the currently parsed
-item in a #GcrParser, use gcr_importer_create_for_parsed(). The list of
-importers returned has the parsed item queued for import.
-
-To queue additional items with a importer use gcr_importer_queue_for_parsed().
-In addition you can try and queue an additional item with a set of importers
-using the gcr_importer_queue_and_filter_for_parsed().
-
-To start the import use gcr_importer_import() or the async variants.</doc>
-    </docsection>
-    <docsection name="gcr-library">
+    <docsection name="gcrlibrary">
       <doc xml:space="preserve"
            filename="../gcr/gcr-library.c"
            line="39">Basic library utilities such as version checks.</doc>
     </docsection>
-    <docsection name="gcr-mock-prompter">
+    <docsection name="gcrmockprompter">
       <doc xml:space="preserve"
            filename="../gcr/gcr-mock-prompter.c"
            line="33">A mock GcrSystemPrompter used for testing against.
@@ -9328,23 +9367,7 @@ Use the gcr_mock_prompter_expect_confirm_ok() function and friends before
 prompting to verify that the prompts are displayed as expected, and to
 provide a response.</doc>
     </docsection>
-    <docsection name="gcr-parser">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-parser.c"
-           line="47">A #GcrParser can parse various certificate and key files such as OpenSSL
-PEM files, DER encoded certifictes, PKCS\#8 keys and so on. Each various
-format is identified by a value in the #GcrDataFormat enumeration.
-
-In order to parse data, a new parser is created with gcr_parser_new() and
-then the #GcrParser::authenticate and #GcrParser::parsed signals should be
-connected to. Data is then fed to the parser via gcr_parser_parse_data()
-or gcr_parser_parse_stream().
-
-During the #GcrParser::parsed signal the attributes that make up the currently
-parsed item can be retrieved using the gcr_parser_get_parsed_attributes()
-function.</doc>
-    </docsection>
-    <docsection name="gcr-pkcs11">
+    <docsection name="gcrpkcs11">
       <doc xml:space="preserve"
            filename="../gcr/gcr-library.c"
            line="87">Manage or lookup various global aspesct and settings of the library.
@@ -9362,70 +9385,12 @@ gcr_pkcs11_add_module() to do so.
 Trust assertions are stored and looked up in specific PKCS\#11 slots.
 You can examine this list with gcr_pkcs11_get_trust_lookup_slots()</doc>
     </docsection>
-    <docsection name="gcr-pkcs11-certificate">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-pkcs11-certificate.c"
-           line="34">A #GcrPkcs11Certificate is a certificate loaded from a PKCS\#11 storage.
-It is also a valid #GckObject and can be used as such.
-
-Use gcr_pkcs11_certificate_lookup_issuer() to lookup the issuer of a given
-certificate in the PKCS\#11 store.
-
-Various common PKCS\#11 certificate attributes are automatically loaded and
-are available via gcr_pkcs11_certificate_get_attributes().</doc>
-    </docsection>
-    <docsection name="gcr-private">
+    <docsection name="gcrprivate">
       <doc xml:space="preserve"
            filename="../gcr/gcr-library.c"
            line="108">This section is only here to supress warnings, and should not be displayed.</doc>
     </docsection>
-    <docsection name="gcr-prompt">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-prompt.c"
-           line="28">A #GcrPrompt represents a prompt displayed to the user. It is an interface
-with various implementations.
-
-Various properties are set on the prompt, and then the prompt is displayed
-the various prompt methods like gcr_prompt_password_run().
-
-A #GcrPrompt may be used to display multiple related prompts. Most
-implemantions do not hide the window between display of multiple related
-prompts, and the #GcrPrompt must be closed or destroyed in order to make
-it go away. This allows the user to see that the prompts are related.
-
-Use #GcrPromptDialog to create an in-process GTK+ dialog prompt. Use
-#GcrSystemPrompt to create a system prompt in a prompter process.
-
-The prompt implementation will always display the GcrPrompt:message property,
-but may choose not to display the GcrPrompt:description or GcrPrompt:title
-properties.</doc>
-    </docsection>
-    <docsection name="gcr-secret-exchange">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-secret-exchange.c"
-           line="35">Allows exchange of secrets between two processes on the same system without
-exposing those secrets to things like loggers, non-pageable memory etc.
-
-This does not protect against active attacks like MITM attacks.
-
-Each side creates a #GcrSecretExchange object, and one of the sides calls
-gcr_secret_exchange_begin(). This creates a string, which should be passed
-to the other side. Each side passes the strings it receives into
-gcr_secret_exchange_receive().
-
-In order to send a reply (either with or without a secret) use
-gcr_secret_exchange_send(). A side must have had gcr_secret_exchange_receive()
-successfully called before it can use gcr_secret_exchange_send().
-
-The #GcrSecretExchange objects can be used for multiple iterations of the
-conversation, or for just one request/reply. The only limitation being that
-the initial request cannot contain a secret.
-
-Caveat: Information about the approximate length (rounded up to the nearest
-16 bytes) may be leaked. If this is considered inacceptable, do not use
-#GcrSecretExchange.</doc>
-    </docsection>
-    <docsection name="gcr-secure-memory">
+    <docsection name="gcrsecurememory">
       <doc xml:space="preserve"
            filename="../gcr/gcr-secure-memory.c"
            line="34">Normal allocated memory can be paged to disk at the whim of the operating
@@ -9438,56 +9403,7 @@ This is only possible if the OS contains support for it.
 These functions allow applications to use secure memory to hold passwords
 and other sensitive information.</doc>
     </docsection>
-    <docsection name="gcr-simple-certificate">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-simple-certificate.c"
-           line="29">An implementation of #GcrCertificate which loads a certificate from DER
-data already located in memory.
-
-To create a #GcrSimpleCertificate object use the
-gcr_simple_certificate_new() or gcr_simple_certificate_new_static()
-functions.</doc>
-    </docsection>
-    <docsection name="gcr-simple-collection">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-simple-collection.c"
-           line="29">A simple implementation of #GcrCollection, which you can add and remove
-objects from. Use gcr_simple_collection_add() to do this
-gcr_simple_collection_remove().</doc>
-    </docsection>
-    <docsection name="gcr-ssh-askpass">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-ssh-askpass.c"
-           line="37">When used as the setup function while spawning an ssh command like ssh-add
-or ssh, this allows callbacks for passwords on the provided interaction.</doc>
-    </docsection>
-    <docsection name="gcr-system-prompt">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-system-prompt.c"
-           line="37">A #GcrPrompt implementation which calls to the system prompter to
-display prompts in a system modal fashion.
-
-Since the system prompter usually only displays one prompt at a time, you
-may have to wait for the prompt to be displayed. Use gcr_system_prompt_open()
-or a related function to open a prompt. Since this can take a long time, you
-should always check that the prompt is still needed after it is opened. A
-previous prompt may have already provided the information needed and you
-may no longer need to prompt.
-
-Use gcr_system_prompt_close() to close the prompt when you're done with it.</doc>
-    </docsection>
-    <docsection name="gcr-system-prompter">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-system-prompter.c"
-           line="40">This is a DBus service which is rarely implemented. Use #GcrSystemPrompt
-to display system prompts.
-
-The GcrSystemPrompter service responds to dbus requests to create system
-prompts and creates #GcrPrompt type objects to display those prompts.
-
-Pass the GType of the implementation of #GcrPrompt to gcr_system_prompter_new().</doc>
-    </docsection>
-    <docsection name="gcr-trust">
+    <docsection name="gcrtrust">
       <doc xml:space="preserve"
            filename="../gcr/gcr-trust.c"
            line="36">These functions provide access to stored information about which
@@ -9516,13 +9432,6 @@ used in TLS or other locations. Instead they support such verification
 by providing some of the needed data for a trust decision.
 
 The storage is provided by pluggable PKCS\#11 modules.</doc>
-    </docsection>
-    <docsection name="gcr-union-collection">
-      <doc xml:space="preserve"
-           filename="../gcr/gcr-union-collection.c"
-           line="30">An implementation of #GcrCollection, which combines the objects in
-other #GcrCollections. Use gcr_union_collection_add() to add and
-gcr_union_collection_remove() to remove them.</doc>
     </docsection>
     <function name="icon_for_token" c:identifier="gcr_icon_for_token">
       <doc xml:space="preserve"
