@@ -297,6 +297,20 @@ thread.</doc>
            glib:type-name="WebKitAuthenticationRequest"
            glib:get-type="webkit_authentication_request_get_type"
            glib:type-struct="AuthenticationRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitAuthenticationRequest.cpp"
+           line="39">Whenever a client attempts to load a page protected by HTTP
+authentication, credentials will need to be provided to authorize access.
+To allow the client to decide how it wishes to handle authentication,
+WebKit will fire a #WebKitWebView::authenticate signal with a
+WebKitAuthenticationRequest object to provide client side
+authentication support. Credentials are exposed through the
+#WebKitCredential object.
+
+In case the client application does not wish
+to handle this signal WebKit will provide a default handler. To handle
+authentication asynchronously, simply increase the reference count of the
+WebKitAuthenticationRequest object.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitAuthenticationRequest.h"
                        line="59"/>
       <method name="authenticate"
@@ -838,10 +852,19 @@ dialog in case of page load failure for example.</doc>
     <class name="AutomationSession"
            c:symbol-prefix="automation_session"
            c:type="WebKitAutomationSession"
+           version="2.18"
            parent="GObject.Object"
            glib:type-name="WebKitAutomationSession"
            glib:get-type="webkit_automation_session_get_type"
            glib:type-struct="AutomationSessionClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitAutomationSession.cpp"
+           line="34">WebKitAutomationSession represents an automation session of a WebKitWebContext.
+When a new session is requested, a WebKitAutomationSession is created and the signal
+WebKitWebContext::automation-started is emitted with the WebKitAutomationSession as
+argument. Then, the automation client can request the session to create a new
+#WebKitWebView to interact with it. When this happens the signal #WebKitAutomationSession::create-web-view
+is emitted.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitAutomationSession.h"
                        line="71"/>
       <method name="get_application_info"
@@ -1116,6 +1139,21 @@ or tab shouldn't be focused.</doc>
            glib:type-name="WebKitBackForwardList"
            glib:get-type="webkit_back_forward_list_get_type"
            glib:type-struct="BackForwardListClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitBackForwardList.cpp"
+           line="28">WebKitBackForwardList maintains a list of visited pages used to
+navigate to recent pages. Items are inserted in the list in the
+order they are visited.
+
+WebKitBackForwardList also maintains the notion of the current item
+(which is always at index 0), the preceding item (which is at index -1),
+and the following item (which is at index 1).
+Methods webkit_web_view_go_back() and webkit_web_view_go_forward() move
+the current item backward or forward by one. Method
+webkit_web_view_go_to_back_forward_list_item() sets the current item to the
+specified item. All other methods returning #WebKitBackForwardListItem&lt;!-- --&gt;s
+do not change the value of the current item, they just return the requested
+item or items.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitBackForwardList.h"
                        line="57"/>
       <method name="get_back_item"
@@ -1440,6 +1478,10 @@ when the list is cleared or the maximum items limit is reached.</doc>
            glib:type-name="WebKitBackForwardListItem"
            glib:get-type="webkit_back_forward_list_item_get_type"
            glib:type-struct="BackForwardListItemClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitBackForwardListItem.cpp"
+           line="32">A history item is part of the #WebKitBackForwardList and consists
+out of a title and a URI.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitBackForwardListItem.h"
                        line="56"/>
       <method name="get_original_uri"
@@ -1767,6 +1809,21 @@ See also webkit_back_forward_list_item_get_original_uri().</doc>
            glib:type-name="WebKitColorChooserRequest"
            glib:get-type="webkit_color_chooser_request_get_type"
            glib:type-struct="ColorChooserRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/gtk/WebKitColorChooserRequest.cpp"
+           line="37">Whenever the user interacts with an &amp;lt;input type='color' /&amp;gt;
+HTML element, WebKit will need to show a dialog to choose a color. For that
+to happen in a general way, instead of just opening a #GtkColorChooser
+(which might be not desirable in some cases, which could prefer to use their
+own color chooser dialog), WebKit will fire the
+#WebKitWebView::run-color-chooser signal with a #WebKitColorChooserRequest
+object, which will allow the client application to specify the color to be
+selected, to inspect the details of the request (e.g. to get initial color)
+and to cancel the request, in case nothing was selected.
+
+In case the client application does not wish to handle this signal,
+WebKit will provide a default handler which will asynchronously run
+a regular #GtkColorChooserDialog for the user to interact with.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitColorChooserRequest.h"
                        line="59"/>
       <method name="cancel"
@@ -1951,6 +2008,19 @@ color input element is removed from the DOM.</doc>
            glib:type-name="WebKitContextMenu"
            glib:get-type="webkit_context_menu_get_type"
            glib:type-struct="ContextMenuClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/Shared/API/glib/WebKitContextMenu.cpp"
+           line="33">#WebKitContextMenu represents a context menu containing
+#WebKitContextMenuItem&lt;!-- --&gt;s in a #WebKitWebView.
+
+When a #WebKitWebView is about to display the context menu, it
+emits the #WebKitWebView::context-menu signal, which has the
+#WebKitContextMenu as an argument. You can modify it, adding new
+submenus that you can create with webkit_context_menu_new(), adding
+new #WebKitContextMenuItem&lt;!-- --&gt;s with
+webkit_context_menu_prepend(), webkit_context_menu_append() or
+webkit_context_menu_insert(), maybe after having removed the
+existing ones with webkit_context_menu_remove_all().</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitContextMenu.h"
                        line="57"/>
       <constructor name="new" c:identifier="webkit_context_menu_new">
@@ -2773,6 +2843,13 @@ If the @user_data #GVariant is floating, it is consumed.</doc>
            glib:type-name="WebKitContextMenuItem"
            glib:get-type="webkit_context_menu_item_get_type"
            glib:type-struct="ContextMenuItemClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/Shared/API/glib/WebKitContextMenuItem.cpp"
+           line="39">The #WebKitContextMenu is composed of #WebKitContextMenuItem&lt;!--
+--&gt;s. These items can be created from a #GtkAction, from a
+#WebKitContextMenuAction or from a #WebKitContextMenuAction and a
+label. These #WebKitContextMenuAction&lt;!-- --&gt;s denote stock actions
+for the items. You can also create separators and submenus.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk3/WebKitContextMenuItem.h"
                        line="58"/>
       <constructor name="new"
@@ -3195,6 +3272,13 @@ submenu of @item is removed.</doc>
            glib:type-name="WebKitCookieManager"
            glib:get-type="webkit_cookie_manager_get_type"
            glib:type-struct="CookieManagerClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitCookieManager.cpp"
+           line="40">The WebKitCookieManager defines how to set up and handle cookies.
+You can get it from a #WebKitWebsiteDataManager with
+webkit_website_data_manager_get_cookie_manager(), and use it to set where to
+store cookies with webkit_cookie_manager_set_persistent_storage(),
+or to set the acceptance policy, with webkit_cookie_manager_get_accept_policy().</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitCookieManager.h"
                        line="87"/>
       <method name="add_cookie"
@@ -4134,10 +4218,19 @@ This method should never be called on a #WebKitCookieManager associated to an ep
     <class name="DeviceInfoPermissionRequest"
            c:symbol-prefix="device_info_permission_request"
            c:type="WebKitDeviceInfoPermissionRequest"
+           version="2.24"
            parent="GObject.Object"
            glib:type-name="WebKitDeviceInfoPermissionRequest"
            glib:get-type="webkit_device_info_permission_request_get_type"
            glib:type-struct="DeviceInfoPermissionRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitDeviceInfoPermissionRequest.cpp"
+           line="32">WebKitUserMediaPermissionRequest represents a request for
+permission to whether WebKit should be allowed to access the user's
+devices information when requested through the enumeraceDevices API.
+
+When a WebKitDeviceInfoPermissionRequest is not handled by the user,
+it is denied by default.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitDeviceInfoPermissionRequest.h"
                        line="56"/>
       <implements name="PermissionRequest"/>
@@ -4207,6 +4300,13 @@ This method should never be called on a #WebKitCookieManager associated to an ep
            glib:type-name="WebKitDownload"
            glib:get-type="webkit_download_get_type"
            glib:type-struct="DownloadClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitDownload.cpp"
+           line="39">#WebKitDownload carries information about a download request and
+response, including a #WebKitURIRequest and a #WebKitURIResponse
+objects. The application may use this object to control the
+download process, or to simply figure out what is to be downloaded,
+and handle the download process itself.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitDownload.h"
                        line="62"/>
       <virtual-method name="decide_destination">
@@ -4900,10 +5000,16 @@ to undo a command after a previously executed editing operation.</doc>
     <class name="EditorState"
            c:symbol-prefix="editor_state"
            c:type="WebKitEditorState"
+           version="2.10"
            parent="GObject.Object"
            glib:type-name="WebKitEditorState"
            glib:get-type="webkit_editor_state_get_type"
            glib:type-struct="EditorStateClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitEditorState.cpp"
+           line="31">WebKitEditorState represents the state of a #WebKitWebView editor.
+Use webkit_web_view_get_editor_state() to get the WebKitEditorState
+of a #WebKitWebView.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitEditorState.h"
                        line="77"/>
       <method name="get_typing_attributes"
@@ -5291,6 +5397,20 @@ See webkit_editor_state_get_typing_attributes() for more information.</doc>
            glib:type-name="WebKitFaviconDatabase"
            glib:get-type="webkit_favicon_database_get_type"
            glib:type-struct="FaviconDatabaseClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitFaviconDatabase.cpp"
+           line="40">#WebKitFaviconDatabase provides access to the icons associated with
+web sites.
+
+WebKit will automatically look for available icons in &amp;lt;link&amp;gt;
+elements on opened pages as well as an existing favicon.ico and
+load the images found into a memory cache if possible. That cache
+is frozen to an on-disk database for persistence.
+
+If #WebKitSettings:enable-private-browsing is %TRUE, new icons
+won't be added to the on-disk database and no existing icons will
+be deleted from it. Nevertheless, WebKit will still store them in
+the in-memory cache during the current execution.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitFaviconDatabase.h"
                        line="59"/>
       <method name="clear" c:identifier="webkit_favicon_database_clear">
@@ -5569,6 +5689,24 @@ property. See webkit_web_view_get_favicon() for more details.</doc>
            glib:type-name="WebKitFileChooserRequest"
            glib:get-type="webkit_file_chooser_request_get_type"
            glib:type-struct="FileChooserRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitFileChooserRequest.cpp"
+           line="40">Whenever the user interacts with an &amp;lt;input type='file' /&amp;gt;
+HTML element, WebKit will need to show a dialog to choose one or
+more files to be uploaded to the server along with the rest of the
+form data. For that to happen in a general way, instead of just
+opening a #GtkFileChooserDialog (which might be not desirable in
+some cases, which could prefer to use their own file chooser
+dialog), WebKit will fire the #WebKitWebView::run-file-chooser
+signal with a #WebKitFileChooserRequest object, which will allow
+the client application to specify the files to be selected, to
+inspect the details of the request (e.g. if multiple selection
+should be allowed) and to cancel the request, in case nothing was
+selected.
+
+In case the client application does not wish to handle this signal,
+WebKit will provide a default handler which will asynchronously run
+a regular #GtkFileChooserDialog for the user to interact with.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitFileChooserRequest.h"
                        line="57"/>
       <method name="cancel" c:identifier="webkit_file_chooser_request_cancel">
@@ -5855,6 +5993,17 @@ webkit_file_chooser_request_get_selected_files() for more details.</doc>
            glib:type-name="WebKitFindController"
            glib:get-type="webkit_find_controller_get_type"
            glib:type-struct="FindControllerClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitFindController.cpp"
+           line="34">A #WebKitFindController is used to search text in a #WebKitWebView. You
+can get a #WebKitWebView&lt;!-- --&gt;'s #WebKitFindController with
+webkit_web_view_get_find_controller(), and later use it to search
+for text using webkit_find_controller_search(), or get the
+number of matches using webkit_find_controller_count_matches(). The
+operations are asynchronous and trigger signals when ready, such as
+#WebKitFindController::found-text,
+#WebKitFindController::failed-to-find-text or
+#WebKitFindController::counted-matches&lt;!-- --&gt;.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitFindController.h"
                        line="82"/>
       <method name="count_matches"
@@ -6320,6 +6469,14 @@ webkit_find_controller_search_previous().</doc>
            glib:type-name="WebKitFormSubmissionRequest"
            glib:get-type="webkit_form_submission_request_get_type"
            glib:type-struct="FormSubmissionRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitFormSubmissionRequest.cpp"
+           line="34">When a form is about to be submitted in a #WebKitWebView, the
+#WebKitWebView::submit-form signal is emitted. Its request argument
+contains information about the text fields of the form, that are
+typically used to store login information, returned as lists by
+webkit_form_submission_request_list_text_fields(). You can submit the
+form with webkit_form_submission_request_submit().</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitFormSubmissionRequest.h"
                        line="57"/>
       <method name="get_text_fields"
@@ -6554,10 +6711,19 @@ If this function returns %FALSE, then both @field_names and
     <class name="GeolocationManager"
            c:symbol-prefix="geolocation_manager"
            c:type="WebKitGeolocationManager"
+           version="2.26"
            parent="GObject.Object"
            glib:type-name="WebKitGeolocationManager"
            glib:get-type="webkit_geolocation_manager_get_type"
            glib:type-struct="GeolocationManagerClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitGeolocationManager.cpp"
+           line="34">WebKitGeolocationManager provides API to get the geographical position of the user.
+Once a #WebKitGeolocationPermissionRequest is allowed, when WebKit needs to know the
+user location #WebKitGeolocationManager::start signal is emitted. If the signal is handled
+and returns %TRUE, the application is responsible for providing the position every time it's
+updated by calling webkit_geolocation_manager_update_position(). The signal #WebKitGeolocationManager::stop
+will be emitted when location updates are no longer needed.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitGeolocationManager.h"
                        line="60"/>
       <method name="failed"
@@ -6740,6 +6906,30 @@ position updates anymore.</doc>
            glib:type-name="WebKitGeolocationPermissionRequest"
            glib:get-type="webkit_geolocation_permission_request_get_type"
            glib:type-struct="GeolocationPermissionRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitGeolocationPermissionRequest.cpp"
+           line="30">WebKitGeolocationPermissionRequest represents a request for
+permission to decide whether WebKit should provide the user's
+location to a website when requested through the Geolocation API.
+
+When a WebKitGeolocationPermissionRequest is not handled by the user,
+it is denied by default.
+
+When embedding web views in your application, you *must* configure an
+application identifier to allow web content to use geolocation services.
+The identifier *must* match the name of the `.desktop` file which describes
+the application, sans the suffix.
+
+If your application uses #GApplication (or any subclass like
+#GtkApplication), WebKit will automatically use the identifier returned by
+g_application_get_application_id(). This is the recommended approach for
+enabling geolocation in applications.
+
+If an identifier cannot be obtained through #GApplication, the value
+returned by g_get_prgname() will be used instead as a fallback. For
+programs which cannot use #GApplication, calling g_set_prgname() early
+during initialization is needed when the name of the executable on disk
+does not match the name of a valid `.desktop` file.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitGeolocationPermissionRequest.h"
                        line="57"/>
       <implements name="PermissionRequest"/>
@@ -7103,6 +7293,26 @@ direction, in clockwise direction.</doc>
            glib:type-name="WebKitHitTestResult"
            glib:get-type="webkit_hit_test_result_get_type"
            glib:type-struct="HitTestResultClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/Shared/API/glib/WebKitHitTestResult.cpp"
+           line="31">A Hit Test is an operation to get context information about a given
+point in a #WebKitWebView. #WebKitHitTestResult represents the
+result of a Hit Test. It provides context information about what is
+at the coordinates of the Hit Test, such as if there's a link,
+an image or a media.
+
+You can get the context of the HitTestResult with
+webkit_hit_test_result_get_context() that returns a bitmask of
+#WebKitHitTestResultContext flags. You can also use
+webkit_hit_test_result_context_is_link(), webkit_hit_test_result_context_is_image() and
+webkit_hit_test_result_context_is_media() to determine whether there's
+a link, image or a media element at the coordinates of the Hit Test.
+Note that it's possible that several #WebKitHitTestResultContext flags
+are active at the same time, for example if there's a link containing an image.
+
+When the mouse is moved over a #WebKitWebView a Hit Test is performed
+for the mouse coordinates and #WebKitWebView::mouse-target-changed
+signal is emitted with a #WebKitHitTestResult.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitHitTestResult.h"
                        line="79"/>
       <method name="context_is_editable"
@@ -8901,11 +9111,22 @@ called from any thread.</doc>
     <class name="InputMethodContext"
            c:symbol-prefix="input_method_context"
            c:type="WebKitInputMethodContext"
+           version="2.28"
            parent="GObject.Object"
            abstract="1"
            glib:type-name="WebKitInputMethodContext"
            glib:get-type="webkit_input_method_context_get_type"
            glib:type-struct="InputMethodContextClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitInputMethodContext.cpp"
+           line="31">WebKitInputMethodContext defines the interface to implement WebKit input methods.
+The input methods are used by WebKit, when editable content is focused, to map from
+key events to Unicode character strings.
+
+An input method may consume multiple key events in sequence and finally
+output the composed result. This is called preediting, and an input method
+may provide feedback about this process by displaying the intermediate
+composition states as preedit text.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk3/WebKitInputMethodContext.h"
                        line="146"/>
       <virtual-method name="committed">
@@ -10306,10 +10527,20 @@ from an untrusted source.</doc>
     <class name="InstallMissingMediaPluginsPermissionRequest"
            c:symbol-prefix="install_missing_media_plugins_permission_request"
            c:type="WebKitInstallMissingMediaPluginsPermissionRequest"
+           version="2.10"
            parent="GObject.Object"
            glib:type-name="WebKitInstallMissingMediaPluginsPermissionRequest"
            glib:get-type="webkit_install_missing_media_plugins_permission_request_get_type"
            glib:type-struct="InstallMissingMediaPluginsPermissionRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitInstallMissingMediaPluginsPermissionRequest.cpp"
+           line="39">WebKitInstallMissingMediaPluginsPermissionRequest represents a request for
+permission to decide whether WebKit should try to start a helper application to
+install missing media plugins when the media backend couldn't play a media because
+the required plugins were not available.
+
+When a WebKitInstallMissingMediaPluginsPermissionRequest is not handled by the user,
+it is allowed by default.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitInstallMissingMediaPluginsPermissionRequest.h"
                        line="56"/>
       <implements name="PermissionRequest"/>
@@ -10605,7 +10836,7 @@ against at application run time.</doc>
                        line="38"/>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MICRO_VERSION" value="92" c:type="WEBKIT_MICRO_VERSION">
+    <constant name="MICRO_VERSION" value="1" c:type="WEBKIT_MICRO_VERSION">
       <doc xml:space="preserve"
            filename="DerivedSources/webkit2gtk/webkit2/WebKitVersion.h"
            line="49">Like webkit_get_micro_version(), but from the headers used at
@@ -10615,7 +10846,7 @@ against at application run time.</doc>
                        line="56"/>
       <type name="gint" c:type="gint"/>
     </constant>
-    <constant name="MINOR_VERSION" value="29" c:type="WEBKIT_MINOR_VERSION">
+    <constant name="MINOR_VERSION" value="30" c:type="WEBKIT_MINOR_VERSION">
       <doc xml:space="preserve"
            filename="DerivedSources/webkit2gtk/webkit2/WebKitVersion.h"
            line="40">Like webkit_get_minor_version(), but from the headers used at
@@ -11033,6 +11264,11 @@ not. To modify requests before they are sent over the network the
            glib:type-name="WebKitNavigationPolicyDecision"
            glib:get-type="webkit_navigation_policy_decision_get_type"
            glib:type-struct="NavigationPolicyDecisionClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitNavigationPolicyDecision.cpp"
+           line="36">WebKitNavigationPolicyDecision represents a policy decision for events associated with
+navigations. If the value of #WebKitNavigationPolicyDecision:mouse-button is not 0, then
+the navigation was triggered by a mouse event.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitNavigationPolicyDecision.h"
                        line="60"/>
       <method name="get_frame_name"
@@ -11458,9 +11694,15 @@ navigation.</doc>
     </enumeration>
     <record name="NetworkProxySettings"
             c:type="WebKitNetworkProxySettings"
+            version="2.16"
             glib:type-name="WebKitNetworkProxySettings"
             glib:get-type="webkit_network_proxy_settings_get_type"
             c:symbol-prefix="network_proxy_settings">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitNetworkProxySettings.cpp"
+           line="29">WebKitNetworkProxySettings can be used to provide a custom proxy configuration
+to a #WebKitWebContext. You need to call webkit_web_context_set_network_proxy_settings()
+with %WEBKIT_NETWORK_PROXY_MODE_CUSTOM and a WebKitNetworkProxySettings.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitNetworkProxySettings.h"
                        line="34"/>
       <constructor name="new"
@@ -11616,6 +11858,7 @@ all three of the socks5, socks4a, and socks4 proxy types.</doc>
     <class name="Notification"
            c:symbol-prefix="notification"
            c:type="WebKitNotification"
+           version="2.8"
            parent="GObject.Object"
            glib:type-name="WebKitNotification"
            glib:get-type="webkit_notification_get_type"
@@ -11871,10 +12114,19 @@ support for it.</doc>
     <class name="NotificationPermissionRequest"
            c:symbol-prefix="notification_permission_request"
            c:type="WebKitNotificationPermissionRequest"
+           version="2.8"
            parent="GObject.Object"
            glib:type-name="WebKitNotificationPermissionRequest"
            glib:get-type="webkit_notification_permission_request_get_type"
            glib:type-struct="NotificationPermissionRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitNotificationPermissionRequest.cpp"
+           line="30">WebKitNotificationPermissionRequest represents a request for
+permission to decide whether WebKit should provide the user with
+notifications through the Web Notification API.
+
+When a WebKitNotificationPermissionRequest is not handled by the user,
+it is denied by default.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitNotificationPermissionRequest.h"
                        line="52"/>
       <implements name="PermissionRequest"/>
@@ -11940,10 +12192,18 @@ support for it.</doc>
     <class name="OptionMenu"
            c:symbol-prefix="option_menu"
            c:type="WebKitOptionMenu"
+           version="2.18"
            parent="GObject.Object"
            glib:type-name="WebKitOptionMenu"
            glib:get-type="webkit_option_menu_get_type"
            glib:type-struct="OptionMenuClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitOptionMenu.cpp"
+           line="29">WebKitOptionMenu represents the dropdown menu of a select element in a #WebKitWebView.
+
+When a select element in a #WebKitWebView needs to display a dropdown menu, the signal
+#WebKitWebView::show-option-menu is emitted, providing a WebKitOptionMenu with the
+#WebKitOptionMenuItem&lt;!-- --&gt;s that should be displayed.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitOptionMenu.h"
                        line="57"/>
       <method name="activate_item"
@@ -12144,9 +12404,16 @@ element is detached from the current page.</doc>
     </record>
     <record name="OptionMenuItem"
             c:type="WebKitOptionMenuItem"
+            version="2.18"
             glib:type-name="WebKitOptionMenuItem"
             glib:get-type="webkit_option_menu_item_get_type"
             c:symbol-prefix="option_menu_item">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitOptionMenuItem.cpp"
+           line="27">The #WebKitOptionMenu is composed of WebKitOptionMenuItem&lt;!-- --&gt;s.
+A WebKitOptionMenuItem always has a label and can contain a tooltip text.
+You can use the WebKitOptionMenuItem of a #WebKitOptionMenu to build your
+own menus.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitOptionMenuItem.h"
                        line="34"/>
       <method name="copy"
@@ -12513,6 +12780,14 @@ element is detached from the current page.</doc>
                glib:type-name="WebKitPermissionRequest"
                glib:get-type="webkit_permission_request_get_type"
                glib:type-struct="PermissionRequestIface">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitPermissionRequest.cpp"
+           line="23">There are situations where an embedder would need to ask the user
+for permission to do certain types of operations, such as switching
+to fullscreen mode or reporting the user's location through the
+standard Geolocation API. In those cases, WebKit will emit a
+#WebKitWebView::permission-request signal with a
+#WebKitPermissionRequest object attached to it.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitPermissionRequest.h"
                        line="45"/>
       <virtual-method name="allow" invoker="allow">
@@ -12640,6 +12915,14 @@ element is detached from the current page.</doc>
            glib:type-name="WebKitPlugin"
            glib:get-type="webkit_plugin_get_type"
            glib:type-struct="PluginClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitPlugin.cpp"
+           line="30">This object represents a single plugin, found while scanning the
+various platform plugin directories. This object can be used to get
+more information about a plugin, and enable/disable it, allowing
+fine-grained control of plugins. The list of available plugins can
+be obtained from the #WebKitWebContext, with
+webkit_web_context_get_plugins().</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitPlugin.h"
                        line="56"/>
       <method name="get_description"
@@ -12843,10 +13126,19 @@ as a list of #WebKitMimeInfo.</doc>
     <class name="PointerLockPermissionRequest"
            c:symbol-prefix="pointer_lock_permission_request"
            c:type="WebKitPointerLockPermissionRequest"
+           version="2.28"
            parent="GObject.Object"
            glib:type-name="WebKitPointerLockPermissionRequest"
            glib:get-type="webkit_pointer_lock_permission_request_get_type"
            glib:type-struct="PointerLockPermissionRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitPointerLockPermissionRequest.cpp"
+           line="28">WebKitPointerLockPermissionRequest represents a request for
+permission to decide whether WebKit can lock the pointer device when
+requested by web content.
+
+When a WebKitPointerLockPermissionRequest is not handled by the user,
+it is allowed by default.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitPointerLockPermissionRequest.h"
                        line="57"/>
       <implements name="PermissionRequest"/>
@@ -12917,6 +13209,17 @@ as a list of #WebKitMimeInfo.</doc>
            glib:type-name="WebKitPolicyDecision"
            glib:get-type="webkit_policy_decision_get_type"
            glib:type-struct="PolicyDecisionClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitPolicyDecision.cpp"
+           line="33">Often WebKit allows the client to decide the policy for certain
+operations. For instance, a client may want to open a link in a new
+tab, block a navigation entirely, query the user or trigger a download
+instead of a navigation. In these cases WebKit will fire the
+#WebKitWebView::decide-policy signal with a #WebKitPolicyDecision
+object. If the signal handler does nothing, WebKit will act as if
+webkit_policy_decision_use() was called as soon as signal handling
+completes. To make a policy decision asynchronously, simply increment
+the reference count of the #WebKitPolicyDecision object.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitPolicyDecision.h"
                        line="58"/>
       <method name="download" c:identifier="webkit_policy_decision_download">
@@ -13174,10 +13477,18 @@ autoplay policy in this case would be set in the @policies.</doc>
     <class name="PrintCustomWidget"
            c:symbol-prefix="print_custom_widget"
            c:type="WebKitPrintCustomWidget"
+           version="2.16"
            parent="GObject.Object"
            glib:type-name="WebKitPrintCustomWidget"
            glib:get-type="webkit_print_custom_widget_get_type"
            glib:type-struct="PrintCustomWidgetClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/gtk/WebKitPrintCustomWidget.cpp"
+           line="30">A WebKitPrintCustomWidget allows to embed a custom widget in the print
+dialog by connecting to the #WebKitPrintOperation::create-custom-widget
+signal, creating a new WebKitPrintCustomWidget with
+webkit_print_custom_widget_new() and returning it from there. You can later
+use webkit_print_operation_run_dialog() to display the dialog.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitPrintCustomWidget.h"
                        line="64"/>
       <constructor name="new"
@@ -13503,6 +13814,12 @@ according to their values.</doc>
            glib:type-name="WebKitPrintOperation"
            glib:get-type="webkit_print_operation_get_type"
            glib:type-struct="PrintOperationClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/gtk/WebKitPrintOperation.cpp"
+           line="43">A #WebKitPrintOperation controls a print operation in WebKit. With
+a similar API to #GtkPrintOperation, it lets you set the print
+settings with webkit_print_operation_set_print_settings() or
+display the print dialog with webkit_print_operation_run_dialog().</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitPrintOperation.h"
                        line="70"/>
       <constructor name="new" c:identifier="webkit_print_operation_new">
@@ -13910,6 +14227,13 @@ webkit_print_operation_run_dialog().</doc>
            glib:type-name="WebKitResponsePolicyDecision"
            glib:get-type="webkit_response_policy_decision_get_type"
            glib:type-struct="ResponsePolicyDecisionClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitResponsePolicyDecision.cpp"
+           line="35">WebKitResponsePolicyDecision represents a policy decision for a
+resource response, whether from the network or the local system.
+A very common use case for these types of decision is deciding
+whether or not to download a particular resource or to load it
+normally.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitResponsePolicyDecision.h"
                        line="60"/>
       <method name="get_request"
@@ -14395,6 +14719,13 @@ used to ask confirmation to leave the current page to the user. Since 2.12</doc>
            glib:type-name="WebKitSecurityManager"
            glib:get-type="webkit_security_manager_get_type"
            glib:type-struct="SecurityManagerClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitSecurityManager.cpp"
+           line="31">The #WebKitSecurityManager defines security settings for URI
+schemes in a #WebKitWebContext. Get it from the context with
+webkit_web_context_get_security_manager(), and use it to register a
+URI scheme with a certain security level, or to check if it already
+has it.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitSecurityManager.h"
                        line="56"/>
       <method name="register_uri_scheme_as_cors_enabled"
@@ -14802,9 +15133,20 @@ See also webkit_security_manager_register_uri_scheme_as_secure().</doc>
     </record>
     <record name="SecurityOrigin"
             c:type="WebKitSecurityOrigin"
+            version="2.16"
             glib:type-name="WebKitSecurityOrigin"
             glib:get-type="webkit_security_origin_get_type"
             c:symbol-prefix="security_origin">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitSecurityOrigin.cpp"
+           line="27">#WebKitSecurityOrigin is a representation of a security domain
+defined by websites. A security origin normally consists of a
+protocol, a hostname, and a port number. It is also possible for a
+security origin to be opaque, as defined by the HTML standard, in
+which case it has no associated protocol, host, or port.
+
+Websites with the same security origin can access each other's
+resources for client-side scripting or database access.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitSecurityOrigin.h"
                        line="34"/>
       <constructor name="new"
@@ -15048,6 +15390,19 @@ called from any thread.</doc>
            glib:type-name="WebKitSettings"
            glib:get-type="webkit_settings_get_type"
            glib:type-struct="SettingsClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitSettings.cpp"
+           line="90">#WebKitSettings can be applied to a #WebKitWebView to control text charset,
+color, font sizes, printing mode, script support, loading of images and various
+other things on a #WebKitWebView. After creation, a #WebKitSettings object
+contains default settings.
+
+&lt;informalexample&gt;&lt;programlisting&gt;
+/&lt;!-- --&gt;* Disable JavaScript. *&lt;!-- --&gt;/
+WebKitSettings *settings = webkit_web_view_group_get_settings (my_view_group);
+webkit_settings_set_enable_javascript (settings, FALSE);
+
+&lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitSettings.h"
                        line="83"/>
       <constructor name="new" c:identifier="webkit_settings_new">
@@ -18857,6 +19212,11 @@ visible in the webview</doc>
            glib:type-name="WebKitURIRequest"
            glib:get-type="webkit_uri_request_get_type"
            glib:type-struct="URIRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/Shared/API/glib/WebKitURIRequest.cpp"
+           line="37">A #WebKitURIRequest can be created with a URI using the
+webkit_uri_request_new() method, and you can get the URI of an
+existing request with the webkit_uri_request_get_uri() one.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitURIRequest.h"
                        line="58"/>
       <constructor name="new" c:identifier="webkit_uri_request_new">
@@ -19043,6 +19403,11 @@ visible in the webview</doc>
            glib:type-name="WebKitURIResponse"
            glib:get-type="webkit_uri_response_get_type"
            glib:type-struct="URIResponseClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/Shared/API/glib/WebKitURIResponse.cpp"
+           line="31">A #WebKitURIResponse contains information such as the URI, the
+status code, the content length, the mime type, the HTTP status or
+the suggested filename.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitURIResponse.h"
                        line="58"/>
       <method name="get_content_length"
@@ -19280,6 +19645,16 @@ present.</doc>
            glib:type-name="WebKitURISchemeRequest"
            glib:get-type="webkit_uri_scheme_request_get_type"
            glib:type-struct="URISchemeRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitURISchemeRequest.cpp"
+           line="43">If you register a particular URI scheme in a #WebKitWebContext,
+using webkit_web_context_register_uri_scheme(), you have to provide
+a #WebKitURISchemeRequestCallback. After that, when a URI request
+is made with that particular scheme, your callback will be
+called. There you will be able to access properties such as the
+scheme, the URI and path, and the #WebKitWebView that initiated the
+request, and also finish the request with
+webkit_uri_scheme_request_finish().</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitURISchemeRequest.h"
                        line="57"/>
       <method name="finish" c:identifier="webkit_uri_scheme_request_finish">
@@ -19844,10 +20219,25 @@ be called from any thread.</doc>
     <class name="UserContentFilterStore"
            c:symbol-prefix="user_content_filter_store"
            c:type="WebKitUserContentFilterStore"
+           version="2.24"
            parent="GObject.Object"
            glib:type-name="WebKitUserContentFilterStore"
            glib:get-type="webkit_user_content_filter_store_get_type"
            glib:type-struct="UserContentFilterStoreClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitUserContentFilterStore.cpp"
+           line="43">The WebKitUserContentFilterStore provides the means to import and save
+[JSON rule sets](https://webkit.org/blog/3476/content-blockers-first-look/),
+which can be loaded later in an efficient manner. Once filters are stored,
+the #WebKitUserContentFilter objects which represent them can be added to
+a #WebKitUserContentManager with webkit_user_content_manager_add_filter().
+
+JSON rule sets are imported using webkit_user_content_filter_store_save() and stored
+on disk in an implementation defined format. The contents of a filter store must be
+managed using the #WebKitUserContentFilterStore: a list of all the stored filters
+can be obtained with webkit_user_content_filter_store_fetch_identifiers(),
+webkit_user_content_filter_store_load() can be used to retrieve a previously saved
+filter, and removed from the store with webkit_user_content_filter_store_remove().</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitUserContentFilterStore.h"
                        line="65"/>
       <constructor name="new"
@@ -20471,10 +20861,24 @@ directory where user content filters are stored on disk.</doc>
     <class name="UserContentManager"
            c:symbol-prefix="user_content_manager"
            c:type="WebKitUserContentManager"
+           version="2.6"
            parent="GObject.Object"
            glib:type-name="WebKitUserContentManager"
            glib:get-type="webkit_user_content_manager_get_type"
            glib:type-struct="UserContentManagerClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitUserContentManager.cpp"
+           line="49">Using a #WebKitUserContentManager user CSS style sheets can be set to
+be injected in the web pages loaded by a #WebKitWebView, by
+webkit_user_content_manager_add_style_sheet().
+
+To use a #WebKitUserContentManager, it must be created using
+webkit_user_content_manager_new(), and then passed to
+webkit_web_view_new_with_user_content_manager(). User style
+sheets can be created with webkit_user_style_sheet_new().
+
+User style sheets can be added and removed at any time, but
+they will affect the web pages loaded afterwards.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitUserContentManager.h"
                        line="59"/>
       <constructor name="new"
@@ -20947,10 +21351,19 @@ webkit_user_content_manager_register_script_message_handler()</doc>
     <class name="UserMediaPermissionRequest"
            c:symbol-prefix="user_media_permission_request"
            c:type="WebKitUserMediaPermissionRequest"
+           version="2.8"
            parent="GObject.Object"
            glib:type-name="WebKitUserMediaPermissionRequest"
            glib:get-type="webkit_user_media_permission_request_get_type"
            glib:type-struct="UserMediaPermissionRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitUserMediaPermissionRequest.cpp"
+           line="30">WebKitUserMediaPermissionRequest represents a request for
+permission to decide whether WebKit should be allowed to access the user's
+audio and video source devices when requested through the getUserMedia API.
+
+When a WebKitUserMediaPermissionRequest is not handled by the user,
+it is denied by default.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitUserMediaPermissionRequest.h"
                        line="56"/>
       <implements name="PermissionRequest"/>
@@ -21022,10 +21435,19 @@ webkit_user_content_manager_register_script_message_handler()</doc>
     <class name="UserMessage"
            c:symbol-prefix="user_message"
            c:type="WebKitUserMessage"
+           version="2.28"
            parent="GObject.InitiallyUnowned"
            glib:type-name="WebKitUserMessage"
            glib:get-type="webkit_user_message_get_type"
            glib:type-struct="UserMessageClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/Shared/API/glib/WebKitUserMessage.cpp"
+           line="39">A WebKitUserMessage is a message that can be used for the communication between the UI process
+and web extensions. A WebKitUserMessage always has a name, and it can also include parameters and
+UNIX file descriptors. Messages can be sent from a #WebKitWebContext to all #WebKitWebExtension&lt;!-- --&gt;s,
+from a #WebKitWebExtension to its corresponding #WebKitWebContext, and from a #WebKitWebView to its
+corresponding #WebKitWebPage (and vice versa). One to one messages can be replied to directly with
+webkit_user_message_send_reply().</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitUserMessage.h"
                        line="70"/>
       <constructor name="new"
@@ -22014,6 +22436,32 @@ called from any thread.</doc>
            glib:type-name="WebKitWebContext"
            glib:get-type="webkit_web_context_get_type"
            glib:type-struct="WebContextClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
+           line="85">The #WebKitWebContext manages all aspects common to all
+#WebKitWebView&lt;!-- --&gt;s.
+
+You can define the #WebKitCacheModel and #WebKitProcessModel with
+webkit_web_context_set_cache_model() and
+webkit_web_context_set_process_model(), depending on the needs of
+your application. You can access the #WebKitSecurityManager to specify
+the behaviour of your application regarding security using
+webkit_web_context_get_security_manager().
+
+It is also possible to change your preferred language or enable
+spell checking, using webkit_web_context_set_preferred_languages(),
+webkit_web_context_set_spell_checking_languages() and
+webkit_web_context_set_spell_checking_enabled().
+
+You can use webkit_web_context_register_uri_scheme() to register
+custom URI schemes, and manage several other settings.
+
+TLS certificate validation failure is now treated as a transport
+error by default. To handle TLS failures differently, you can
+connect to #WebKitWebView::load-failed-with-tls-errors.
+Alternatively, you can use webkit_web_context_set_tls_errors_policy()
+to set the policy %WEBKIT_TLS_ERRORS_POLICY_IGNORE; however, this is
+not appropriate for Internet applications.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                        line="159"/>
       <constructor name="new"
@@ -22021,13 +22469,13 @@ called from any thread.</doc>
                    version="2.8">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="696">Create a new #WebKitWebContext</doc>
+             line="702">Create a new #WebKitWebContext</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="168"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="701">a newly created #WebKitWebContext</doc>
+               line="707">a newly created #WebKitWebContext</doc>
           <type name="WebContext" c:type="WebKitWebContext*"/>
         </return-value>
       </constructor>
@@ -22036,7 +22484,7 @@ called from any thread.</doc>
                    version="2.16">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="710">Create a new ephemeral #WebKitWebContext. An ephemeral #WebKitWebContext is a context
+             line="716">Create a new ephemeral #WebKitWebContext. An ephemeral #WebKitWebContext is a context
 created with an ephemeral #WebKitWebsiteDataManager. This is just a convenient method
 to create ephemeral contexts without having to create your own #WebKitWebsiteDataManager.
 All #WebKitWebView&lt;!-- --&gt;s associated with this context will also be ephemeral. Websites will
@@ -22047,7 +22495,7 @@ This is normally used to implement private instances.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="720">a new ephemeral #WebKitWebContext.</doc>
+               line="726">a new ephemeral #WebKitWebContext.</doc>
           <type name="WebContext" c:type="WebKitWebContext*"/>
         </return-value>
       </constructor>
@@ -22056,20 +22504,20 @@ This is normally used to implement private instances.</doc>
                    version="2.10">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="730">Create a new #WebKitWebContext with a #WebKitWebsiteDataManager.</doc>
+             line="736">Create a new #WebKitWebContext with a #WebKitWebsiteDataManager.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="174"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="736">a newly created #WebKitWebContext</doc>
+               line="742">a newly created #WebKitWebContext</doc>
           <type name="WebContext" c:type="WebKitWebContext*"/>
         </return-value>
         <parameters>
           <parameter name="manager" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="732">a #WebKitWebsiteDataManager</doc>
+                 line="738">a #WebKitWebsiteDataManager</doc>
             <type name="WebsiteDataManager"
                   c:type="WebKitWebsiteDataManager*"/>
           </parameter>
@@ -22079,13 +22527,13 @@ This is normally used to implement private instances.</doc>
                 c:identifier="webkit_web_context_get_default">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="683">Gets the default web context</doc>
+             line="689">Gets the default web context</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="165"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="688">a #WebKitWebContext</doc>
+               line="694">a #WebKitWebContext</doc>
           <type name="WebContext" c:type="WebKitWebContext*"/>
         </return-value>
       </function>
@@ -22163,7 +22611,7 @@ This is normally used to implement private instances.</doc>
               version="2.26">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1334">Adds a path to be mounted in the sandbox. @path must exist before any web process
+             line="1340">Adds a path to be mounted in the sandbox. @path must exist before any web process
 has been created otherwise it will be silently ignored. It is a fatal error to
 add paths after a web process has been spawned.
 
@@ -22180,19 +22628,19 @@ See also webkit_web_context_set_sandbox_enabled()</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1336">a #WebKitWebContext</doc>
+                 line="1342">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="path" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1337">an absolute path to mount in the sandbox</doc>
+                 line="1343">an absolute path to mount in the sandbox</doc>
             <type name="filename" c:type="const char*"/>
           </parameter>
           <parameter name="read_only" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1338">if %TRUE the path will be read-only</doc>
+                 line="1344">if %TRUE the path will be read-only</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -22202,7 +22650,7 @@ See also webkit_web_context_set_sandbox_enabled()</doc>
               version="2.6">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1629">Ignore further TLS errors on the @host for the certificate present in @info.</doc>
+             line="1635">Ignore further TLS errors on the @host for the certificate present in @info.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="306"/>
         <return-value transfer-ownership="none">
@@ -22212,19 +22660,19 @@ See also webkit_web_context_set_sandbox_enabled()</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1631">a #WebKitWebContext</doc>
+                 line="1637">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="certificate" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1632">a #GTlsCertificate</doc>
+                 line="1638">a #GTlsCertificate</doc>
             <type name="Gio.TlsCertificate" c:type="GTlsCertificate*"/>
           </parameter>
           <parameter name="host" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1633">the host for which a certificate is to be allowed</doc>
+                 line="1639">the host for which a certificate is to be allowed</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -22232,7 +22680,7 @@ See also webkit_web_context_set_sandbox_enabled()</doc>
       <method name="clear_cache" c:identifier="webkit_web_context_clear_cache">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="911">Clears all resources currently cached.
+             line="917">Clears all resources currently cached.
 See also webkit_web_context_set_cache_model().</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="202"/>
@@ -22243,7 +22691,7 @@ See also webkit_web_context_set_cache_model().</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="913">a #WebKitWebContext</doc>
+                 line="919">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22252,7 +22700,7 @@ See also webkit_web_context_set_cache_model().</doc>
               c:identifier="webkit_web_context_download_uri">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="978">Requests downloading of the specified URI string. The download operation
+             line="984">Requests downloading of the specified URI string. The download operation
 will not be associated to any #WebKitWebView, if you are interested in
 starting a download from a particular #WebKitWebView use
 webkit_web_view_download_uri() instead.</doc>
@@ -22261,7 +22709,7 @@ webkit_web_view_download_uri() instead.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="988">a new #WebKitDownload representing
+               line="994">a new #WebKitDownload representing
    the download operation.</doc>
           <type name="Download" c:type="WebKitDownload*"/>
         </return-value>
@@ -22269,13 +22717,13 @@ webkit_web_view_download_uri() instead.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="980">a #WebKitWebContext</doc>
+                 line="986">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="981">the URI to download</doc>
+                 line="987">the URI to download</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -22284,7 +22732,7 @@ webkit_web_view_download_uri() instead.</doc>
               c:identifier="webkit_web_context_get_cache_model">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="883">Returns the current cache model. For more information about this
+             line="889">Returns the current cache model. For more information about this
 value check the documentation of the function
 webkit_web_context_set_cache_model().</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
@@ -22292,14 +22740,14 @@ webkit_web_context_set_cache_model().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="891">the current #WebKitCacheModel</doc>
+               line="897">the current #WebKitCacheModel</doc>
           <type name="CacheModel" c:type="WebKitCacheModel"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="885">the #WebKitWebContext</doc>
+                 line="891">the #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22308,20 +22756,20 @@ webkit_web_context_set_cache_model().</doc>
               c:identifier="webkit_web_context_get_cookie_manager">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1000">Get the #WebKitCookieManager of the @context's #WebKitWebsiteDataManager.</doc>
+             line="1006">Get the #WebKitCookieManager of the @context's #WebKitWebsiteDataManager.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="214"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1006">the #WebKitCookieManager of @context.</doc>
+               line="1012">the #WebKitCookieManager of @context.</doc>
           <type name="CookieManager" c:type="WebKitCookieManager*"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1002">a #WebKitWebContext</doc>
+                 line="1008">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22330,7 +22778,7 @@ webkit_web_context_set_cache_model().</doc>
               c:identifier="webkit_web_context_get_favicon_database">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1111">Get the #WebKitFaviconDatabase associated with @context.
+             line="1117">Get the #WebKitFaviconDatabase associated with @context.
 
 To initialize the database you need to call
 webkit_web_context_set_favicon_database_directory().</doc>
@@ -22339,14 +22787,14 @@ webkit_web_context_set_favicon_database_directory().</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1120">the #WebKitFaviconDatabase of @context.</doc>
+               line="1126">the #WebKitFaviconDatabase of @context.</doc>
           <type name="FaviconDatabase" c:type="WebKitFaviconDatabase*"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1113">a #WebKitWebContext</doc>
+                 line="1119">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22355,7 +22803,7 @@ webkit_web_context_set_favicon_database_directory().</doc>
               c:identifier="webkit_web_context_get_favicon_database_directory">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1084">Get the directory path being used to store the favicons database
+             line="1090">Get the directory path being used to store the favicons database
 for @context, or %NULL if
 webkit_web_context_set_favicon_database_directory() hasn't been
 called yet.
@@ -22368,7 +22816,7 @@ time.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1097">the path of the directory of the favicons
+               line="1103">the path of the directory of the favicons
 database associated with @context, or %NULL.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
@@ -22376,7 +22824,7 @@ database associated with @context, or %NULL.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1086">a #WebKitWebContext</doc>
+                 line="1092">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22386,20 +22834,20 @@ database associated with @context, or %NULL.</doc>
               version="2.26">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1015">Get the #WebKitGeolocationManager of @context.</doc>
+             line="1021">Get the #WebKitGeolocationManager of @context.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="217"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1021">the #WebKitGeolocationManager of @context.</doc>
+               line="1027">the #WebKitGeolocationManager of @context.</doc>
           <type name="GeolocationManager" c:type="WebKitGeolocationManager*"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1017">a #WebKitWebContext</doc>
+                 line="1023">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22407,7 +22855,7 @@ database associated with @context, or %NULL.</doc>
       <method name="get_plugins" c:identifier="webkit_web_context_get_plugins">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1182">Asynchronously get the list of installed plugins.
+             line="1188">Asynchronously get the list of installed plugins.
 
 When the operation is finished, @callback will be called. You can then call
 webkit_web_context_get_plugins_finish() to get the result of the operation.</doc>
@@ -22420,7 +22868,7 @@ webkit_web_context_get_plugins_finish() to get the result of the operation.</doc
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1184">a #WebKitWebContext</doc>
+                 line="1190">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -22429,7 +22877,7 @@ webkit_web_context_get_plugins_finish() to get the result of the operation.</doc
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1185">a #GCancellable or %NULL to ignore</doc>
+                 line="1191">a #GCancellable or %NULL to ignore</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -22440,7 +22888,7 @@ webkit_web_context_get_plugins_finish() to get the result of the operation.</doc
                      closure="2">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1186">a #GAsyncReadyCallback to call when the request is satisfied</doc>
+                 line="1192">a #GAsyncReadyCallback to call when the request is satisfied</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -22449,7 +22897,7 @@ webkit_web_context_get_plugins_finish() to get the result of the operation.</doc
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1187">the data to pass to callback function</doc>
+                 line="1193">the data to pass to callback function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -22459,13 +22907,13 @@ webkit_web_context_get_plugins_finish() to get the result of the operation.</doc
               throws="1">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1202">Finish an asynchronous operation started with webkit_web_context_get_plugins.</doc>
+             line="1208">Finish an asynchronous operation started with webkit_web_context_get_plugins.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="242"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1210">a #GList of #WebKitPlugin. You must free the #GList with
+               line="1216">a #GList of #WebKitPlugin. You must free the #GList with
    g_list_free() and unref the #WebKitPlugin&lt;!-- --&gt;s with g_object_unref() when you're done with them.</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="Plugin"/>
@@ -22475,13 +22923,13 @@ webkit_web_context_get_plugins_finish() to get the result of the operation.</doc
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1204">a #WebKitWebContext</doc>
+                 line="1210">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1205">a #GAsyncResult</doc>
+                 line="1211">a #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -22491,21 +22939,21 @@ webkit_web_context_get_plugins_finish() to get the result of the operation.</doc
               version="2.4">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1689">Returns the current process model. For more information about this value
+             line="1695">Returns the current process model. For more information about this value
 see webkit_web_context_set_process_model().</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="315"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1696">the current #WebKitProcessModel</doc>
+               line="1702">the current #WebKitProcessModel</doc>
           <type name="ProcessModel" c:type="WebKitProcessModel"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1691">the #WebKitWebContext</doc>
+                 line="1697">the #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22515,20 +22963,20 @@ see webkit_web_context_set_process_model().</doc>
               version="2.26">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1367">Get whether sandboxing is currently enabled.</doc>
+             line="1373">Get whether sandboxing is currently enabled.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="257"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1373">%TRUE if sandboxing is enabled, or %FALSE otherwise.</doc>
+               line="1379">%TRUE if sandboxing is enabled, or %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1369">a #WebKitWebContext</doc>
+                 line="1375">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22537,20 +22985,20 @@ see webkit_web_context_set_process_model().</doc>
               c:identifier="webkit_web_context_get_security_manager">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1130">Get the #WebKitSecurityManager of @context.</doc>
+             line="1136">Get the #WebKitSecurityManager of @context.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="229"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1136">the #WebKitSecurityManager of @context.</doc>
+               line="1142">the #WebKitSecurityManager of @context.</doc>
           <type name="SecurityManager" c:type="WebKitSecurityManager*"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1132">a #WebKitWebContext</doc>
+                 line="1138">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22559,20 +23007,20 @@ see webkit_web_context_set_process_model().</doc>
               c:identifier="webkit_web_context_get_spell_checking_enabled">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1384">Get whether spell checking feature is currently enabled.</doc>
+             line="1390">Get whether spell checking feature is currently enabled.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="265"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1390">%TRUE If spell checking is enabled, or %FALSE otherwise.</doc>
+               line="1396">%TRUE If spell checking is enabled, or %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1386">a #WebKitWebContext</doc>
+                 line="1392">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22581,7 +23029,7 @@ see webkit_web_context_set_process_model().</doc>
               c:identifier="webkit_web_context_get_spell_checking_languages">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1419">Get the the list of spell checking languages associated with
+             line="1425">Get the the list of spell checking languages associated with
 @context, or %NULL if no languages have been previously set.
 
 See webkit_web_context_set_spell_checking_languages() for more
@@ -22591,7 +23039,7 @@ details on the format of the languages in the list.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1429">A %NULL-terminated
+               line="1435">A %NULL-terminated
    array of languages if available, or %NULL otherwise.</doc>
           <array c:type="const gchar* const*">
             <type name="utf8"/>
@@ -22601,7 +23049,7 @@ details on the format of the languages in the list.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1421">a #WebKitWebContext</doc>
+                 line="1427">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22610,20 +23058,20 @@ details on the format of the languages in the list.</doc>
               c:identifier="webkit_web_context_get_tls_errors_policy">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1531">Get the TLS errors policy of @context</doc>
+             line="1537">Get the TLS errors policy of @context</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="286"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1537">a #WebKitTLSErrorsPolicy</doc>
+               line="1543">a #WebKitTLSErrorsPolicy</doc>
           <type name="TLSErrorsPolicy" c:type="WebKitTLSErrorsPolicy"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1533">a #WebKitWebContext</doc>
+                 line="1539">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22633,20 +23081,20 @@ details on the format of the languages in the list.</doc>
               version="2.30">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1840">Get the #WebKitWebContext:use-system-appearance-for-scrollbars property.</doc>
+             line="1846">Get the #WebKitWebContext:use-system-appearance-for-scrollbars property.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="332"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1846">%TRUE if scrollbars are rendering using the system appearance, or %FALSE otherwise</doc>
+               line="1852">%TRUE if scrollbars are rendering using the system appearance, or %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1842">a #WebKitWebContext</doc>
+                 line="1848">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22658,7 +23106,7 @@ details on the format of the languages in the list.</doc>
               deprecated-version="2.26">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1728">Gets the maximum number of web processes that can be created at the same time for the @context.
+             line="1734">Gets the maximum number of web processes that can be created at the same time for the @context.
 
 This function is now deprecated and always returns 0 (no limit). See also webkit_web_context_set_web_process_count_limit().</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
@@ -22666,14 +23114,14 @@ This function is now deprecated and always returns 0 (no limit). See also webkit
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="1736">the maximum limit of web processes, or 0 if there isn't a limit.</doc>
+               line="1742">the maximum limit of web processes, or 0 if there isn't a limit.</doc>
           <type name="guint" c:type="guint"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1730">the #WebKitWebContext</doc>
+                 line="1736">the #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22683,20 +23131,20 @@ This function is now deprecated and always returns 0 (no limit). See also webkit
               version="2.10">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="747">Get the #WebKitWebsiteDataManager of @context.</doc>
+             line="753">Get the #WebKitWebsiteDataManager of @context.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="177"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="753">a #WebKitWebsiteDataManager</doc>
+               line="759">a #WebKitWebsiteDataManager</doc>
           <type name="WebsiteDataManager" c:type="WebKitWebsiteDataManager*"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="749">the #WebKitWebContext</doc>
+                 line="755">the #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22706,7 +23154,7 @@ This function is now deprecated and always returns 0 (no limit). See also webkit
               version="2.16">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1756">Sets initial desktop notification permissions for the @context.
+             line="1762">Sets initial desktop notification permissions for the @context.
 @allowed_origins and @disallowed_origins must each be #GList of
 #WebKitSecurityOrigin objects representing origins that will,
 respectively, either always or never have permission to show desktop
@@ -22730,13 +23178,13 @@ permissions.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1758">the #WebKitWebContext</doc>
+                 line="1764">the #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="allowed_origins" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1759">a #GList of security origins</doc>
+                 line="1765">a #GList of security origins</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="SecurityOrigin"/>
             </type>
@@ -22744,7 +23192,7 @@ permissions.</doc>
           <parameter name="disallowed_origins" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1760">a #GList of security origins</doc>
+                 line="1766">a #GList of security origins</doc>
             <type name="GLib.List" c:type="GList*">
               <type name="SecurityOrigin"/>
             </type>
@@ -22756,21 +23204,21 @@ permissions.</doc>
               version="2.18">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="781">Get whether automation is allowed in @context.
+             line="787">Get whether automation is allowed in @context.
 See also webkit_web_context_set_automation_allowed().</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="183"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="788">%TRUE if automation is allowed or %FALSE otherwise.</doc>
+               line="794">%TRUE if automation is allowed or %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="783">the #WebKitWebContext</doc>
+                 line="789">the #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22780,20 +23228,20 @@ See also webkit_web_context_set_automation_allowed().</doc>
               version="2.16">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="764">Get whether a #WebKitWebContext is ephemeral.</doc>
+             line="770">Get whether a #WebKitWebContext is ephemeral.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="180"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="770">%TRUE if @context is ephemeral or %FALSE otherwise.</doc>
+               line="776">%TRUE if @context is ephemeral or %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="766">the #WebKitWebContext</doc>
+                 line="772">the #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
         </parameters>
@@ -22802,7 +23250,7 @@ See also webkit_web_context_set_automation_allowed().</doc>
               c:identifier="webkit_web_context_prefetch_dns">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1611">Resolve the domain name of the given @hostname in advance, so that if a URI
+             line="1617">Resolve the domain name of the given @hostname in advance, so that if a URI
 of @hostname is requested the load will be performed more quickly.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="298"/>
@@ -22813,13 +23261,13 @@ of @hostname is requested the load will be performed more quickly.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1613">a #WebKitWebContext</doc>
+                 line="1619">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="hostname" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1614">a hostname to be resolved</doc>
+                 line="1620">a hostname to be resolved</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -22828,7 +23276,7 @@ of @hostname is requested the load will be performed more quickly.</doc>
               c:identifier="webkit_web_context_register_uri_scheme">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1221">Register @scheme in @context, so that when an URI request with @scheme is made in the
+             line="1227">Register @scheme in @context, so that when an URI request with @scheme is made in the
 #WebKitWebContext, the #WebKitURISchemeRequestCallback registered will be called with a
 #WebKitURISchemeRequest.
 It is possible to handle URI scheme requests asynchronously, by calling g_object_ref() on the
@@ -22879,13 +23327,13 @@ about_uri_scheme_request_cb (WebKitURISchemeRequest *request,
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1223">a #WebKitWebContext</doc>
+                 line="1229">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="scheme" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1224">the network scheme to register</doc>
+                 line="1230">the network scheme to register</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="callback"
@@ -22895,7 +23343,7 @@ about_uri_scheme_request_cb (WebKitURISchemeRequest *request,
                      destroy="3">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1225">a #WebKitURISchemeRequestCallback</doc>
+                 line="1231">a #WebKitURISchemeRequestCallback</doc>
             <type name="URISchemeRequestCallback"
                   c:type="WebKitURISchemeRequestCallback"/>
           </parameter>
@@ -22905,7 +23353,7 @@ about_uri_scheme_request_cb (WebKitURISchemeRequest *request,
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1226">data to pass to callback function</doc>
+                 line="1232">data to pass to callback function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="user_data_destroy_func"
@@ -22913,7 +23361,7 @@ about_uri_scheme_request_cb (WebKitURISchemeRequest *request,
                      scope="async">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1227">destroy notify for @user_data</doc>
+                 line="1233">destroy notify for @user_data</doc>
             <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
           </parameter>
         </parameters>
@@ -22923,7 +23371,7 @@ about_uri_scheme_request_cb (WebKitURISchemeRequest *request,
               version="2.28">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1792">Send @message to all #WebKitWebExtension&lt;!-- --&gt;s associated to @context.
+             line="1798">Send @message to all #WebKitWebExtension&lt;!-- --&gt;s associated to @context.
 If @message is floating, it's consumed.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="324"/>
@@ -22934,13 +23382,13 @@ If @message is floating, it's consumed.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1794">the #WebKitWebContext</doc>
+                 line="1800">the #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="message" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1795">a #WebKitUserMessage</doc>
+                 line="1801">a #WebKitUserMessage</doc>
             <type name="UserMessage" c:type="WebKitUserMessage*"/>
           </parameter>
         </parameters>
@@ -22949,7 +23397,7 @@ If @message is floating, it's consumed.</doc>
               c:identifier="webkit_web_context_set_additional_plugins_directory">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1149">Set an additional directory where WebKit will look for plugins.</doc>
+             line="1155">Set an additional directory where WebKit will look for plugins.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="232"/>
         <return-value transfer-ownership="none">
@@ -22959,13 +23407,13 @@ If @message is floating, it's consumed.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1151">a #WebKitWebContext</doc>
+                 line="1157">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="directory" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1152">the directory to add</doc>
+                 line="1158">the directory to add</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -22975,7 +23423,7 @@ If @message is floating, it's consumed.</doc>
               version="2.18">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="803">Set whether automation is allowed in @context. When automation is enabled the browser could
+             line="809">Set whether automation is allowed in @context. When automation is enabled the browser could
 be controlled by another process by requesting an automation session. When a new automation
 session is requested the signal #WebKitWebContext::automation-started is emitted.
 Automation is disabled by default, so you need to explicitly call this method passing %TRUE
@@ -22992,13 +23440,13 @@ if there's another #WebKitWebContext with automation already enabled.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="805">the #WebKitWebContext</doc>
+                 line="811">the #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="allowed" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="806">value to set</doc>
+                 line="812">value to set</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -23007,7 +23455,7 @@ if there's another #WebKitWebContext with automation already enabled.</doc>
               c:identifier="webkit_web_context_set_cache_model">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="837">Specifies a usage model for WebViews, which WebKit will use to
+             line="843">Specifies a usage model for WebViews, which WebKit will use to
 determine its caching behavior. All web views follow the cache
 model. This cache model determines the RAM and disk space to use
 for caching previously viewed content .
@@ -23034,13 +23482,13 @@ specifying %WEBKIT_CACHE_MODEL_DOCUMENT_VIEWER. The default value is
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="839">the #WebKitWebContext</doc>
+                 line="845">the #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="cache_model" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="840">a #WebKitCacheModel</doc>
+                 line="846">a #WebKitCacheModel</doc>
             <type name="CacheModel" c:type="WebKitCacheModel"/>
           </parameter>
         </parameters>
@@ -23051,7 +23499,7 @@ specifying %WEBKIT_CACHE_MODEL_DOCUMENT_VIEWER. The default value is
               deprecated-version="2.10.">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1590">Set the directory where disk cache files will be stored
+             line="1596">Set the directory where disk cache files will be stored
 This method must be called before loading anything in this context, otherwise
 it will not have any effect.
 
@@ -23068,13 +23516,13 @@ since the #WebKitWebsiteDataManager is immutable.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1592">a #WebKitWebContext</doc>
+                 line="1598">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="directory" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1593">the directory to set</doc>
+                 line="1599">the directory to set</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -23083,7 +23531,7 @@ since the #WebKitWebsiteDataManager is immutable.</doc>
               c:identifier="webkit_web_context_set_favicon_database_directory">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1041">Set the directory path to be used to store the favicons database
+             line="1047">Set the directory path to be used to store the favicons database
 for @context on disk. Passing %NULL as @path means using the
 default directory for the platform (see g_get_user_cache_dir()).
 
@@ -23100,7 +23548,7 @@ called only once. Further calls for the same instance of
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1043">a #WebKitWebContext</doc>
+                 line="1049">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="path"
@@ -23109,7 +23557,7 @@ called only once. Further calls for the same instance of
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1044">an absolute path to the icon database
+                 line="1050">an absolute path to the icon database
 directory or %NULL to use the defaults</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
@@ -23120,7 +23568,7 @@ directory or %NULL to use the defaults</doc>
               version="2.16">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="929">Set the network proxy settings to be used by connections started in @context.
+             line="935">Set the network proxy settings to be used by connections started in @context.
 By default %WEBKIT_NETWORK_PROXY_MODE_DEFAULT is used, which means that the
 system settings will be used (g_proxy_resolver_get_default()).
 If you want to override the system default settings, you can either use
@@ -23137,13 +23585,13 @@ a valid #WebKitNetworkProxySettings; otherwise, @proxy_settings must be %NULL.</
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="931">a #WebKitWebContext</doc>
+                 line="937">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="proxy_mode" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="932">a #WebKitNetworkProxyMode</doc>
+                 line="938">a #WebKitNetworkProxyMode</doc>
             <type name="NetworkProxyMode" c:type="WebKitNetworkProxyMode"/>
           </parameter>
           <parameter name="proxy_settings"
@@ -23152,7 +23600,7 @@ a valid #WebKitNetworkProxySettings; otherwise, @proxy_settings must be %NULL.</
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="933">a #WebKitNetworkProxySettings, or %NULL</doc>
+                 line="939">a #WebKitNetworkProxySettings, or %NULL</doc>
             <type name="NetworkProxySettings"
                   c:type="WebKitNetworkProxySettings*"/>
           </parameter>
@@ -23162,7 +23610,7 @@ a valid #WebKitNetworkProxySettings; otherwise, @proxy_settings must be %NULL.</
               c:identifier="webkit_web_context_set_preferred_languages">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1483">Set the list of preferred languages, sorted from most desirable
+             line="1489">Set the list of preferred languages, sorted from most desirable
 to least desirable. The list will be used to build the "Accept-Language"
 header that will be included in the network requests started by
 the #WebKitWebContext.</doc>
@@ -23175,7 +23623,7 @@ the #WebKitWebContext.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1485">a #WebKitWebContext</doc>
+                 line="1491">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="languages"
@@ -23184,7 +23632,7 @@ the #WebKitWebContext.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1486">a %NULL-terminated list of language identifiers</doc>
+                 line="1492">a %NULL-terminated list of language identifiers</doc>
             <array c:type="const gchar* const*">
               <type name="utf8"/>
             </array>
@@ -23196,7 +23644,7 @@ the #WebKitWebContext.</doc>
               version="2.4">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1649">Specifies a process model for WebViews, which WebKit will use to
+             line="1655">Specifies a process model for WebViews, which WebKit will use to
 determine how auxiliary processes are handled.
 
 %WEBKIT_PROCESS_MODEL_MULTIPLE_SECONDARY_PROCESSES will use
@@ -23222,13 +23670,13 @@ your application crash.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1651">the #WebKitWebContext</doc>
+                 line="1657">the #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="process_model" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1652">a #WebKitProcessModel</doc>
+                 line="1658">a #WebKitProcessModel</doc>
             <type name="ProcessModel" c:type="WebKitProcessModel"/>
           </parameter>
         </parameters>
@@ -23238,7 +23686,7 @@ your application crash.</doc>
               version="2.26">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1295">Set whether WebKit subprocesses will be sandboxed, limiting access to the system.
+             line="1301">Set whether WebKit subprocesses will be sandboxed, limiting access to the system.
 
 This method **must be called before any web process has been created**,
 as early as possible in your application. Calling it later is a fatal error.
@@ -23253,13 +23701,13 @@ This is only implemented on Linux and is a no-op otherwise.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1297">a #WebKitWebContext</doc>
+                 line="1303">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="enabled" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1298">if %TRUE enable sandboxing</doc>
+                 line="1304">if %TRUE enable sandboxing</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -23268,7 +23716,7 @@ This is only implemented on Linux and is a no-op otherwise.</doc>
               c:identifier="webkit_web_context_set_spell_checking_enabled">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1403">Enable or disable the spell checking feature.</doc>
+             line="1409">Enable or disable the spell checking feature.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="268"/>
         <return-value transfer-ownership="none">
@@ -23278,13 +23726,13 @@ This is only implemented on Linux and is a no-op otherwise.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1405">a #WebKitWebContext</doc>
+                 line="1411">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="enabled" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1406">Value to be set</doc>
+                 line="1412">Value to be set</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -23293,7 +23741,7 @@ This is only implemented on Linux and is a no-op otherwise.</doc>
               c:identifier="webkit_web_context_set_spell_checking_languages">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1453">Set the list of spell checking languages to be used for spell
+             line="1459">Set the list of spell checking languages to be used for spell
 checking.
 
 The locale string typically is in the form lang_COUNTRY, where lang
@@ -23313,13 +23761,13 @@ in WebKit.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1455">a #WebKitWebContext</doc>
+                 line="1461">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="languages" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1456">a %NULL-terminated list of spell checking languages</doc>
+                 line="1462">a %NULL-terminated list of spell checking languages</doc>
             <array c:type="const gchar* const*">
               <type name="utf8" c:type="gchar*"/>
             </array>
@@ -23330,7 +23778,7 @@ in WebKit.</doc>
               c:identifier="webkit_web_context_set_tls_errors_policy">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1511">Set the TLS errors policy of @context as @policy</doc>
+             line="1517">Set the TLS errors policy of @context as @policy</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="282"/>
         <return-value transfer-ownership="none">
@@ -23340,13 +23788,13 @@ in WebKit.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1513">a #WebKitWebContext</doc>
+                 line="1519">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="policy" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1514">a #WebKitTLSErrorsPolicy</doc>
+                 line="1520">a #WebKitTLSErrorsPolicy</doc>
             <type name="TLSErrorsPolicy" c:type="WebKitTLSErrorsPolicy"/>
           </parameter>
         </parameters>
@@ -23356,7 +23804,7 @@ in WebKit.</doc>
               version="2.30">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1814">Set the #WebKitWebContext:use-system-appearance-for-scrollbars property.</doc>
+             line="1820">Set the #WebKitWebContext:use-system-appearance-for-scrollbars property.</doc>
         <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebContext.h"
                          line="328"/>
         <return-value transfer-ownership="none">
@@ -23366,13 +23814,13 @@ in WebKit.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1816">a #WebKitWebContext</doc>
+                 line="1822">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="enabled" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1817">value to set</doc>
+                 line="1823">value to set</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -23381,7 +23829,7 @@ in WebKit.</doc>
               c:identifier="webkit_web_context_set_web_extensions_directory">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1546">Set the directory where WebKit will look for Web Extensions.
+             line="1552">Set the directory where WebKit will look for Web Extensions.
 This method must be called before loading anything in this context,
 otherwise it will not have any effect. You can connect to
 #WebKitWebContext::initialize-web-extensions to call this method
@@ -23395,13 +23843,13 @@ before anything is loaded.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1548">a #WebKitWebContext</doc>
+                 line="1554">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="directory" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1549">the directory to add</doc>
+                 line="1555">the directory to add</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -23411,7 +23859,7 @@ before anything is loaded.</doc>
               version="2.4">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1566">Set user data to be passed to Web Extensions on initialization.
+             line="1572">Set user data to be passed to Web Extensions on initialization.
 The data will be passed to the
 #WebKitWebExtensionInitializeWithUserDataFunction.
 This method must be called before loading anything in this context,
@@ -23427,13 +23875,13 @@ before anything is loaded.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1568">a #WebKitWebContext</doc>
+                 line="1574">a #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="user_data" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1569">a #GVariant</doc>
+                 line="1575">a #GVariant</doc>
             <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
         </parameters>
@@ -23445,7 +23893,7 @@ before anything is loaded.</doc>
               deprecated-version="2.26">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="1707">Sets the maximum number of web processes that can be created at the same time for the @context.
+             line="1713">Sets the maximum number of web processes that can be created at the same time for the @context.
 The default value is 0 and means no limit.
 
 This function is now deprecated and does nothing for security reasons.</doc>
@@ -23458,13 +23906,13 @@ This function is now deprecated and does nothing for security reasons.</doc>
           <instance-parameter name="context" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1709">the #WebKitWebContext</doc>
+                 line="1715">the #WebKitWebContext</doc>
             <type name="WebContext" c:type="WebKitWebContext*"/>
           </instance-parameter>
           <parameter name="limit" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="1710">the maximum number of web processes</doc>
+                 line="1716">the maximum number of web processes</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
@@ -23478,7 +23926,7 @@ This function is now deprecated and does nothing for security reasons.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="483">The directory where local storage data will be saved.</doc>
+             line="489">The directory where local storage data will be saved.</doc>
         <doc-deprecated xml:space="preserve">Use #WebKitWebsiteDataManager:local-storage-directory instead.</doc-deprecated>
         <type name="utf8" c:type="gchar*"/>
       </property>
@@ -23489,7 +23937,7 @@ This function is now deprecated and does nothing for security reasons.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="521">Whether swap Web processes on cross-site navigations is enabled.
+             line="527">Whether swap Web processes on cross-site navigations is enabled.
 
 When enabled, pages from each security origin will be handled by
 their own separate Web processes, which are started (and
@@ -23505,7 +23953,7 @@ websites stealing data from other visited pages.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="545">Whether to use system appearance for rendering scrollbars.
+             line="551">Whether to use system appearance for rendering scrollbars.
 
 This is enabled by default for backwards compatibility, but it's only
 recommened to use when the application includes other widgets to ensure
@@ -23519,7 +23967,7 @@ consistency, or when consistency with other applications is required too.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="503">The #WebKitWebsiteDataManager associated with this context.</doc>
+             line="509">The #WebKitWebsiteDataManager associated with this context.</doc>
         <type name="WebsiteDataManager"/>
       </property>
       <field name="parent">
@@ -23531,7 +23979,7 @@ consistency, or when consistency with other applications is required too.</doc>
       <glib:signal name="automation-started" when="last" version="2.18">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="629">This signal is emitted when a new automation request is made.
+             line="635">This signal is emitted when a new automation request is made.
 Note that it will never be emitted if automation is not enabled in @context,
 see webkit_web_context_set_automation_allowed() for more details.</doc>
         <return-value transfer-ownership="none">
@@ -23541,7 +23989,7 @@ see webkit_web_context_set_automation_allowed() for more details.</doc>
           <parameter name="session" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="632">the #WebKitAutomationSession associated with this event</doc>
+                 line="638">the #WebKitAutomationSession associated with this event</doc>
             <type name="AutomationSession"/>
           </parameter>
         </parameters>
@@ -23549,7 +23997,7 @@ see webkit_web_context_set_automation_allowed() for more details.</doc>
       <glib:signal name="download-started" when="last">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="568">This signal is emitted when a new download request is made.</doc>
+             line="574">This signal is emitted when a new download request is made.</doc>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -23557,7 +24005,7 @@ see webkit_web_context_set_automation_allowed() for more details.</doc>
           <parameter name="download" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="571">the #WebKitDownload associated with this event</doc>
+                 line="577">the #WebKitDownload associated with this event</doc>
             <type name="Download"/>
           </parameter>
         </parameters>
@@ -23567,7 +24015,7 @@ see webkit_web_context_set_automation_allowed() for more details.</doc>
                    version="2.16">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="605">This signal is emitted when a #WebKitWebContext needs to set
+             line="611">This signal is emitted when a #WebKitWebContext needs to set
 initial notification permissions for a web process. It is emitted
 when a new web process is about to be launched, and signals the
 most appropriate moment to use
@@ -23582,7 +24030,7 @@ webkit_web_context_initialize_notification_permissions() again.</doc>
       <glib:signal name="initialize-web-extensions" when="last" version="2.4">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="585">This signal is emitted when a new web process is about to be
+             line="591">This signal is emitted when a new web process is about to be
 launched. It signals the most appropriate moment to use
 webkit_web_context_set_web_extensions_initialization_user_data()
 and webkit_web_context_set_web_extensions_directory().</doc>
@@ -23593,7 +24041,7 @@ and webkit_web_context_set_web_extensions_directory().</doc>
       <glib:signal name="user-message-received" when="last" version="2.28">
         <doc xml:space="preserve"
              filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-             line="650">This signal is emitted when a #WebKitUserMessage is received from a
+             line="656">This signal is emitted when a #WebKitUserMessage is received from a
 #WebKitWebExtension. You can reply to the message using
 webkit_user_message_send_reply().
 
@@ -23602,14 +24050,14 @@ You can handle the user message asynchronously by calling g_object_ref() on
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-               line="662">%TRUE if the message was handled, or %FALSE otherwise.</doc>
+               line="668">%TRUE if the message was handled, or %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <parameter name="message" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-                 line="653">the #WebKitUserMessage received</doc>
+                 line="659">the #WebKitUserMessage received</doc>
             <type name="UserMessage"/>
           </parameter>
         </parameters>
@@ -23744,6 +24192,29 @@ You can handle the user message asynchronously by calling g_object_ref() on
            glib:type-name="WebKitWebInspector"
            glib:get-type="webkit_web_inspector_get_type"
            glib:type-struct="WebInspectorClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/gtk/WebKitWebInspector.cpp"
+           line="33">The WebKit Inspector is a graphical tool to inspect and change the
+content of a #WebKitWebView. It also includes an interactive
+JavaScript debugger. Using this class one can get a #GtkWidget
+which can be embedded into an application to show the inspector.
+
+The inspector is available when the #WebKitSettings of the
+#WebKitWebView has set the #WebKitSettings:enable-developer-extras
+to true, otherwise no inspector is available.
+
+&lt;informalexample&gt;&lt;programlisting&gt;
+/&lt;!-- --&gt;* Enable the developer extras *&lt;!-- --&gt;/
+WebKitSettings *setting = webkit_web_view_get_settings (WEBKIT_WEB_VIEW(my_webview));
+g_object_set (G_OBJECT(settings), "enable-developer-extras", TRUE, NULL);
+
+/&lt;!-- --&gt;* Load some data or reload to be able to inspect the page*&lt;!-- --&gt;/
+webkit_web_view_load_uri (WEBKIT_WEB_VIEW(my_webview), "http://www.gnome.org");
+
+/&lt;!-- --&gt;* Show the inspector *&lt;!-- --&gt;/
+WebKitWebInspector *inspector = webkit_web_view_get_inspector (WEBKIT_WEB_VIEW(my_webview));
+webkit_web_inspector_show (WEBKIT_WEB_INSPECTOR(inspector));
+&lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebInspector.h"
                        line="57"/>
       <method name="attach" c:identifier="webkit_web_inspector_attach">
@@ -24110,715 +24581,6 @@ signal and simply return %TRUE</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebInspector.h"
                        line="42"/>
     </record>
-    <docsection name="WebKitAuthenticationRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitAuthenticationRequest.cpp"
-           line="39">Whenever a client attempts to load a page protected by HTTP
-authentication, credentials will need to be provided to authorize access.
-To allow the client to decide how it wishes to handle authentication,
-WebKit will fire a #WebKitWebView::authenticate signal with a
-WebKitAuthenticationRequest object to provide client side
-authentication support. Credentials are exposed through the
-#WebKitCredential object.
-
-In case the client application does not wish
-to handle this signal WebKit will provide a default handler. To handle
-authentication asynchronously, simply increase the reference count of the
-WebKitAuthenticationRequest object.</doc>
-    </docsection>
-    <docsection name="WebKitAutomationSession">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitAutomationSession.cpp"
-           line="34">WebKitAutomationSession represents an automation session of a WebKitWebContext.
-When a new session is requested, a WebKitAutomationSession is created and the signal
-WebKitWebContext::automation-started is emitted with the WebKitAutomationSession as
-argument. Then, the automation client can request the session to create a new
-#WebKitWebView to interact with it. When this happens the signal #WebKitAutomationSession::create-web-view
-is emitted.</doc>
-    </docsection>
-    <docsection name="WebKitBackForwardList">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitBackForwardList.cpp"
-           line="28">WebKitBackForwardList maintains a list of visited pages used to
-navigate to recent pages. Items are inserted in the list in the
-order they are visited.
-
-WebKitBackForwardList also maintains the notion of the current item
-(which is always at index 0), the preceding item (which is at index -1),
-and the following item (which is at index 1).
-Methods webkit_web_view_go_back() and webkit_web_view_go_forward() move
-the current item backward or forward by one. Method
-webkit_web_view_go_to_back_forward_list_item() sets the current item to the
-specified item. All other methods returning #WebKitBackForwardListItem&lt;!-- --&gt;s
-do not change the value of the current item, they just return the requested
-item or items.</doc>
-    </docsection>
-    <docsection name="WebKitBackForwardListItem">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitBackForwardListItem.cpp"
-           line="32">A history item is part of the #WebKitBackForwardList and consists
-out of a title and a URI.</doc>
-    </docsection>
-    <docsection name="WebKitColorChooserRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/gtk/WebKitColorChooserRequest.cpp"
-           line="37">Whenever the user interacts with an &amp;lt;input type='color' /&amp;gt;
-HTML element, WebKit will need to show a dialog to choose a color. For that
-to happen in a general way, instead of just opening a #GtkColorChooser
-(which might be not desirable in some cases, which could prefer to use their
-own color chooser dialog), WebKit will fire the
-#WebKitWebView::run-color-chooser signal with a #WebKitColorChooserRequest
-object, which will allow the client application to specify the color to be
-selected, to inspect the details of the request (e.g. to get initial color)
-and to cancel the request, in case nothing was selected.
-
-In case the client application does not wish to handle this signal,
-WebKit will provide a default handler which will asynchronously run
-a regular #GtkColorChooserDialog for the user to interact with.</doc>
-    </docsection>
-    <docsection name="WebKitContextMenu">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/Shared/API/glib/WebKitContextMenu.cpp"
-           line="33">#WebKitContextMenu represents a context menu containing
-#WebKitContextMenuItem&lt;!-- --&gt;s in a #WebKitWebView.
-
-When a #WebKitWebView is about to display the context menu, it
-emits the #WebKitWebView::context-menu signal, which has the
-#WebKitContextMenu as an argument. You can modify it, adding new
-submenus that you can create with webkit_context_menu_new(), adding
-new #WebKitContextMenuItem&lt;!-- --&gt;s with
-webkit_context_menu_prepend(), webkit_context_menu_append() or
-webkit_context_menu_insert(), maybe after having removed the
-existing ones with webkit_context_menu_remove_all().</doc>
-    </docsection>
-    <docsection name="WebKitContextMenuItem">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/Shared/API/glib/WebKitContextMenuItem.cpp"
-           line="39">The #WebKitContextMenu is composed of #WebKitContextMenuItem&lt;!--
---&gt;s. These items can be created from a #GtkAction, from a
-#WebKitContextMenuAction or from a #WebKitContextMenuAction and a
-label. These #WebKitContextMenuAction&lt;!-- --&gt;s denote stock actions
-for the items. You can also create separators and submenus.</doc>
-    </docsection>
-    <docsection name="WebKitCookieManager">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitCookieManager.cpp"
-           line="40">The WebKitCookieManager defines how to set up and handle cookies.
-You can get it from a #WebKitWebsiteDataManager with
-webkit_website_data_manager_get_cookie_manager(), and use it to set where to
-store cookies with webkit_cookie_manager_set_persistent_storage(),
-or to set the acceptance policy, with webkit_cookie_manager_get_accept_policy().</doc>
-    </docsection>
-    <docsection name="WebKitDeviceInfoPermissionRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitDeviceInfoPermissionRequest.cpp"
-           line="32">WebKitUserMediaPermissionRequest represents a request for
-permission to whether WebKit should be allowed to access the user's
-devices information when requested through the enumeraceDevices API.
-
-When a WebKitDeviceInfoPermissionRequest is not handled by the user,
-it is denied by default.</doc>
-    </docsection>
-    <docsection name="WebKitDownload">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitDownload.cpp"
-           line="39">#WebKitDownload carries information about a download request and
-response, including a #WebKitURIRequest and a #WebKitURIResponse
-objects. The application may use this object to control the
-download process, or to simply figure out what is to be downloaded,
-and handle the download process itself.</doc>
-    </docsection>
-    <docsection name="WebKitEditorState">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitEditorState.cpp"
-           line="31">WebKitEditorState represents the state of a #WebKitWebView editor.
-Use webkit_web_view_get_editor_state() to get the WebKitEditorState
-of a #WebKitWebView.</doc>
-    </docsection>
-    <docsection name="WebKitError">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitError.cpp"
-           line="29">Categorized WebKit errors.</doc>
-    </docsection>
-    <docsection name="WebKitFaviconDatabase">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitFaviconDatabase.cpp"
-           line="40">#WebKitFaviconDatabase provides access to the icons associated with
-web sites.
-
-WebKit will automatically look for available icons in &amp;lt;link&amp;gt;
-elements on opened pages as well as an existing favicon.ico and
-load the images found into a memory cache if possible. That cache
-is frozen to an on-disk database for persistence.
-
-If #WebKitSettings:enable-private-browsing is %TRUE, new icons
-won't be added to the on-disk database and no existing icons will
-be deleted from it. Nevertheless, WebKit will still store them in
-the in-memory cache during the current execution.</doc>
-    </docsection>
-    <docsection name="WebKitFileChooserRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitFileChooserRequest.cpp"
-           line="40">Whenever the user interacts with an &amp;lt;input type='file' /&amp;gt;
-HTML element, WebKit will need to show a dialog to choose one or
-more files to be uploaded to the server along with the rest of the
-form data. For that to happen in a general way, instead of just
-opening a #GtkFileChooserDialog (which might be not desirable in
-some cases, which could prefer to use their own file chooser
-dialog), WebKit will fire the #WebKitWebView::run-file-chooser
-signal with a #WebKitFileChooserRequest object, which will allow
-the client application to specify the files to be selected, to
-inspect the details of the request (e.g. if multiple selection
-should be allowed) and to cancel the request, in case nothing was
-selected.
-
-In case the client application does not wish to handle this signal,
-WebKit will provide a default handler which will asynchronously run
-a regular #GtkFileChooserDialog for the user to interact with.</doc>
-    </docsection>
-    <docsection name="WebKitFindController">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitFindController.cpp"
-           line="34">A #WebKitFindController is used to search text in a #WebKitWebView. You
-can get a #WebKitWebView&lt;!-- --&gt;'s #WebKitFindController with
-webkit_web_view_get_find_controller(), and later use it to search
-for text using webkit_find_controller_search(), or get the
-number of matches using webkit_find_controller_count_matches(). The
-operations are asynchronous and trigger signals when ready, such as
-#WebKitFindController::found-text,
-#WebKitFindController::failed-to-find-text or
-#WebKitFindController::counted-matches&lt;!-- --&gt;.</doc>
-    </docsection>
-    <docsection name="WebKitFormSubmissionRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitFormSubmissionRequest.cpp"
-           line="34">When a form is about to be submitted in a #WebKitWebView, the
-#WebKitWebView::submit-form signal is emitted. Its request argument
-contains information about the text fields of the form, that are
-typically used to store login information, returned as lists by
-webkit_form_submission_request_list_text_fields(). You can submit the
-form with webkit_form_submission_request_submit().</doc>
-    </docsection>
-    <docsection name="WebKitGeolocationManager">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitGeolocationManager.cpp"
-           line="34">WebKitGeolocationManager provides API to get the geographical position of the user.
-Once a #WebKitGeolocationPermissionRequest is allowed, when WebKit needs to know the
-user location #WebKitGeolocationManager::start signal is emitted. If the signal is handled
-and returns %TRUE, the application is responsible for providing the position every time it's
-updated by calling webkit_geolocation_manager_update_position(). The signal #WebKitGeolocationManager::stop
-will be emitted when location updates are no longer needed.</doc>
-    </docsection>
-    <docsection name="WebKitGeolocationPermissionRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitGeolocationPermissionRequest.cpp"
-           line="30">WebKitGeolocationPermissionRequest represents a request for
-permission to decide whether WebKit should provide the user's
-location to a website when requested through the Geolocation API.
-
-When a WebKitGeolocationPermissionRequest is not handled by the user,
-it is denied by default.
-
-When embedding web views in your application, you *must* configure an
-application identifier to allow web content to use geolocation services.
-The identifier *must* match the name of the `.desktop` file which describes
-the application, sans the suffix.
-
-If your application uses #GApplication (or any subclass like
-#GtkApplication), WebKit will automatically use the identifier returned by
-g_application_get_application_id(). This is the recommended approach for
-enabling geolocation in applications.
-
-If an identifier cannot be obtained through #GApplication, the value
-returned by g_get_prgname() will be used instead as a fallback. For
-programs which cannot use #GApplication, calling g_set_prgname() early
-during initialization is needed when the name of the executable on disk
-does not match the name of a valid `.desktop` file.</doc>
-    </docsection>
-    <docsection name="WebKitHitTestResult">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/Shared/API/glib/WebKitHitTestResult.cpp"
-           line="31">A Hit Test is an operation to get context information about a given
-point in a #WebKitWebView. #WebKitHitTestResult represents the
-result of a Hit Test. It provides context information about what is
-at the coordinates of the Hit Test, such as if there's a link,
-an image or a media.
-
-You can get the context of the HitTestResult with
-webkit_hit_test_result_get_context() that returns a bitmask of
-#WebKitHitTestResultContext flags. You can also use
-webkit_hit_test_result_context_is_link(), webkit_hit_test_result_context_is_image() and
-webkit_hit_test_result_context_is_media() to determine whether there's
-a link, image or a media element at the coordinates of the Hit Test.
-Note that it's possible that several #WebKitHitTestResultContext flags
-are active at the same time, for example if there's a link containing an image.
-
-When the mouse is moved over a #WebKitWebView a Hit Test is performed
-for the mouse coordinates and #WebKitWebView::mouse-target-changed
-signal is emitted with a #WebKitHitTestResult.</doc>
-    </docsection>
-    <docsection name="WebKitInputMethodContext">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitInputMethodContext.cpp"
-           line="31">WebKitInputMethodContext defines the interface to implement WebKit input methods.
-The input methods are used by WebKit, when editable content is focused, to map from
-key events to Unicode character strings.
-
-An input method may consume multiple key events in sequence and finally
-output the composed result. This is called preediting, and an input method
-may provide feedback about this process by displaying the intermediate
-composition states as preedit text.</doc>
-    </docsection>
-    <docsection name="WebKitInstallMissingMediaPluginsPermissionRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitInstallMissingMediaPluginsPermissionRequest.cpp"
-           line="39">WebKitInstallMissingMediaPluginsPermissionRequest represents a request for
-permission to decide whether WebKit should try to start a helper application to
-install missing media plugins when the media backend couldn't play a media because
-the required plugins were not available.
-
-When a WebKitInstallMissingMediaPluginsPermissionRequest is not handled by the user,
-it is allowed by default.</doc>
-    </docsection>
-    <docsection name="WebKitNavigationPolicyDecision">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitNavigationPolicyDecision.cpp"
-           line="36">WebKitNavigationPolicyDecision represents a policy decision for events associated with
-navigations. If the value of #WebKitNavigationPolicyDecision:mouse-button is not 0, then
-the navigation was triggered by a mouse event.</doc>
-    </docsection>
-    <docsection name="WebKitNetworkProxySettings">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitNetworkProxySettings.cpp"
-           line="29">WebKitNetworkProxySettings can be used to provide a custom proxy configuration
-to a #WebKitWebContext. You need to call webkit_web_context_set_network_proxy_settings()
-with %WEBKIT_NETWORK_PROXY_MODE_CUSTOM and a WebKitNetworkProxySettings.</doc>
-    </docsection>
-    <docsection name="WebKitNotificationPermissionRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitNotificationPermissionRequest.cpp"
-           line="30">WebKitNotificationPermissionRequest represents a request for
-permission to decide whether WebKit should provide the user with
-notifications through the Web Notification API.
-
-When a WebKitNotificationPermissionRequest is not handled by the user,
-it is denied by default.</doc>
-    </docsection>
-    <docsection name="WebKitOptionMenu">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitOptionMenu.cpp"
-           line="29">WebKitOptionMenu represents the dropdown menu of a select element in a #WebKitWebView.
-
-When a select element in a #WebKitWebView needs to display a dropdown menu, the signal
-#WebKitWebView::show-option-menu is emitted, providing a WebKitOptionMenu with the
-#WebKitOptionMenuItem&lt;!-- --&gt;s that should be displayed.</doc>
-    </docsection>
-    <docsection name="WebKitOptionMenuItem">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitOptionMenuItem.cpp"
-           line="27">The #WebKitOptionMenu is composed of WebKitOptionMenuItem&lt;!-- --&gt;s.
-A WebKitOptionMenuItem always has a label and can contain a tooltip text.
-You can use the WebKitOptionMenuItem of a #WebKitOptionMenu to build your
-own menus.</doc>
-    </docsection>
-    <docsection name="WebKitPermissionRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitPermissionRequest.cpp"
-           line="23">There are situations where an embedder would need to ask the user
-for permission to do certain types of operations, such as switching
-to fullscreen mode or reporting the user's location through the
-standard Geolocation API. In those cases, WebKit will emit a
-#WebKitWebView::permission-request signal with a
-#WebKitPermissionRequest object attached to it.</doc>
-    </docsection>
-    <docsection name="WebKitPlugin">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitPlugin.cpp"
-           line="30">This object represents a single plugin, found while scanning the
-various platform plugin directories. This object can be used to get
-more information about a plugin, and enable/disable it, allowing
-fine-grained control of plugins. The list of available plugins can
-be obtained from the #WebKitWebContext, with
-webkit_web_context_get_plugins().</doc>
-    </docsection>
-    <docsection name="WebKitPointerLockPermissionRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitPointerLockPermissionRequest.cpp"
-           line="28">WebKitPointerLockPermissionRequest represents a request for
-permission to decide whether WebKit can lock the pointer device when
-requested by web content.
-
-When a WebKitPointerLockPermissionRequest is not handled by the user,
-it is allowed by default.</doc>
-    </docsection>
-    <docsection name="WebKitPolicyDecision">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitPolicyDecision.cpp"
-           line="33">Often WebKit allows the client to decide the policy for certain
-operations. For instance, a client may want to open a link in a new
-tab, block a navigation entirely, query the user or trigger a download
-instead of a navigation. In these cases WebKit will fire the
-#WebKitWebView::decide-policy signal with a #WebKitPolicyDecision
-object. If the signal handler does nothing, WebKit will act as if
-webkit_policy_decision_use() was called as soon as signal handling
-completes. To make a policy decision asynchronously, simply increment
-the reference count of the #WebKitPolicyDecision object.</doc>
-    </docsection>
-    <docsection name="WebKitPrintCustomWidget">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/gtk/WebKitPrintCustomWidget.cpp"
-           line="30">A WebKitPrintCustomWidget allows to embed a custom widget in the print
-dialog by connecting to the #WebKitPrintOperation::create-custom-widget
-signal, creating a new WebKitPrintCustomWidget with
-webkit_print_custom_widget_new() and returning it from there. You can later
-use webkit_print_operation_run_dialog() to display the dialog.</doc>
-    </docsection>
-    <docsection name="WebKitPrintOperation">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/gtk/WebKitPrintOperation.cpp"
-           line="43">A #WebKitPrintOperation controls a print operation in WebKit. With
-a similar API to #GtkPrintOperation, it lets you set the print
-settings with webkit_print_operation_set_print_settings() or
-display the print dialog with webkit_print_operation_run_dialog().</doc>
-    </docsection>
-    <docsection name="WebKitResponsePolicyDecision">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitResponsePolicyDecision.cpp"
-           line="35">WebKitResponsePolicyDecision represents a policy decision for a
-resource response, whether from the network or the local system.
-A very common use case for these types of decision is deciding
-whether or not to download a particular resource or to load it
-normally.</doc>
-    </docsection>
-    <docsection name="WebKitSecurityManager">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitSecurityManager.cpp"
-           line="31">The #WebKitSecurityManager defines security settings for URI
-schemes in a #WebKitWebContext. Get it from the context with
-webkit_web_context_get_security_manager(), and use it to register a
-URI scheme with a certain security level, or to check if it already
-has it.</doc>
-    </docsection>
-    <docsection name="WebKitSecurityOrigin">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitSecurityOrigin.cpp"
-           line="27">#WebKitSecurityOrigin is a representation of a security domain
-defined by websites. A security origin normally consists of a
-protocol, a hostname, and a port number. It is also possible for a
-security origin to be opaque, as defined by the HTML standard, in
-which case it has no associated protocol, host, or port.
-
-Websites with the same security origin can access each other's
-resources for client-side scripting or database access.</doc>
-    </docsection>
-    <docsection name="WebKitSettings">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitSettings.cpp"
-           line="90">#WebKitSettings can be applied to a #WebKitWebView to control text charset,
-color, font sizes, printing mode, script support, loading of images and various
-other things on a #WebKitWebView. After creation, a #WebKitSettings object
-contains default settings.
-
-&lt;informalexample&gt;&lt;programlisting&gt;
-/&lt;!-- --&gt;* Disable JavaScript. *&lt;!-- --&gt;/
-WebKitSettings *settings = webkit_web_view_group_get_settings (my_view_group);
-webkit_settings_set_enable_javascript (settings, FALSE);
-
-&lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
-    </docsection>
-    <docsection name="WebKitURIRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/Shared/API/glib/WebKitURIRequest.cpp"
-           line="37">A #WebKitURIRequest can be created with a URI using the
-webkit_uri_request_new() method, and you can get the URI of an
-existing request with the webkit_uri_request_get_uri() one.</doc>
-    </docsection>
-    <docsection name="WebKitURIResponse">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/Shared/API/glib/WebKitURIResponse.cpp"
-           line="31">A #WebKitURIResponse contains information such as the URI, the
-status code, the content length, the mime type, the HTTP status or
-the suggested filename.</doc>
-    </docsection>
-    <docsection name="WebKitURISchemeRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitURISchemeRequest.cpp"
-           line="43">If you register a particular URI scheme in a #WebKitWebContext,
-using webkit_web_context_register_uri_scheme(), you have to provide
-a #WebKitURISchemeRequestCallback. After that, when a URI request
-is made with that particular scheme, your callback will be
-called. There you will be able to access properties such as the
-scheme, the URI and path, and the #WebKitWebView that initiated the
-request, and also finish the request with
-webkit_uri_scheme_request_finish().</doc>
-    </docsection>
-    <docsection name="WebKitUserContent">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitUserContent.cpp"
-           line="30">See also: #WebKitUserContentManager</doc>
-    </docsection>
-    <docsection name="WebKitUserContentFilterStore">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitUserContentFilterStore.cpp"
-           line="43">The WebKitUserContentFilterStore provides the means to import and save
-[JSON rule sets](https://webkit.org/blog/3476/content-blockers-first-look/),
-which can be loaded later in an efficient manner. Once filters are stored,
-the #WebKitUserContentFilter objects which represent them can be added to
-a #WebKitUserContentManager with webkit_user_content_manager_add_filter().
-
-JSON rule sets are imported using webkit_user_content_filter_store_save() and stored
-on disk in an implementation defined format. The contents of a filter store must be
-managed using the #WebKitUserContentFilterStore: a list of all the stored filters
-can be obtained with webkit_user_content_filter_store_fetch_identifiers(),
-webkit_user_content_filter_store_load() can be used to retrieve a previously saved
-filter, and removed from the store with webkit_user_content_filter_store_remove().</doc>
-    </docsection>
-    <docsection name="WebKitUserContentManager">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitUserContentManager.cpp"
-           line="49">Using a #WebKitUserContentManager user CSS style sheets can be set to
-be injected in the web pages loaded by a #WebKitWebView, by
-webkit_user_content_manager_add_style_sheet().
-
-To use a #WebKitUserContentManager, it must be created using
-webkit_user_content_manager_new(), and then passed to
-webkit_web_view_new_with_user_content_manager(). User style
-sheets can be created with webkit_user_style_sheet_new().
-
-User style sheets can be added and removed at any time, but
-they will affect the web pages loaded afterwards.</doc>
-    </docsection>
-    <docsection name="WebKitUserMediaPermissionRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitUserMediaPermissionRequest.cpp"
-           line="30">WebKitUserMediaPermissionRequest represents a request for
-permission to decide whether WebKit should be allowed to access the user's
-audio and video source devices when requested through the getUserMedia API.
-
-When a WebKitUserMediaPermissionRequest is not handled by the user,
-it is denied by default.</doc>
-    </docsection>
-    <docsection name="WebKitUserMessage">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/Shared/API/glib/WebKitUserMessage.cpp"
-           line="39">A WebKitUserMessage is a message that can be used for the communication between the UI process
-and web extensions. A WebKitUserMessage always has a name, and it can also include parameters and
-UNIX file descriptors. Messages can be sent from a #WebKitWebContext to all #WebKitWebExtension&lt;!-- --&gt;s,
-from a #WebKitWebExtension to its corresponding #WebKitWebContext, and from a #WebKitWebView to its
-corresponding #WebKitWebPage (and vice versa). One to one messages can be replied to directly with
-webkit_user_message_send_reply().</doc>
-    </docsection>
-    <docsection name="WebKitVersion">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitVersion.cpp"
-           line="23">Provides convenience functions returning WebKit's major, minor and
-micro versions of the WebKit library your code is running
-against. This is not necessarily the same as the
-#WEBKIT_MAJOR_VERSION, #WEBKIT_MINOR_VERSION or
-#WEBKIT_MICRO_VERSION, which represent the version of the WebKit
-headers included when compiling the code.</doc>
-    </docsection>
-    <docsection name="WebKitWebContext">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitWebContext.cpp"
-           line="85">The #WebKitWebContext manages all aspects common to all
-#WebKitWebView&lt;!-- --&gt;s.
-
-You can define the #WebKitCacheModel and #WebKitProcessModel with
-webkit_web_context_set_cache_model() and
-webkit_web_context_set_process_model(), depending on the needs of
-your application. You can access the #WebKitSecurityManager to specify
-the behaviour of your application regarding security using
-webkit_web_context_get_security_manager().
-
-It is also possible to change your preferred language or enable
-spell checking, using webkit_web_context_set_preferred_languages(),
-webkit_web_context_set_spell_checking_languages() and
-webkit_web_context_set_spell_checking_enabled().
-
-You can use webkit_web_context_register_uri_scheme() to register
-custom URI schemes, and manage several other settings.
-
-TLS certificate validation failure is now treated as a transport
-error by default. To handle TLS failures differently, you can
-connect to #WebKitWebView::load-failed-with-tls-errors.
-Alternatively, you can use webkit_web_context_set_tls_errors_policy()
-to set the policy %WEBKIT_TLS_ERRORS_POLICY_IGNORE; however, this is
-not appropriate for Internet applications.</doc>
-    </docsection>
-    <docsection name="WebKitWebInspector">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/gtk/WebKitWebInspector.cpp"
-           line="33">The WebKit Inspector is a graphical tool to inspect and change the
-content of a #WebKitWebView. It also includes an interactive
-JavaScript debugger. Using this class one can get a #GtkWidget
-which can be embedded into an application to show the inspector.
-
-The inspector is available when the #WebKitSettings of the
-#WebKitWebView has set the #WebKitSettings:enable-developer-extras
-to true, otherwise no inspector is available.
-
-&lt;informalexample&gt;&lt;programlisting&gt;
-/&lt;!-- --&gt;* Enable the developer extras *&lt;!-- --&gt;/
-WebKitSettings *setting = webkit_web_view_get_settings (WEBKIT_WEB_VIEW(my_webview));
-g_object_set (G_OBJECT(settings), "enable-developer-extras", TRUE, NULL);
-
-/&lt;!-- --&gt;* Load some data or reload to be able to inspect the page*&lt;!-- --&gt;/
-webkit_web_view_load_uri (WEBKIT_WEB_VIEW(my_webview), "http://www.gnome.org");
-
-/&lt;!-- --&gt;* Show the inspector *&lt;!-- --&gt;/
-WebKitWebInspector *inspector = webkit_web_view_get_inspector (WEBKIT_WEB_VIEW(my_webview));
-webkit_web_inspector_show (WEBKIT_WEB_INSPECTOR(inspector));
-&lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
-    </docsection>
-    <docsection name="WebKitWebResource">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitWebResource.cpp"
-           line="35">A #WebKitWebResource encapsulates content for each resource at the
-end of a particular URI. For example, one #WebKitWebResource will
-be created for each separate image and stylesheet when a page is
-loaded.
-
-You can access the response and the URI for a given
-#WebKitWebResource, using webkit_web_resource_get_uri() and
-webkit_web_resource_get_response(), as well as the raw data, using
-webkit_web_resource_get_data().</doc>
-    </docsection>
-    <docsection name="WebKitWebView">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitWebView.cpp"
-           line="109">#WebKitWebView is the central class of the WPE WebKit and WebKitGTK
-APIs. It is responsible for managing the drawing of the content and
-forwarding of events. You can load any URI into the #WebKitWebView or
-a data string. With #WebKitSettings you can control various aspects
-of the rendering and loading of the content.
-
-Note that in WebKitGTK, #WebKitWebView is scrollable by itself, so
-you don't need to embed it in a #GtkScrolledWindow.</doc>
-    </docsection>
-    <docsection name="WebKitWebsiteData">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitWebsiteData.cpp"
-           line="31">WebKitWebsiteData represents data stored in the client by a particular website.
-A website is normally a set of URLs grouped by domain name. You can get the website name,
-which is usually the domain, with webkit_website_data_get_name().
-Documents loaded from the file system, like file:// URIs, are all grouped in the same WebKitWebsiteData
-with the name "Local files".
-
-A website can store different types of data in the client side. #WebKitWebsiteDataTypes is an enum containing
-all the possible data types; use webkit_website_data_get_types() to get the bitmask of data types.
-It's also possible to know the size of the data stored for some of the #WebKitWebsiteDataTypes by using
-webkit_website_data_get_size().
-
-A list of WebKitWebsiteData can be retrieved with webkit_website_data_manager_fetch(). See #WebKitWebsiteDataManager
-for more information.</doc>
-    </docsection>
-    <docsection name="WebKitWebsiteDataAccessPermissionRequest">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitWebsiteDataAccessPermissionRequest.cpp"
-           line="27">WebKitWebsiteDataAccessPermissionRequest represents a request for
-permission to allow a third-party domain access its cookies.
-
-When a WebKitWebsiteDataAccessPermissionRequest is not handled by the user,
-it is denied by default.</doc>
-    </docsection>
-    <docsection name="WebKitWebsiteDataManager">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitWebsiteDataManager.cpp"
-           line="37">WebKitWebsiteDataManager allows you to manage the data that websites
-can store in the client file system like databases or caches.
-You can use WebKitWebsiteDataManager to configure the local directories
-where the Website data will be stored, by creating a new manager with
-webkit_website_data_manager_new() passing the values you want to set.
-You can set all the possible configuration values or only some of them,
-a default value will be used automatically for the configuration options
-not provided. #WebKitWebsiteDataManager:base-data-directory and
-#WebKitWebsiteDataManager:base-cache-directory are two special properties
-that can be used to set a common base directory for all Website data and
-caches. It's possible to provide both, a base directory and a specific value,
-but in that case, the specific value takes precedence over the base directory.
-The newly created WebKitWebsiteDataManager must be passed as a construct property
-to a #WebKitWebContext, you can use webkit_web_context_new_with_website_data_manager()
-to create a new #WebKitWebContext with a WebKitWebsiteDataManager.
-In case you don't want to set any specific configuration, you don't need to create
-a WebKitWebsiteDataManager, the #WebKitWebContext will create a WebKitWebsiteDataManager
-with the default configuration. To get the WebKitWebsiteDataManager of a #WebKitWebContext
-you can use webkit_web_context_get_website_data_manager().
-
-A WebKitWebsiteDataManager can also be ephemeral and then all the directories configuration
-is not needed because website data will never persist. You can create an ephemeral WebKitWebsiteDataManager
-with webkit_website_data_manager_new_ephemeral(). Then you can pass an ephemeral WebKitWebsiteDataManager to
-a #WebKitWebContext to make it ephemeral or use webkit_web_context_new_ephemeral() and the WebKitWebsiteDataManager
-will be automatically created by the #WebKitWebContext.
-
-WebKitWebsiteDataManager can also be used to fetch websites data, remove data
-stored by particular websites, or clear data for all websites modified since a given
-period of time.</doc>
-    </docsection>
-    <docsection name="WebKitWebsitePolicies">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitWebsitePolicies.cpp"
-           line="31">WebKitWebsitePolicies allows you to configure per-page policies,
-currently only autoplay policies are supported.</doc>
-    </docsection>
-    <docsection name="WebKitWindowProperties">
-      <doc xml:space="preserve"
-           filename="Source/WebKit/UIProcess/API/glib/WebKitWindowProperties.cpp"
-           line="34">The content of a #WebKitWebView can request to change certain
-properties of the window containing the view. This can include the x, y position
-of the window, the width and height but also if a toolbar,
-scrollbar, statusbar, locationbar should be visible to the user,
-and the request to show the #WebKitWebView fullscreen.
-
-The #WebKitWebView::ready-to-show signal handler is the proper place
-to apply the initial window properties. Then you can monitor the
-#WebKitWindowProperties by connecting to ::notify signal.
-
-&lt;informalexample&gt;&lt;programlisting&gt;
-static void ready_to_show_cb (WebKitWebView *web_view, gpointer user_data)
-{
-    GtkWidget *window;
-    WebKitWindowProperties *window_properties;
-    gboolean visible;
-
-    /&lt;!-- --&gt;* Create the window to contain the WebKitWebView *&lt;!-- --&gt;/
-    window = browser_window_new ();
-    gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (web_view));
-    gtk_widget_show (GTK_WIDGET (web_view));
-
-    /&lt;!-- --&gt;* Get the WebKitWindowProperties of the web view and monitor it *&lt;!-- --&gt;/
-    window_properties = webkit_web_view_get_window_properties (web_view);
-    g_signal_connect (window_properties, "notify::geometry",
-                      G_CALLBACK (window_geometry_changed), window);
-    g_signal_connect (window_properties, "notify::toolbar-visible",
-                      G_CALLBACK (window_toolbar_visibility_changed), window);
-    g_signal_connect (window_properties, "notify::menubar-visible",
-                      G_CALLBACK (window_menubar_visibility_changed), window);
-    ....
-
-    /&lt;!-- --&gt;* Apply the window properties before showing the window *&lt;!-- --&gt;/
-    visible = webkit_window_properties_get_toolbar_visible (window_properties);
-    browser_window_set_toolbar_visible (BROWSER_WINDOW (window), visible);
-    visible = webkit_window_properties_get_menubar_visible (window_properties);
-    browser_window_set_menubar_visible (BROWSER_WINDOW (window), visible);
-    ....
-
-    if (webkit_window_properties_get_fullscreen (window_properties)) {
-        gtk_window_fullscreen (GTK_WINDOW (window));
-    } else {
-        GdkRectangle geometry;
-
-        gtk_window_set_resizable (GTK_WINDOW (window),
-                                  webkit_window_properties_get_resizable (window_properties));
-        webkit_window_properties_get_geometry (window_properties, &amp;geometry);
-        gtk_window_move (GTK_WINDOW (window), geometry.x, geometry.y);
-        gtk_window_resize (GTK_WINDOW (window), geometry.width, geometry.height);
-    }
-
-    gtk_widget_show (window);
-}
-&lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
-    </docsection>
     <enumeration name="WebProcessTerminationReason"
                  version="2.20"
                  glib:type-name="WebKitWebProcessTerminationReason"
@@ -24851,6 +24613,17 @@ static void ready_to_show_cb (WebKitWebView *web_view, gpointer user_data)
            glib:type-name="WebKitWebResource"
            glib:get-type="webkit_web_resource_get_type"
            glib:type-struct="WebResourceClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitWebResource.cpp"
+           line="35">A #WebKitWebResource encapsulates content for each resource at the
+end of a particular URI. For example, one #WebKitWebResource will
+be created for each separate image and stylesheet when a page is
+loaded.
+
+You can access the response and the URI for a given
+#WebKitWebResource, using webkit_web_resource_get_uri() and
+webkit_web_resource_get_response(), as well as the raw data, using
+webkit_web_resource_get_data().</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebResource.h"
                        line="58"/>
       <method name="get_data" c:identifier="webkit_web_resource_get_data">
@@ -25190,6 +24963,16 @@ received by the server for the initial request.</doc>
            glib:type-name="WebKitWebView"
            glib:get-type="webkit_web_view_get_type"
            glib:type-struct="WebViewClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitWebView.cpp"
+           line="109">#WebKitWebView is the central class of the WPE WebKit and WebKitGTK
+APIs. It is responsible for managing the drawing of the content and
+forwarding of events. You can load any URI into the #WebKitWebView or
+a data string. With #WebKitSettings you can control various aspects
+of the rendering and loading of the content.
+
+Note that in WebKitGTK, #WebKitWebView is scrollable by itself, so
+you don't need to embed it in a #GtkScrolledWindow.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebView.h"
                        line="279"/>
       <implements name="Atk.ImplementorIface"/>
@@ -29819,9 +29602,25 @@ released. This function is MT-safe and may be called from any thread.</doc>
     </record>
     <record name="WebsiteData"
             c:type="WebKitWebsiteData"
+            version="2.16"
             glib:type-name="WebKitWebsiteData"
             glib:get-type="webkit_website_data_get_type"
             c:symbol-prefix="website_data">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitWebsiteData.cpp"
+           line="31">WebKitWebsiteData represents data stored in the client by a particular website.
+A website is normally a set of URLs grouped by domain name. You can get the website name,
+which is usually the domain, with webkit_website_data_get_name().
+Documents loaded from the file system, like file:// URIs, are all grouped in the same WebKitWebsiteData
+with the name "Local files".
+
+A website can store different types of data in the client side. #WebKitWebsiteDataTypes is an enum containing
+all the possible data types; use webkit_website_data_get_types() to get the bitmask of data types.
+It's also possible to know the size of the data stored for some of the #WebKitWebsiteDataTypes by using
+webkit_website_data_get_size().
+
+A list of WebKitWebsiteData can be retrieved with webkit_website_data_manager_fetch(). See #WebKitWebsiteDataManager
+for more information.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebsiteData.h"
                        line="34"/>
       <method name="get_name"
@@ -29953,10 +29752,18 @@ called from any thread.</doc>
     <class name="WebsiteDataAccessPermissionRequest"
            c:symbol-prefix="website_data_access_permission_request"
            c:type="WebKitWebsiteDataAccessPermissionRequest"
+           version="2.30"
            parent="GObject.Object"
            glib:type-name="WebKitWebsiteDataAccessPermissionRequest"
            glib:get-type="webkit_website_data_access_permission_request_get_type"
            glib:type-struct="WebsiteDataAccessPermissionRequestClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitWebsiteDataAccessPermissionRequest.cpp"
+           line="27">WebKitWebsiteDataAccessPermissionRequest represents a request for
+permission to allow a third-party domain access its cookies.
+
+When a WebKitWebsiteDataAccessPermissionRequest is not handled by the user,
+it is denied by default.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebsiteDataAccessPermissionRequest.h"
                        line="56"/>
       <implements name="PermissionRequest"/>
@@ -30070,10 +29877,42 @@ called from any thread.</doc>
     <class name="WebsiteDataManager"
            c:symbol-prefix="website_data_manager"
            c:type="WebKitWebsiteDataManager"
+           version="2.10"
            parent="GObject.Object"
            glib:type-name="WebKitWebsiteDataManager"
            glib:get-type="webkit_website_data_manager_get_type"
            glib:type-struct="WebsiteDataManagerClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitWebsiteDataManager.cpp"
+           line="37">WebKitWebsiteDataManager allows you to manage the data that websites
+can store in the client file system like databases or caches.
+You can use WebKitWebsiteDataManager to configure the local directories
+where the Website data will be stored, by creating a new manager with
+webkit_website_data_manager_new() passing the values you want to set.
+You can set all the possible configuration values or only some of them,
+a default value will be used automatically for the configuration options
+not provided. #WebKitWebsiteDataManager:base-data-directory and
+#WebKitWebsiteDataManager:base-cache-directory are two special properties
+that can be used to set a common base directory for all Website data and
+caches. It's possible to provide both, a base directory and a specific value,
+but in that case, the specific value takes precedence over the base directory.
+The newly created WebKitWebsiteDataManager must be passed as a construct property
+to a #WebKitWebContext, you can use webkit_web_context_new_with_website_data_manager()
+to create a new #WebKitWebContext with a WebKitWebsiteDataManager.
+In case you don't want to set any specific configuration, you don't need to create
+a WebKitWebsiteDataManager, the #WebKitWebContext will create a WebKitWebsiteDataManager
+with the default configuration. To get the WebKitWebsiteDataManager of a #WebKitWebContext
+you can use webkit_web_context_get_website_data_manager().
+
+A WebKitWebsiteDataManager can also be ephemeral and then all the directories configuration
+is not needed because website data will never persist. You can create an ephemeral WebKitWebsiteDataManager
+with webkit_website_data_manager_new_ephemeral(). Then you can pass an ephemeral WebKitWebsiteDataManager to
+a #WebKitWebContext to make it ephemeral or use webkit_web_context_new_ephemeral() and the WebKitWebsiteDataManager
+will be automatically created by the #WebKitWebContext.
+
+WebKitWebsiteDataManager can also be used to fetch websites data, remove data
+stored by particular websites, or clear data for all websites modified since a given
+period of time.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebsiteDataManager.h"
                        line="58"/>
       <constructor name="new"
@@ -31248,10 +31087,15 @@ parameters to configure data directories will be ignored.</doc>
     <class name="WebsitePolicies"
            c:symbol-prefix="website_policies"
            c:type="WebKitWebsitePolicies"
+           version="2.30"
            parent="GObject.Object"
            glib:type-name="WebKitWebsitePolicies"
            glib:get-type="webkit_website_policies_get_type"
            glib:type-struct="WebsitePoliciesClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitWebsitePolicies.cpp"
+           line="31">WebKitWebsitePolicies allows you to configure per-page policies,
+currently only autoplay policies are supported.</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWebsitePolicies.h"
                        line="55"/>
       <constructor name="new"
@@ -31413,6 +31257,62 @@ WebKitWebView *view = WEBKIT_WEB_VIEW(g_object_new(WEBKIT_TYPE_WEB_VIEW,
            glib:type-name="WebKitWindowProperties"
            glib:get-type="webkit_window_properties_get_type"
            glib:type-struct="WindowPropertiesClass">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitWindowProperties.cpp"
+           line="34">The content of a #WebKitWebView can request to change certain
+properties of the window containing the view. This can include the x, y position
+of the window, the width and height but also if a toolbar,
+scrollbar, statusbar, locationbar should be visible to the user,
+and the request to show the #WebKitWebView fullscreen.
+
+The #WebKitWebView::ready-to-show signal handler is the proper place
+to apply the initial window properties. Then you can monitor the
+#WebKitWindowProperties by connecting to ::notify signal.
+
+&lt;informalexample&gt;&lt;programlisting&gt;
+static void ready_to_show_cb (WebKitWebView *web_view, gpointer user_data)
+{
+    GtkWidget *window;
+    WebKitWindowProperties *window_properties;
+    gboolean visible;
+
+    /&lt;!-- --&gt;* Create the window to contain the WebKitWebView *&lt;!-- --&gt;/
+    window = browser_window_new ();
+    gtk_container_add (GTK_CONTAINER (window), GTK_WIDGET (web_view));
+    gtk_widget_show (GTK_WIDGET (web_view));
+
+    /&lt;!-- --&gt;* Get the WebKitWindowProperties of the web view and monitor it *&lt;!-- --&gt;/
+    window_properties = webkit_web_view_get_window_properties (web_view);
+    g_signal_connect (window_properties, "notify::geometry",
+                      G_CALLBACK (window_geometry_changed), window);
+    g_signal_connect (window_properties, "notify::toolbar-visible",
+                      G_CALLBACK (window_toolbar_visibility_changed), window);
+    g_signal_connect (window_properties, "notify::menubar-visible",
+                      G_CALLBACK (window_menubar_visibility_changed), window);
+    ....
+
+    /&lt;!-- --&gt;* Apply the window properties before showing the window *&lt;!-- --&gt;/
+    visible = webkit_window_properties_get_toolbar_visible (window_properties);
+    browser_window_set_toolbar_visible (BROWSER_WINDOW (window), visible);
+    visible = webkit_window_properties_get_menubar_visible (window_properties);
+    browser_window_set_menubar_visible (BROWSER_WINDOW (window), visible);
+    ....
+
+    if (webkit_window_properties_get_fullscreen (window_properties)) {
+        gtk_window_fullscreen (GTK_WINDOW (window));
+    } else {
+        GdkRectangle geometry;
+
+        gtk_window_set_resizable (GTK_WINDOW (window),
+                                  webkit_window_properties_get_resizable (window_properties));
+        webkit_window_properties_get_geometry (window_properties, &amp;geometry);
+        gtk_window_move (GTK_WINDOW (window), geometry.x, geometry.y);
+        gtk_window_resize (GTK_WINDOW (window), geometry.width, geometry.height);
+    }
+
+    gtk_widget_show (window);
+}
+&lt;/programlisting&gt;&lt;/informalexample&gt;</doc>
       <source-position filename="Source/WebKit/UIProcess/API/gtk/WebKitWindowProperties.h"
                        line="58"/>
       <method name="get_fullscreen"
@@ -31909,5 +31809,25 @@ URI may be in Punycode if the safety check fails.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
+    <docsection name="webkiterror">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitError.cpp"
+           line="29">Categorized WebKit errors.</doc>
+    </docsection>
+    <docsection name="webkitusercontent">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitUserContent.cpp"
+           line="30">See also: #WebKitUserContentManager</doc>
+    </docsection>
+    <docsection name="webkitversion">
+      <doc xml:space="preserve"
+           filename="Source/WebKit/UIProcess/API/glib/WebKitVersion.cpp"
+           line="23">Provides convenience functions returning WebKit's major, minor and
+micro versions of the WebKit library your code is running
+against. This is not necessarily the same as the
+#WEBKIT_MAJOR_VERSION, #WEBKIT_MINOR_VERSION or
+#WEBKIT_MICRO_VERSION, which represent the version of the WebKit
+headers included when compiling the code.</doc>
+    </docsection>
   </namespace>
 </repository>
