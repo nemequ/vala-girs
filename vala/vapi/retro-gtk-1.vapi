@@ -194,14 +194,12 @@ namespace Retro {
 	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_ANALOG_ID_", type_id = "retro_analog_id_get_type ()")]
 	public enum AnalogId {
 		X,
-		Y,
-		COUNT
+		Y
 	}
 	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_ANALOG_INDEX_", type_id = "retro_analog_index_get_type ()")]
 	public enum AnalogIndex {
 		LEFT,
-		RIGHT,
-		COUNT
+		RIGHT
 	}
 	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_CONTROLLER_TYPE_", type_id = "retro_controller_type_get_type ()")]
 	public enum ControllerType {
@@ -212,7 +210,6 @@ namespace Retro {
 		LIGHTGUN,
 		ANALOG,
 		POINTER,
-		COUNT,
 		TYPE_MASK;
 		public int get_id_count ();
 		public int get_index_count ();
@@ -234,8 +231,7 @@ namespace Retro {
 		L2,
 		R2,
 		L3,
-		R3,
-		COUNT;
+		R3;
 		public static Retro.JoypadId from_button_code (uint16 button_code);
 		public uint16 to_button_code ();
 	}
@@ -247,8 +243,7 @@ namespace Retro {
 		CURSOR,
 		TURBO,
 		PAUSE,
-		START,
-		COUNT
+		START
 	}
 	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_MEMORY_TYPE_", has_type_id = false)]
 	public enum MemoryType {
@@ -267,28 +262,24 @@ namespace Retro {
 		WHEELDOWN,
 		MIDDLE,
 		HORIZ_WHEELUP,
-		HORIZ_WHEELDOWN,
-		COUNT
+		HORIZ_WHEELDOWN
 	}
 	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_POINTER_ID_", type_id = "retro_pointer_id_get_type ()")]
 	public enum PointerId {
 		X,
 		Y,
-		PRESSED,
-		COUNT
+		PRESSED
 	}
 	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_RUMBLE_EFFECT_", type_id = "retro_rumble_effect_get_type ()")]
 	public enum RumbleEffect {
 		STRONG,
-		WEAK,
-		COUNT
+		WEAK
 	}
 	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_VIDEO_FILTER_", type_id = "retro_video_filter_get_type ()")]
 	public enum VideoFilter {
 		SMOOTH,
 		SHARP,
-		CRT,
-		COUNT;
+		CRT;
 		public static Retro.VideoFilter from_string (string filter);
 	}
 	[CCode (cheader_filename = "retro-gtk.h")]

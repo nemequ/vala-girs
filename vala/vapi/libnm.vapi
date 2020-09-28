@@ -3362,8 +3362,6 @@ namespace NM {
 		[Version (since = "1.18")]
 		public unowned NM.IPRoutingRule get_routing_rule (uint idx);
 		public bool has_dns_options ();
-		[Version (since = "1.2")]
-		public int next_valid_dns_option (uint idx);
 		public void remove_address (int idx);
 		public bool remove_address_by_value (NM.IPAddress address);
 		[Version (since = "1.28")]

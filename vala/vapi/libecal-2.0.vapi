@@ -1242,6 +1242,9 @@ namespace ECal {
 	[Version (since = "3.30")]
 	public static bool util_init_recur_task_sync (ICal.Component vtodo, ECal.Client cal_client, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.40")]
+	public static bool util_inline_local_attachments_sync (ICal.Component component, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.16")]
 	public static bool util_is_first_instance (ECal.Component comp, ICal.Time rid, ECal.RecurResolveTimezoneCb tz_cb);
 	[CCode (cheader_filename = "libecal/libecal.h")]

@@ -20,6 +20,8 @@ namespace GExiv2 {
 		public bool from_stream (GLib.InputStream stream) throws GLib.Error;
 		public string? generate_xmp_packet (GExiv2.XmpFormatFlags xmp_format_flags, uint32 padding);
 		public string? get_comment ();
+		[Version (since = "0.12.2")]
+		public GLib.Bytes? get_exif_data (GExiv2.ByteOrder byte_order) throws GLib.Error;
 		public bool get_exif_tag_rational (string tag, out int nom, out int den);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_exif_tags ();
@@ -111,6 +113,11 @@ namespace GExiv2 {
 		public unowned string get_mime_type ();
 		public uint32 get_size ();
 		public uint32 get_width ();
+	}
+	[CCode (cheader_filename = "gexiv2/gexiv2.h", cprefix = "GEXIV2_BYTE_ORDER_", type_id = "gexiv2_gexiv2_byte_order_get_type ()")]
+	public enum ByteOrder {
+		LITTLE,
+		BIG
 	}
 	[CCode (cheader_filename = "gexiv2/gexiv2.h", cprefix = "GEXIV2_LOG_LEVEL_", type_id = "gexiv2_gexiv2_log_level_get_type ()")]
 	public enum LogLevel {
