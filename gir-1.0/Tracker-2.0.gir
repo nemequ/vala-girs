@@ -31,17 +31,6 @@ if (!TRACKER_CHECK_VERSION (0, 10, 7)) {
       </parameters>
     </function-macro>
     <class name="NamespaceManager" c:symbol-prefix="namespace_manager" c:type="TrackerNamespaceManager" parent="GObject.Object" glib:type-name="TrackerNamespaceManager" glib:get-type="tracker_namespace_manager_get_type" glib:type-struct="NamespaceManagerClass">
-      <doc xml:space="preserve" filename="../src/libtracker-sparql/tracker-namespace-manager.c" line="44">&lt;para&gt;
-#TrackerNamespaceManager keeps track of namespaces. It allows you to assign
-short prefixes for them to avoid typing full URLs all the time.
-
-The syntax used is that of Compact URIs (CURIEs) as defined here:
-(https://www.w3.org/TR/2010/NOTE-curie-20101216)
-
-Usually you will want to use the default namespace manager, as returned by
-tracker_namespace_manager_get_default(). This has a set of well-known
-prefixes predefined.
-&lt;/para&gt;</doc>
       <source-position filename="../src/libtracker-sparql/tracker-namespace-manager.h" line="32" />
       <constructor name="new" c:identifier="tracker_namespace_manager_new" version="1.10">
         <doc xml:space="preserve" filename="../src/libtracker-sparql/tracker-namespace-manager.c" line="96">Creates a new #TrackerNamespaceManager instance.</doc>
@@ -187,64 +176,6 @@ is not known.</doc>
       </field>
     </record>
     <class name="Notifier" c:symbol-prefix="notifier" c:type="TrackerNotifier" parent="GObject.Object" glib:type-name="TrackerNotifier" glib:get-type="tracker_notifier_get_type" glib:type-struct="NotifierClass">
-      <doc xml:space="preserve" filename="../src/libtracker-sparql/tracker-notifier.c" line="20">#TrackerNotifier is an object that receives notifications about
-changes to the Tracker database. A #TrackerNotifier is created
-through tracker_notifier_new(), passing the RDF types that are
-relevant to the caller, and possible different #TrackerNotifierFlags
-to change #TrackerNotifier behavior. After the notifier is created,
-events can be listened for by connecting to the #TrackerNotifier::events
-signal. This object was added in Tracker 1.12.
-
-#TrackerNotifier by default coalesces events so the user is only
-notified of changes after all metadata is extracted and inserted
-in the database, so the user is guaranteed that all relevant data
-will be available at the time of notification. If this is not desired,
-or when dealing with data not dealt with by tracker-extract, the
-%TRACKER_NOTIFIER_FLAG_NOTIFY_UNEXTRACTED flag can be passed.
-
-If the %TRACKER_NOTIFIER_FLAG_NOTIFY_UNEXTRACTED flag is passed,
-created/updated elements may be notified in two steps, first a
-CREATED/UPDATED event will be emitted, and then a second UPDATED
-event might appear after further metadata is extracted.
-
-#TrackerNotifier is tracker:id centric, the ID can be
-obtained from every event through tracker_notifier_event_get_id().
-The expected way to retrieving metadata is a query of the form:
-|[&lt;!-- language="SPARQL" --&gt;
-SELECT ?urn …
-WHERE {
-  ?urn a rdfs:Resource .
-  …
-  FILTER (tracker:id(?urn) = …)
-}
-]|
-
-If the flags %TRACKER_NOTIFIER_FLAG_QUERY_URN or
-%TRACKER_NOTIFIER_FLAG_QUERY_LOCATION are passed, the extra metadata
-will be available through tracker_notifier_event_get_urn() and/or
-tracker_notifier_event_get_location(). Note that this metadata can't
-be obtained for every element and situation, most notably during
-%TRACKER_NOTIFIER_EVENT_DELETE events.
-
-# Known caveats # {#trackernotifier-caveats}
-
-* If a resource is deleted, the %TRACKER_NOTIFIER_EVENT_DELETE event
-  emitted will have a %NULL location, even if the notifier was created
-  with the %TRACKER_NOTIFIER_FLAG_QUERY_LOCATION flag enabled. At the
-  time of notifying, the resource does not exist anymore, so no
-  meatadata can be retrieved.
-* Notifications of files being moved across indexed folders will
-  appear as %TRACKER_NOTIFIER_EVENT_UPDATE events, containing
-  the new location (if requested). The older location is no longer
-  known to Tracker, this may make tracking of elements in specific
-  folders hard using solely the #TrackerNotifier/Tracker data
-  available at event notification time.
-
-The recommendation to fix those is making the caller aware
-of tracker:ids, querying those in the application SPARQL
-queries so the client can search the formerly queried data for
-matching IDs when #TrackerNotifier events happen. URNs are just
-as effective as a matching mechanism, but more costly.</doc>
       <source-position filename="../src/libtracker-sparql/tracker-notifier.h" line="43" />
       <implements name="Gio.Initable" />
       <constructor name="new" c:identifier="tracker_notifier_new" version="1.12" throws="1">
@@ -467,10 +398,8 @@ notified upon, typically of the form "urn:uuid:...".</doc>
       </member>
     </bitfield>
     <class name="Resource" c:symbol-prefix="resource" c:type="TrackerResource" parent="GObject.Object" glib:type-name="TrackerResource" glib:get-type="tracker_resource_get_type" glib:type-struct="ResourceClass">
-      <doc xml:space="preserve" filename="../src/libtracker-sparql/tracker-resource.c" line="43">&lt;para&gt;
-#TrackerResource keeps track of a set of properties for a given resource.
-The resulting data can be serialized in several ways.
-&lt;/para&gt;</doc>
+      <doc xml:space="preserve" filename="../src/libtracker-sparql/tracker-resource.c" line="64">The &lt;structname&gt;TrackerResource&lt;/structname&gt; object represents information
+about a given resource.</doc>
       <source-position filename="../src/libtracker-sparql/tracker-resource.h" line="35" />
       <constructor name="new" c:identifier="tracker_resource_new" version="1.10">
         <doc xml:space="preserve" filename="../src/libtracker-sparql/tracker-resource.c" line="224">Creates a TrackerResource instance.</doc>
@@ -1231,6 +1160,85 @@ version @required_major.required_minor.@required_micro
         </parameter>
       </parameters>
     </function>
+    <docsection name="tracker-namespace-manager">
+      <doc xml:space="preserve" filename="../src/libtracker-sparql/tracker-namespace-manager.c" line="44">&lt;para&gt;
+#TrackerNamespaceManager keeps track of namespaces. It allows you to assign
+short prefixes for them to avoid typing full URLs all the time.
+
+The syntax used is that of Compact URIs (CURIEs) as defined here:
+(https://www.w3.org/TR/2010/NOTE-curie-20101216)
+
+Usually you will want to use the default namespace manager, as returned by
+tracker_namespace_manager_get_default(). This has a set of well-known
+prefixes predefined.
+&lt;/para&gt;</doc>
+    </docsection>
+    <docsection name="tracker-notifier">
+      <doc xml:space="preserve" filename="../src/libtracker-sparql/tracker-notifier.c" line="20">#TrackerNotifier is an object that receives notifications about
+changes to the Tracker database. A #TrackerNotifier is created
+through tracker_notifier_new(), passing the RDF types that are
+relevant to the caller, and possible different #TrackerNotifierFlags
+to change #TrackerNotifier behavior. After the notifier is created,
+events can be listened for by connecting to the #TrackerNotifier::events
+signal. This object was added in Tracker 1.12.
+
+#TrackerNotifier by default coalesces events so the user is only
+notified of changes after all metadata is extracted and inserted
+in the database, so the user is guaranteed that all relevant data
+will be available at the time of notification. If this is not desired,
+or when dealing with data not dealt with by tracker-extract, the
+%TRACKER_NOTIFIER_FLAG_NOTIFY_UNEXTRACTED flag can be passed.
+
+If the %TRACKER_NOTIFIER_FLAG_NOTIFY_UNEXTRACTED flag is passed,
+created/updated elements may be notified in two steps, first a
+CREATED/UPDATED event will be emitted, and then a second UPDATED
+event might appear after further metadata is extracted.
+
+#TrackerNotifier is tracker:id centric, the ID can be
+obtained from every event through tracker_notifier_event_get_id().
+The expected way to retrieving metadata is a query of the form:
+|[&lt;!-- language="SPARQL" --&gt;
+SELECT ?urn …
+WHERE {
+  ?urn a rdfs:Resource .
+  …
+  FILTER (tracker:id(?urn) = …)
+}
+]|
+
+If the flags %TRACKER_NOTIFIER_FLAG_QUERY_URN or
+%TRACKER_NOTIFIER_FLAG_QUERY_LOCATION are passed, the extra metadata
+will be available through tracker_notifier_event_get_urn() and/or
+tracker_notifier_event_get_location(). Note that this metadata can't
+be obtained for every element and situation, most notably during
+%TRACKER_NOTIFIER_EVENT_DELETE events.
+
+# Known caveats # {#trackernotifier-caveats}
+
+* If a resource is deleted, the %TRACKER_NOTIFIER_EVENT_DELETE event
+  emitted will have a %NULL location, even if the notifier was created
+  with the %TRACKER_NOTIFIER_FLAG_QUERY_LOCATION flag enabled. At the
+  time of notifying, the resource does not exist anymore, so no
+  meatadata can be retrieved.
+* Notifications of files being moved across indexed folders will
+  appear as %TRACKER_NOTIFIER_EVENT_UPDATE events, containing
+  the new location (if requested). The older location is no longer
+  known to Tracker, this may make tracking of elements in specific
+  folders hard using solely the #TrackerNotifier/Tracker data
+  available at event notification time.
+
+The recommendation to fix those is making the caller aware
+of tracker:ids, querying those in the application SPARQL
+queries so the client can search the formerly queried data for
+matching IDs when #TrackerNotifier events happen. URNs are just
+as effective as a matching mechanism, but more costly.</doc>
+    </docsection>
+    <docsection name="tracker-resource">
+      <doc xml:space="preserve" filename="../src/libtracker-sparql/tracker-resource.c" line="43">&lt;para&gt;
+#TrackerResource keeps track of a set of properties for a given resource.
+The resulting data can be serialized in several ways.
+&lt;/para&gt;</doc>
+    </docsection>
   <enumeration name="SparqlConnectionFlags" c:type="TrackerSparqlConnectionFlags" glib:type-name="TrackerSparqlConnectionFlags" glib:get-type="tracker_sparql_connection_flags_get_type">
 		<member name="none" c:identifier="TRACKER_SPARQL_CONNECTION_FLAGS_NONE" value="0" />
 		<member name="readonly" c:identifier="TRACKER_SPARQL_CONNECTION_FLAGS_READONLY" value="(null)" />

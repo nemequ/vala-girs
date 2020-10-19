@@ -157,21 +157,28 @@ namespace E {
 		public void @unlock ();
 	}
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", type_id = "e_book_backend_sync_get_type ()")]
-	[Version (since = "3.34")]
 	public class BookBackendSync : E.BookBackend {
 		[CCode (has_construct_function = false)]
 		protected BookBackendSync ();
+		[Version (since = "3.34")]
 		public bool create_contacts (string vcards, uint32 opflags, out GLib.SList<E.Contact> out_contacts, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.34")]
 		public E.Contact get_contact (string uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.34")]
 		public bool get_contact_list (string query, out GLib.SList<E.Contact> out_contacts, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.34")]
 		public bool get_contact_list_uids (string query, out GLib.SList<string> out_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.34")]
 		public bool modify_contacts (string vcards, uint32 opflags, out GLib.SList<E.Contact> out_contacts, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.34")]
 		public bool open (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoWrapper]
 		public virtual bool open_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.34")]
 		public bool refresh (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoWrapper]
 		public virtual bool refresh_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.34")]
 		public bool remove_contacts (string uids, uint32 opflags, out GLib.SList<string> out_removed_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", type_id = "e_book_cache_get_type ()")]

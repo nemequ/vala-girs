@@ -134,33 +134,47 @@ namespace Jsonrpc {
 		public static bool parse_array (GLib.VariantIter iter, ...);
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", type_id = "jsonrpc_client_get_type ()")]
-	[Version (since = "3.26")]
 	public class Client : GLib.Object {
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.26")]
 		public Client (GLib.IOStream io_stream);
+		[Version (since = "3.26")]
 		public bool call (string method, GLib.Variant? @params, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
+		[Version (since = "3.26")]
 		public async bool call_async (string method, GLib.Variant? @params, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
 		[CCode (finish_name = "jsonrpc_client_call_finish")]
 		[Version (since = "3.30")]
 		public async bool call_with_id_async (string method, GLib.Variant? @params, GLib.Variant* id, GLib.Cancellable? cancellable, out GLib.Variant? return_value) throws GLib.Error;
+		[Version (since = "3.26")]
 		public bool close (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.26")]
 		public async bool close_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public static GLib.Quark error_quark ();
+		[Version (since = "3.26")]
 		public bool get_use_gvariant ();
+		[Version (since = "3.26")]
 		public bool reply (GLib.Variant id, GLib.Variant? result, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool reply_async (GLib.Variant id, GLib.Variant result, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.28")]
 		public async bool reply_error_async (GLib.Variant id, int code, string? message, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.26")]
 		public bool send_notification (string method, GLib.Variant? @params, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.26")]
 		public async bool send_notification_async (string method, GLib.Variant? @params, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.26")]
 		public void set_use_gvariant (bool use_gvariant);
+		[Version (since = "3.26")]
 		public void start_listening ();
 		[NoAccessorMethod]
+		[Version (since = "3.26")]
 		public GLib.IOStream io_stream { construct; }
+		[Version (since = "3.26")]
 		public bool use_gvariant { get; set; }
 		[Version (since = "3.28")]
 		public virtual signal void failed ();
+		[Version (since = "3.26")]
 		public virtual signal bool handle_call (string method, GLib.Variant id, GLib.Variant? @params);
+		[Version (since = "3.26")]
 		public virtual signal void notification (string method_name, GLib.Variant? @params);
 	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", type_id = "jsonrpc_input_stream_get_type ()")]

@@ -58,20 +58,8 @@ and/or use gtk-doc annotations.  -->
                glib:get-type="peas_activatable_get_type"
                glib:type-struct="ActivatableInterface">
       <doc xml:space="preserve"
-           filename="../libpeas/peas-activatable.c"
-           line="26">#PeasActivatable is an interface which should be implemented by plugins
-that should be activated on an object of a certain type (depending on the
-application). For instance, in a typical windowed application,
-#PeasActivatable plugin instances could be bound to individual toplevel
-windows.
-
-It is typical to use #PeasActivatable along with #PeasExtensionSet in order
-to activate and deactivate extensions automatically when plugins are loaded
-or unloaded.
-
-You can also use the code of this interface as a base for your own
-extension types, as illustrated by gedit's %GeditWindowActivatable and
-%GeditDocumentActivatable interfaces.</doc>
+           filename="../libpeas/peas-activatable.h"
+           line="40">Interface for activatable plugins.</doc>
       <source-position filename="../libpeas/peas-activatable.h" line="65"/>
       <virtual-method name="activate" invoker="activate">
         <doc xml:space="preserve"
@@ -390,23 +378,9 @@ windowed application. It is set at construction time and won't change.</doc>
            glib:get-type="peas_engine_get_type"
            glib:type-struct="EngineClass">
       <doc xml:space="preserve"
-           filename="../libpeas/peas-engine.c"
-           line="40">The #PeasEngine is the object which manages the plugins.
-
-Its role is twofold:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;
-    &lt;para&gt;it will fetch all the information about the available plugins
-    from all the registered plugin directories;&lt;/para&gt;
-  &lt;/listitem&gt;
-  &lt;listitem&gt;
-    &lt;para&gt;it will provide you an API to load, control and unload your
-    plugins and their extensions from within your application.&lt;/para&gt;
-  &lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-Since libpeas 1.22, @extension_type can be an Abstract #GType
-and not just an Interface #GType.</doc>
+           filename="../libpeas/peas-engine.h"
+           line="44">The #PeasEngine structure contains only private data and should only be
+accessed using the provided API.</doc>
       <source-position filename="../libpeas/peas-engine.h" line="76"/>
       <constructor name="new" c:identifier="peas_engine_new">
         <doc xml:space="preserve"
@@ -1262,15 +1236,8 @@ use g_signal_connect_after().</doc>
            glib:get-type="peas_extension_base_get_type"
            glib:type-struct="ExtensionBaseClass">
       <doc xml:space="preserve"
-           filename="../libpeas/peas-extension-base.c"
-           line="28">#PeasExtensionBase can optionally be used as a base class for the extensions
-of your plugin. By inheriting from it, you will make your extension able to
-access the related #PeasPluginInfo, and especially the location where all
-the data of your plugin lives.
-
-Non-C extensions will usually not inherit from this class: Python
-plugins automatically get a "plugin_info" attribute that serves
-the same purpose.</doc>
+           filename="../libpeas/peas-extension-base.h"
+           line="42">Base class for C extensions.</doc>
       <source-position filename="../libpeas/peas-extension-base.h" line="68"/>
       <method name="get_data_dir"
               c:identifier="peas_extension_base_get_data_dir">
@@ -1377,55 +1344,9 @@ peas_plugin_info_get_data_dir().</doc>
            glib:get-type="peas_extension_set_get_type"
            glib:type-struct="ExtensionSetClass">
       <doc xml:space="preserve"
-           filename="../libpeas/peas-extension-set.c"
-           line="34">A #PeasExtensionSet is an object which proxies method calls to a set
-of actual extensions.  The application writer will use these objects
-in order to call methods on several instances of an actual extension
-exported by all the currently loaded plugins.
-
-#PeasExtensionSet will automatically track loading and unloading of
-the plugins, and signal appearance and disappearance of new
-extension instances.  You should connect to those signals if you
-wish to call specific methods on loading or unloading time.
-
-Here is the code for a typical setup of #PeasExtensionSet with
-#PeasActivatable as the watched extension point, and #GtkWindow
-instances as the target objects:
-|[
-static void
-on_extension_added (PeasExtensionSet *set,
-                    PeasPluginInfo   *info,
-                    PeasActivatable  *activatable)
-{
-  peas_activatable_activate (activatable);
-}
-
-static void
-on_extension_removed (PeasExtensionSet *set,
-                      PeasPluginInfo   *info,
-                      PeasActivatable  *activatable)
-{
-  peas_activatable_deactivate (activatable);
-}
-
-PeasExtensionSet *
-setup_extension_set (PeasEngine *engine,
-                     GtkWindow  *window)
-{
-  PeasExtensionSet *set;
-
-  set = peas_extension_set_new (engine, PEAS_TYPE_ACTIVATABLE,
-                                "object", window, NULL);
-  peas_extension_set_foreach (set,
-                              (PeasExtensionSetForeachFunc) on_extension_added,
-                              NULL);
-  g_signal_connect (set, "extension-added",
-                    G_CALLBACK (on_extension_added), NULL);
-  g_signal_connect (set, "extension-removed",
-                    G_CALLBACK (on_extension_removed), NULL);
-  return set;
-}
-]|</doc>
+           filename="../libpeas/peas-extension-set.h"
+           line="46">The #PeasExtensionSet structure contains only private data and should only
+be accessed using the provided API.</doc>
       <source-position filename="../libpeas/peas-extension-set.h" line="93"/>
       <constructor name="new"
                    c:identifier="peas_extension_set_new"
@@ -2150,14 +2071,9 @@ It is used with peas_object_module_register_extension_factory().</doc>
            glib:get-type="peas_object_module_get_type"
            glib:type-struct="ObjectModuleClass">
       <doc xml:space="preserve"
-           filename="../libpeas/peas-object-module.c"
-           line="33">#PeasObjectModule is a subclass of #GTypeModule which allows registration
-of extensions.  It will be used by C extensions implementors to register
-extension implementations from within the peas_register_types module
-function.
-
-Since libpeas 1.22, @extension_type can be an Abstract #GType
-and not just an Interface #GType.</doc>
+           filename="../libpeas/peas-object-module.h"
+           line="65">The #PeasObjectModule structure contains only private data and should only
+be accessed using the provided API.</doc>
       <source-position filename="../libpeas/peas-object-module.h" line="88"/>
       <implements name="GObject.TypePlugin"/>
       <constructor name="new"
@@ -2165,31 +2081,31 @@ and not just an Interface #GType.</doc>
                    introspectable="0">
         <doc xml:space="preserve"
              filename="../libpeas/peas-object-module.c"
-             line="354">Creates a new #PeasObjectModule.</doc>
+             line="381">Creates a new #PeasObjectModule.</doc>
         <source-position filename="../libpeas/peas-object-module.h" line="93"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../libpeas/peas-object-module.c"
-               line="362">a new #PeasObjectModule.</doc>
+               line="389">a new #PeasObjectModule.</doc>
           <type name="ObjectModule" c:type="PeasObjectModule*"/>
         </return-value>
         <parameters>
           <parameter name="module_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="356">The module name.</doc>
+                 line="383">The module name.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="path" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="357">The path.</doc>
+                 line="384">The path.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="resident" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="358">If the module should be resident.</doc>
+                 line="385">If the module should be resident.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -2200,20 +2116,20 @@ and not just an Interface #GType.</doc>
                    introspectable="0">
         <doc xml:space="preserve"
              filename="../libpeas/peas-object-module.c"
-             line="409">Creates a new #PeasObjectModule for an embedded plugin.</doc>
+             line="436">Creates a new #PeasObjectModule for an embedded plugin.</doc>
         <source-position filename="../libpeas/peas-object-module.h"
                          line="102"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../libpeas/peas-object-module.c"
-               line="415">a new #PeasObjectModule.</doc>
+               line="442">a new #PeasObjectModule.</doc>
           <type name="ObjectModule" c:type="PeasObjectModule*"/>
         </return-value>
         <parameters>
           <parameter name="module_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="411">The module name.</doc>
+                 line="438">The module name.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="symbol" transfer-ownership="none">
@@ -2226,12 +2142,12 @@ and not just an Interface #GType.</doc>
                    introspectable="0">
         <doc xml:space="preserve"
              filename="../libpeas/peas-object-module.c"
-             line="379">Creates a new #PeasObjectModule.</doc>
+             line="406">Creates a new #PeasObjectModule.</doc>
         <source-position filename="../libpeas/peas-object-module.h" line="97"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../libpeas/peas-object-module.c"
-               line="388">a new #PeasObjectModule.
+               line="415">a new #PeasObjectModule.
 
 Since 1.14</doc>
           <type name="ObjectModule" c:type="PeasObjectModule*"/>
@@ -2240,25 +2156,25 @@ Since 1.14</doc>
           <parameter name="module_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="381">The module name.</doc>
+                 line="408">The module name.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="path" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="382">The path.</doc>
+                 line="409">The path.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="resident" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="383">If the module should be resident.</doc>
+                 line="410">If the module should be resident.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
           <parameter name="local_linkage" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="384">Whether to load the module with local linkage.</doc>
+                 line="411">Whether to load the module with local linkage.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -2268,7 +2184,7 @@ Since 1.14</doc>
               introspectable="0">
         <doc xml:space="preserve"
              filename="../libpeas/peas-object-module.c"
-             line="434">Creates an object for the @exten_type passing @n_parameters
+             line="461">Creates an object for the @exten_type passing @n_parameters
 and @parameters to the #PeasFactoryFunc. If @module does
 not provide a #PeasFactoryFunc for @exten_type then
 %NULL is returned.
@@ -2280,32 +2196,32 @@ and not just an Interface #GType.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../libpeas/peas-object-module.c"
-               line="449">The created object, or %NULL.</doc>
+               line="476">The created object, or %NULL.</doc>
           <type name="GObject.Object" c:type="GObject*"/>
         </return-value>
         <parameters>
           <instance-parameter name="module" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="436">A #PeasObjectModule.</doc>
+                 line="463">A #PeasObjectModule.</doc>
             <type name="ObjectModule" c:type="PeasObjectModule*"/>
           </instance-parameter>
           <parameter name="exten_type" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="437">The #GType of the extension.</doc>
+                 line="464">The #GType of the extension.</doc>
             <type name="GType" c:type="GType"/>
           </parameter>
           <parameter name="n_parameters" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="438">The number of paramteters.</doc>
+                 line="465">The number of paramteters.</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="parameters" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="439">The parameters.</doc>
+                 line="466">The parameters.</doc>
             <array length="1" zero-terminated="0" c:type="GParameter*">
               <type name="GObject.Parameter" c:type="GParameter"/>
             </array>
@@ -2317,20 +2233,20 @@ and not just an Interface #GType.</doc>
               introspectable="0">
         <doc xml:space="preserve"
              filename="../libpeas/peas-object-module.c"
-             line="565">Gets the library.</doc>
+             line="592">Gets the library.</doc>
         <source-position filename="../libpeas/peas-object-module.h"
                          line="124"/>
         <return-value>
           <doc xml:space="preserve"
                filename="../libpeas/peas-object-module.c"
-               line="571">the library.</doc>
+               line="598">the library.</doc>
           <type name="GModule.Module" c:type="GModule*"/>
         </return-value>
         <parameters>
           <instance-parameter name="module" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="567">A #PeasObjectModule.</doc>
+                 line="594">A #PeasObjectModule.</doc>
             <type name="ObjectModule" c:type="PeasObjectModule*"/>
           </instance-parameter>
         </parameters>
@@ -2340,20 +2256,20 @@ and not just an Interface #GType.</doc>
               introspectable="0">
         <doc xml:space="preserve"
              filename="../libpeas/peas-object-module.c"
-             line="527">Gets the module name.</doc>
+             line="554">Gets the module name.</doc>
         <source-position filename="../libpeas/peas-object-module.h"
                          line="119"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../libpeas/peas-object-module.c"
-               line="533">the module name.</doc>
+               line="560">the module name.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="module" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="529">A #PeasObjectModule.</doc>
+                 line="556">A #PeasObjectModule.</doc>
             <type name="ObjectModule" c:type="PeasObjectModule*"/>
           </instance-parameter>
         </parameters>
@@ -2363,20 +2279,20 @@ and not just an Interface #GType.</doc>
               introspectable="0">
         <doc xml:space="preserve"
              filename="../libpeas/peas-object-module.c"
-             line="509">Gets the path.</doc>
+             line="536">Gets the path.</doc>
         <source-position filename="../libpeas/peas-object-module.h"
                          line="117"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../libpeas/peas-object-module.c"
-               line="515">the path.</doc>
+               line="542">the path.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="module" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="511">A #PeasObjectModule.</doc>
+                 line="538">A #PeasObjectModule.</doc>
             <type name="ObjectModule" c:type="PeasObjectModule*"/>
           </instance-parameter>
         </parameters>
@@ -2387,20 +2303,20 @@ and not just an Interface #GType.</doc>
               introspectable="0">
         <doc xml:space="preserve"
              filename="../libpeas/peas-object-module.c"
-             line="545">Gets the symbol name used to register extension implementations.</doc>
+             line="572">Gets the symbol name used to register extension implementations.</doc>
         <source-position filename="../libpeas/peas-object-module.h"
                          line="121"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../libpeas/peas-object-module.c"
-               line="551">the symbol name.</doc>
+               line="578">the symbol name.</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="module" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="547">A #PeasObjectModule.</doc>
+                 line="574">A #PeasObjectModule.</doc>
             <type name="ObjectModule" c:type="PeasObjectModule*"/>
           </instance-parameter>
         </parameters>
@@ -2410,7 +2326,7 @@ and not just an Interface #GType.</doc>
               introspectable="0">
         <doc xml:space="preserve"
              filename="../libpeas/peas-object-module.c"
-             line="475">Determines if the module provides an extension for @exten_type.
+             line="502">Determines if the module provides an extension for @exten_type.
 
 Since libpeas 1.22, @exten_type can be an Abstract #GType
 and not just an Interface #GType.</doc>
@@ -2419,20 +2335,20 @@ and not just an Interface #GType.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../libpeas/peas-object-module.c"
-               line="485">if the module provides an extension for @exten_type.</doc>
+               line="512">if the module provides an extension for @exten_type.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="module" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="477">A #PeasObjectModule.</doc>
+                 line="504">A #PeasObjectModule.</doc>
             <type name="ObjectModule" c:type="PeasObjectModule*"/>
           </instance-parameter>
           <parameter name="exten_type" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="478">The #GType of the extension.</doc>
+                 line="505">The #GType of the extension.</doc>
             <type name="GType" c:type="GType"/>
           </parameter>
         </parameters>
@@ -2441,7 +2357,7 @@ and not just an Interface #GType.</doc>
               c:identifier="peas_object_module_register_extension_factory">
         <doc xml:space="preserve"
              filename="../libpeas/peas-object-module.c"
-             line="583">Register an implementation for an extension type through a factory
+             line="610">Register an implementation for an extension type through a factory
 function @factory_func which will instantiate the extension when
 requested.
 
@@ -2461,13 +2377,13 @@ and not just an Interface #GType.</doc>
           <instance-parameter name="module" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="585">Your plugin's #PeasObjectModule.</doc>
+                 line="612">Your plugin's #PeasObjectModule.</doc>
             <type name="ObjectModule" c:type="PeasObjectModule*"/>
           </instance-parameter>
           <parameter name="exten_type" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="586">The #GType of the extension you implement.</doc>
+                 line="613">The #GType of the extension you implement.</doc>
             <type name="GType" c:type="GType"/>
           </parameter>
           <parameter name="factory_func"
@@ -2477,7 +2393,7 @@ and not just an Interface #GType.</doc>
                      destroy="3">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="587">The #PeasFactoryFunc that will create the @exten_type
+                 line="614">The #PeasFactoryFunc that will create the @exten_type
   instance when requested.</doc>
             <type name="FactoryFunc" c:type="PeasFactoryFunc"/>
           </parameter>
@@ -2487,7 +2403,7 @@ and not just an Interface #GType.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="589">Data to pass to @func calls.</doc>
+                 line="616">Data to pass to @func calls.</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="destroy_func"
@@ -2495,7 +2411,7 @@ and not just an Interface #GType.</doc>
                      scope="async">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="590">A #GDestroyNotify for @user_data.</doc>
+                 line="617">A #GDestroyNotify for @user_data.</doc>
             <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
           </parameter>
         </parameters>
@@ -2504,7 +2420,7 @@ and not just an Interface #GType.</doc>
               c:identifier="peas_object_module_register_extension_type">
         <doc xml:space="preserve"
              filename="../libpeas/peas-object-module.c"
-             line="655">Register @impl_type as an extension which implements @extension_type.
+             line="682">Register @impl_type as an extension which implements @extension_type.
 
 Since libpeas 1.22, @exten_type can be an Abstract #GType
 and not just an Interface #GType.</doc>
@@ -2517,19 +2433,19 @@ and not just an Interface #GType.</doc>
           <instance-parameter name="module" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="657">Your plugin's #PeasObjectModule.</doc>
+                 line="684">Your plugin's #PeasObjectModule.</doc>
             <type name="ObjectModule" c:type="PeasObjectModule*"/>
           </instance-parameter>
           <parameter name="exten_type" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="658">The #GType of the extension you implement.</doc>
+                 line="685">The #GType of the extension you implement.</doc>
             <type name="GType" c:type="GType"/>
           </parameter>
           <parameter name="impl_type" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libpeas/peas-object-module.c"
-                 line="659">The #GType of your implementation of @exten_type.</doc>
+                 line="686">The #GType of your implementation of @exten_type.</doc>
             <type name="GType" c:type="GType"/>
           </parameter>
         </parameters>
@@ -2540,7 +2456,7 @@ and not just an Interface #GType.</doc>
                 transfer-ownership="none">
         <doc xml:space="preserve"
              filename="../libpeas/peas-object-module.c"
-             line="334">This property indicates whether the module is loaded with
+             line="361">This property indicates whether the module is loaded with
 local linkage, i.e. #G_MODULE_BIND_LOCAL.
 
 Since 1.14</doc>
@@ -2616,25 +2532,9 @@ Since 1.14</doc>
             glib:get-type="peas_plugin_info_get_type"
             c:symbol-prefix="plugin_info">
       <doc xml:space="preserve"
-           filename="../libpeas/peas-plugin-info.c"
-           line="39">A #PeasPluginInfo contains all the information available about a plugin.
-
-All this information comes from the related plugin info file, whose file
-extension is ".plugin". Here is an example of such a plugin file, in the
-#GKeyFile format:
-|[
-[Plugin]
-Module=helloworld
-Depends=foo;bar;baz
-Loader=python3
-Name=Hello World
-Description=Displays "Hello World"
-Authors=Steve Frécinaux &amp;lt;code@istique.net&amp;gt;
-Copyright=Copyright © 2009-10 Steve Frécinaux
-Website=https://wiki.gnome.org/Projects/Libpeas
-Help=http://library.gnome.org/devel/libpeas/stable/
-Hidden=false
-]|</doc>
+           filename="../libpeas/peas-plugin-info.h"
+           line="65">The #PeasPluginInfo structure contains only private data and should only
+be accessed using the provided API.</doc>
       <source-position filename="../libpeas/peas-plugin-info.h" line="71"/>
       <method name="get_authors" c:identifier="peas_plugin_info_get_authors">
         <doc xml:space="preserve"
@@ -3223,7 +3123,44 @@ loading a plugin.</doc>
         </parameter>
       </parameters>
     </function>
-    <docsection name="peasextension">
+    <docsection name="peas-activatable">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-activatable.c"
+           line="26">#PeasActivatable is an interface which should be implemented by plugins
+that should be activated on an object of a certain type (depending on the
+application). For instance, in a typical windowed application,
+#PeasActivatable plugin instances could be bound to individual toplevel
+windows.
+
+It is typical to use #PeasActivatable along with #PeasExtensionSet in order
+to activate and deactivate extensions automatically when plugins are loaded
+or unloaded.
+
+You can also use the code of this interface as a base for your own
+extension types, as illustrated by gedit's %GeditWindowActivatable and
+%GeditDocumentActivatable interfaces.</doc>
+    </docsection>
+    <docsection name="peas-engine">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-engine.c"
+           line="40">The #PeasEngine is the object which manages the plugins.
+
+Its role is twofold:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;
+    &lt;para&gt;it will fetch all the information about the available plugins
+    from all the registered plugin directories;&lt;/para&gt;
+  &lt;/listitem&gt;
+  &lt;listitem&gt;
+    &lt;para&gt;it will provide you an API to load, control and unload your
+    plugins and their extensions from within your application.&lt;/para&gt;
+  &lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+Since libpeas 1.22, @extension_type can be an Abstract #GType
+and not just an Interface #GType.</doc>
+    </docsection>
+    <docsection name="peas-extension">
       <doc xml:space="preserve"
            filename="../libpeas/peas-extension.c"
            line="27">#PeasExtension is a proxy class used to access actual extensions
@@ -3254,6 +3191,103 @@ Another reason is that it makes reference counting issues easier to deal
 with.
 
 See peas_extension_call() for more information.</doc>
+    </docsection>
+    <docsection name="peas-extension-base">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-extension-base.c"
+           line="28">#PeasExtensionBase can optionally be used as a base class for the extensions
+of your plugin. By inheriting from it, you will make your extension able to
+access the related #PeasPluginInfo, and especially the location where all
+the data of your plugin lives.
+
+Non-C extensions will usually not inherit from this class: Python
+plugins automatically get a "plugin_info" attribute that serves
+the same purpose.</doc>
+    </docsection>
+    <docsection name="peas-extension-set">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-extension-set.c"
+           line="34">A #PeasExtensionSet is an object which proxies method calls to a set
+of actual extensions.  The application writer will use these objects
+in order to call methods on several instances of an actual extension
+exported by all the currently loaded plugins.
+
+#PeasExtensionSet will automatically track loading and unloading of
+the plugins, and signal appearance and disappearance of new
+extension instances.  You should connect to those signals if you
+wish to call specific methods on loading or unloading time.
+
+Here is the code for a typical setup of #PeasExtensionSet with
+#PeasActivatable as the watched extension point, and #GtkWindow
+instances as the target objects:
+|[
+static void
+on_extension_added (PeasExtensionSet *set,
+                    PeasPluginInfo   *info,
+                    PeasActivatable  *activatable)
+{
+  peas_activatable_activate (activatable);
+}
+
+static void
+on_extension_removed (PeasExtensionSet *set,
+                      PeasPluginInfo   *info,
+                      PeasActivatable  *activatable)
+{
+  peas_activatable_deactivate (activatable);
+}
+
+PeasExtensionSet *
+setup_extension_set (PeasEngine *engine,
+                     GtkWindow  *window)
+{
+  PeasExtensionSet *set;
+
+  set = peas_extension_set_new (engine, PEAS_TYPE_ACTIVATABLE,
+                                "object", window, NULL);
+  peas_extension_set_foreach (set,
+                              (PeasExtensionSetForeachFunc) on_extension_added,
+                              NULL);
+  g_signal_connect (set, "extension-added",
+                    G_CALLBACK (on_extension_added), NULL);
+  g_signal_connect (set, "extension-removed",
+                    G_CALLBACK (on_extension_removed), NULL);
+  return set;
+}
+]|</doc>
+    </docsection>
+    <docsection name="peas-object-module">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-object-module.c"
+           line="33">#PeasObjectModule is a subclass of #GTypeModule which allows registration
+of extensions.  It will be used by C extensions implementors to register
+extension implementations from within the peas_register_types module
+function.
+
+Since libpeas 1.22, @extension_type can be an Abstract #GType
+and not just an Interface #GType.</doc>
+    </docsection>
+    <docsection name="peas-plugin-info">
+      <doc xml:space="preserve"
+           filename="../libpeas/peas-plugin-info.c"
+           line="39">A #PeasPluginInfo contains all the information available about a plugin.
+
+All this information comes from the related plugin info file, whose file
+extension is ".plugin". Here is an example of such a plugin file, in the
+#GKeyFile format:
+|[
+[Plugin]
+Module=helloworld
+Depends=foo;bar;baz
+Loader=python3
+Name=Hello World
+Description=Displays "Hello World"
+Authors=Steve Frécinaux &amp;lt;code@istique.net&amp;gt;
+Copyright=Copyright © 2009-10 Steve Frécinaux
+Website=https://wiki.gnome.org/Projects/Libpeas
+Help=http://library.gnome.org/devel/libpeas/stable/
+Hidden=false
+]|</doc>
     </docsection>
     <function name="plugin_info_error_quark"
               c:identifier="peas_plugin_info_error_quark"

@@ -43,37 +43,10 @@ of jsonrpc-glib is greater than the required one.</doc>
     <class name="Client"
            c:symbol-prefix="client"
            c:type="JsonrpcClient"
-           version="3.26"
            parent="GObject.Object"
            glib:type-name="JsonrpcClient"
            glib:get-type="jsonrpc_client_get_type"
            glib:type-struct="ClientClass">
-      <doc xml:space="preserve"
-           filename="../src/jsonrpc-client.c"
-           line="23">The #JsonrpcClient class provides a convenient API to coordinate with a
-JSON-RPC server. You can provide the underlying #GIOStream to communicate
-with allowing you to control the negotiation of how you setup your
-communications channel. One such method might be to use a #GSubprocess and
-communicate over stdin and stdout.
-
-Because JSON-RPC allows for out-of-band notifications from the server to
-the client, it is important that the consumer of this API calls
-jsonrpc_client_close() or jsonrpc_client_close_async() when they no longer
-need the client. This is because #JsonrpcClient contains an asynchronous
-read-loop to process incoming messages. Until jsonrpc_client_close() or
-jsonrpc_client_close_async() have been called, this read loop will prevent
-the object from finalizing (being freed).
-
-To make an RPC call, use jsonrpc_client_call() or
-jsonrpc_client_call_async() and provide the method name and the parameters
-as a #GVariant for call.
-
-It is a programming error to mix synchronous and asynchronous API calls
-of the #JsonrpcClient class.
-
-For synchronous calls, #JsonrpcClient will use the thread-default
-#GMainContext. If you have special needs here ensure you've set the context
-before calling into any #JsonrpcClient API.</doc>
       <source-position filename="../src/jsonrpc-client.h" line="63"/>
       <constructor name="new" c:identifier="jsonrpc_client_new" version="3.26">
         <doc xml:space="preserve"
@@ -1636,24 +1609,6 @@ trip.</doc>
            glib:type-name="JsonrpcOutputStream"
            glib:get-type="jsonrpc_output_stream_get_type"
            glib:type-struct="OutputStreamClass">
-      <doc xml:space="preserve"
-           filename="../src/jsonrpc-output-stream.c"
-           line="28">The #JsonrpcOutputStream is resonsible for serializing messages onto
-the underlying stream.
-
-Optionally, if jsonrpc_output_stream_set_use_gvariant() has been called,
-the messages will be encoded directly in the #GVariant format instead of
-JSON along with setting a "Content-Type" header to "application/gvariant".
-This is useful for situations where you control both sides of the RPC server
-using jsonrpc-glib as you can reduce the overhead of parsing JSON nodes due
-to #GVariant not requiring parsing or allocation overhead to the same degree
-as JSON.
-
-For example, if you need a large message, which is encoded in JSON, you need
-to decode the entire message up front which avoids performing lazy operations.
-When using GVariant encoding, you have a single allocation created for the
-#GVariant which means you reduce the memory pressure caused by lots of small
-allocations.</doc>
       <source-position filename="../src/jsonrpc-output-stream.h" line="50"/>
       <implements name="Gio.Seekable"/>
       <constructor name="new" c:identifier="jsonrpc_output_stream_new">
@@ -1864,11 +1819,6 @@ been buffered, and there is no guarantee the peer received it.</doc>
            glib:type-name="JsonrpcServer"
            glib:get-type="jsonrpc_server_get_type"
            glib:type-struct="ServerClass">
-      <doc xml:space="preserve"
-           filename="../src/jsonrpc-server.c"
-           line="30">The #JsonrpcServer class can help you implement a JSON-RPC server. You can
-accept connections and then communicate with clients using the
-#JsonrpcClient API.</doc>
       <source-position filename="../src/jsonrpc-server.h" line="59"/>
       <constructor name="new" c:identifier="jsonrpc_server_new" version="3.26">
         <doc xml:space="preserve"
@@ -2357,7 +2307,62 @@ concatenation.</doc>
       <source-position filename="../src/jsonrpc-version.h" line="69"/>
       <type name="utf8" c:type="gchar*"/>
     </constant>
-    <docsection name="jsonrpcversion">
+    <docsection name="jsonrpc-client">
+      <doc xml:space="preserve"
+           filename="../src/jsonrpc-client.c"
+           line="23">The #JsonrpcClient class provides a convenient API to coordinate with a
+JSON-RPC server. You can provide the underlying #GIOStream to communicate
+with allowing you to control the negotiation of how you setup your
+communications channel. One such method might be to use a #GSubprocess and
+communicate over stdin and stdout.
+
+Because JSON-RPC allows for out-of-band notifications from the server to
+the client, it is important that the consumer of this API calls
+jsonrpc_client_close() or jsonrpc_client_close_async() when they no longer
+need the client. This is because #JsonrpcClient contains an asynchronous
+read-loop to process incoming messages. Until jsonrpc_client_close() or
+jsonrpc_client_close_async() have been called, this read loop will prevent
+the object from finalizing (being freed).
+
+To make an RPC call, use jsonrpc_client_call() or
+jsonrpc_client_call_async() and provide the method name and the parameters
+as a #GVariant for call.
+
+It is a programming error to mix synchronous and asynchronous API calls
+of the #JsonrpcClient class.
+
+For synchronous calls, #JsonrpcClient will use the thread-default
+#GMainContext. If you have special needs here ensure you've set the context
+before calling into any #JsonrpcClient API.</doc>
+    </docsection>
+    <docsection name="jsonrpc-output-stream">
+      <doc xml:space="preserve"
+           filename="../src/jsonrpc-output-stream.c"
+           line="28">The #JsonrpcOutputStream is resonsible for serializing messages onto
+the underlying stream.
+
+Optionally, if jsonrpc_output_stream_set_use_gvariant() has been called,
+the messages will be encoded directly in the #GVariant format instead of
+JSON along with setting a "Content-Type" header to "application/gvariant".
+This is useful for situations where you control both sides of the RPC server
+using jsonrpc-glib as you can reduce the overhead of parsing JSON nodes due
+to #GVariant not requiring parsing or allocation overhead to the same degree
+as JSON.
+
+For example, if you need a large message, which is encoded in JSON, you need
+to decode the entire message up front which avoids performing lazy operations.
+When using GVariant encoding, you have a single allocation created for the
+#GVariant which means you reduce the memory pressure caused by lots of small
+allocations.</doc>
+    </docsection>
+    <docsection name="jsonrpc-server">
+      <doc xml:space="preserve"
+           filename="../src/jsonrpc-server.c"
+           line="30">The #JsonrpcServer class can help you implement a JSON-RPC server. You can
+accept connections and then communicate with clients using the
+#JsonrpcClient API.</doc>
+    </docsection>
+    <docsection name="jsonrpc-version">
       <doc xml:space="preserve"
            filename="../src/jsonrpc-version.h"
            line="27">jsonrpc-glib provides macros to check the version of the library

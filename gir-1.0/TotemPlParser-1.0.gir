@@ -426,100 +426,8 @@ used when saving the state of an on-going playlist.</doc>
            glib:get-type="totem_pl_parser_get_type"
            glib:type-struct="ParserClass">
       <doc xml:space="preserve"
-           filename="../plparse/totem-pl-parser.c"
-           line="23">#TotemPlParser is a general-purpose playlist parser and writer, with
-support for several different types of playlist. Note that totem-pl-parser requires a main loop
-to operate properly (e.g. for the #TotemPlParser::entry-parsed signal to be emitted).
-
-&lt;example&gt;
- &lt;title&gt;Reading a Playlist&lt;/title&gt;
- &lt;programlisting&gt;
-TotemPlParser *pl = totem_pl_parser_new ();
-g_object_set (pl, "recurse", FALSE, "disable-unsafe", TRUE, NULL);
-g_signal_connect (G_OBJECT (pl), "playlist-started", G_CALLBACK (playlist_started), NULL);
-g_signal_connect (G_OBJECT (pl), "entry-parsed", G_CALLBACK (entry_parsed), NULL);
-
-if (totem_pl_parser_parse (pl, "http://example.com/playlist.pls", FALSE) != TOTEM_PL_PARSER_RESULT_SUCCESS)
-	g_error ("Playlist parsing failed.");
-
-g_object_unref (pl);
- &lt;/programlisting&gt;
-&lt;/example&gt;
-
-&lt;example&gt;
- &lt;title&gt;Reading a Playlist Asynchronously&lt;/title&gt;
- &lt;programlisting&gt;
-TotemPlParser *pl = totem_pl_parser_new ();
-g_object_set (pl, "recurse", FALSE, "disable-unsafe", TRUE, NULL);
-g_signal_connect (G_OBJECT (pl), "playlist-started", G_CALLBACK (playlist_started), NULL);
-g_signal_connect (G_OBJECT (pl), "entry-parsed", G_CALLBACK (entry_parsed), NULL);
-
-totem_pl_parser_parse_async (pl, "http://example.com/playlist.pls", FALSE, NULL, parse_cb, NULL);
-g_object_unref (pl);
-
-static void
-parse_cb (TotemPlParser *parser, GAsyncResult *result, gpointer user_data)
-{
-GError *error = NULL;
-	if (totem_pl_parser_parse_finish (parser, result, &amp;error) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
-		g_error ("Playlist parsing failed: %s", error-&gt;message);
-		g_error_free (error);
-	}
-}
- &lt;/programlisting&gt;
-&lt;/example&gt;
-
-&lt;example&gt;
- &lt;title&gt;Getting Metadata from Entries&lt;/title&gt;
- &lt;programlisting&gt;
-static void
-entry_parsed (TotemPlParser *parser, const gchar *uri, GHashTable *metadata, gpointer user_data)
-{
-	gchar *title = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_TITLE);
-	if (title != NULL)
-		g_message ("Entry title: %s", title);
-	else
-		g_message ("Entry (URI: %s) has no title.", uri);
-}
- &lt;/programlisting&gt;
-&lt;/example&gt;
-
-
-&lt;example&gt;
- &lt;title&gt;Writing a Playlist&lt;/title&gt;
- &lt;programlisting&gt;
-{
-	TotemPlParser *pl;
-	TotemPlPlaylist *playlist;
-	TotemPlPlaylistIter iter;
-	GFile *file;
-
-	pl = totem_pl_parser_new ();
-	playlist = totem_pl_playlist_new ();
-	file = g_file_new_for_path ("/tmp/playlist.pls");
-
-	totem_pl_playlist_append (playlist, &amp;iter);
-	totem_pl_playlist_set (playlist, &amp;iter,
-			       TOTEM_PL_PARSER_FIELD_URI, "file:///1.ogg",
-			       TOTEM_PL_PARSER_FIELD_TITLE, "1.ogg",
-			       NULL);
-
-	totem_pl_playlist_append (playlist, &amp;iter);
-	totem_pl_playlist_set (playlist, &amp;iter,
-			       TOTEM_PL_PARSER_FIELD_URI, "file:///2.ogg",
-			       NULL);
-
-	if (totem_pl_parser_save (pl, playlist, file, "Title",
-				  TOTEM_PL_PARSER_PLS, NULL) != TRUE) {
-		g_error ("Playlist writing failed.");
-	}
-
-	g_object_unref (playlist);
-	g_object_unref (pl);
-	g_object_unref (file);
-}
- &lt;/programlisting&gt;
-&lt;/example&gt;</doc>
+           filename="../plparse/totem-pl-parser.h"
+           line="62">All the fields in the #TotemPlParser structure are private and should never be accessed directly.</doc>
       <source-position filename="../plparse/totem-pl-parser.h" line="302"/>
       <constructor name="new" c:identifier="totem_pl_parser_new">
         <doc xml:space="preserve"
@@ -1563,10 +1471,8 @@ and totem_pl_parser_add_ignored_mimetype()).</doc>
            glib:get-type="totem_pl_playlist_get_type"
            glib:type-struct="PlaylistClass">
       <doc xml:space="preserve"
-           filename="../plparse/totem-pl-playlist.c"
-           line="22">#TotemPlPlaylist represents a playlist, provides API to either navigate through
-the playlist elements, or perform additions or modifications. See also
-totem_pl_parser_save().</doc>
+           filename="../plparse/totem-pl-playlist.h"
+           line="35">All the fields in the #TotemPlPlaylist structure are private and should never be accessed directly.</doc>
       <source-position filename="../plparse/totem-pl-playlist.h" line="54"/>
       <constructor name="new" c:identifier="totem_pl_playlist_new">
         <doc xml:space="preserve"
@@ -2003,10 +1909,8 @@ by @iter.</doc>
     </record>
     <record name="PlaylistIter" c:type="TotemPlPlaylistIter">
       <doc xml:space="preserve"
-           filename="../plparse/totem-pl-playlist.c"
-           line="34">#TotemPlPlaylistIter refers to an element in a playlist and is designed
-to bridge between application provided playlist widgets or objects,
-and #TotemPlParser's saving code.</doc>
+           filename="../plparse/totem-pl-playlist.h"
+           line="56">All the fields in the #TotemPlPlaylistIter structure are private and should never be accessed directly.</doc>
       <source-position filename="../plparse/totem-pl-playlist.h" line="65"/>
       <field name="data1" readable="0" private="1">
         <type name="gpointer" c:type="gpointer"/>
@@ -2029,7 +1933,7 @@ and #TotemPlParser's saving code.</doc>
         <type name="GType" c:type="GType"/>
       </return-value>
     </function>
-    <docsection name="totemdisc">
+    <docsection name="totem-disc">
       <doc xml:space="preserve"
            filename="../plparse/totem-disc.c"
            line="30">This file has various different disc utility functions for getting
@@ -2041,6 +1945,117 @@ an MRL would be &lt;literal&gt;dvd:///dev/scd0&lt;/literal&gt;, which is not a
 valid URI as far as, for example, GIO is concerned.
 
 The rest of the totem-pl-parser API exclusively uses URIs.</doc>
+    </docsection>
+    <docsection name="totem-pl-parser">
+      <doc xml:space="preserve"
+           filename="../plparse/totem-pl-parser.c"
+           line="23">#TotemPlParser is a general-purpose playlist parser and writer, with
+support for several different types of playlist. Note that totem-pl-parser requires a main loop
+to operate properly (e.g. for the #TotemPlParser::entry-parsed signal to be emitted).
+
+&lt;example&gt;
+ &lt;title&gt;Reading a Playlist&lt;/title&gt;
+ &lt;programlisting&gt;
+TotemPlParser *pl = totem_pl_parser_new ();
+g_object_set (pl, "recurse", FALSE, "disable-unsafe", TRUE, NULL);
+g_signal_connect (G_OBJECT (pl), "playlist-started", G_CALLBACK (playlist_started), NULL);
+g_signal_connect (G_OBJECT (pl), "entry-parsed", G_CALLBACK (entry_parsed), NULL);
+
+if (totem_pl_parser_parse (pl, "http://example.com/playlist.pls", FALSE) != TOTEM_PL_PARSER_RESULT_SUCCESS)
+	g_error ("Playlist parsing failed.");
+
+g_object_unref (pl);
+ &lt;/programlisting&gt;
+&lt;/example&gt;
+
+&lt;example&gt;
+ &lt;title&gt;Reading a Playlist Asynchronously&lt;/title&gt;
+ &lt;programlisting&gt;
+TotemPlParser *pl = totem_pl_parser_new ();
+g_object_set (pl, "recurse", FALSE, "disable-unsafe", TRUE, NULL);
+g_signal_connect (G_OBJECT (pl), "playlist-started", G_CALLBACK (playlist_started), NULL);
+g_signal_connect (G_OBJECT (pl), "entry-parsed", G_CALLBACK (entry_parsed), NULL);
+
+totem_pl_parser_parse_async (pl, "http://example.com/playlist.pls", FALSE, NULL, parse_cb, NULL);
+g_object_unref (pl);
+
+static void
+parse_cb (TotemPlParser *parser, GAsyncResult *result, gpointer user_data)
+{
+GError *error = NULL;
+	if (totem_pl_parser_parse_finish (parser, result, &amp;error) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
+		g_error ("Playlist parsing failed: %s", error-&gt;message);
+		g_error_free (error);
+	}
+}
+ &lt;/programlisting&gt;
+&lt;/example&gt;
+
+&lt;example&gt;
+ &lt;title&gt;Getting Metadata from Entries&lt;/title&gt;
+ &lt;programlisting&gt;
+static void
+entry_parsed (TotemPlParser *parser, const gchar *uri, GHashTable *metadata, gpointer user_data)
+{
+	gchar *title = g_hash_table_lookup (metadata, TOTEM_PL_PARSER_FIELD_TITLE);
+	if (title != NULL)
+		g_message ("Entry title: %s", title);
+	else
+		g_message ("Entry (URI: %s) has no title.", uri);
+}
+ &lt;/programlisting&gt;
+&lt;/example&gt;
+
+
+&lt;example&gt;
+ &lt;title&gt;Writing a Playlist&lt;/title&gt;
+ &lt;programlisting&gt;
+{
+	TotemPlParser *pl;
+	TotemPlPlaylist *playlist;
+	TotemPlPlaylistIter iter;
+	GFile *file;
+
+	pl = totem_pl_parser_new ();
+	playlist = totem_pl_playlist_new ();
+	file = g_file_new_for_path ("/tmp/playlist.pls");
+
+	totem_pl_playlist_append (playlist, &amp;iter);
+	totem_pl_playlist_set (playlist, &amp;iter,
+			       TOTEM_PL_PARSER_FIELD_URI, "file:///1.ogg",
+			       TOTEM_PL_PARSER_FIELD_TITLE, "1.ogg",
+			       NULL);
+
+	totem_pl_playlist_append (playlist, &amp;iter);
+	totem_pl_playlist_set (playlist, &amp;iter,
+			       TOTEM_PL_PARSER_FIELD_URI, "file:///2.ogg",
+			       NULL);
+
+	if (totem_pl_parser_save (pl, playlist, file, "Title",
+				  TOTEM_PL_PARSER_PLS, NULL) != TRUE) {
+		g_error ("Playlist writing failed.");
+	}
+
+	g_object_unref (playlist);
+	g_object_unref (pl);
+	g_object_unref (file);
+}
+ &lt;/programlisting&gt;
+&lt;/example&gt;</doc>
+    </docsection>
+    <docsection name="totem-pl-playlist">
+      <doc xml:space="preserve"
+           filename="../plparse/totem-pl-playlist.c"
+           line="22">#TotemPlPlaylist represents a playlist, provides API to either navigate through
+the playlist elements, or perform additions or modifications. See also
+totem_pl_parser_save().</doc>
+    </docsection>
+    <docsection name="totem-pl-playlist-iter">
+      <doc xml:space="preserve"
+           filename="../plparse/totem-pl-playlist.c"
+           line="34">#TotemPlPlaylistIter refers to an element in a playlist and is designed
+to bridge between application provided playlist widgets or objects,
+and #TotemPlParser's saving code.</doc>
     </docsection>
   </namespace>
 </repository>

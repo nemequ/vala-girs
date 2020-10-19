@@ -29,10 +29,6 @@ namespace Gedit {
 		public unowned Gtk.SourceSearchContext get_search_context ();
 		public string get_short_name_for_display ();
 		public string get_uri_for_display ();
-		[Version (deprecated = true, deprecated_since = "3.38")]
-		public bool goto_line (int line);
-		[Version (deprecated = true, deprecated_since = "3.38")]
-		public bool goto_line_offset (int line, int line_offset);
 		public bool is_untitled ();
 		public bool is_untouched ();
 		public void set_language (Gtk.SourceLanguage? lang);
@@ -157,18 +153,6 @@ namespace Gedit {
 	public class View : Gtk.SourceView, Atk.Implementor, Gtk.Buildable, Gtk.Scrollable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public View (Gedit.Document doc);
-		[Version (deprecated = true, deprecated_since = "3.38")]
-		public void copy_clipboard ();
-		[Version (deprecated = true, deprecated_since = "3.38")]
-		public void cut_clipboard ();
-		[Version (deprecated = true, deprecated_since = "3.38")]
-		public void delete_selection ();
-		[Version (deprecated = true, deprecated_since = "3.38")]
-		public void paste_clipboard ();
-		[Version (deprecated = true, deprecated_since = "3.38")]
-		public void scroll_to_cursor ();
-		[Version (deprecated = true, deprecated_since = "3.38")]
-		public void select_all ();
 		public void set_font (bool default_font, string font_name);
 		public virtual signal void drop_uris ([CCode (array_length = false, array_null_terminated = true)] string[] uri_list);
 	}
@@ -291,9 +275,6 @@ namespace Gedit {
 	public static void debug_plugin_message (string file, int line, string function, string message);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_basename_for_display (GLib.File location);
-	[CCode (cheader_filename = "gedit/gedit-utils.h")]
-	[Version (deprecated = true, deprecated_since = "3.38")]
-	public static bool utils_decode_uri (string uri, out string scheme, out string user, out string host, out string port, out string path);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "gedit/gedit-utils.h")]
 	public static string[] utils_drop_get_uris (Gtk.SelectionData selection_data);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]

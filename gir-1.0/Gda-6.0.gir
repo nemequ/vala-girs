@@ -115,12 +115,6 @@ and/or use gtk-doc annotations.  -->
            glib:type-name="GdaBatch"
            glib:get-type="gda_batch_get_type"
            glib:type-struct="BatchClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-batch.h"
-           line="59">The #GdaBatch object represents one or more SQL statements (as #GdaStatement objects) in a single object.
-
-A #GdaBatch can either be built "manually" by assembling together several #GdaStatement objects,
-or from an SQL string using a #GdaSqlParser object.</doc>
       <source-position filename="../libgda/gda-batch.h" line="57"/>
       <constructor name="new" c:identifier="gda_batch_new">
         <doc xml:space="preserve"
@@ -743,67 +737,6 @@ is converted to "\\".</doc>
            glib:type-name="GdaBlobOp"
            glib:get-type="gda_blob_op_get_type"
            glib:type-struct="BlobOpClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-blob-op.h"
-           line="41">This object is a base class for individual database providers which support BLOB types. It supports
-operations to read and write data in a BLOB value (of type GDA_BLOB_TYPE).
-
-Libgda offers two methods to manipulate binary values as two containers: &lt;link linkend="GdaBinary"&gt;GdaBinary&lt;/link&gt;
-and &lt;link linkend="GdaBlob"&gt;GdaBlob&lt;/link&gt;:
-&lt;itemizedlist&gt;
- &lt;listitem&gt;&lt;para&gt;When reading from a data model returned by &amp;LIBGDA; binary data will often be in a GdaBlob
-  object, and the associated &lt;link linkend="GdaBlobOp"&gt;GdaBlobOp&lt;/link&gt; object can be used to manipulate the
-  binary object (in a database for example)&lt;/para&gt;&lt;/listitem&gt;
- &lt;listitem&gt;&lt;para&gt;When the binary value is created by the user, then there is no point in using a GdaBlob as
-  there can not be any &lt;link linkend="GdaBlobOp"&gt;GdaBlobOp&lt;/link&gt; object, so the GdaBinary container is
-  enough.&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-Note that a &lt;link linkend="GdaBlob"&gt;GdaBlob&lt;/link&gt; value (the "data" attribute) will often not contain any data
-(or only some part of the actual BLOB)
-and that it's up to the user to use the associated &lt;link linkend="GdaBlobOp"&gt;GdaBlobOp&lt;/link&gt; object to
-"load" the data into the container (into the actual process heap).
-
-For example to load the 1st 40 bytes of a blob:
- &lt;programlisting&gt;
-GValue *blob_value = ...
-GdaBlob *blob;
-
-blob = (GdaBlob*) gda_value_get_blob (blob_value);
-gda_blob_op_read (blob-&gt;op, blob, 0, 40);
- &lt;/programlisting&gt;
-
-Another example is to write the contents of a blob to a file on disk, using a special
- &lt;link linkend="GdaBlobOp"&gt;GdaBlobOp&lt;/link&gt; object (internal to &amp;LIBGDA; which interfaces
- with a file in a filesystem):
- &lt;programlisting&gt;
-GValue *blob_value; // value to copy from
-GValue *tmp_value;
-GdaBlob *file_blob;
-
-GValue *blob_value = ...
-tmp_value = gda_value_new_blob_from_file ("MyFile.bin");
-file_blob = (GdaBlob*) gda_value_get_blob (tmp_value);
-
-if (! gda_blob_op_write_all (file_blob-&gt;op, gda_value_get_blob (blob_value))) {
-      // error
-}
-else {
-      gsize size;
-      size = gda_blob_op_get_length (file_blob-&gt;op);
-      g_print ("Wrote %s, size = %d\n", filename, size);
-}
-gda_value_free (tmp_value);
- &lt;/programlisting&gt;
-
-For further information, see:
- &lt;itemizedlist&gt;
-   &lt;listitem&gt;&lt;para&gt;the section about &lt;link linkend="gen_blobs"&gt;Binary large objects (BLOBs)&lt;/link&gt;'s
-       abstraction&lt;/para&gt;&lt;/listitem&gt;
-   &lt;listitem&gt;&lt;para&gt;&lt;link linkend="libgda-provider-blobop"&gt;Virtual methods for Blob operations&lt;/link&gt;
-       section for more information
-       about how to implement the virtual methods when creating a database provider&lt;/para&gt;&lt;/listitem&gt;
- &lt;/itemizedlist&gt;</doc>
       <source-position filename="../libgda/gda-blob-op.h" line="39"/>
       <method name="get_length" c:identifier="gda_blob_op_get_length">
         <source-position filename="../libgda/gda-blob-op.h" line="109"/>
@@ -1058,9 +991,6 @@ blob is truncated from its previous length.</doc>
            glib:type-name="GdaColumn"
            glib:get-type="gda_column_get_type"
            glib:type-struct="ColumnClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-column.h"
-           line="50">The #GdaColumn object represents a #GdaDataModel's column and handle all its properties.</doc>
       <source-position filename="../libgda/gda-column.h" line="48"/>
       <constructor name="new" c:identifier="gda_column_new">
         <source-position filename="../libgda/gda-column.h" line="60"/>
@@ -1588,42 +1518,6 @@ data model.</doc>
            glib:type-name="GdaConfig"
            glib:get-type="gda_config_get_type"
            glib:type-struct="ConfigClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-config.h"
-           line="114">The functions in this section allow applications an easy access to libgda's
-configuration (the list of data sources and database providers).
-
-As soon as a &lt;link linkend="GdaConfig"&gt;GdaConfig&lt;/link&gt; is needed (for example when requesting information
-about a data source or about a server provider), a single instance object is created,
-and no other will need to be created. A pointer to this object can be obtained with
-&lt;link linkend="gda-config-get"&gt;gda_config_get()&lt;/link&gt;. Of course one can (right after having called
-&lt;link linkend="gda-init"&gt;gda_init()&lt;/link&gt;) force the creation of a GdaConfig object with some
-specific properties set, using a simple call like:
-&lt;programlisting&gt;
-g_object_new (GDA_TYPE_CONFIG, "user-filename", "my_file", NULL);
-&lt;/programlisting&gt;
-Please note that after that call, the caller has a reference to the newly created object, and should technically
-call &lt;link linkend="g-object-unref"&gt;g_object_unref()&lt;/link&gt; when finished using it. It is safe to do this
-but also pointless since that object should not be destroyed (as no other will be created) as &amp;LIBGDA; also
-keeps a reference for itself.
-
-Data sources are defined in a per-user configuration file which is by default &lt;filename&gt;${HOME}/.libgda/config&lt;/filename&gt; and
-in a system wide configuration file which is by default &lt;filename&gt;${prefix}/etc/libgda-4.0/config&lt;/filename&gt;. Those
-filenames can be modified by setting the &lt;link linkend="GdaConfig--user-file"&gt;user-file&lt;/link&gt; and
-&lt;link linkend="GdaConfig--system-file"&gt;system-file&lt;/link&gt; properties for the single &lt;link linkend="GdaConfig"&gt;GdaConfig&lt;/link&gt;
-instance. Note that setting either of these properties to &lt;literal&gt;NULL&lt;/literal&gt; will disable using the corresponding
-configuration file (DSN will exist only in memory and their definition will be lost when the application finishes).
-
-The #GdaConfig object implements its own locking mechanism so it is thread-safe.
-
-Note about localization: when the #GdaConfig loads configuration files, it filters the
-contents based on the current locale, so for example if your current locale is "de" then
-all the loaded strings (for the ones which are translated) will be in the German language.
-Changing the locale afterwards will have no effect on the #GdaConfig and the already loaded
-configuration.
-The consequence is that you should first call setlocale() youself in your code before using
-a #GdaConfig object. As a side note you should also call gtk_init() before gdaui_init() because
-gtk_init() calls setlocale().</doc>
       <source-position filename="../libgda/gda-config.h" line="176"/>
       <function name="can_modify_system_config"
                 c:identifier="gda_config_can_modify_system_config">
@@ -2173,25 +2067,6 @@ This method may fail with a %GDA_CONFIG_ERROR domain error (see the #GdaConfigEr
            glib:type-name="GdaConnection"
            glib:get-type="gda_connection_get_type"
            glib:type-struct="ConnectionClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-connection.h"
-           line="76">Each connection to a database is represented by a #GdaConnection object. A connection is created
-using gda_connection_new_from_dsn() if a data source has been defined, or gda_connection_new_from_string()
-otherwise. It is not recommended to create a #GdaConnection object using g_object_new() as the results are
-unpredictable (some parts won't correctly be initialized).
-
-Once the connection has been created, it can be opened using gda_connection_open() or gda_connection_open_async().
-By default these functions will block, unless you speficy a #GMainContext from which events will be processed
-while opening the connection using gda_connection_set_main_context().
-
-The same gda_connection_set_main_context() allows the program to still handle events while a
-potentially blocking operation (such as executing a statement) is being carried out (this is a change compared to the
-#GdaConnection object in Libgda versions before 6.x, where asynchronous execution was featured
-using a set of specific functions like gda_connection_async_statement_execute()).
-
-The #GdaConnection object implements its own locking mechanism so it is thread-safe. If a #GMainContext has been
-specified using gda_connection_set_main_context(), then the events will continue to be processed while the
-lock on the connection is being acquired.</doc>
       <source-position filename="../libgda/gda-connection.h" line="144"/>
       <implements name="Lockable"/>
       <constructor name="new_from_dsn"
@@ -5919,11 +5794,6 @@ started, rolled back, a savepoint added,...)</doc>
            glib:type-name="GdaConnectionEvent"
            glib:get-type="gda_connection_event_get_type"
            glib:type-struct="ConnectionEventClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-connection-event.h"
-           line="71">Events occurring on a connection are each represented as a #GdaConnectionEvent object. Each #GdaConnection
-is responsible for keeping a list of past events; that list can be consulted using the
-gda_connection_get_events() function.</doc>
       <source-position filename="../libgda/gda-connection-event.h" line="35"/>
       <method name="get_code" c:identifier="gda_connection_event_get_code">
         <source-position filename="../libgda/gda-connection-event.h"
@@ -6657,10 +6527,6 @@ are indicated in the diagram below:
            glib:type-name="GdaDataAccessWrapper"
            glib:get-type="gda_data_access_wrapper_get_type"
            glib:type-struct="DataAccessWrapperClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-data-access-wrapper.h"
-           line="43">The #GdaDataAccessWrapper object simply wraps another #GdaDataModel data model object
-and allows data to be accessed in a random way while remaining memory efficient as much as possible.</doc>
       <source-position filename="../libgda/gda-data-access-wrapper.h"
                        line="41"/>
       <implements name="DataModel"/>
@@ -6804,19 +6670,6 @@ and the columns of the wrapped data model</doc>
            glib:type-name="GdaDataComparator"
            glib:get-type="gda_data_comparator_get_type"
            glib:type-struct="DataComparatorClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-data-comparator.h"
-           line="76">The #GdaDataComparator is a simple object which takes two #GdaDataModel objects and compare them.
-Actual comparison is performed when the gda_data_comparator_compute_diff() is called; for each
-difference found, the &lt;link linkend="GdaDataComparator-diff-computed"&gt;diff-computed&lt;/link&gt; signal
-is emitted (any user installed signal handler which returns FALSE stops the computing process).
-
-There are some limitations to this object:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;The data models compared must have the same number and type of columns&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;The comparison is done column-for-column: one cannot omit columns in the comparison, nor compare
-  columns with different positions&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;</doc>
       <source-position filename="../libgda/gda-data-comparator.h" line="74"/>
       <constructor name="new" c:identifier="gda_data_comparator_new">
         <doc xml:space="preserve"
@@ -7083,22 +6936,6 @@ will speed things up as less data will be processed.</doc>
                glib:type-name="GdaDataHandler"
                glib:get-type="gda_data_handler_get_type"
                glib:type-struct="DataHandlerInterface">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-data-handler.h"
-           line="53">Because data types vary a lot from a DBMS to another, the #GdaDataHandler interface helps
-managing data in its various representations, and converting from one to another:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;as a #GValue which is a generic value container for the C language&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;as a human readable string (in the user defined locale)&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;as an SQL string (a string which can be used in SQL statements)&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-For each data type, a corresponding #GdaDataHandler object can be requested using the
-&lt;link linkend="gda-data-handler-get-default"&gt;gda_data_handler_get_default()&lt;/link&gt; function. However, when working
-with a specific database provider, it's better to use a #GdaDataHandler which may be specific to the
-database provider which will correctly handle each database specifics using
-&lt;link linkend="gda-server-provider-get-data-handler-g-type"&gt;gda_server_provider_get_data_handler_g_type()&lt;/link&gt; or
-&lt;link linkend="gda-server-provider-get-data-handler-dbms"&gt;gda_server_provider_get_data_handler_dbms()&lt;/link&gt;.</doc>
       <source-position filename="../libgda/gda-data-handler.h" line="50"/>
       <function name="get_default"
                 c:identifier="gda_data_handler_get_default"
@@ -7792,47 +7629,6 @@ Note: the @str string must be in the current locale representation</doc>
                glib:type-name="GdaDataModel"
                glib:get-type="gda_data_model_get_type"
                glib:type-struct="DataModelIface">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-data-model.h"
-           line="137">A #GdaDataModel represents an array of values organized in rows and columns. All the data in the same
-column have the same type, and all the data in each row have the same semantic meaning. The #GdaDataModel is
-actually an interface implemented by other objects to support various kinds of data storage and operations.
-
-When a SELECT statement is executed using an opened #GdaConnection, the returned value (if no error occurred)
-is a #GdaDataSelect object which implements the #GdaDataModel interface. Please see the #GdaDataSelect's
-documentation for more information.
-
-Depending on the real implementation, the contents of data models may be modified by the user using functions
-provided by the model. The actual operations a data model permits can be known using the
-gda_data_model_get_access_flags() method.
-
-Again, depending on the real implementation, data retrieving can be done either accessing direct random
-values located by their row and column, or using a cursor, or both. Use the gda_data_model_get_access_flags()
-method to know how the data model can be accessed.
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;Random access to a data model's contents is done using gda_data_model_get_value_at(), or using
-      one or more #GdaDataModelIter object(s);&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Cursor access to a data model's contents is done using a #GdaDataModelIter object. If this mode is
-      the only supported, then only one #GdaDataModelIter object can be created and
-      it is &lt;emphasis&gt;not possible&lt;/emphasis&gt; to use gda_data_model_get_value_at() in this case.&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-Random access data models are easier to use since picking a value is very simple using the gda_data_model_get_value_at(),
-but consume more memory since all the accessible values must generally be present in memory even if they are not used.
-Thus if a data model must handle large quantities of data, it is generally wiser to use a data model which can be
-only accessed using a cursor.
-
-As a side note there are also data models which wrap other data models such as:
-&lt;itemizedlist&gt;
-    &lt;listitem&gt;&lt;para&gt;The #GdaDataProxy data model which stores temporary modifications and shows only some
-	parts of the wrapped data model&lt;/para&gt;&lt;/listitem&gt;
-    &lt;listitem&gt;&lt;para&gt;The #GdaDataAccessWrapper data model which offers a memory efficient random access on top of a
-	wrapped cursor based access data model&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-Also see the section about &lt;link linkend="gda-data-model-writing"&gt;writing your own GdaDataModel&lt;/link&gt;
-
-Finally, the #GdaDataModel object implements its own locking mechanism and can be used simultaneously from several threads.</doc>
       <source-position filename="../libgda/gda-decl.h" line="36"/>
       <function name="error_quark" c:identifier="gda_data_model_error_quark">
         <return-value transfer-ownership="none">
@@ -9407,13 +9203,6 @@ type of columns may also have changed)</doc>
            glib:type-name="GdaDataModelArray"
            glib:get-type="gda_data_model_array_get_type"
            glib:type-struct="DataModelArrayClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-data-model-array.h"
-           line="44">The #GdaDataModelArray object is a data model which internally uses a #GArray to index all its rows (represented
-as #GdaRow objects). In this data model, all the data is stored in memory, which can be a memory limitation if the number
-of rows is huge.
-This type of data model is easy to use to store some temporary data, and has a random access mode (any value can be accessed
-at any time without the need for an iterator).</doc>
       <source-position filename="../libgda/gda-data-model-array.h" line="42"/>
       <implements name="DataModel"/>
       <function name="new" c:identifier="gda_data_model_array_new">
@@ -9638,21 +9427,6 @@ Also clears @model's contents.</doc>
            glib:type-name="GdaDataModelDir"
            glib:get-type="gda_data_model_dir_get_type"
            glib:type-struct="DataModelDirClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-data-model-dir.h"
-           line="41">The #GdaDataModelDir object lists files on a filesystem which are located
-below a "basedir" directory, one file per row. The data model has the following columns:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;the "dir_name" column (G_TYPE_STRING): contains the dirname part of the file&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;the "file_name" column (G_TYPE_STRING): contains the file name part of the file&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;the "size" column (G_TYPE_UINT): contains the size in bytes of the file&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;the "mime_type" column (G_TYPE_STRING): contains the mime type of the file (if GnomeVFS has been found, and NULL otherwise)&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;the "md5sum" column (G_TYPE_STRING): contains the MD5 hash of each file (if LibGCrypt has been found, and NULL otherwise)&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;the "data" column (GDA_TYPE_BLOB): contains the contents of each file&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-Note that the actual values of the "mime_type", "md5sum" and "data" columns are computed only when they
- are requested to help with performances.</doc>
       <source-position filename="../libgda/gda-data-model-dir.h" line="39"/>
       <implements name="DataModel"/>
       <function name="new" c:identifier="gda_data_model_dir_new">
@@ -9875,29 +9649,6 @@ Note that the actual values of the "mime_type", "md5sum" and "data" columns are 
            glib:type-name="GdaDataModelImport"
            glib:get-type="gda_data_model_import_get_type"
            glib:type-struct="DataModelImportClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-data-model-import.h"
-           line="44">The #GdaDataModelImport data model imports data from a string or a file. The data can either be
-in a CSV (comma separated values) format or in an XML format as described by the libgda-array.dtd DTD (as a side
-way it is also possible to import data from an already-build XML tree validated against that DTD).
-
-The caller must decide, upon construction, if the new #GdaDataModelImport must support random access or simply
-a cursor based access. Random access makes it easier to use the resulting data model but consumes more memory as
-all the data is copied in memory, and is thus not suitable for large data sets. Note that importing from an
-already-build XML tree will always result in a random access data model.
-
-Various import options can be specified using parameters in a #GdaSet object. The available options
-depend on the format of the imported data listed here:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;"SEPARATOR" (string, CVS import only): specifies the separator to consider&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;"ESCAPE_CHAR" (string, CVS import only): specifies the character used to "escape" the strings
-      contained between two separators&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;"ENCODING" (string, CVS import only): specifies the character set used in the imported data&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;"TITLE_AS_FIRST_LINE" (boolean, CVS import only): TRUE to specify that the first line of the
-      imported data contains the column names&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;"G_TYPE_&amp;lt;col number&amp;gt;" (GType, CVS import only): specifies the requested GType type for the column
-	numbered "col number"&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;</doc>
       <source-position filename="../libgda/gda-data-model-import.h" line="42"/>
       <implements name="DataModel"/>
       <function name="new_file" c:identifier="gda_data_model_import_new_file">
@@ -10573,58 +10324,6 @@ will stop, and if set to %FALSE, then the error will be reported but the import 
            glib:type-name="GdaDataModelIter"
            glib:get-type="gda_data_model_iter_get_type"
            glib:type-struct="DataModelIterClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-data-model-iter.h"
-           line="65">A #GdaDataModelIter object is used to iterate through the rows of a #GdaDataModel. If the data model is accessible
-in a random access way then any number of #GdaDataModelIter objects can be created on the same data model, and
-if the data model only supports a cursor based access then only one #GdaDataModelIter can be created. In any case
-creating a #GdaDataModelIter should be done using the gda_data_model_create_iter() method. Note that if
-the data model only supports a cursor based access, then calling this method several times will always return
-the same #GdaDataModelIter, but with its reference count increased by 1 (so you should call g_object_unref() when
-finished with it).
-
-When a #GdaDataModelIter is valid (that is when it points to an existing row in the data model it iterates through),
-the individual values (corresponding to each column of the data model, at the pointer row) can be accessed
-using the gda_data_model_iter_get_value_at() or gda_data_model_iter_get_value_for_field() methods
-(or in the same way #GdaSet's values are accessed as #GdaDataModelIter inherits the #GdaSet).
-
-Right after being created, a #GdaDataModelIter is invalid (does not point to any row of its data model). To read the
-first row of the data model, use the gda_data_model_iter_move_next() method. Calling this method several times will
-move the iterator forward, up to when the data model has no more rows and the #GdaDataModelIter will be declared invalid
-(and gda_data_model_iter_move_next() has returned FALSE). Note that at this point, the number of rows in the data
-model will be known.
-
-If the data model supports it, a #GdaDataModelIter can be moved backwards using the gda_data_model_iter_move_prev()
-method. However if the iterator is invalid, moving backwards will not be possible (on the contrary to
-gda_data_model_iter_move_next() which moves to the first row).
-
-The gda_data_model_iter_move_to_row() method, if the iterator can be moved both forward and backwards, can move the
-iterator to a specific row (sometimes faster than moving it forward or backwards a number of times).
-
-The following figure illustrates the #GdaDataModelIter usage:
-&lt;mediaobject&gt;
-  &lt;imageobject role="html"&gt;
-    &lt;imagedata fileref="GdaDataModelIter.png" format="PNG" contentwidth="190mm"/&gt;
-  &lt;/imageobject&gt;
-  &lt;textobject&gt;
-    &lt;phrase&gt;GdaDataModelIter's usage&lt;/phrase&gt;
-  &lt;/textobject&gt;
-&lt;/mediaobject&gt;
-
-Note: the new #GdaDataModelIter does not hold any reference to the data model it iterates through (ie.
-if this data model is destroyed at some point, the new iterator will become useless but in
-any case it will not prevent the data model from being destroyed).
-
-Note: when the data model emits the "reset" signal, then:
-&lt;itemizedlist&gt;
- &lt;listitem&gt;&lt;para&gt;the number of columns of the iterator can change to reflect the new data model
-   being itered on. In this case the iterator's position is reset as if it was
-   just created&lt;/para&gt;&lt;/listitem&gt;
- &lt;listitem&gt;&lt;para&gt;some column types which were unknown (i.e. GDA_TYPE_NULL type), can change
-   to their correct type. In this case there is no other iterator change&lt;/para&gt;&lt;/listitem&gt;
- &lt;listitem&gt;&lt;para&gt;some column types which were not GDA_TYPE_NULL can change, and in this case
-   the iterator's position is reset as if it was just created&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;</doc>
       <source-position filename="../libgda/gda-data-model-iter.h" line="53"/>
       <function name="error_quark"
                 c:identifier="gda_data_model_iter_error_quark">
@@ -11486,10 +11185,6 @@ in statement</doc>
            glib:type-name="GdaDataPivot"
            glib:get-type="gda_data_pivot_get_type"
            glib:type-struct="DataPivotClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-data-pivot.h"
-           line="76">The #GdaDataPivot data model allows one to do some analysis and summarisation on the contents
-of a data model.</doc>
       <source-position filename="../libgda/gda-data-pivot.h" line="39"/>
       <implements name="DataModel"/>
       <function name="error_quark" c:identifier="gda_data_pivot_error_quark">
@@ -11765,103 +11460,6 @@ still forming a valid SQL syntax).</doc>
            glib:type-name="GdaDataProxy"
            glib:get-type="gda_data_proxy_get_type"
            glib:type-struct="DataProxyClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-data-proxy.h"
-           line="73">This object stores modifications to be made to a #GdaDataModel object which is proxied until the modifications are actually
- written to the #GdaDataModel, it can also filter the proxied data model to show only a subset (a defined number of continuous
- rows or by a filter to apply).
-
- Specifically, for a proxied data model having &lt;varname&gt;nb_cols&lt;/varname&gt; columns and &lt;varname&gt;nb_rows&lt;/varname&gt; rows,
- the #GdaDataProxy object has the following attributes:
- &lt;itemizedlist&gt;
-   &lt;listitem&gt;
-     &lt;para&gt;&lt;varname&gt;2 * nb_cols&lt;/varname&gt; columns:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;the first (&amp;gt;= 0) &lt;varname&gt;nb_cols&lt;/varname&gt; columns are the current values stored in the
-      proxy (which correspond to the values of the proxied data model if the considered row has not been
-      changed). The associated values are writable.&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;the last &lt;varname&gt;nb_cols&lt;/varname&gt; columns are the values stored in the proxied data model,
-      at column &lt;varname&gt;col - nb_cols&lt;/varname&gt;&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-     &lt;/para&gt;
-   &lt;/listitem&gt;
-   &lt;listitem&gt;&lt;para&gt;a variable number of rows depending on the following attributes:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;if the proxy is configured to have an empty row as the first row&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;if the proxy only displays parts of the proxied data model&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;if new rows have been added to the proxy&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-   &lt;/para&gt;&lt;/listitem&gt;
-   &lt;listitem&gt;&lt;para&gt;Any #GdaDataModelIter iterator created will only make appear the colmuns as present in the proxied
-       data model, not any of the other columns&lt;/para&gt;&lt;/listitem&gt;
- &lt;/itemizedlist&gt;
- This situation is illustrated in the following schema, where there is a direct mapping between the proxy's
- rows and the proxied data model's rows:
- &lt;mediaobject&gt;
-   &lt;imageobject role="html"&gt;
-     &lt;imagedata fileref="data_proxy1.png" format="PNG" contentwidth="170mm"/&gt;
-   &lt;/imageobject&gt;
-   &lt;textobject&gt;
-     &lt;phrase&gt;GdaDataProxy's values mapping regarding the proxied data model&lt;/phrase&gt;
-   &lt;/textobject&gt;
- &lt;/mediaobject&gt;
-
- Note that unless explicitly mentioned, the columns are read-only.
-
- The following figures illustrate row mappings between the data proxy and the proxied data model in
- several situations (which can be combined, but are shown alone for simplicity):
- &lt;itemizedlist&gt;
-   &lt;listitem&gt;&lt;para&gt;situation where rows 1 and 5 have been marked as deleted from the data proxy, using
-&lt;link linkend="gda-data-proxy-delete"&gt;gda_data_proxy_delete()&lt;/link&gt; method, the data
-proxy has 2 rows less than the proxied data model:
-&lt;mediaobject&gt;
-  &lt;imageobject role="html"&gt;
-    &lt;imagedata fileref="data_proxy2.png" format="PNG" contentwidth="100mm"/&gt;
-  &lt;/imageobject&gt;
-  &lt;textobject&gt;
-    &lt;phrase&gt;GdaDataProxy with 2 rows marked as deleted&lt;/phrase&gt;
-  &lt;/textobject&gt;
-&lt;/mediaobject&gt;
-   &lt;/para&gt;&lt;/listitem&gt;
-   &lt;listitem&gt;&lt;para&gt;situation where the data proxy only shows a sample of the proxied data model
-at any given time, using the
-&lt;link linkend="gda-data-proxy-set-sample-size"&gt;gda_data_proxy_set_sample_size()&lt;/link&gt; method
-(the sample here is 4 rows wide, and starts at row 3):
-&lt;mediaobject&gt;
-  &lt;imageobject role="html"&gt;
-    &lt;imagedata fileref="data_proxy3.png" format="PNG" contentwidth="100mm"/&gt;
-  &lt;/imageobject&gt;
-  &lt;textobject&gt;
-    &lt;phrase&gt;GdaDataProxy with a sample size of 4&lt;/phrase&gt;
-  &lt;/textobject&gt;
-&lt;/mediaobject&gt;
-   &lt;/para&gt;&lt;/listitem&gt;
-   &lt;listitem&gt;&lt;para&gt;situation where the data proxy shows a row of NULL values, using the
-&lt;link linkend="GdaDataproxy-prepend-null-entry"&gt;"prepend-null-entry"&lt;/link&gt; property:
-&lt;mediaobject&gt;
-  &lt;imageobject role="html"&gt;
-    &lt;imagedata fileref="data_proxy4.png" format="PNG" contentwidth="100mm"/&gt;
-  &lt;/imageobject&gt;
-  &lt;textobject&gt;
-    &lt;phrase&gt;GdaDataProxy with an extra row of NULL values&lt;/phrase&gt;
-  &lt;/textobject&gt;
-&lt;/mediaobject&gt;
-   &lt;/para&gt;&lt;/listitem&gt;
-   &lt;listitem&gt;&lt;para&gt;situation where a row has been added to the data proxy, using for example the
-&lt;link linkend="gda-data-model-append-row"&gt;gda_data_model_append_row()&lt;/link&gt; method:
-&lt;mediaobject&gt;
-  &lt;imageobject role="html"&gt;
-    &lt;imagedata fileref="data_proxy5.png" format="PNG" contentwidth="100mm"/&gt;
-  &lt;/imageobject&gt;
-  &lt;textobject&gt;
-    &lt;phrase&gt;GdaDataProxy where a row has been added&lt;/phrase&gt;
-  &lt;/textobject&gt;
-&lt;/mediaobject&gt;
-   &lt;/para&gt;&lt;/listitem&gt;
- &lt;/itemizedlist&gt;
-
- The #GdaDataProxy objects are thread safe, which means any proxy object can be used from
- any thread at the same time as they implement their own locking mechanisms.</doc>
       <source-position filename="../libgda/gda-data-proxy.h" line="71"/>
       <implements name="DataModel"/>
       <constructor name="new" c:identifier="gda_data_proxy_new">
@@ -13097,45 +12695,6 @@ callback returns a non %NULL value, then the change commit fails with the return
            glib:type-name="GdaDataSelect"
            glib:get-type="gda_data_select_get_type"
            glib:type-struct="DataSelectClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-data-select.h"
-           line="94">This data model implements the &lt;link linkend="GdaDataModel"&gt;GdaDataModel&lt;/link&gt; interface and is the required
- base object when database providers implement a data model returned when a SELECT statement has been executed.
- As the &lt;link linkend="GdaDataModel"&gt;GdaDataModel&lt;/link&gt; interface is implemented, consult the API
- to access and modify the data held in a &lt;link linkend="GdaDataSelect"&gt;GdaDataSelect&lt;/link&gt; object.
-
-Depending on the requested data model usage (as specified by the "model_usage" parameter of the
-&lt;link linkend="gda-connection-statement-execute"&gt;gda_connection_statement_execute()&lt;/link&gt; and similar
-methods, the #GdaDataSelect will allow random access, cursor based access or both.
-
-Also, when later you'll be reading the data contained in a #GdaDataSelect object, depending on the actual
-implementation (which adapts to the API providede by the database server), some calls to the database server
-may be necessary to actually obtain the data. If this behaviour is not the one intended and if you need to
-access the data without having to contact the database server (for example for performances reasons), then
-you can use the &lt;link linkend="gda_data_select_prepare_for_offline"&gt;gda_data_select_prepare_for_offline()&lt;/link&gt;
-method or specify the &lt;link linkend="GDA-STATEMENT-MODEL-OFFLINE:CAPS"&gt;GDA_STATEMENT_MODEL_OFFLINE&lt;/link&gt;
-flag when executing the SELECT statement.
-
- The default behaviour however is to disallow modifications, and this section documents how to parametrize
- a &lt;link linkend="GdaDataSelect"&gt;GdaDataSelect&lt;/link&gt; to allow modifications. Once this is done, any modification
- done to the data model will be propagated to the modified table in the database using INSERT, UPDATE or DELETE
- statements.
-
- After any modification, it is still possible to read values from the data model (even values for rows which have
- been modified or inserted). The data model might then execute some SELECT statement to fetch some actualized values.
-
- Note: there is a corner case where a modification made to a row would make the row not selected at first in the data model
- (for example is the original SELECT statement included a clause &lt;![CDATA["WHERE id &lt; 100"]]&gt; and the modification sets the
- &lt;![CDATA["id"]]&gt; value to 110), then the row will still be in the data model even though it would not be if the SELECT statement
- which execution created the data model in the first place was re-run. This is illustrated in the schema below:
- &lt;mediaobject&gt;
-   &lt;imageobject role="html"&gt;
-     &lt;imagedata fileref="writable_data_model.png" format="PNG" contentwidth="100mm"/&gt;
-   &lt;/imageobject&gt;
-   &lt;textobject&gt;
-     &lt;phrase&gt;GdaDataSelect data model's contents after some modifications&lt;/phrase&gt;
-   &lt;/textobject&gt;
- &lt;/mediaobject&gt;</doc>
       <source-position filename="../libgda/gda-data-select.h" line="65"/>
       <implements name="DataModel"/>
       <function name="error_quark" c:identifier="gda_data_select_error_quark">
@@ -13892,10 +13451,6 @@ to uniquely identify a single row in a table when creating modification statemen
            glib:type-name="GdaDbBase"
            glib:get-type="gda_db_base_get_type"
            glib:type-struct="DbBaseClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-db-base.c"
-           line="33">This is a basic class for database objects, e.g. #GdaDbTable and #GdaDbView. It is not common to
-use it directly.</doc>
       <source-position filename="../libgda/gda-db-base.h" line="36"/>
       <constructor name="new" c:identifier="gda_db_base_new">
         <doc xml:space="preserve"
@@ -14165,10 +13720,6 @@ set. If @catalog is %NULL @schema may not be %NULL but if @schema is
                glib:type-name="GdaDbBuildable"
                glib:get-type="gda_db_buildable_get_type"
                glib:type-struct="DbBuildableInterface">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-db-buildable.c"
-           line="27">#GdaDbBuildable represents an interface for writing and reading xml nodes. #GdaDbTable and
-#GdaDbView implement this interface.</doc>
       <source-position filename="../libgda/gda-db-buildable.h" line="46"/>
       <virtual-method name="parse_node"
                       invoker="parse_node"
@@ -14356,15 +13907,6 @@ set. If @catalog is %NULL @schema may not be %NULL but if @schema is
            glib:type-name="GdaDbCatalog"
            glib:get-type="gda_db_catalog_get_type"
            glib:type-struct="DbCatalogClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-db-catalog.c"
-           line="51">This is a main object that represents overall database. The best way to create an instance of
-#GdaDbCatalog is to call gda_connection_create_db_catalog(). This object may be also constracted
-from an xml file using gda_db_catalog_parse_file() or gda_db_catalog_parse_file_from_path() or
-didrectly from the open connection using gda_db_catalog_parse_cnc().
-
-The database can be updated or modified using gda_db_catalog_perform_operation() and dumped to
-a file using gda_db_catalog_write_to_path() or gda_db_catalog_write_to_file().</doc>
       <source-position filename="../libgda/gda-db-catalog.h" line="40"/>
       <constructor name="new" c:identifier="gda_db_catalog_new" version="6.0">
         <doc xml:space="preserve"
@@ -14823,29 +14365,6 @@ file</doc>
            glib:type-name="GdaDbColumn"
            glib:get-type="gda_db_column_get_type"
            glib:type-struct="DbColumnClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-db-column.c"
-           line="54">This object represents a column of a table or a view. The column can be constracted manually
-using API or generated from xml file together with other databse objects. See #GdaDbCatalog.
-#GdaDbColumn implements #GdaDbBuildable interface for parsing xml file. This is a typical example
-how the #GdaDbColumn API can be used.
-
-|[&lt;!-- language="C" --&gt;
-GdaDbTable *tproject = gda_db_table_new ();
-gda_db_base_set_name (GDA_DB_BASE (tproject), "Project");
-
-GdaDbColumn *pid = gda_db_column_new ();
-gda_db_column_set_name (pid, "id");
-gda_db_column_set_type (pid, G_TYPE_INT);
-gda_db_column_set_nnul (pid, TRUE);
-gda_db_column_set_autoinc (pid, TRUE);
-gda_db_column_set_unique (pid, TRUE);
-gda_db_column_set_pkey (pid, TRUE);
-
-gda_db_table_append_column (tproject, pid);
-
-g_object_unref (pid);
-]|</doc>
       <source-position filename="../libgda/gda-db-column.h" line="39"/>
       <implements name="DbBuildable"/>
       <implements name="DdlModifiable"/>
@@ -15559,23 +15078,6 @@ set. In this case appropriate types for DB implementation will be used, e.g. flo
            glib:type-name="GdaDbFkey"
            glib:get-type="gda_db_fkey_get_type"
            glib:type-struct="DbFkeyClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-db-fkey.c"
-           line="42">For generating database from xml file or for mapping
-database to an xml file #GdaDbFkey holds information about
-foregn keys with a convenient set of methods to manipulate them.
-#GdaDbFkey implements #GdaDbBuildable interface for parsing xml file. This is an example how
-#GdaDbFkey can be used:
-
-|[&lt;!-- language="C" --&gt;
-GdaDbFkey *fkey = gda_db_fkey_new ();
-gda_db_fkey_set_ref_table (fkey, "Project");
-gda_db_fkey_set_ondelete (fkey, GDA_DB_FKEY_RESTRICT);
-gda_db_fkey_set_onupdate (fkey, GDA_DB_FKEY_RESTRICT);
-gda_db_fkey_set_field (fkey, "project_id", "id");
-
-gda_db_table_append_fkey (temployee, fkey);
-]|</doc>
       <source-position filename="../libgda/gda-db-fkey.h" line="39"/>
       <implements name="DbBuildable"/>
       <constructor name="new"
@@ -15944,40 +15446,6 @@ hasn't been set.</doc>
            glib:type-name="GdaDbIndex"
            glib:get-type="gda_db_index_get_type"
            glib:type-struct="DbIndexClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-db-index.c"
-           line="39">The object #GdaDbIndex holds information about index in a table. Just populate the information
-using index API, set table as property, execute gda_ddl_modifiable_create() method. This
-method executes all needed DB manopulations to add the target index to the DB. This can be
-illustarted by the following example:
-
-|[&lt;!-- language="C" --&gt;
-GdaDbTable *table = gda_db_table_new();
-// Populate table as needed.
-GdaDbIndex      *index = gda_db_index_new ();
-GdaDbIndexField *field = gda_db_index_field_new ();
-GdaDbColumn     *fcol  = gda_db_column_new ();
-GError *error = NULL;
-
-gda_db_index_set_unique (index, TRUE);
-gda_db_base_set_name (GDA_DB_BASE (index), "MyIndex");
-
-gda_db_column_set_name (fcol, "name");
-
-gda_db_index_field_set_column (field, fcol);
-gda_db_index_field_set_sort_order (field, GDA_DB_INDEX_SORT_ORDER_ASC);
-gda_db_index_append_field (index, field);
-
-g_object_unref (fcol);
-g_object_unref (field);
-
-g_object_set (index, "table", table, NULL);
-
-res = gda_ddl_modifiable_create (GDA_DDL_MODIFIABLE(index), cnc, NULL, &amp;error);
-
-if (!res)
-  g_print("Error during index addition\n");
-]|</doc>
       <source-position filename="../libgda/gda-db-index.h" line="37"/>
       <implements name="DdlModifiable"/>
       <constructor name="new" c:identifier="gda_db_index_new">
@@ -16147,11 +15615,6 @@ CREATE UNIQUE INDEX ...</doc>
            glib:type-name="GdaDbIndexField"
            glib:get-type="gda_db_index_field_get_type"
            glib:type-struct="DbIndexFieldClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-db-index-field.c"
-           line="31">This object is a container for information needed to create an index for a table. After
-population with information, it should be passed to the #GdaDbIndex instance. See #GdaDbIndex
-section for the example.</doc>
       <source-position filename="../libgda/gda-db-index-field.h" line="37"/>
       <constructor name="new"
                    c:identifier="gda_db_index_field_new"
@@ -16368,78 +15831,6 @@ referecne count.</doc>
            glib:type-name="GdaDbTable"
            glib:get-type="gda_db_table_get_type"
            glib:type-struct="DbTableClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-db-table.c"
-           line="45">This object represents a table of a database. The table view can be constracted manually
-using API or generated from xml file together with other databse objects. See #GdaDbCatalog.
-#GdaDbTable implements #GdaDbBuildable interface for parsing xml file.
-
-#GdaDbTable can be used as a container to hold other objects, e.g. #GdaDbColumn, #GdaDbFkey and
-as soon as populated with all needed objects the table can be created using
-gda_ddl_modifiable_create(),
-
-To delete the table a method gda_ddl_modifiable_drop() can be called.
-
-A simple example of how to create a table with 3 columns being the last column of the foreign key.
-
-|[&lt;!-- language="C" --&gt;
-
-GdaConnection *cnc;
-//Open connection here
-
-GError        *error = NULL;
-
-GdaDbTable *tproject = gda_db_table_new ();
-gda_db_base_set_name (GDA_DB_BASE (tproject), "Project");
-
-GdaDbColumn *pid   = gda_db_column_new ();
-GdaDbColumn *pname = gda_db_column_new ();
-GdaDbColumn *pfkey = gda_db_column_new ();
-GdaDbFkey   *fkey  = gda_db_fkey_new ();
-
-gda_db_column_set_name (pid, "id");
-gda_db_column_set_type (pid, G_TYPE_INT);
-gda_db_column_set_nnul (pid, TRUE);
-gda_db_column_set_autoinc (pid, TRUE);
-gda_db_column_set_unique (pid, TRUE);
-gda_db_column_set_pkey (pid, TRUE);
-
-gda_db_column_set_name (pname, "name");
-gda_db_column_set_type (pname, G_TYPE_STRING);
-gda_db_column_set_size (pname, 30);
-gda_db_column_set_nnul (pname, TRUE);
-gda_db_column_set_unique (pname, TRUE);
-
-gda_db_column_set_name (pfkey, "fkey");
-gda_db_column_set_type (pfkey, G_TYPE_INT);
-gda_db_column_set_nnul (pfkey, TRUE);
-
-gda_db_fkey_set_ref_table (fkey, "AnotherTable");
-gda_db_fkey_set_ondelete (fkey, GDA_DB_FKEY_RESTRICT);
-gda_db_fkey_set_onupdate (fkey, GDA_DB_FKEY_RESTRICT);
-gda_db_fkey_set_field (fkey, "fkey", "another_table_id");
-
-gda_db_table_append_column (tproject, pid);
-g_object_unref (pid);
-
-gda_db_table_append_column (tproject, pname);
-g_object_unref (pname);
-
-gda_db_table_append_column (tproject, pfkey);
-g_object_unref (pfkey);
-
-gda_db_table_append_fkey (tproject, fkey);
-g_object_unref (fkey);
-
-if (!gda_ddl_modifiable_create (GDA_DDL_MODIFIABLE (tproject), cnc, NULL, &amp;error))
-{
-  g_error ("It was not possible to create the table in the database: %s\n",
-           error &amp;&amp; error-&gt;message ? error-&gt;message : "No detail");
-}
-
-g_object_unref (tproject);
- 
-]|</doc>
       <source-position filename="../libgda/gda-db-table.h" line="41"/>
       <implements name="DbBuildable"/>
       <implements name="DdlModifiable"/>
@@ -16775,25 +16166,6 @@ only and should not be used for the new code. It will be obsolete.</doc>
            glib:type-name="GdaDbView"
            glib:get-type="gda_db_view_get_type"
            glib:type-struct="DbViewClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-db-view.c"
-           line="38">This object represents a view of a database. The view can be constracted manually
-using API or generated from xml file together with other databse objects. See #GdaDbCatalog.
-#GdaDbView implements #GdaDbBuildable interface for parsing xml file. This is typical example
-how #GdaDbView can be used
-
-|[&lt;!-- language="C" --&gt;
-
- GdaDbView *myview = gda_db_view_new ();
- gda_db_base_set_name (GDA_DB_BASE (myview), "MyView");
- gda_db_view_set_istemp (myview, FALSE);
- gda_db_view_set_defstring (myview, "SELECT name, project_id FROM NewEmployee");
-
- res = gda_db_view_create (myview, fixture-&gt;cnc, TRUE, &amp;error);
-
- if (!res)
-   GDA_PGSQL_ERROR_HANDLE (error);
- ]|</doc>
       <source-position filename="../libgda/gda-db-view.h" line="41"/>
       <implements name="DbBuildable"/>
       <implements name="DdlModifiable"/>
@@ -17050,15 +16422,6 @@ for internal use and will be obsolete in the future. Do not use it for the new c
                glib:type-name="GdaDdlModifiable"
                glib:get-type="gda_ddl_modifiable_get_type"
                glib:type-struct="DdlModifiableInterface">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-ddl-modifiable.c"
-           line="28">This interface should be used to perform some DDL opration using objects that implement it.
-Calling gda_ddl_modifiable_create() on #GdaDbColumn operation will execute ADD COLUMN
-operation. The user should pass a pointer to instance of #GdaDbTable as user_data where
-column will be added (cretaed).
-
-If the underlying object does not implement the operation, then %FALSE is returned and the error
-is set.</doc>
       <source-position filename="../libgda/gda-ddl-modifiable.h" line="52"/>
       <function name="error_quark"
                 c:identifier="gda_ddl_modifiable_error_quark">
@@ -17741,10 +17104,6 @@ If only one of @dsn1 or @dsn2 is %NULL, then the function return %FALSE.</doc>
            glib:type-name="GdaHandlerBin"
            glib:get-type="gda_handler_bin_get_type"
            glib:type-struct="HandlerBinClass">
-      <doc xml:space="preserve"
-           filename="../libgda/handlers/gda-handler-bin.h"
-           line="33">You should normally not need to use this API, refer to the #GdaDataHandler
-interface documentation for more information.</doc>
       <source-position filename="../libgda/handlers/gda-handler-bin.h"
                        line="31"/>
       <implements name="DataHandler"/>
@@ -17778,10 +17137,6 @@ interface documentation for more information.</doc>
            glib:type-name="GdaHandlerBoolean"
            glib:get-type="gda_handler_boolean_get_type"
            glib:type-struct="HandlerBooleanClass">
-      <doc xml:space="preserve"
-           filename="../libgda/handlers/gda-handler-boolean.h"
-           line="32">You should normally not need to use this API, refer to the #GdaDataHandler
-interface documentation for more information.</doc>
       <source-position filename="../libgda/handlers/gda-handler-boolean.h"
                        line="30"/>
       <implements name="DataHandler"/>
@@ -17815,10 +17170,6 @@ interface documentation for more information.</doc>
            glib:type-name="GdaHandlerNumerical"
            glib:get-type="gda_handler_numerical_get_type"
            glib:type-struct="HandlerNumericalClass">
-      <doc xml:space="preserve"
-           filename="../libgda/handlers/gda-handler-numerical.h"
-           line="32">You should normally not need to use this API, refer to the #GdaDataHandler
-interface documentation for more information.</doc>
       <source-position filename="../libgda/handlers/gda-handler-numerical.h"
                        line="30"/>
       <implements name="DataHandler"/>
@@ -17852,10 +17203,6 @@ interface documentation for more information.</doc>
            glib:type-name="GdaHandlerString"
            glib:get-type="gda_handler_string_get_type"
            glib:type-struct="HandlerStringClass">
-      <doc xml:space="preserve"
-           filename="../libgda/handlers/gda-handler-string.h"
-           line="33">You should normally not need to use this API, refer to the #GdaDataHandler
-interface documentation for more information.</doc>
       <source-position filename="../libgda/handlers/gda-handler-string.h"
                        line="31"/>
       <implements name="DataHandler"/>
@@ -17921,10 +17268,6 @@ by the @prov object (possibly also @cnc).</doc>
            glib:type-name="GdaHandlerText"
            glib:get-type="gda_handler_text_get_type"
            glib:type-struct="HandlerTextClass">
-      <doc xml:space="preserve"
-           filename="../libgda/handlers/gda-handler-text.h"
-           line="28">You should normally not need to use this API, refer to the #GdaDataHandler
-interface documentation for more information.</doc>
       <source-position filename="../libgda/handlers/gda-handler-text.h"
                        line="47"/>
       <implements name="DataHandler"/>
@@ -17987,10 +17330,6 @@ by the provider object associated with @cnc.</doc>
            glib:type-name="GdaHandlerTime"
            glib:get-type="gda_handler_time_get_type"
            glib:type-struct="HandlerTimeClass">
-      <doc xml:space="preserve"
-           filename="../libgda/handlers/gda-handler-time.h"
-           line="32">You should normally not need to use this API, refer to the #GdaDataHandler
-interface documentation for more information.</doc>
       <source-position filename="../libgda/handlers/gda-handler-time.h"
                        line="30"/>
       <implements name="DataHandler"/>
@@ -18231,10 +17570,6 @@ using gda_handler_time_new_no_locale().</doc>
            glib:type-name="GdaHandlerType"
            glib:get-type="gda_handler_type_get_type"
            glib:type-struct="HandlerTypeClass">
-      <doc xml:space="preserve"
-           filename="../libgda/handlers/gda-handler-type.h"
-           line="32">You should normally not need to use this API, refer to the #GdaDataHandler
-interface documentation for more information.</doc>
       <source-position filename="../libgda/handlers/gda-handler-type.h"
                        line="30"/>
       <implements name="DataHandler"/>
@@ -18268,15 +17603,6 @@ interface documentation for more information.</doc>
            glib:type-name="GdaHolder"
            glib:get-type="gda_holder_get_type"
            glib:type-struct="HolderClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-holder.h"
-           line="63">The #GdaHolder is a container for a single #GValue value. It also specifies various attributes
-of the contained value (default value, ...)
-
-The type of a #GdaHolder has to be set and cannot be modified, except if it's initialized
-with a GDA_TYPE_NULL GType (representing NULL values) where it can be changed once to a real GType.
-
-Each GdaHolder object is thread safe.</doc>
       <source-position filename="../libgda/gda-holder.h" line="61"/>
       <implements name="Lockable"/>
       <constructor name="new" c:identifier="gda_holder_new">
@@ -19287,11 +18613,6 @@ otherwise.</doc>
                glib:type-name="GdaLockable"
                glib:get-type="gda_lockable_get_type"
                glib:type-struct="LockableInterface">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-lockable.h"
-           line="39">This interface is implemented by objects which are thread safe (ie. can be used by several threads at
-the same time). Before using an object from a thread, one has to call gda_lockable_lock() or
-gda_lockable_trylock() and call gda_lockable_unlock() when the object is not used anymore.</doc>
       <source-position filename="../libgda/gda-lockable.h" line="37"/>
       <virtual-method name="lock" invoker="lock">
         <doc xml:space="preserve"
@@ -20080,20 +19401,6 @@ or DELETE operation.</doc>
            glib:type-name="GdaMetaStore"
            glib:get-type="gda_meta_store_get_type"
            glib:type-struct="MetaStoreClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-meta-store.h"
-           line="136">Previous versions of &amp;LIBGDA; relied on an XML based file to store dictionary information, such as
-the database's schema (tables, views, etc) and various other information. The problems were that it was
-difficult for an application to integrate its own data into the dictionary and that there were some
-performances problems as the XML file needed to be parsed (and converted into its own in-memory structure)
-before any data could be read out of it.
-
-The new dictionary now relies on a database structure to store its data (see the
-&lt;link linkend="information_schema"&gt;database schema&lt;/link&gt; section for a detailed description). The actual database can be a
-single file (using an SQLite database), an entirely in memory database (also using an SQLite database), or
-a more conventional backend such as a PostgreSQL database for a shared dictionary on a server.
-
-The #GdaMetaStore object is thread safe.</doc>
       <source-position filename="../libgda/gda-meta-store.h" line="134"/>
       <constructor name="new" c:identifier="gda_meta_store_new">
         <doc xml:space="preserve"
@@ -21514,78 +20821,6 @@ signal, or %NULL if signal propagation should continue</doc>
            glib:type-name="GdaMetaStruct"
            glib:get-type="gda_meta_struct_get_type"
            glib:type-struct="MetaStructClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-meta-struct.h"
-           line="391">The #GdaMetaStruct object reads data from a #GdaMetaStore object and
- creates an easy to use in memory representation for some database objects. For example one can easily
- analyze the columns of a table (or its foreign keys) using a #GdaMetaStruct.
-
- When created, the new #GdaMetaStruct object is empty (it does not have any information about any database object).
- Information about database objects is computed upon request using the gda_meta_struct_complement() method. Information
- about individual database objects is represented by #GdaMetaDbObject structures, which can be obtained using
- gda_meta_struct_get_db_object() or gda_meta_struct_get_all_db_objects().
-
- Note that the #GdaMetaDbObject structures may change or may be removed or replaced by others, so it not
- advised to keep pointers to these structures: pointers to these structures should be considered valid
- as long as gda_meta_struct_complement() and other similar functions have not been called.
-
- In the following code sample, one prints the columns names and types of a table:
- &lt;programlisting&gt;
-GdaMetaStruct *mstruct;
-GdaMetaDbObject *dbo;
-GValue *catalog, *schema, *name;
-
-// Define name (and optionnally catalog and schema)
-[...]
-
-mstruct = gda_meta_struct_new ();
-gda_meta_struct_complement (mstruct, store, GDA_META_DB_TABLE, catalog, schema, name, NULL);
-dbo = gda_meta_struct_get_db_object (mstruct, catalog, schema, name);
-if (!dbo)
-       g_print ("Table not found\n");
-else {
-       GSList *list;
-       for (list = GDA_META_TABLE (dbo)-&gt;columns; list; list = list-&gt;next) {
-               GdaMetaTableColumn *tcol = GDA_META_TABLE_COLUMN (list-&gt;data);
-               g_print ("COLUMN: %s (%s)\n", tcol-&gt;column_name, tcol-&gt;column_type);
-       }
-}
-gda_meta_struct_free (mstruct);
- &lt;/programlisting&gt;
- If now the database object type is not known, one can use the following code:
- &lt;programlisting&gt;
-GdaMetaStruct *mstruct;
-GdaMetaDbObject *dbo;
-GValue *catalog, *schema, *name;
-
-// Define name (and optionnally catalog and schema)
-[...]
-
-mstruct = gda_meta_struct_new ();
-gda_meta_struct_complement (mstruct, store, GDA_META_DB_UNKNOWN, catalog, schema, name, NULL);
-dbo = gda_meta_struct_get_db_object (mstruct, catalog, schema, name);
-if (!dbo)
-       g_print ("Object not found\n");
-else {
-       if ((dbo-&gt;obj_type == GDA_META_DB_TABLE) || (dbo-&gt;obj_type == GDA_META_DB_VIEW)) {
-               if (dbo-&gt;obj_type == GDA_META_DB_TABLE)
-                       g_print ("Is a table\n");
-               else if (dbo-&gt;obj_type == GDA_META_DB_VIEW) {
-                       g_print ("Is a view, definition is:\n");
-                       g_print ("%s\n", GDA_META_VIEW (dbo)-&gt;view_def);
-               }
-
-               GSList *list;
-               for (list = GDA_META_TABLE (dbo)-&gt;columns; list; list = list-&gt;next) {
-                       GdaMetaTableColumn *tcol = GDA_META_TABLE_COLUMN (list-&gt;data);
-                       g_print ("COLUMN: %s (%s)\n", tcol-&gt;column_name, tcol-&gt;column_type);
-               }
-       }
-       else
-               g_print ("Not a table or a view\n");
-}
-gda_meta_struct_free (mstruct);
- &lt;/programlisting&gt;</doc>
       <source-position filename="../libgda/gda-meta-struct.h" line="45"/>
       <function name="error_quark" c:identifier="gda_meta_struct_error_quark">
         <return-value transfer-ownership="none">
@@ -22600,27 +21835,6 @@ Free-function: gda_numeric_free</doc>
            glib:type-name="GdaPStmt"
            glib:get-type="gda_pstmt_get_type"
            glib:type-struct="PStmtClass">
-      <doc xml:space="preserve"
-           filename="../libgda/providers-support/gda-pstmt.h"
-           line="54">The #GdaPStmt represents the association between a #GdaStatement statement and a &lt;emphasis&gt;prepared statement&lt;/emphasis&gt;
-which is database dependent and is an in-memory representation of a statement. Using prepared statement has the
-following advantages:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;the parsing of the SQL has to be done only once, which improves performances if the statement
-has to be executed more than once&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;if a statement has been prepared, then it means it is syntactically correct and has been
-&lt;emphasis&gt;understood&lt;/emphasis&gt; by the database's API&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;it is possible to use variables in prepared statement which eliminates the risk
-of SQL code injection&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-The #GdaPStmt is not intended to be instantiated, but subclassed by database provider's implementation.
-Once created, the database provider's implementation can decide to associate (for future lookup) to
-a #GdaStatement object in a connection using gda_connection_add_prepared_statement().
-
-The #GdaPStmt object can keep a reference to the #GdaStatement object (which can be set and get using
-the gda_pstmt_set_gda_statement() and gda_pstmt_get_gda_statement()), however that reference
-if a weak one (which means it will be lost if the #GdaStatement object is destroyed).</doc>
       <source-position filename="../libgda/providers-support/gda-pstmt.h"
                        line="52"/>
       <method name="copy_contents" c:identifier="gda_pstmt_copy_contents">
@@ -28210,14 +27424,6 @@ free it.</doc>
             glib:type-name="GdaQuarkList"
             glib:get-type="gda_quark_list_get_type"
             c:symbol-prefix="quark_list">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-quark-list.h"
-           line="37">This object is used to store KEY=VALUE pairs. It is mainly used internally by Libgda to store connection
-parameters.
-
-Authentification values are kept in a mangled form in memory, and unmangled when
-they are requested using gda_quark_list_find(), and when you don't need them anymore,
-call gda_quark_list_protect_values() to remove the unmangled version.</doc>
       <source-position filename="../libgda/gda-quark-list.h" line="33"/>
       <constructor name="new" c:identifier="gda_quark_list_new">
         <doc xml:space="preserve"
@@ -28490,13 +27696,6 @@ then this function does nothing.</doc>
            glib:type-name="GdaRepetitiveStatement"
            glib:get-type="gda_repetitive_statement_get_type"
            glib:type-struct="RepetitiveStatementClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-repetitive-statement.h"
-           line="37">The #GdaRepetitiveStatement object allows one to specify a statement to be executed
-several times using different variables' values sets for each execution. Using the object
-has almost no interrest at all if the statement to be executed several times has no parameter.
-
-Use the gda_connection_repetitive_statement_execute() method to execute the repetitive statement.</doc>
       <source-position filename="../libgda/gda-repetitive-statement.h"
                        line="35"/>
       <constructor name="new"
@@ -28646,13 +27845,6 @@ Use this object with gda_repetitive_statement_append_set().</doc>
            glib:type-name="GdaRow"
            glib:get-type="gda_row_get_type"
            glib:type-struct="RowClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-row.h"
-           line="49">The #GdaDataModelArray object uses #GdaRow to store each row of data. Each #GdaRow has the same
-number of #GValue values (equal to the number of columns of the data model).
-
-As a side note, the #GdaRow object is also used internally by the implementation of the data models returned
-when executing a SELECT statement.</doc>
       <source-position filename="../libgda/gda-row.h" line="47"/>
       <constructor name="new" c:identifier="gda_row_new">
         <doc xml:space="preserve"
@@ -28983,28 +28175,6 @@ providers' implementations to report any error while reading a value from the da
            glib:type-name="GdaServerOperation"
            glib:get-type="gda_server_operation_get_type"
            glib:type-struct="ServerOperationClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-server-operation.h"
-           line="174">This object is basically just a data store: it can store named values, the values being
-organized hierarchically by their name which are similar to a Unix file path. For example a value can be read from its path
-using the gda_server_operation_get_value_at() method, or set using the gda_server_operation_set_value_at() method.
-
-Each #GdaServerOperation contains some structure which is usually defined by a database provider to implement
-a specific operation. The structure is composed of the following building blocks:
-&lt;itemizedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;Named values (internally represented as a #GdaHolder object)&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Named values in a vector (internally represented as a #GdaSet object)&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Values in an array (internally represented as a #GdaDataModel object)&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Sequences of one or more of the previous blocks. A sequence can contain any number of
-  instances of the template block (there may be lower and upper boundaries to the number of instances)&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-&lt;emphasis&gt;Important note:&lt;/emphasis&gt; #GdaServerOperation objects are usually not created
-manually using gda_server_operation_new(), but
-using a #GdaServerProvider object with gda_server_provider_create_operation().
-See the &lt;link linkend="DDLIntro"&gt;global introduction about DDL&lt;/link&gt; for more information.
-Alternatively one can use the &lt;link linkend="libgda-40-Convenience-functions"&gt;Convenience functions&lt;/link&gt;
-which internally manipulate #GdaServerOperation objects.</doc>
       <source-position filename="../libgda/gda-server-operation.h" line="172"/>
       <constructor name="new" c:identifier="gda_server_operation_new">
         <doc xml:space="preserve"
@@ -30936,13 +30106,6 @@ This list is owned by @arg, then you should not free it.</doc>
            glib:type-name="GdaServerProvider"
            glib:get-type="gda_server_provider_get_type"
            glib:type-struct="ServerProviderClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-server-provider.h"
-           line="74">The #GdaServerProvider class is a virtual class which all the DBMS providers
-must inherit, and implement its virtual methods.
-
-See the &lt;link linkend="libgda-provider-class"&gt;Virtual methods for providers&lt;/link&gt; section for more information
-about how to implement the virtual methods.</doc>
       <source-position filename="../libgda/gda-server-provider.h" line="49"/>
       <implements name="Lockable"/>
       <function name="error_quark"
@@ -34425,14 +33588,6 @@ for more information.</doc>
            glib:type-name="GdaSet"
            glib:get-type="gda_set_get_type"
            glib:type-struct="SetClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-set.h"
-           line="113">The #GdaSet object is a container for several values (as #GdaHolder objects). Each #GdaSet object also
-maintains some publicly accessible information about the #GdaHolder objects, through the #GdaSetNode, #GdaSetSource and
-#GdaSetGroup structures (see gda_set_get_node(), gda_set_get_source() and gda_set_get_group()).
-
-It is possible to control the values a #GdaHolder can have in the #GdaSet by connecting to the
-&lt;link linkend="GdaSet-before-holder-change"&gt;"before-holder-change"&lt;/link&gt; signal.</doc>
       <source-position filename="../libgda/gda-set.h" line="111"/>
       <constructor name="new" c:identifier="gda_set_new">
         <doc xml:space="preserve"
@@ -36307,35 +35462,6 @@ otherwise.</doc>
            glib:type-name="GdaSqlBuilder"
            glib:get-type="gda_sql_builder_get_type"
            glib:type-struct="SqlBuilderClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-sql-builder.h"
-           line="67">The #GdaSqlBuilder can be used to build a #GdaStatement from its structural description,
-much in the same way a #GdaSqlParser can be used to build a #GdaStatement from an SQL
-string.
-
-The #GdaSqlBuilder internally constructs a #GdaSqlStatement and uses it when requested to produce
-a #GdaStatement (see gda_sql_builder_get_statement()), or a #GdaSqlStatement (see
-gda_sql_builder_get_sql_statement()).
-
-During the building process, some pieces of the statement are constructed, and assembled into the
-final statement. Each of these pieces can be reused anytime in the same #GdaSqlBuilder object, and each
-is identified using a single unsigned integer ID. That ID is dynamically allocated by the object.
-
-The following example builds the equivalent of the &lt;![CDATA["name='joe' AND age &gt;= ##ageparam::int"]]&gt; expression:
-&lt;programlisting&gt;&lt;![CDATA[
-GdaSqlBuilder *b=...
-guint id_field = gda_sql_builder_add_id (b, "name"); // build the "name" SQL identifier
-guint id_value = gda_sql_builder_add_expr (b, NULL, G_TYPE_STRING, "joe"); // 'joe' expression
-guint id_cond1 = gda_sql_builder_add_cond (b, GDA_SQL_OPERATOR_TYPE_EQ, id_field, id_value, 0); // "name='joe'"
-
-guint id_cond2 = gda_sql_builder_add_cond (b, GDA_SQL_OPERATOR_TYPE_GT,
-     gda_sql_builder_add_id (b, "age"), // build the "age" SQL identifier
-     gda_sql_builder_add_param (b, "ageparam", G_TYPE_INT, FALSE), // parameter
-     0);
-guint id_cond_and = gda_sql_builder_add_cond (b, GDA_SQL_OPERATOR_TYPE_AND, id_cond1, id_cond2, 0); // whole expression
-]]&gt;&lt;/programlisting&gt;
-
-For more examples, see the &lt;link linkend="howto-sqlbuilder"&gt;Build statements without using a parser&lt;/link&gt; section.</doc>
       <source-position filename="../libgda/gda-sql-builder.h" line="63"/>
       <constructor name="new" c:identifier="gda_sql_builder_new" version="4.2">
         <doc xml:space="preserve"
@@ -38977,79 +38103,6 @@ If @value's string starts by 't' or 'T' then @pspec will be allowed to be %NULL<
            glib:type-name="GdaSqlParser"
            glib:get-type="gda_sql_parser_get_type"
            glib:type-struct="SqlParserClass">
-      <doc xml:space="preserve"
-           filename="../libgda/sql-parser/gda-sql-parser.h"
-           line="97">The #GdaSqlParser is an object dedicated to creating #GdaStatement and #GdaBatch objects from SQL strings. The actual contents
-of the parsed statements is represented as #GdaSqlStatement structures (which can be obtained from any #GdaStatement through the
-"structure" property).
-
-#GdaSqlParser parsers can be created by calling gda_server_provider_create_parser() for a provider adapted SQL parser, or using
-gda_sql_parser_new() for a general purpose SQL parser.
-
-The #GdaSqlParser can either work in "parse" mode where it will try to parse the SQL string, or in "delimiter" mode where it will
-only attempt at delimiting SQL statements in a string which may contain several SQL statements (usually separated by a semi column).
-If operating in "parser" mode, and the parser can't correctly parse the string, then it will switch to the "delimiter" mode
-for the next statement in the string to parse (and create a GDA_SQL_STATEMENT_UNKNOWN statement).
-
-The #GdaSqlParser object parses and analyzes SQL statements and reports the following statement types:
-&lt;itemizedlist&gt;
-&lt;listitem&gt;&lt;para&gt;SELECT (and COMPOUND select),
-    INSERT, UPDATE and DELETE SQL statements should be completely parsed.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;Transaction related statements (corresponding to the BEGIN, COMMIT, ROLLBACK,
-SAVEPOINT, ROLLBACK SAVEPOINT and DELETE SAVEPOINT) are parsed and a minimalist structure is created to
-extract some information (that structure is not enough per-se to re-create the complete SQL statement).
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;Any other type of SQL statement (CREATE TABLE, ...) creates a #GdaStatement of type
-    GDA_SQL_STATEMENT_UNKNOWN, and it only able to locate place holders (variables) and end of statement
-    marks.&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-
-NOTE: Any SQL of a type which should be parsed which but which creates a #GdaStatement of type GDA_SQL_STATEMENT_UNKNOWN
-(check with gda_statement_get_statement_type()) should be reported as a bug.
-
-The #GdaSqlParser object recognizes place holders (variables), which can later be queried and valued using
-gda_statement_get_parameters(). The following syntax are recognized (other syntaxes might be
-recognized for specific database providers if the #GdaSqlParser is created using gda_server_provider_create_parser()
-but for portability reasons it's better to avoid them):
-&lt;itemizedlist&gt;
-&lt;listitem&gt;&lt;para&gt;&lt;programlisting&gt;##NAME[::TYPE[::NULL]]]&lt;/programlisting&gt;:
-    for a variable named NAME with the optional type TYPE (which can be a GType
-    name or a custom database type name), and with the optional "::NULL" to instruct that the variable can
-    be NULL.
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;listitem&gt;&lt;para&gt;
- &lt;programlisting&gt;## /&amp;ast; name:NAME [type:TYPE] [nullok:[TRUE|FALSE]] [descr:DESCR] &amp;ast;/&lt;/programlisting&gt;
-    for a variable named NAME with the optional type TYPE (which can be a GType
-    name or a custom database type name), with the optional "nullok" attribute and an optional
-    description DESCR. Note that the NAME, TYPE and DESCR literals here must be quoted (simple or double quotes) if
-    they include non alphanumeric characters, and that there must always be at least a space between the
-    &lt;![CDATA[##]]&gt; and the opening and closing comments (C style).
-&lt;/para&gt;&lt;/listitem&gt;
-&lt;/itemizedlist&gt;
-Note that the type string must be a type recognized by the
-&lt;link linkend="gda-g-type-from-string"&gt;gda_g_type_from_string()&lt;/link&gt; function (all valid GType names
-plus a few synonyms). Examples of correct place holders definitions are:
-&lt;programlisting&gt;
-## /&amp;ast; name:"+0" type:gchararray &amp;ast;/
-## /&amp;ast; name:'-5' type:string &amp;ast;/
-## /&amp;ast;name:myvar type:gint descr:ToBeDefined nullok:FALSE&amp;ast;/
-## /&amp;ast;name:myvar type:int descr:"A long description"&amp;ast;/
-##+0::gchararray
-##-5::timestamp
-&lt;/programlisting&gt;
-
-Also note that variables should not be used when an SQL identifier is expected. For example the following
-examples &lt;emphasis&gt;should be avoided&lt;/emphasis&gt; because they may not work properly (depending on the database being used):
-&lt;programlisting&gt;
-SELECT * FROM ##tablename::string;
-DELETE FROM mytable WHERE ##tcol::string = 5;
-ALTER GROUP mygroup ADD USER ##name::gchararray;
-&lt;/programlisting&gt;
-
-The #GdaSqlParser object internally uses a LEMON generated parser (the same as the one used by SQLite).
-
-The #GdaSqlParser object implements its own locking mechanism so it is thread-safe.</doc>
       <source-position filename="../libgda/sql-parser/gda-sql-parser.h"
                        line="95"/>
       <implements name="Lockable"/>
@@ -40404,26 +39457,8 @@ to set its value to point to value; after call this function the target owns
             glib:get-type="gda_sql_statement_get_type"
             c:symbol-prefix="sql_statement">
       <doc xml:space="preserve"
-           filename="../libgda/sql-parser/gda-sql-statement.h"
-           line="30">Use the #GdaSqlBuilder object to build #GdaSqlStatement structures.
-
-Every SQL statement can be decomposed in a #GdaSqlStatement structure. This is not a #GObject, but rather just a C structure
-which can be manipulated directly. The structure is a tree composed of several key structures which are show in the following diagram
-(even though it does not show, all structures "inherit" the #GdaSqlAnyPart structure which holds some basic information).
-&lt;mediaobject&gt;
- &lt;imageobject role="html"&gt;
-   &lt;imagedata fileref="parts.png" format="PNG"/&gt;
- &lt;/imageobject&gt;
- &lt;caption&gt;
-   &lt;para&gt;
-     Main parts of the #GdaSqlStatement structure.
-   &lt;/para&gt;
- &lt;/caption&gt;
-&lt;/mediaobject&gt;
-
-The examples/SqlParserConsole directory of &amp;LIBGDA;'s sources contains a small utility
-to display statements' structures as a graph (using the GraphViz language). It has been used to
-provide the examples in this section of the documentation.</doc>
+           filename="../libgda/sql-parser/gda-statement-struct.h"
+           line="31">This structure is the top level structure encapsulating several type of statements.</doc>
       <source-position filename="../libgda/sql-parser/gda-statement-struct.h"
                        line="50"/>
       <field name="sql" writable="1">
@@ -42116,22 +41151,6 @@ gda_value_free().</doc>
            glib:type-name="GdaStatement"
            glib:get-type="gda_statement_get_type"
            glib:type-struct="StatementClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-statement.h"
-           line="122">The #GdaStatement represents a single SQL statement (multiple statements can be grouped in a #GdaBatch object).
-
- A #GdaStatement can either be built by describing its constituing parts using a #GdaSqlBuilder object,
- or from an SQL statement using a #GdaSqlParser object.
-
- A #GdaConnection can use a #GdaStatement to:
- &lt;itemizedlist&gt;
-   &lt;listitem&gt;&lt;para&gt;prepare it for a future execution, the preparation step involves converting the #GdaStatement
-object into a structure used by the database's own API, see gda_connection_statement_prepare()&lt;/para&gt;&lt;/listitem&gt;
-   &lt;listitem&gt;&lt;para&gt;execute it using gda_connection_statement_execute_select() if it is known that the statement is a
-selection statement, gda_connection_statement_execute_non_select() if it is not a selection statement, or
-gda_connection_statement_execute() when the type of expected result is unknown.&lt;/para&gt;&lt;/listitem&gt;
- &lt;/itemizedlist&gt;
- Note that it is possible to use the same #GdaStatement object at the same time with several #GdaConnection objects.</doc>
       <source-position filename="../libgda/gda-statement.h" line="120"/>
       <constructor name="new" c:identifier="gda_statement_new">
         <doc xml:space="preserve"
@@ -43406,20 +42425,6 @@ with time zone indication.</doc>
            glib:type-name="GdaTransactionStatus"
            glib:get-type="gda_transaction_status_get_type"
            glib:type-struct="TransactionStatusClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-transaction-status.h"
-           line="94">On any connection (as a #GdaConnection object), if the database provider used by the connection
-supports it, transactions may be started, committed or rolledback, or savepoints added, removed or rolledback.
-These operations can be performed using Libgda's API (such as gda_connection_begin_transaction()), or directly
-using some SQL on the connection (usually a "BEGIN;" command). The #GdaTransactionStatus's aim is to
-make it easy to keep track of all the commands which have been issued on a connection regarding transactions.
-
-One #GdaTransactionStatus object is automatically attached to a #GdaConnection when a transaction is started, and
-is destroyed when the transaction is finished. A pointer to this object can be fetched using
-gda_connection_get_transaction_status() (beware that it should then not be modified). The end user is not
-supposed to instantiate #GdaTransactionStatus objects
-
-#GdaTransactionStatus's attributes are directly accessible using the public members of the object.</doc>
       <source-position filename="../libgda/gda-transaction-status.h"
                        line="69"/>
       <constructor name="new" c:identifier="gda_transaction_status_new">
@@ -43743,14 +42748,6 @@ transaction if there are several nested transactions</doc>
            glib:type-name="GdaTree"
            glib:get-type="gda_tree_get_type"
            glib:type-struct="TreeClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-tree.h"
-           line="59">The #GdaTree is the top level object representing hierarchically structured data. From this object it
-is also possible (depending on the tree managers it uses), to clean (remove all the nodes) the whole tree,
-or to request a complete or partial update of the nodes.
-
-It is also possible to set attributes to the tree itself (as it is possible to do for tree nodes),
-or to dump the whole or part of a tree in an indented and easy to read fashion.</doc>
       <source-position filename="../libgda/gda-tree.h" line="57"/>
       <constructor name="new" c:identifier="gda_tree_new" version="4.2">
         <doc xml:space="preserve"
@@ -44351,19 +43348,6 @@ does not have a ny children anymore when it had some</doc>
            glib:type-name="GdaTreeManager"
            glib:get-type="gda_tree_manager_get_type"
            glib:type-struct="TreeManagerClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-tree-manager.h"
-           line="66">A #GdaTreeManager object is responsible for creating nodes in the tree(s) for which it
-operates.
-
-When creating nodes, a #GdaTreeManager object can (depending on its implementation), get some
-named attributes from the node below which it has to create nodes, using the gda_tree_node_fetch_attribute()
-or gda_tree_node_get_node_attribute(). For example the #GdaTreeMgrColumns manager (which creates a node for each column
-of a table) needs the table name and the schema in which the table is; both can be specified using an
-object's property, or, if not specified that way, are fetched as attributes.
-
-The #GdaTreeManager itself is an abstract type (which can't be instantiated). Use an existing sub class or subclass
-it yourself.</doc>
       <source-position filename="../libgda/gda-tree-manager.h" line="64"/>
       <constructor name="new_with_func"
                    c:identifier="gda_tree_manager_new_with_func"
@@ -44803,19 +43787,6 @@ need to be updated ore moved</doc>
            glib:type-name="GdaTreeMgrColumns"
            glib:get-type="gda_tree_mgr_columns_get_type"
            glib:type-struct="TreeMgrColumnsClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-tree-mgr-columns.h"
-           line="35">The #GdaTreeMgrColumns is a #GdaTreeManager object which creates a node for
-each column in a table.
-
-It uses the #GdaMetaStore associated to a #GdaConnection to get the columns list
-for a table designated by its name and the database schema it is in; it's up to the
-caller to make sure the data in the #GdaMetaStore is up to date.
-
-The #GdaConnection to be used needs to be specified when the object is created. The table
-name and schema can however be specified when the object is created, and if not, are
-fetched from the #GdaTreeNode below which the nodes will be placed (using
-gda_tree_node_fetch_attribute()).</doc>
       <source-position filename="../libgda/gda-tree-mgr-columns.h" line="33"/>
       <constructor name="new"
                    c:identifier="gda_tree_mgr_columns_new"
@@ -44914,10 +43885,6 @@ priority over the GdaTreeMgrColumns:connection property.</doc>
            glib:type-name="GdaTreeMgrLabel"
            glib:get-type="gda_tree_mgr_label_get_type"
            glib:type-struct="TreeMgrLabelClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-tree-mgr-label.h"
-           line="35">The #GdaTreeMgrLabel is a #GdaTreeManager object which creates a single node. This tree manager
-is useful to create "sections" in a #GdaTree hierarchy.</doc>
       <source-position filename="../libgda/gda-tree-mgr-label.h" line="33"/>
       <constructor name="new"
                    c:identifier="gda_tree_mgr_label_new"
@@ -44967,15 +43934,6 @@ is useful to create "sections" in a #GdaTree hierarchy.</doc>
            glib:type-name="GdaTreeMgrSchemas"
            glib:get-type="gda_tree_mgr_schemas_get_type"
            glib:type-struct="TreeMgrSchemasClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-tree-mgr-schemas.h"
-           line="34">The #GdaTreeMgrSchemas is a #GdaTreeManager object which creates a node for
-each schema in a database.
-
-It uses the #GdaMetaStore associated to a #GdaConnection to get the schemas list; it's up to the
-caller to make sure the data in the #GdaMetaStore is up to date.
-
-The #GdaConnection to be used needs to be specified when the object is created.</doc>
       <source-position filename="../libgda/gda-tree-mgr-schemas.h" line="32"/>
       <constructor name="new"
                    c:identifier="gda_tree_mgr_schemas_new"
@@ -45042,21 +44000,6 @@ priority over the GdaTreeMgrSchema:connection property.</doc>
            glib:type-name="GdaTreeMgrSelect"
            glib:get-type="gda_tree_mgr_select_get_type"
            glib:type-struct="TreeMgrSelectClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-tree-mgr-select.h"
-           line="35">The #GdaTreeMgrSelect is a #GdaTreeManager object which executes a SELECT statement and
-creates a node for each row in the result.
-
-The #GdaConnection and SELECT #GdaStatement to be used need to be specified when the object is created.
-If the SELECT statement to be used needs some parameters, then it is possible to give values to some of them
-when constructing the object, but not necessary.
-
-If the SELECT statement needs some parameters which have not been provided during the construction, then
-these parameters will be fetched from the #GdaTreeNode below which the nodes will be placed (using
-gda_tree_node_fetch_attribute()).
-
-For each node created, an attribute is set for each column in the SELECT statement: the attribute name is
-the column name and the attribute value is the value if that column.</doc>
       <source-position filename="../libgda/gda-tree-mgr-select.h" line="33"/>
       <constructor name="new"
                    c:identifier="gda_tree_mgr_select_new"
@@ -45130,19 +44073,6 @@ the #GdaDataModel resulting from the execution of @stmt.</doc>
            glib:type-name="GdaTreeMgrTables"
            glib:get-type="gda_tree_mgr_tables_get_type"
            glib:type-struct="TreeMgrTablesClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-tree-mgr-tables.h"
-           line="35">The #GdaTreeMgrTables is a #GdaTreeManager object which creates a node for
-each table in a database schema.
-
-It uses the #GdaMetaStore associated to a #GdaConnection to get the tables list
-in database schema; it's up to the
-caller to make sure the data in the #GdaMetaStore is up to date.
-
-The #GdaConnection to be used needs to be specified when the object is created. The
-schema can however be specified when the object is created, and if not, is
-fetched from the #GdaTreeNode below which the nodes will be placed (using
-gda_tree_node_fetch_attribute()).</doc>
       <source-position filename="../libgda/gda-tree-mgr-tables.h" line="33"/>
       <constructor name="new"
                    c:identifier="gda_tree_mgr_tables_new"
@@ -45229,14 +44159,6 @@ a schema) will be used</doc>
            glib:type-name="GdaTreeNode"
            glib:get-type="gda_tree_node_get_type"
            glib:type-struct="TreeNodeClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-tree-node.h"
-           line="62">Every node in a #GdaTree tree is represented by a single #GdaTreeNode object. There is no distinction
-between nodes which have children and those which don't (leaf nodes).
-
-The #GdaTreeNode is very basic as it only has a "name" attribute: users are encouraged to subclass it to
-add more features if needed (and make use of them by defining a #GdaTreeManagerNodeFunc function and
-calling gda_tree_manager_set_node_create_func()).</doc>
       <source-position filename="../libgda/gda-tree-node.h" line="52"/>
       <constructor name="new" c:identifier="gda_tree_node_new" version="4.2">
         <doc xml:space="preserve"
@@ -45960,27 +44882,6 @@ does not have a ny children anymore when it had some</doc>
             glib:type-name="GdaWorker"
             glib:get-type="gda_worker_get_type"
             c:symbol-prefix="worker">
-      <doc xml:space="preserve"
-           filename="../libgda/thread-wrapper/gda-worker.h"
-           line="31">The purpose of the #GdaWorker object is to execute "jobs" (functions with arguments) within a worker thread, using
-gda_worker_submit_job().
-
-Any code executing in any thread context can submit jobs to @worker and is guaranted not to be blocked (except if using
-gda_worker_wait_job() or if the
-jobs are submitted within the worker thread itself). Once jobs have been submitted, it's up to the caller to regularly
-check if a job has completed using gda_worker_fetch_job_result(). If you don't want to have to check regularly (which is
-like some polling operation), then you can use gda_worker_set_callback() which adds a callback when any job has completed.
-
-gda_worker_wait_job() allows you to execute a job in the worker thread while blocking the calling thread.
-
-Before fetching a jobs's result, it is also possible to request the cancellation of the job using gda_worker_cancel_job(), or
-completely discard the job using gda_worker_forget_job().
-
-Jobs can also be submitted using gda_worker_do_job(), which internally runs a #GMainLoop and allows you to execute a job
-while at the same time processing events for the specified #GMainContext.
-
-The #GdaWorker implements its own locking mechanism and can safely be used from multiple
-threads at once without needing further locking.</doc>
       <source-position filename="../libgda/thread-wrapper/gda-worker.h"
                        line="29"/>
       <constructor name="new" c:identifier="gda_worker_new" version="6.0">
@@ -46666,31 +45567,6 @@ In any case, the returned value is the same as *@location.</doc>
            glib:type-name="GdaXaTransaction"
            glib:get-type="gda_xa_transaction_get_type"
            glib:type-struct="XaTransactionClass">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-xa-transaction.h"
-           line="72">The #GdaXaTransaction object acts as a distributed transaction manager: to make sure local transactions on several
-connections (to possibly different databases and database types) either all succeed or all fail. For more information,
-see the X/Open CAE document Distributed Transaction Processing: The XA Specification.
-This document is published by The Open Group and available at
-&lt;ulink url="http://www.opengroup.org/public/pubs/catalog/c193.htm"&gt;http://www.opengroup.org/public/pubs/catalog/c193.htm&lt;/ulink&gt;.
-
-The two phases commit protocol is implemented during the execution of a distributed transaction: modifications
-made on any connection are first &lt;emphasis&gt;prepared&lt;/emphasis&gt; (which means that they are store in the database), and
-if that phase succeeded for all the involved connections, then the &lt;emphasis&gt;commit&lt;/emphasis&gt; phase is executed
-(where all the data previously stored during the &lt;emphasis&gt;prepare&lt;/emphasis&gt; phase are actually committed).
-That second phase may actually fail, but the distributed transaction will still be considered as successfull
-as the data stored during the &lt;emphasis&gt;prepare&lt;/emphasis&gt; phase can be committed afterwards.
-
-A distributed transaction involves the following steps:
-&lt;orderedlist&gt;
-  &lt;listitem&gt;&lt;para&gt;Create a #GdaXaTransaction object&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Register the connections which will be part of the distributed transaction with that object
-using gda_xa_transaction_register_connection()&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Beging the distributed transaction using gda_xa_transaction_begin()&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Work individually on each connection as normally (make modifications)&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Commit the distributed transaction using gda_xa_transaction_commit()&lt;/para&gt;&lt;/listitem&gt;
-  &lt;listitem&gt;&lt;para&gt;Discard the #GdaXaTransaction object using g_object_unref()&lt;/para&gt;&lt;/listitem&gt;
-&lt;/orderedlist&gt;</doc>
       <source-position filename="../libgda/gda-xa-transaction.h" line="53"/>
       <constructor name="new" c:identifier="gda_xa_transaction_new">
         <doc xml:space="preserve"
@@ -47546,7 +46422,7 @@ returned by #g_type_name.</doc>
         </parameter>
       </parameters>
     </function>
-    <docsection name="gdaattributesmanager">
+    <docsection name="gda-attributes-manager">
       <doc xml:space="preserve"
            filename="../libgda/gda-attributes-manager.h"
            line="72">he #GdaAttributesManager manages lists of named values (attributes) for the benefit of
@@ -47566,12 +46442,928 @@ Attibute names can be any string, but &amp;LIBGDA; reserves some for its own usa
 
 The #GdaAttributesManager implements its own locking mechanism so it is thread-safe.</doc>
     </docsection>
-    <docsection name="gdalog">
+    <docsection name="gda-batch">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-batch.h"
+           line="59">The #GdaBatch object represents one or more SQL statements (as #GdaStatement objects) in a single object.
+
+A #GdaBatch can either be built "manually" by assembling together several #GdaStatement objects,
+or from an SQL string using a #GdaSqlParser object.</doc>
+    </docsection>
+    <docsection name="gda-blob-op">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-blob-op.h"
+           line="41">This object is a base class for individual database providers which support BLOB types. It supports
+operations to read and write data in a BLOB value (of type GDA_BLOB_TYPE).
+
+Libgda offers two methods to manipulate binary values as two containers: &lt;link linkend="GdaBinary"&gt;GdaBinary&lt;/link&gt;
+and &lt;link linkend="GdaBlob"&gt;GdaBlob&lt;/link&gt;:
+&lt;itemizedlist&gt;
+ &lt;listitem&gt;&lt;para&gt;When reading from a data model returned by &amp;LIBGDA; binary data will often be in a GdaBlob
+  object, and the associated &lt;link linkend="GdaBlobOp"&gt;GdaBlobOp&lt;/link&gt; object can be used to manipulate the
+  binary object (in a database for example)&lt;/para&gt;&lt;/listitem&gt;
+ &lt;listitem&gt;&lt;para&gt;When the binary value is created by the user, then there is no point in using a GdaBlob as
+  there can not be any &lt;link linkend="GdaBlobOp"&gt;GdaBlobOp&lt;/link&gt; object, so the GdaBinary container is
+  enough.&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+Note that a &lt;link linkend="GdaBlob"&gt;GdaBlob&lt;/link&gt; value (the "data" attribute) will often not contain any data
+(or only some part of the actual BLOB)
+and that it's up to the user to use the associated &lt;link linkend="GdaBlobOp"&gt;GdaBlobOp&lt;/link&gt; object to
+"load" the data into the container (into the actual process heap).
+
+For example to load the 1st 40 bytes of a blob:
+ &lt;programlisting&gt;
+GValue *blob_value = ...
+GdaBlob *blob;
+
+blob = (GdaBlob*) gda_value_get_blob (blob_value);
+gda_blob_op_read (blob-&gt;op, blob, 0, 40);
+ &lt;/programlisting&gt;
+
+Another example is to write the contents of a blob to a file on disk, using a special
+ &lt;link linkend="GdaBlobOp"&gt;GdaBlobOp&lt;/link&gt; object (internal to &amp;LIBGDA; which interfaces
+ with a file in a filesystem):
+ &lt;programlisting&gt;
+GValue *blob_value; // value to copy from
+GValue *tmp_value;
+GdaBlob *file_blob;
+
+GValue *blob_value = ...
+tmp_value = gda_value_new_blob_from_file ("MyFile.bin");
+file_blob = (GdaBlob*) gda_value_get_blob (tmp_value);
+
+if (! gda_blob_op_write_all (file_blob-&gt;op, gda_value_get_blob (blob_value))) {
+      // error
+}
+else {
+      gsize size;
+      size = gda_blob_op_get_length (file_blob-&gt;op);
+      g_print ("Wrote %s, size = %d\n", filename, size);
+}
+gda_value_free (tmp_value);
+ &lt;/programlisting&gt;
+
+For further information, see:
+ &lt;itemizedlist&gt;
+   &lt;listitem&gt;&lt;para&gt;the section about &lt;link linkend="gen_blobs"&gt;Binary large objects (BLOBs)&lt;/link&gt;'s
+       abstraction&lt;/para&gt;&lt;/listitem&gt;
+   &lt;listitem&gt;&lt;para&gt;&lt;link linkend="libgda-provider-blobop"&gt;Virtual methods for Blob operations&lt;/link&gt;
+       section for more information
+       about how to implement the virtual methods when creating a database provider&lt;/para&gt;&lt;/listitem&gt;
+ &lt;/itemizedlist&gt;</doc>
+    </docsection>
+    <docsection name="gda-column">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-column.h"
+           line="50">The #GdaColumn object represents a #GdaDataModel's column and handle all its properties.</doc>
+    </docsection>
+    <docsection name="gda-config">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-config.h"
+           line="114">The functions in this section allow applications an easy access to libgda's
+configuration (the list of data sources and database providers).
+
+As soon as a &lt;link linkend="GdaConfig"&gt;GdaConfig&lt;/link&gt; is needed (for example when requesting information
+about a data source or about a server provider), a single instance object is created,
+and no other will need to be created. A pointer to this object can be obtained with
+&lt;link linkend="gda-config-get"&gt;gda_config_get()&lt;/link&gt;. Of course one can (right after having called
+&lt;link linkend="gda-init"&gt;gda_init()&lt;/link&gt;) force the creation of a GdaConfig object with some
+specific properties set, using a simple call like:
+&lt;programlisting&gt;
+g_object_new (GDA_TYPE_CONFIG, "user-filename", "my_file", NULL);
+&lt;/programlisting&gt;
+Please note that after that call, the caller has a reference to the newly created object, and should technically
+call &lt;link linkend="g-object-unref"&gt;g_object_unref()&lt;/link&gt; when finished using it. It is safe to do this
+but also pointless since that object should not be destroyed (as no other will be created) as &amp;LIBGDA; also
+keeps a reference for itself.
+
+Data sources are defined in a per-user configuration file which is by default &lt;filename&gt;${HOME}/.libgda/config&lt;/filename&gt; and
+in a system wide configuration file which is by default &lt;filename&gt;${prefix}/etc/libgda-4.0/config&lt;/filename&gt;. Those
+filenames can be modified by setting the &lt;link linkend="GdaConfig--user-file"&gt;user-file&lt;/link&gt; and
+&lt;link linkend="GdaConfig--system-file"&gt;system-file&lt;/link&gt; properties for the single &lt;link linkend="GdaConfig"&gt;GdaConfig&lt;/link&gt;
+instance. Note that setting either of these properties to &lt;literal&gt;NULL&lt;/literal&gt; will disable using the corresponding
+configuration file (DSN will exist only in memory and their definition will be lost when the application finishes).
+
+The #GdaConfig object implements its own locking mechanism so it is thread-safe.
+
+Note about localization: when the #GdaConfig loads configuration files, it filters the
+contents based on the current locale, so for example if your current locale is "de" then
+all the loaded strings (for the ones which are translated) will be in the German language.
+Changing the locale afterwards will have no effect on the #GdaConfig and the already loaded
+configuration.
+The consequence is that you should first call setlocale() youself in your code before using
+a #GdaConfig object. As a side note you should also call gtk_init() before gdaui_init() because
+gtk_init() calls setlocale().</doc>
+    </docsection>
+    <docsection name="gda-connection">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-connection.h"
+           line="76">Each connection to a database is represented by a #GdaConnection object. A connection is created
+using gda_connection_new_from_dsn() if a data source has been defined, or gda_connection_new_from_string()
+otherwise. It is not recommended to create a #GdaConnection object using g_object_new() as the results are
+unpredictable (some parts won't correctly be initialized).
+
+Once the connection has been created, it can be opened using gda_connection_open() or gda_connection_open_async().
+By default these functions will block, unless you speficy a #GMainContext from which events will be processed
+while opening the connection using gda_connection_set_main_context().
+
+The same gda_connection_set_main_context() allows the program to still handle events while a
+potentially blocking operation (such as executing a statement) is being carried out (this is a change compared to the
+#GdaConnection object in Libgda versions before 6.x, where asynchronous execution was featured
+using a set of specific functions like gda_connection_async_statement_execute()).
+
+The #GdaConnection object implements its own locking mechanism so it is thread-safe. If a #GMainContext has been
+specified using gda_connection_set_main_context(), then the events will continue to be processed while the
+lock on the connection is being acquired.</doc>
+    </docsection>
+    <docsection name="gda-connection-event">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-connection-event.h"
+           line="71">Events occurring on a connection are each represented as a #GdaConnectionEvent object. Each #GdaConnection
+is responsible for keeping a list of past events; that list can be consulted using the
+gda_connection_get_events() function.</doc>
+    </docsection>
+    <docsection name="gda-data-access-wrapper">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-data-access-wrapper.h"
+           line="43">The #GdaDataAccessWrapper object simply wraps another #GdaDataModel data model object
+and allows data to be accessed in a random way while remaining memory efficient as much as possible.</doc>
+    </docsection>
+    <docsection name="gda-data-comparator">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-data-comparator.h"
+           line="76">The #GdaDataComparator is a simple object which takes two #GdaDataModel objects and compare them.
+Actual comparison is performed when the gda_data_comparator_compute_diff() is called; for each
+difference found, the &lt;link linkend="GdaDataComparator-diff-computed"&gt;diff-computed&lt;/link&gt; signal
+is emitted (any user installed signal handler which returns FALSE stops the computing process).
+
+There are some limitations to this object:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;The data models compared must have the same number and type of columns&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;The comparison is done column-for-column: one cannot omit columns in the comparison, nor compare
+  columns with different positions&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;</doc>
+    </docsection>
+    <docsection name="gda-data-handler">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-data-handler.h"
+           line="53">Because data types vary a lot from a DBMS to another, the #GdaDataHandler interface helps
+managing data in its various representations, and converting from one to another:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;as a #GValue which is a generic value container for the C language&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;as a human readable string (in the user defined locale)&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;as an SQL string (a string which can be used in SQL statements)&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+For each data type, a corresponding #GdaDataHandler object can be requested using the
+&lt;link linkend="gda-data-handler-get-default"&gt;gda_data_handler_get_default()&lt;/link&gt; function. However, when working
+with a specific database provider, it's better to use a #GdaDataHandler which may be specific to the
+database provider which will correctly handle each database specifics using
+&lt;link linkend="gda-server-provider-get-data-handler-g-type"&gt;gda_server_provider_get_data_handler_g_type()&lt;/link&gt; or
+&lt;link linkend="gda-server-provider-get-data-handler-dbms"&gt;gda_server_provider_get_data_handler_dbms()&lt;/link&gt;.</doc>
+    </docsection>
+    <docsection name="gda-data-model">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-data-model.h"
+           line="137">A #GdaDataModel represents an array of values organized in rows and columns. All the data in the same
+column have the same type, and all the data in each row have the same semantic meaning. The #GdaDataModel is
+actually an interface implemented by other objects to support various kinds of data storage and operations.
+
+When a SELECT statement is executed using an opened #GdaConnection, the returned value (if no error occurred)
+is a #GdaDataSelect object which implements the #GdaDataModel interface. Please see the #GdaDataSelect's
+documentation for more information.
+
+Depending on the real implementation, the contents of data models may be modified by the user using functions
+provided by the model. The actual operations a data model permits can be known using the
+gda_data_model_get_access_flags() method.
+
+Again, depending on the real implementation, data retrieving can be done either accessing direct random
+values located by their row and column, or using a cursor, or both. Use the gda_data_model_get_access_flags()
+method to know how the data model can be accessed.
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;Random access to a data model's contents is done using gda_data_model_get_value_at(), or using
+      one or more #GdaDataModelIter object(s);&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Cursor access to a data model's contents is done using a #GdaDataModelIter object. If this mode is
+      the only supported, then only one #GdaDataModelIter object can be created and
+      it is &lt;emphasis&gt;not possible&lt;/emphasis&gt; to use gda_data_model_get_value_at() in this case.&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+Random access data models are easier to use since picking a value is very simple using the gda_data_model_get_value_at(),
+but consume more memory since all the accessible values must generally be present in memory even if they are not used.
+Thus if a data model must handle large quantities of data, it is generally wiser to use a data model which can be
+only accessed using a cursor.
+
+As a side note there are also data models which wrap other data models such as:
+&lt;itemizedlist&gt;
+    &lt;listitem&gt;&lt;para&gt;The #GdaDataProxy data model which stores temporary modifications and shows only some
+	parts of the wrapped data model&lt;/para&gt;&lt;/listitem&gt;
+    &lt;listitem&gt;&lt;para&gt;The #GdaDataAccessWrapper data model which offers a memory efficient random access on top of a
+	wrapped cursor based access data model&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+Also see the section about &lt;link linkend="gda-data-model-writing"&gt;writing your own GdaDataModel&lt;/link&gt;
+
+Finally, the #GdaDataModel object implements its own locking mechanism and can be used simultaneously from several threads.</doc>
+    </docsection>
+    <docsection name="gda-data-model-array">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-data-model-array.h"
+           line="44">The #GdaDataModelArray object is a data model which internally uses a #GArray to index all its rows (represented
+as #GdaRow objects). In this data model, all the data is stored in memory, which can be a memory limitation if the number
+of rows is huge.
+This type of data model is easy to use to store some temporary data, and has a random access mode (any value can be accessed
+at any time without the need for an iterator).</doc>
+    </docsection>
+    <docsection name="gda-data-model-dir">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-data-model-dir.h"
+           line="41">The #GdaDataModelDir object lists files on a filesystem which are located
+below a "basedir" directory, one file per row. The data model has the following columns:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;the "dir_name" column (G_TYPE_STRING): contains the dirname part of the file&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;the "file_name" column (G_TYPE_STRING): contains the file name part of the file&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;the "size" column (G_TYPE_UINT): contains the size in bytes of the file&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;the "mime_type" column (G_TYPE_STRING): contains the mime type of the file (if GnomeVFS has been found, and NULL otherwise)&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;the "md5sum" column (G_TYPE_STRING): contains the MD5 hash of each file (if LibGCrypt has been found, and NULL otherwise)&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;the "data" column (GDA_TYPE_BLOB): contains the contents of each file&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+Note that the actual values of the "mime_type", "md5sum" and "data" columns are computed only when they
+ are requested to help with performances.</doc>
+    </docsection>
+    <docsection name="gda-data-model-import">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-data-model-import.h"
+           line="44">The #GdaDataModelImport data model imports data from a string or a file. The data can either be
+in a CSV (comma separated values) format or in an XML format as described by the libgda-array.dtd DTD (as a side
+way it is also possible to import data from an already-build XML tree validated against that DTD).
+
+The caller must decide, upon construction, if the new #GdaDataModelImport must support random access or simply
+a cursor based access. Random access makes it easier to use the resulting data model but consumes more memory as
+all the data is copied in memory, and is thus not suitable for large data sets. Note that importing from an
+already-build XML tree will always result in a random access data model.
+
+Various import options can be specified using parameters in a #GdaSet object. The available options
+depend on the format of the imported data listed here:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;"SEPARATOR" (string, CVS import only): specifies the separator to consider&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;"ESCAPE_CHAR" (string, CVS import only): specifies the character used to "escape" the strings
+      contained between two separators&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;"ENCODING" (string, CVS import only): specifies the character set used in the imported data&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;"TITLE_AS_FIRST_LINE" (boolean, CVS import only): TRUE to specify that the first line of the
+      imported data contains the column names&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;"G_TYPE_&amp;lt;col number&amp;gt;" (GType, CVS import only): specifies the requested GType type for the column
+	numbered "col number"&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;</doc>
+    </docsection>
+    <docsection name="gda-data-model-iter">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-data-model-iter.h"
+           line="65">A #GdaDataModelIter object is used to iterate through the rows of a #GdaDataModel. If the data model is accessible
+in a random access way then any number of #GdaDataModelIter objects can be created on the same data model, and
+if the data model only supports a cursor based access then only one #GdaDataModelIter can be created. In any case
+creating a #GdaDataModelIter should be done using the gda_data_model_create_iter() method. Note that if
+the data model only supports a cursor based access, then calling this method several times will always return
+the same #GdaDataModelIter, but with its reference count increased by 1 (so you should call g_object_unref() when
+finished with it).
+
+When a #GdaDataModelIter is valid (that is when it points to an existing row in the data model it iterates through),
+the individual values (corresponding to each column of the data model, at the pointer row) can be accessed
+using the gda_data_model_iter_get_value_at() or gda_data_model_iter_get_value_for_field() methods
+(or in the same way #GdaSet's values are accessed as #GdaDataModelIter inherits the #GdaSet).
+
+Right after being created, a #GdaDataModelIter is invalid (does not point to any row of its data model). To read the
+first row of the data model, use the gda_data_model_iter_move_next() method. Calling this method several times will
+move the iterator forward, up to when the data model has no more rows and the #GdaDataModelIter will be declared invalid
+(and gda_data_model_iter_move_next() has returned FALSE). Note that at this point, the number of rows in the data
+model will be known.
+
+If the data model supports it, a #GdaDataModelIter can be moved backwards using the gda_data_model_iter_move_prev()
+method. However if the iterator is invalid, moving backwards will not be possible (on the contrary to
+gda_data_model_iter_move_next() which moves to the first row).
+
+The gda_data_model_iter_move_to_row() method, if the iterator can be moved both forward and backwards, can move the
+iterator to a specific row (sometimes faster than moving it forward or backwards a number of times).
+
+The following figure illustrates the #GdaDataModelIter usage:
+&lt;mediaobject&gt;
+  &lt;imageobject role="html"&gt;
+    &lt;imagedata fileref="GdaDataModelIter.png" format="PNG" contentwidth="190mm"/&gt;
+  &lt;/imageobject&gt;
+  &lt;textobject&gt;
+    &lt;phrase&gt;GdaDataModelIter's usage&lt;/phrase&gt;
+  &lt;/textobject&gt;
+&lt;/mediaobject&gt;
+
+Note: the new #GdaDataModelIter does not hold any reference to the data model it iterates through (ie.
+if this data model is destroyed at some point, the new iterator will become useless but in
+any case it will not prevent the data model from being destroyed).
+
+Note: when the data model emits the "reset" signal, then:
+&lt;itemizedlist&gt;
+ &lt;listitem&gt;&lt;para&gt;the number of columns of the iterator can change to reflect the new data model
+   being itered on. In this case the iterator's position is reset as if it was
+   just created&lt;/para&gt;&lt;/listitem&gt;
+ &lt;listitem&gt;&lt;para&gt;some column types which were unknown (i.e. GDA_TYPE_NULL type), can change
+   to their correct type. In this case there is no other iterator change&lt;/para&gt;&lt;/listitem&gt;
+ &lt;listitem&gt;&lt;para&gt;some column types which were not GDA_TYPE_NULL can change, and in this case
+   the iterator's position is reset as if it was just created&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;</doc>
+    </docsection>
+    <docsection name="gda-data-pivot">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-data-pivot.h"
+           line="76">The #GdaDataPivot data model allows one to do some analysis and summarisation on the contents
+of a data model.</doc>
+    </docsection>
+    <docsection name="gda-data-proxy">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-data-proxy.h"
+           line="73">This object stores modifications to be made to a #GdaDataModel object which is proxied until the modifications are actually
+ written to the #GdaDataModel, it can also filter the proxied data model to show only a subset (a defined number of continuous
+ rows or by a filter to apply).
+
+ Specifically, for a proxied data model having &lt;varname&gt;nb_cols&lt;/varname&gt; columns and &lt;varname&gt;nb_rows&lt;/varname&gt; rows,
+ the #GdaDataProxy object has the following attributes:
+ &lt;itemizedlist&gt;
+   &lt;listitem&gt;
+     &lt;para&gt;&lt;varname&gt;2 * nb_cols&lt;/varname&gt; columns:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;the first (&amp;gt;= 0) &lt;varname&gt;nb_cols&lt;/varname&gt; columns are the current values stored in the
+      proxy (which correspond to the values of the proxied data model if the considered row has not been
+      changed). The associated values are writable.&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;the last &lt;varname&gt;nb_cols&lt;/varname&gt; columns are the values stored in the proxied data model,
+      at column &lt;varname&gt;col - nb_cols&lt;/varname&gt;&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+     &lt;/para&gt;
+   &lt;/listitem&gt;
+   &lt;listitem&gt;&lt;para&gt;a variable number of rows depending on the following attributes:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;if the proxy is configured to have an empty row as the first row&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;if the proxy only displays parts of the proxied data model&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;if new rows have been added to the proxy&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+   &lt;/para&gt;&lt;/listitem&gt;
+   &lt;listitem&gt;&lt;para&gt;Any #GdaDataModelIter iterator created will only make appear the colmuns as present in the proxied
+       data model, not any of the other columns&lt;/para&gt;&lt;/listitem&gt;
+ &lt;/itemizedlist&gt;
+ This situation is illustrated in the following schema, where there is a direct mapping between the proxy's
+ rows and the proxied data model's rows:
+ &lt;mediaobject&gt;
+   &lt;imageobject role="html"&gt;
+     &lt;imagedata fileref="data_proxy1.png" format="PNG" contentwidth="170mm"/&gt;
+   &lt;/imageobject&gt;
+   &lt;textobject&gt;
+     &lt;phrase&gt;GdaDataProxy's values mapping regarding the proxied data model&lt;/phrase&gt;
+   &lt;/textobject&gt;
+ &lt;/mediaobject&gt;
+
+ Note that unless explicitly mentioned, the columns are read-only.
+
+ The following figures illustrate row mappings between the data proxy and the proxied data model in
+ several situations (which can be combined, but are shown alone for simplicity):
+ &lt;itemizedlist&gt;
+   &lt;listitem&gt;&lt;para&gt;situation where rows 1 and 5 have been marked as deleted from the data proxy, using
+&lt;link linkend="gda-data-proxy-delete"&gt;gda_data_proxy_delete()&lt;/link&gt; method, the data
+proxy has 2 rows less than the proxied data model:
+&lt;mediaobject&gt;
+  &lt;imageobject role="html"&gt;
+    &lt;imagedata fileref="data_proxy2.png" format="PNG" contentwidth="100mm"/&gt;
+  &lt;/imageobject&gt;
+  &lt;textobject&gt;
+    &lt;phrase&gt;GdaDataProxy with 2 rows marked as deleted&lt;/phrase&gt;
+  &lt;/textobject&gt;
+&lt;/mediaobject&gt;
+   &lt;/para&gt;&lt;/listitem&gt;
+   &lt;listitem&gt;&lt;para&gt;situation where the data proxy only shows a sample of the proxied data model
+at any given time, using the
+&lt;link linkend="gda-data-proxy-set-sample-size"&gt;gda_data_proxy_set_sample_size()&lt;/link&gt; method
+(the sample here is 4 rows wide, and starts at row 3):
+&lt;mediaobject&gt;
+  &lt;imageobject role="html"&gt;
+    &lt;imagedata fileref="data_proxy3.png" format="PNG" contentwidth="100mm"/&gt;
+  &lt;/imageobject&gt;
+  &lt;textobject&gt;
+    &lt;phrase&gt;GdaDataProxy with a sample size of 4&lt;/phrase&gt;
+  &lt;/textobject&gt;
+&lt;/mediaobject&gt;
+   &lt;/para&gt;&lt;/listitem&gt;
+   &lt;listitem&gt;&lt;para&gt;situation where the data proxy shows a row of NULL values, using the
+&lt;link linkend="GdaDataproxy-prepend-null-entry"&gt;"prepend-null-entry"&lt;/link&gt; property:
+&lt;mediaobject&gt;
+  &lt;imageobject role="html"&gt;
+    &lt;imagedata fileref="data_proxy4.png" format="PNG" contentwidth="100mm"/&gt;
+  &lt;/imageobject&gt;
+  &lt;textobject&gt;
+    &lt;phrase&gt;GdaDataProxy with an extra row of NULL values&lt;/phrase&gt;
+  &lt;/textobject&gt;
+&lt;/mediaobject&gt;
+   &lt;/para&gt;&lt;/listitem&gt;
+   &lt;listitem&gt;&lt;para&gt;situation where a row has been added to the data proxy, using for example the
+&lt;link linkend="gda-data-model-append-row"&gt;gda_data_model_append_row()&lt;/link&gt; method:
+&lt;mediaobject&gt;
+  &lt;imageobject role="html"&gt;
+    &lt;imagedata fileref="data_proxy5.png" format="PNG" contentwidth="100mm"/&gt;
+  &lt;/imageobject&gt;
+  &lt;textobject&gt;
+    &lt;phrase&gt;GdaDataProxy where a row has been added&lt;/phrase&gt;
+  &lt;/textobject&gt;
+&lt;/mediaobject&gt;
+   &lt;/para&gt;&lt;/listitem&gt;
+ &lt;/itemizedlist&gt;
+
+ The #GdaDataProxy objects are thread safe, which means any proxy object can be used from
+ any thread at the same time as they implement their own locking mechanisms.</doc>
+    </docsection>
+    <docsection name="gda-data-select">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-data-select.h"
+           line="94">This data model implements the &lt;link linkend="GdaDataModel"&gt;GdaDataModel&lt;/link&gt; interface and is the required
+ base object when database providers implement a data model returned when a SELECT statement has been executed.
+ As the &lt;link linkend="GdaDataModel"&gt;GdaDataModel&lt;/link&gt; interface is implemented, consult the API
+ to access and modify the data held in a &lt;link linkend="GdaDataSelect"&gt;GdaDataSelect&lt;/link&gt; object.
+
+Depending on the requested data model usage (as specified by the "model_usage" parameter of the
+&lt;link linkend="gda-connection-statement-execute"&gt;gda_connection_statement_execute()&lt;/link&gt; and similar
+methods, the #GdaDataSelect will allow random access, cursor based access or both.
+
+Also, when later you'll be reading the data contained in a #GdaDataSelect object, depending on the actual
+implementation (which adapts to the API providede by the database server), some calls to the database server
+may be necessary to actually obtain the data. If this behaviour is not the one intended and if you need to
+access the data without having to contact the database server (for example for performances reasons), then
+you can use the &lt;link linkend="gda_data_select_prepare_for_offline"&gt;gda_data_select_prepare_for_offline()&lt;/link&gt;
+method or specify the &lt;link linkend="GDA-STATEMENT-MODEL-OFFLINE:CAPS"&gt;GDA_STATEMENT_MODEL_OFFLINE&lt;/link&gt;
+flag when executing the SELECT statement.
+
+ The default behaviour however is to disallow modifications, and this section documents how to parametrize
+ a &lt;link linkend="GdaDataSelect"&gt;GdaDataSelect&lt;/link&gt; to allow modifications. Once this is done, any modification
+ done to the data model will be propagated to the modified table in the database using INSERT, UPDATE or DELETE
+ statements.
+
+ After any modification, it is still possible to read values from the data model (even values for rows which have
+ been modified or inserted). The data model might then execute some SELECT statement to fetch some actualized values.
+
+ Note: there is a corner case where a modification made to a row would make the row not selected at first in the data model
+ (for example is the original SELECT statement included a clause &lt;![CDATA["WHERE id &lt; 100"]]&gt; and the modification sets the
+ &lt;![CDATA["id"]]&gt; value to 110), then the row will still be in the data model even though it would not be if the SELECT statement
+ which execution created the data model in the first place was re-run. This is illustrated in the schema below:
+ &lt;mediaobject&gt;
+   &lt;imageobject role="html"&gt;
+     &lt;imagedata fileref="writable_data_model.png" format="PNG" contentwidth="100mm"/&gt;
+   &lt;/imageobject&gt;
+   &lt;textobject&gt;
+     &lt;phrase&gt;GdaDataSelect data model's contents after some modifications&lt;/phrase&gt;
+   &lt;/textobject&gt;
+ &lt;/mediaobject&gt;</doc>
+    </docsection>
+    <docsection name="gda-db-base">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-db-base.c"
+           line="33">This is a basic class for database objects, e.g. #GdaDbTable and #GdaDbView. It is not common to
+use it directly.</doc>
+    </docsection>
+    <docsection name="gda-db-buildable">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-db-buildable.c"
+           line="27">#GdaDbBuildable represents an interface for writing and reading xml nodes. #GdaDbTable and
+#GdaDbView implement this interface.</doc>
+    </docsection>
+    <docsection name="gda-db-catalog">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-db-catalog.c"
+           line="51">This is a main object that represents overall database. The best way to create an instance of
+#GdaDbCatalog is to call gda_connection_create_db_catalog(). This object may be also constracted
+from an xml file using gda_db_catalog_parse_file() or gda_db_catalog_parse_file_from_path() or
+didrectly from the open connection using gda_db_catalog_parse_cnc().
+
+The database can be updated or modified using gda_db_catalog_perform_operation() and dumped to
+a file using gda_db_catalog_write_to_path() or gda_db_catalog_write_to_file().</doc>
+    </docsection>
+    <docsection name="gda-db-column">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-db-column.c"
+           line="54">This object represents a column of a table or a view. The column can be constracted manually
+using API or generated from xml file together with other databse objects. See #GdaDbCatalog.
+#GdaDbColumn implements #GdaDbBuildable interface for parsing xml file. This is a typical example
+how the #GdaDbColumn API can be used.
+
+|[&lt;!-- language="C" --&gt;
+GdaDbTable *tproject = gda_db_table_new ();
+gda_db_base_set_name (GDA_DB_BASE (tproject), "Project");
+
+GdaDbColumn *pid = gda_db_column_new ();
+gda_db_column_set_name (pid, "id");
+gda_db_column_set_type (pid, G_TYPE_INT);
+gda_db_column_set_nnul (pid, TRUE);
+gda_db_column_set_autoinc (pid, TRUE);
+gda_db_column_set_unique (pid, TRUE);
+gda_db_column_set_pkey (pid, TRUE);
+
+gda_db_table_append_column (tproject, pid);
+
+g_object_unref (pid);
+]|</doc>
+    </docsection>
+    <docsection name="gda-db-fkey">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-db-fkey.c"
+           line="42">For generating database from xml file or for mapping
+database to an xml file #GdaDbFkey holds information about
+foregn keys with a convenient set of methods to manipulate them.
+#GdaDbFkey implements #GdaDbBuildable interface for parsing xml file. This is an example how
+#GdaDbFkey can be used:
+
+|[&lt;!-- language="C" --&gt;
+GdaDbFkey *fkey = gda_db_fkey_new ();
+gda_db_fkey_set_ref_table (fkey, "Project");
+gda_db_fkey_set_ondelete (fkey, GDA_DB_FKEY_RESTRICT);
+gda_db_fkey_set_onupdate (fkey, GDA_DB_FKEY_RESTRICT);
+gda_db_fkey_set_field (fkey, "project_id", "id");
+
+gda_db_table_append_fkey (temployee, fkey);
+]|</doc>
+    </docsection>
+    <docsection name="gda-db-index">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-db-index.c"
+           line="39">The object #GdaDbIndex holds information about index in a table. Just populate the information
+using index API, set table as property, execute gda_ddl_modifiable_create() method. This
+method executes all needed DB manopulations to add the target index to the DB. This can be
+illustarted by the following example:
+
+|[&lt;!-- language="C" --&gt;
+GdaDbTable *table = gda_db_table_new();
+// Populate table as needed.
+GdaDbIndex      *index = gda_db_index_new ();
+GdaDbIndexField *field = gda_db_index_field_new ();
+GdaDbColumn     *fcol  = gda_db_column_new ();
+GError *error = NULL;
+
+gda_db_index_set_unique (index, TRUE);
+gda_db_base_set_name (GDA_DB_BASE (index), "MyIndex");
+
+gda_db_column_set_name (fcol, "name");
+
+gda_db_index_field_set_column (field, fcol);
+gda_db_index_field_set_sort_order (field, GDA_DB_INDEX_SORT_ORDER_ASC);
+gda_db_index_append_field (index, field);
+
+g_object_unref (fcol);
+g_object_unref (field);
+
+g_object_set (index, "table", table, NULL);
+
+res = gda_ddl_modifiable_create (GDA_DDL_MODIFIABLE(index), cnc, NULL, &amp;error);
+
+if (!res)
+  g_print("Error during index addition\n");
+]|</doc>
+    </docsection>
+    <docsection name="gda-db-index-field">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-db-index-field.c"
+           line="31">This object is a container for information needed to create an index for a table. After
+population with information, it should be passed to the #GdaDbIndex instance. See #GdaDbIndex
+section for the example.</doc>
+    </docsection>
+    <docsection name="gda-db-table">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-db-table.c"
+           line="45">This object represents a table of a database. The table view can be constracted manually
+using API or generated from xml file together with other databse objects. See #GdaDbCatalog.
+#GdaDbTable implements #GdaDbBuildable interface for parsing xml file.
+
+#GdaDbTable can be used as a container to hold other objects, e.g. #GdaDbColumn, #GdaDbFkey and
+as soon as populated with all needed objects the table can be created using
+gda_ddl_modifiable_create(),
+
+To delete the table a method gda_ddl_modifiable_drop() can be called.
+
+A simple example of how to create a table with 3 columns being the last column of the foreign key.
+
+|[&lt;!-- language="C" --&gt;
+
+GdaConnection *cnc;
+//Open connection here
+
+GError        *error = NULL;
+
+GdaDbTable *tproject = gda_db_table_new ();
+gda_db_base_set_name (GDA_DB_BASE (tproject), "Project");
+
+GdaDbColumn *pid   = gda_db_column_new ();
+GdaDbColumn *pname = gda_db_column_new ();
+GdaDbColumn *pfkey = gda_db_column_new ();
+GdaDbFkey   *fkey  = gda_db_fkey_new ();
+
+gda_db_column_set_name (pid, "id");
+gda_db_column_set_type (pid, G_TYPE_INT);
+gda_db_column_set_nnul (pid, TRUE);
+gda_db_column_set_autoinc (pid, TRUE);
+gda_db_column_set_unique (pid, TRUE);
+gda_db_column_set_pkey (pid, TRUE);
+
+gda_db_column_set_name (pname, "name");
+gda_db_column_set_type (pname, G_TYPE_STRING);
+gda_db_column_set_size (pname, 30);
+gda_db_column_set_nnul (pname, TRUE);
+gda_db_column_set_unique (pname, TRUE);
+
+gda_db_column_set_name (pfkey, "fkey");
+gda_db_column_set_type (pfkey, G_TYPE_INT);
+gda_db_column_set_nnul (pfkey, TRUE);
+
+gda_db_fkey_set_ref_table (fkey, "AnotherTable");
+gda_db_fkey_set_ondelete (fkey, GDA_DB_FKEY_RESTRICT);
+gda_db_fkey_set_onupdate (fkey, GDA_DB_FKEY_RESTRICT);
+gda_db_fkey_set_field (fkey, "fkey", "another_table_id");
+
+gda_db_table_append_column (tproject, pid);
+g_object_unref (pid);
+
+gda_db_table_append_column (tproject, pname);
+g_object_unref (pname);
+
+gda_db_table_append_column (tproject, pfkey);
+g_object_unref (pfkey);
+
+gda_db_table_append_fkey (tproject, fkey);
+g_object_unref (fkey);
+
+if (!gda_ddl_modifiable_create (GDA_DDL_MODIFIABLE (tproject), cnc, NULL, &amp;error))
+{
+  g_error ("It was not possible to create the table in the database: %s\n",
+           error &amp;&amp; error-&gt;message ? error-&gt;message : "No detail");
+}
+
+g_object_unref (tproject);
+ 
+]|</doc>
+    </docsection>
+    <docsection name="gda-db-view">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-db-view.c"
+           line="38">This object represents a view of a database. The view can be constracted manually
+using API or generated from xml file together with other databse objects. See #GdaDbCatalog.
+#GdaDbView implements #GdaDbBuildable interface for parsing xml file. This is typical example
+how #GdaDbView can be used
+
+|[&lt;!-- language="C" --&gt;
+
+ GdaDbView *myview = gda_db_view_new ();
+ gda_db_base_set_name (GDA_DB_BASE (myview), "MyView");
+ gda_db_view_set_istemp (myview, FALSE);
+ gda_db_view_set_defstring (myview, "SELECT name, project_id FROM NewEmployee");
+
+ res = gda_db_view_create (myview, fixture-&gt;cnc, TRUE, &amp;error);
+
+ if (!res)
+   GDA_PGSQL_ERROR_HANDLE (error);
+ ]|</doc>
+    </docsection>
+    <docsection name="gda-ddl-modifiable">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-ddl-modifiable.c"
+           line="28">This interface should be used to perform some DDL opration using objects that implement it.
+Calling gda_ddl_modifiable_create() on #GdaDbColumn operation will execute ADD COLUMN
+operation. The user should pass a pointer to instance of #GdaDbTable as user_data where
+column will be added (cretaed).
+
+If the underlying object does not implement the operation, then %FALSE is returned and the error
+is set.</doc>
+    </docsection>
+    <docsection name="gda-handler-bin">
+      <doc xml:space="preserve"
+           filename="../libgda/handlers/gda-handler-bin.h"
+           line="33">You should normally not need to use this API, refer to the #GdaDataHandler
+interface documentation for more information.</doc>
+    </docsection>
+    <docsection name="gda-handler-boolean">
+      <doc xml:space="preserve"
+           filename="../libgda/handlers/gda-handler-boolean.h"
+           line="32">You should normally not need to use this API, refer to the #GdaDataHandler
+interface documentation for more information.</doc>
+    </docsection>
+    <docsection name="gda-handler-numerical">
+      <doc xml:space="preserve"
+           filename="../libgda/handlers/gda-handler-numerical.h"
+           line="32">You should normally not need to use this API, refer to the #GdaDataHandler
+interface documentation for more information.</doc>
+    </docsection>
+    <docsection name="gda-handler-string">
+      <doc xml:space="preserve"
+           filename="../libgda/handlers/gda-handler-string.h"
+           line="33">You should normally not need to use this API, refer to the #GdaDataHandler
+interface documentation for more information.</doc>
+    </docsection>
+    <docsection name="gda-handler-text">
+      <doc xml:space="preserve"
+           filename="../libgda/handlers/gda-handler-text.h"
+           line="28">You should normally not need to use this API, refer to the #GdaDataHandler
+interface documentation for more information.</doc>
+    </docsection>
+    <docsection name="gda-handler-time">
+      <doc xml:space="preserve"
+           filename="../libgda/handlers/gda-handler-time.h"
+           line="32">You should normally not need to use this API, refer to the #GdaDataHandler
+interface documentation for more information.</doc>
+    </docsection>
+    <docsection name="gda-handler-type">
+      <doc xml:space="preserve"
+           filename="../libgda/handlers/gda-handler-type.h"
+           line="32">You should normally not need to use this API, refer to the #GdaDataHandler
+interface documentation for more information.</doc>
+    </docsection>
+    <docsection name="gda-holder">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-holder.h"
+           line="63">The #GdaHolder is a container for a single #GValue value. It also specifies various attributes
+of the contained value (default value, ...)
+
+The type of a #GdaHolder has to be set and cannot be modified, except if it's initialized
+with a GDA_TYPE_NULL GType (representing NULL values) where it can be changed once to a real GType.
+
+Each GdaHolder object is thread safe.</doc>
+    </docsection>
+    <docsection name="gda-lockable">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-lockable.h"
+           line="39">This interface is implemented by objects which are thread safe (ie. can be used by several threads at
+the same time). Before using an object from a thread, one has to call gda_lockable_lock() or
+gda_lockable_trylock() and call gda_lockable_unlock() when the object is not used anymore.</doc>
+    </docsection>
+    <docsection name="gda-log">
       <doc xml:space="preserve"
            filename="../libgda/gda-log.h"
            line="31">Logging functions.</doc>
     </docsection>
-    <docsection name="gdaserveroperationnodes">
+    <docsection name="gda-meta-store">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-meta-store.h"
+           line="136">Previous versions of &amp;LIBGDA; relied on an XML based file to store dictionary information, such as
+the database's schema (tables, views, etc) and various other information. The problems were that it was
+difficult for an application to integrate its own data into the dictionary and that there were some
+performances problems as the XML file needed to be parsed (and converted into its own in-memory structure)
+before any data could be read out of it.
+
+The new dictionary now relies on a database structure to store its data (see the
+&lt;link linkend="information_schema"&gt;database schema&lt;/link&gt; section for a detailed description). The actual database can be a
+single file (using an SQLite database), an entirely in memory database (also using an SQLite database), or
+a more conventional backend such as a PostgreSQL database for a shared dictionary on a server.
+
+The #GdaMetaStore object is thread safe.</doc>
+    </docsection>
+    <docsection name="gda-meta-struct">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-meta-struct.h"
+           line="391">The #GdaMetaStruct object reads data from a #GdaMetaStore object and
+ creates an easy to use in memory representation for some database objects. For example one can easily
+ analyze the columns of a table (or its foreign keys) using a #GdaMetaStruct.
+
+ When created, the new #GdaMetaStruct object is empty (it does not have any information about any database object).
+ Information about database objects is computed upon request using the gda_meta_struct_complement() method. Information
+ about individual database objects is represented by #GdaMetaDbObject structures, which can be obtained using
+ gda_meta_struct_get_db_object() or gda_meta_struct_get_all_db_objects().
+
+ Note that the #GdaMetaDbObject structures may change or may be removed or replaced by others, so it not
+ advised to keep pointers to these structures: pointers to these structures should be considered valid
+ as long as gda_meta_struct_complement() and other similar functions have not been called.
+
+ In the following code sample, one prints the columns names and types of a table:
+ &lt;programlisting&gt;
+GdaMetaStruct *mstruct;
+GdaMetaDbObject *dbo;
+GValue *catalog, *schema, *name;
+
+// Define name (and optionnally catalog and schema)
+[...]
+
+mstruct = gda_meta_struct_new ();
+gda_meta_struct_complement (mstruct, store, GDA_META_DB_TABLE, catalog, schema, name, NULL);
+dbo = gda_meta_struct_get_db_object (mstruct, catalog, schema, name);
+if (!dbo)
+       g_print ("Table not found\n");
+else {
+       GSList *list;
+       for (list = GDA_META_TABLE (dbo)-&gt;columns; list; list = list-&gt;next) {
+               GdaMetaTableColumn *tcol = GDA_META_TABLE_COLUMN (list-&gt;data);
+               g_print ("COLUMN: %s (%s)\n", tcol-&gt;column_name, tcol-&gt;column_type);
+       }
+}
+gda_meta_struct_free (mstruct);
+ &lt;/programlisting&gt;
+ If now the database object type is not known, one can use the following code:
+ &lt;programlisting&gt;
+GdaMetaStruct *mstruct;
+GdaMetaDbObject *dbo;
+GValue *catalog, *schema, *name;
+
+// Define name (and optionnally catalog and schema)
+[...]
+
+mstruct = gda_meta_struct_new ();
+gda_meta_struct_complement (mstruct, store, GDA_META_DB_UNKNOWN, catalog, schema, name, NULL);
+dbo = gda_meta_struct_get_db_object (mstruct, catalog, schema, name);
+if (!dbo)
+       g_print ("Object not found\n");
+else {
+       if ((dbo-&gt;obj_type == GDA_META_DB_TABLE) || (dbo-&gt;obj_type == GDA_META_DB_VIEW)) {
+               if (dbo-&gt;obj_type == GDA_META_DB_TABLE)
+                       g_print ("Is a table\n");
+               else if (dbo-&gt;obj_type == GDA_META_DB_VIEW) {
+                       g_print ("Is a view, definition is:\n");
+                       g_print ("%s\n", GDA_META_VIEW (dbo)-&gt;view_def);
+               }
+
+               GSList *list;
+               for (list = GDA_META_TABLE (dbo)-&gt;columns; list; list = list-&gt;next) {
+                       GdaMetaTableColumn *tcol = GDA_META_TABLE_COLUMN (list-&gt;data);
+                       g_print ("COLUMN: %s (%s)\n", tcol-&gt;column_name, tcol-&gt;column_type);
+               }
+       }
+       else
+               g_print ("Not a table or a view\n");
+}
+gda_meta_struct_free (mstruct);
+ &lt;/programlisting&gt;</doc>
+    </docsection>
+    <docsection name="gda-pstmt">
+      <doc xml:space="preserve"
+           filename="../libgda/providers-support/gda-pstmt.h"
+           line="54">The #GdaPStmt represents the association between a #GdaStatement statement and a &lt;emphasis&gt;prepared statement&lt;/emphasis&gt;
+which is database dependent and is an in-memory representation of a statement. Using prepared statement has the
+following advantages:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;the parsing of the SQL has to be done only once, which improves performances if the statement
+has to be executed more than once&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;if a statement has been prepared, then it means it is syntactically correct and has been
+&lt;emphasis&gt;understood&lt;/emphasis&gt; by the database's API&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;it is possible to use variables in prepared statement which eliminates the risk
+of SQL code injection&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+The #GdaPStmt is not intended to be instantiated, but subclassed by database provider's implementation.
+Once created, the database provider's implementation can decide to associate (for future lookup) to
+a #GdaStatement object in a connection using gda_connection_add_prepared_statement().
+
+The #GdaPStmt object can keep a reference to the #GdaStatement object (which can be set and get using
+the gda_pstmt_set_gda_statement() and gda_pstmt_get_gda_statement()), however that reference
+if a weak one (which means it will be lost if the #GdaStatement object is destroyed).</doc>
+    </docsection>
+    <docsection name="gda-quark-list">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-quark-list.h"
+           line="37">This object is used to store KEY=VALUE pairs. It is mainly used internally by Libgda to store connection
+parameters.
+
+Authentification values are kept in a mangled form in memory, and unmangled when
+they are requested using gda_quark_list_find(), and when you don't need them anymore,
+call gda_quark_list_protect_values() to remove the unmangled version.</doc>
+    </docsection>
+    <docsection name="gda-repetitive-statement">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-repetitive-statement.h"
+           line="37">The #GdaRepetitiveStatement object allows one to specify a statement to be executed
+several times using different variables' values sets for each execution. Using the object
+has almost no interrest at all if the statement to be executed several times has no parameter.
+
+Use the gda_connection_repetitive_statement_execute() method to execute the repetitive statement.</doc>
+    </docsection>
+    <docsection name="gda-row">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-row.h"
+           line="49">The #GdaDataModelArray object uses #GdaRow to store each row of data. Each #GdaRow has the same
+number of #GValue values (equal to the number of columns of the data model).
+
+As a side note, the #GdaRow object is also used internally by the implementation of the data models returned
+when executing a SELECT statement.</doc>
+    </docsection>
+    <docsection name="gda-server-operation">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-server-operation.h"
+           line="174">This object is basically just a data store: it can store named values, the values being
+organized hierarchically by their name which are similar to a Unix file path. For example a value can be read from its path
+using the gda_server_operation_get_value_at() method, or set using the gda_server_operation_set_value_at() method.
+
+Each #GdaServerOperation contains some structure which is usually defined by a database provider to implement
+a specific operation. The structure is composed of the following building blocks:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;Named values (internally represented as a #GdaHolder object)&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Named values in a vector (internally represented as a #GdaSet object)&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Values in an array (internally represented as a #GdaDataModel object)&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Sequences of one or more of the previous blocks. A sequence can contain any number of
+  instances of the template block (there may be lower and upper boundaries to the number of instances)&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+&lt;emphasis&gt;Important note:&lt;/emphasis&gt; #GdaServerOperation objects are usually not created
+manually using gda_server_operation_new(), but
+using a #GdaServerProvider object with gda_server_provider_create_operation().
+See the &lt;link linkend="DDLIntro"&gt;global introduction about DDL&lt;/link&gt; for more information.
+Alternatively one can use the &lt;link linkend="libgda-40-Convenience-functions"&gt;Convenience functions&lt;/link&gt;
+which internally manipulate #GdaServerOperation objects.</doc>
+    </docsection>
+    <docsection name="gda-server-operation-nodes">
       <doc xml:space="preserve"
            filename="../libgda/gda-server-operation.h"
            line="123">To each part of a path is associated a node (as a #GdaServerOperationNode structure). For example the
@@ -47584,7 +47376,7 @@ gda_server_operation_get_root_nodes() function) and about each node of a path, a
 of its contents. It is mainly reserved for database provider's implementations but can have its purpose
 outside of this scope.</doc>
     </docsection>
-    <docsection name="gdaserveroperationsequences">
+    <docsection name="gda-server-operation-sequences">
       <doc xml:space="preserve"
            filename="../libgda/gda-server-operation.h"
            line="109">The #GdaServerOperation object can contain sequences of templates. For example when creating a table,
@@ -47593,12 +47385,293 @@ foreign key applies, the referenced table and the corresponding columns of the r
 additional information). In this case the foreign keys are defined as a sequence of templates (the foreign key
 definition): there can be zero or more foreign keys.</doc>
     </docsection>
-    <docsection name="gdautil">
+    <docsection name="gda-server-provider">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-server-provider.h"
+           line="74">The #GdaServerProvider class is a virtual class which all the DBMS providers
+must inherit, and implement its virtual methods.
+
+See the &lt;link linkend="libgda-provider-class"&gt;Virtual methods for providers&lt;/link&gt; section for more information
+about how to implement the virtual methods.</doc>
+    </docsection>
+    <docsection name="gda-set">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-set.h"
+           line="113">The #GdaSet object is a container for several values (as #GdaHolder objects). Each #GdaSet object also
+maintains some publicly accessible information about the #GdaHolder objects, through the #GdaSetNode, #GdaSetSource and
+#GdaSetGroup structures (see gda_set_get_node(), gda_set_get_source() and gda_set_get_group()).
+
+It is possible to control the values a #GdaHolder can have in the #GdaSet by connecting to the
+&lt;link linkend="GdaSet-before-holder-change"&gt;"before-holder-change"&lt;/link&gt; signal.</doc>
+    </docsection>
+    <docsection name="gda-sql-builder">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-sql-builder.h"
+           line="67">The #GdaSqlBuilder can be used to build a #GdaStatement from its structural description,
+much in the same way a #GdaSqlParser can be used to build a #GdaStatement from an SQL
+string.
+
+The #GdaSqlBuilder internally constructs a #GdaSqlStatement and uses it when requested to produce
+a #GdaStatement (see gda_sql_builder_get_statement()), or a #GdaSqlStatement (see
+gda_sql_builder_get_sql_statement()).
+
+During the building process, some pieces of the statement are constructed, and assembled into the
+final statement. Each of these pieces can be reused anytime in the same #GdaSqlBuilder object, and each
+is identified using a single unsigned integer ID. That ID is dynamically allocated by the object.
+
+The following example builds the equivalent of the &lt;![CDATA["name='joe' AND age &gt;= ##ageparam::int"]]&gt; expression:
+&lt;programlisting&gt;&lt;![CDATA[
+GdaSqlBuilder *b=...
+guint id_field = gda_sql_builder_add_id (b, "name"); // build the "name" SQL identifier
+guint id_value = gda_sql_builder_add_expr (b, NULL, G_TYPE_STRING, "joe"); // 'joe' expression
+guint id_cond1 = gda_sql_builder_add_cond (b, GDA_SQL_OPERATOR_TYPE_EQ, id_field, id_value, 0); // "name='joe'"
+
+guint id_cond2 = gda_sql_builder_add_cond (b, GDA_SQL_OPERATOR_TYPE_GT,
+     gda_sql_builder_add_id (b, "age"), // build the "age" SQL identifier
+     gda_sql_builder_add_param (b, "ageparam", G_TYPE_INT, FALSE), // parameter
+     0);
+guint id_cond_and = gda_sql_builder_add_cond (b, GDA_SQL_OPERATOR_TYPE_AND, id_cond1, id_cond2, 0); // whole expression
+]]&gt;&lt;/programlisting&gt;
+
+For more examples, see the &lt;link linkend="howto-sqlbuilder"&gt;Build statements without using a parser&lt;/link&gt; section.</doc>
+    </docsection>
+    <docsection name="gda-sql-parser">
+      <doc xml:space="preserve"
+           filename="../libgda/sql-parser/gda-sql-parser.h"
+           line="97">The #GdaSqlParser is an object dedicated to creating #GdaStatement and #GdaBatch objects from SQL strings. The actual contents
+of the parsed statements is represented as #GdaSqlStatement structures (which can be obtained from any #GdaStatement through the
+"structure" property).
+
+#GdaSqlParser parsers can be created by calling gda_server_provider_create_parser() for a provider adapted SQL parser, or using
+gda_sql_parser_new() for a general purpose SQL parser.
+
+The #GdaSqlParser can either work in "parse" mode where it will try to parse the SQL string, or in "delimiter" mode where it will
+only attempt at delimiting SQL statements in a string which may contain several SQL statements (usually separated by a semi column).
+If operating in "parser" mode, and the parser can't correctly parse the string, then it will switch to the "delimiter" mode
+for the next statement in the string to parse (and create a GDA_SQL_STATEMENT_UNKNOWN statement).
+
+The #GdaSqlParser object parses and analyzes SQL statements and reports the following statement types:
+&lt;itemizedlist&gt;
+&lt;listitem&gt;&lt;para&gt;SELECT (and COMPOUND select),
+    INSERT, UPDATE and DELETE SQL statements should be completely parsed.
+&lt;/para&gt;&lt;/listitem&gt;
+&lt;listitem&gt;&lt;para&gt;Transaction related statements (corresponding to the BEGIN, COMMIT, ROLLBACK,
+SAVEPOINT, ROLLBACK SAVEPOINT and DELETE SAVEPOINT) are parsed and a minimalist structure is created to
+extract some information (that structure is not enough per-se to re-create the complete SQL statement).
+&lt;/para&gt;&lt;/listitem&gt;
+&lt;listitem&gt;&lt;para&gt;Any other type of SQL statement (CREATE TABLE, ...) creates a #GdaStatement of type
+    GDA_SQL_STATEMENT_UNKNOWN, and it only able to locate place holders (variables) and end of statement
+    marks.&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+
+NOTE: Any SQL of a type which should be parsed which but which creates a #GdaStatement of type GDA_SQL_STATEMENT_UNKNOWN
+(check with gda_statement_get_statement_type()) should be reported as a bug.
+
+The #GdaSqlParser object recognizes place holders (variables), which can later be queried and valued using
+gda_statement_get_parameters(). The following syntax are recognized (other syntaxes might be
+recognized for specific database providers if the #GdaSqlParser is created using gda_server_provider_create_parser()
+but for portability reasons it's better to avoid them):
+&lt;itemizedlist&gt;
+&lt;listitem&gt;&lt;para&gt;&lt;programlisting&gt;##NAME[::TYPE[::NULL]]]&lt;/programlisting&gt;:
+    for a variable named NAME with the optional type TYPE (which can be a GType
+    name or a custom database type name), and with the optional "::NULL" to instruct that the variable can
+    be NULL.
+&lt;/para&gt;&lt;/listitem&gt;
+&lt;listitem&gt;&lt;para&gt;
+ &lt;programlisting&gt;## /&amp;ast; name:NAME [type:TYPE] [nullok:[TRUE|FALSE]] [descr:DESCR] &amp;ast;/&lt;/programlisting&gt;
+    for a variable named NAME with the optional type TYPE (which can be a GType
+    name or a custom database type name), with the optional "nullok" attribute and an optional
+    description DESCR. Note that the NAME, TYPE and DESCR literals here must be quoted (simple or double quotes) if
+    they include non alphanumeric characters, and that there must always be at least a space between the
+    &lt;![CDATA[##]]&gt; and the opening and closing comments (C style).
+&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;
+Note that the type string must be a type recognized by the
+&lt;link linkend="gda-g-type-from-string"&gt;gda_g_type_from_string()&lt;/link&gt; function (all valid GType names
+plus a few synonyms). Examples of correct place holders definitions are:
+&lt;programlisting&gt;
+## /&amp;ast; name:"+0" type:gchararray &amp;ast;/
+## /&amp;ast; name:'-5' type:string &amp;ast;/
+## /&amp;ast;name:myvar type:gint descr:ToBeDefined nullok:FALSE&amp;ast;/
+## /&amp;ast;name:myvar type:int descr:"A long description"&amp;ast;/
+##+0::gchararray
+##-5::timestamp
+&lt;/programlisting&gt;
+
+Also note that variables should not be used when an SQL identifier is expected. For example the following
+examples &lt;emphasis&gt;should be avoided&lt;/emphasis&gt; because they may not work properly (depending on the database being used):
+&lt;programlisting&gt;
+SELECT * FROM ##tablename::string;
+DELETE FROM mytable WHERE ##tcol::string = 5;
+ALTER GROUP mygroup ADD USER ##name::gchararray;
+&lt;/programlisting&gt;
+
+The #GdaSqlParser object internally uses a LEMON generated parser (the same as the one used by SQLite).
+
+The #GdaSqlParser object implements its own locking mechanism so it is thread-safe.</doc>
+    </docsection>
+    <docsection name="gda-sql-statement">
+      <doc xml:space="preserve"
+           filename="../libgda/sql-parser/gda-sql-statement.h"
+           line="30">Use the #GdaSqlBuilder object to build #GdaSqlStatement structures.
+
+Every SQL statement can be decomposed in a #GdaSqlStatement structure. This is not a #GObject, but rather just a C structure
+which can be manipulated directly. The structure is a tree composed of several key structures which are show in the following diagram
+(even though it does not show, all structures "inherit" the #GdaSqlAnyPart structure which holds some basic information).
+&lt;mediaobject&gt;
+ &lt;imageobject role="html"&gt;
+   &lt;imagedata fileref="parts.png" format="PNG"/&gt;
+ &lt;/imageobject&gt;
+ &lt;caption&gt;
+   &lt;para&gt;
+     Main parts of the #GdaSqlStatement structure.
+   &lt;/para&gt;
+ &lt;/caption&gt;
+&lt;/mediaobject&gt;
+
+The examples/SqlParserConsole directory of &amp;LIBGDA;'s sources contains a small utility
+to display statements' structures as a graph (using the GraphViz language). It has been used to
+provide the examples in this section of the documentation.</doc>
+    </docsection>
+    <docsection name="gda-statement">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-statement.h"
+           line="122">The #GdaStatement represents a single SQL statement (multiple statements can be grouped in a #GdaBatch object).
+
+ A #GdaStatement can either be built by describing its constituing parts using a #GdaSqlBuilder object,
+ or from an SQL statement using a #GdaSqlParser object.
+
+ A #GdaConnection can use a #GdaStatement to:
+ &lt;itemizedlist&gt;
+   &lt;listitem&gt;&lt;para&gt;prepare it for a future execution, the preparation step involves converting the #GdaStatement
+object into a structure used by the database's own API, see gda_connection_statement_prepare()&lt;/para&gt;&lt;/listitem&gt;
+   &lt;listitem&gt;&lt;para&gt;execute it using gda_connection_statement_execute_select() if it is known that the statement is a
+selection statement, gda_connection_statement_execute_non_select() if it is not a selection statement, or
+gda_connection_statement_execute() when the type of expected result is unknown.&lt;/para&gt;&lt;/listitem&gt;
+ &lt;/itemizedlist&gt;
+ Note that it is possible to use the same #GdaStatement object at the same time with several #GdaConnection objects.</doc>
+    </docsection>
+    <docsection name="gda-transaction-status">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-transaction-status.h"
+           line="94">On any connection (as a #GdaConnection object), if the database provider used by the connection
+supports it, transactions may be started, committed or rolledback, or savepoints added, removed or rolledback.
+These operations can be performed using Libgda's API (such as gda_connection_begin_transaction()), or directly
+using some SQL on the connection (usually a "BEGIN;" command). The #GdaTransactionStatus's aim is to
+make it easy to keep track of all the commands which have been issued on a connection regarding transactions.
+
+One #GdaTransactionStatus object is automatically attached to a #GdaConnection when a transaction is started, and
+is destroyed when the transaction is finished. A pointer to this object can be fetched using
+gda_connection_get_transaction_status() (beware that it should then not be modified). The end user is not
+supposed to instantiate #GdaTransactionStatus objects
+
+#GdaTransactionStatus's attributes are directly accessible using the public members of the object.</doc>
+    </docsection>
+    <docsection name="gda-tree">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-tree.h"
+           line="59">The #GdaTree is the top level object representing hierarchically structured data. From this object it
+is also possible (depending on the tree managers it uses), to clean (remove all the nodes) the whole tree,
+or to request a complete or partial update of the nodes.
+
+It is also possible to set attributes to the tree itself (as it is possible to do for tree nodes),
+or to dump the whole or part of a tree in an indented and easy to read fashion.</doc>
+    </docsection>
+    <docsection name="gda-tree-manager">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-tree-manager.h"
+           line="66">A #GdaTreeManager object is responsible for creating nodes in the tree(s) for which it
+operates.
+
+When creating nodes, a #GdaTreeManager object can (depending on its implementation), get some
+named attributes from the node below which it has to create nodes, using the gda_tree_node_fetch_attribute()
+or gda_tree_node_get_node_attribute(). For example the #GdaTreeMgrColumns manager (which creates a node for each column
+of a table) needs the table name and the schema in which the table is; both can be specified using an
+object's property, or, if not specified that way, are fetched as attributes.
+
+The #GdaTreeManager itself is an abstract type (which can't be instantiated). Use an existing sub class or subclass
+it yourself.</doc>
+    </docsection>
+    <docsection name="gda-tree-mgr-columns">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-tree-mgr-columns.h"
+           line="35">The #GdaTreeMgrColumns is a #GdaTreeManager object which creates a node for
+each column in a table.
+
+It uses the #GdaMetaStore associated to a #GdaConnection to get the columns list
+for a table designated by its name and the database schema it is in; it's up to the
+caller to make sure the data in the #GdaMetaStore is up to date.
+
+The #GdaConnection to be used needs to be specified when the object is created. The table
+name and schema can however be specified when the object is created, and if not, are
+fetched from the #GdaTreeNode below which the nodes will be placed (using
+gda_tree_node_fetch_attribute()).</doc>
+    </docsection>
+    <docsection name="gda-tree-mgr-label">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-tree-mgr-label.h"
+           line="35">The #GdaTreeMgrLabel is a #GdaTreeManager object which creates a single node. This tree manager
+is useful to create "sections" in a #GdaTree hierarchy.</doc>
+    </docsection>
+    <docsection name="gda-tree-mgr-schemas">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-tree-mgr-schemas.h"
+           line="34">The #GdaTreeMgrSchemas is a #GdaTreeManager object which creates a node for
+each schema in a database.
+
+It uses the #GdaMetaStore associated to a #GdaConnection to get the schemas list; it's up to the
+caller to make sure the data in the #GdaMetaStore is up to date.
+
+The #GdaConnection to be used needs to be specified when the object is created.</doc>
+    </docsection>
+    <docsection name="gda-tree-mgr-select">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-tree-mgr-select.h"
+           line="35">The #GdaTreeMgrSelect is a #GdaTreeManager object which executes a SELECT statement and
+creates a node for each row in the result.
+
+The #GdaConnection and SELECT #GdaStatement to be used need to be specified when the object is created.
+If the SELECT statement to be used needs some parameters, then it is possible to give values to some of them
+when constructing the object, but not necessary.
+
+If the SELECT statement needs some parameters which have not been provided during the construction, then
+these parameters will be fetched from the #GdaTreeNode below which the nodes will be placed (using
+gda_tree_node_fetch_attribute()).
+
+For each node created, an attribute is set for each column in the SELECT statement: the attribute name is
+the column name and the attribute value is the value if that column.</doc>
+    </docsection>
+    <docsection name="gda-tree-mgr-tables">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-tree-mgr-tables.h"
+           line="35">The #GdaTreeMgrTables is a #GdaTreeManager object which creates a node for
+each table in a database schema.
+
+It uses the #GdaMetaStore associated to a #GdaConnection to get the tables list
+in database schema; it's up to the
+caller to make sure the data in the #GdaMetaStore is up to date.
+
+The #GdaConnection to be used needs to be specified when the object is created. The
+schema can however be specified when the object is created, and if not, is
+fetched from the #GdaTreeNode below which the nodes will be placed (using
+gda_tree_node_fetch_attribute()).</doc>
+    </docsection>
+    <docsection name="gda-tree-node">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-tree-node.h"
+           line="62">Every node in a #GdaTree tree is represented by a single #GdaTreeNode object. There is no distinction
+between nodes which have children and those which don't (leaf nodes).
+
+The #GdaTreeNode is very basic as it only has a "name" attribute: users are encouraged to subclass it to
+add more features if needed (and make use of them by defining a #GdaTreeManagerNodeFunc function and
+calling gda_tree_manager_set_node_create_func()).</doc>
+    </docsection>
+    <docsection name="gda-util">
       <doc xml:space="preserve"
            filename="../libgda/gda-util.h"
            line="39">Some useful functions.</doc>
     </docsection>
-    <docsection name="gdavalue">
+    <docsection name="gda-value">
       <doc xml:space="preserve"
            filename="../libgda/gda-value.h"
            line="173">&amp;LIBGDA; manages each individual value within an opaque #GValue structure. Any GValue type can be used,
@@ -47629,6 +47702,56 @@ There are two special value types which are:
   &lt;listitem&gt;&lt;para&gt;the GDA_TYPE_NULL value which never changes and acutally represents an SQL NULL value&lt;/para&gt;&lt;/listitem&gt;
   &lt;listitem&gt;&lt;para&gt;the GDA_TYPE_DEFAULT value which represents a default value which &amp;LIBGDA; does not interpret (such as when a table column's default value is a function call)&lt;/para&gt;&lt;/listitem&gt;
 &lt;/itemizedlist&gt;</doc>
+    </docsection>
+    <docsection name="gda-worker">
+      <doc xml:space="preserve"
+           filename="../libgda/thread-wrapper/gda-worker.h"
+           line="31">The purpose of the #GdaWorker object is to execute "jobs" (functions with arguments) within a worker thread, using
+gda_worker_submit_job().
+
+Any code executing in any thread context can submit jobs to @worker and is guaranted not to be blocked (except if using
+gda_worker_wait_job() or if the
+jobs are submitted within the worker thread itself). Once jobs have been submitted, it's up to the caller to regularly
+check if a job has completed using gda_worker_fetch_job_result(). If you don't want to have to check regularly (which is
+like some polling operation), then you can use gda_worker_set_callback() which adds a callback when any job has completed.
+
+gda_worker_wait_job() allows you to execute a job in the worker thread while blocking the calling thread.
+
+Before fetching a jobs's result, it is also possible to request the cancellation of the job using gda_worker_cancel_job(), or
+completely discard the job using gda_worker_forget_job().
+
+Jobs can also be submitted using gda_worker_do_job(), which internally runs a #GMainLoop and allows you to execute a job
+while at the same time processing events for the specified #GMainContext.
+
+The #GdaWorker implements its own locking mechanism and can safely be used from multiple
+threads at once without needing further locking.</doc>
+    </docsection>
+    <docsection name="gda-xa-transaction">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-xa-transaction.h"
+           line="72">The #GdaXaTransaction object acts as a distributed transaction manager: to make sure local transactions on several
+connections (to possibly different databases and database types) either all succeed or all fail. For more information,
+see the X/Open CAE document Distributed Transaction Processing: The XA Specification.
+This document is published by The Open Group and available at
+&lt;ulink url="http://www.opengroup.org/public/pubs/catalog/c193.htm"&gt;http://www.opengroup.org/public/pubs/catalog/c193.htm&lt;/ulink&gt;.
+
+The two phases commit protocol is implemented during the execution of a distributed transaction: modifications
+made on any connection are first &lt;emphasis&gt;prepared&lt;/emphasis&gt; (which means that they are store in the database), and
+if that phase succeeded for all the involved connections, then the &lt;emphasis&gt;commit&lt;/emphasis&gt; phase is executed
+(where all the data previously stored during the &lt;emphasis&gt;prepare&lt;/emphasis&gt; phase are actually committed).
+That second phase may actually fail, but the distributed transaction will still be considered as successfull
+as the data stored during the &lt;emphasis&gt;prepare&lt;/emphasis&gt; phase can be committed afterwards.
+
+A distributed transaction involves the following steps:
+&lt;orderedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;Create a #GdaXaTransaction object&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Register the connections which will be part of the distributed transaction with that object
+using gda_xa_transaction_register_connection()&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Beging the distributed transaction using gda_xa_transaction_begin()&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Work individually on each connection as normally (make modifications)&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Commit the distributed transaction using gda_xa_transaction_commit()&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;Discard the #GdaXaTransaction object using g_object_unref()&lt;/para&gt;&lt;/listitem&gt;
+&lt;/orderedlist&gt;</doc>
     </docsection>
     <function-macro name="holder_new_boolean"
                     c:identifier="gda_holder_new_boolean"
@@ -47993,6 +48116,12 @@ If no time zone is given UTC is used.</doc>
         </parameter>
       </parameters>
     </function>
+    <docsection name="provider-support">
+      <doc xml:space="preserve"
+           filename="../libgda/gda-server-provider-extra.h"
+           line="34">The methods mentioned in this section are reserved for database providers implementations and should
+not bu used by developers outside that scope.</doc>
+    </docsection>
     <function name="provider_meta_error_quark"
               c:identifier="gda_provider_meta_error_quark"
               moved-to="ProviderMeta.error_quark">
@@ -48000,12 +48129,6 @@ If no time zone is given UTC is used.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
-    <docsection name="providersupport">
-      <doc xml:space="preserve"
-           filename="../libgda/gda-server-provider-extra.h"
-           line="34">The methods mentioned in this section are reserved for database providers implementations and should
-not bu used by developers outside that scope.</doc>
-    </docsection>
     <function name="rewrite_sql_statement_for_null_parameters"
               c:identifier="gda_rewrite_sql_statement_for_null_parameters"
               version="4.2.9"

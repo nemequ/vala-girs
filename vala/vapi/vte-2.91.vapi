@@ -27,7 +27,6 @@ namespace Vte {
 	}
 	[CCode (cheader_filename = "vte/vte.h", ref_function = "vte_regex_ref", type_id = "vte_regex_get_type ()", unref_function = "vte_regex_unref")]
 	[Compact]
-	[Version (since = "0.46")]
 	public class Regex {
 		[CCode (has_construct_function = false)]
 		public Regex.for_match (string pattern, ssize_t pattern_length, uint32 flags) throws GLib.Error;

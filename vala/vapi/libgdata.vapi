@@ -148,18 +148,26 @@ namespace GData {
 		public string scope_value { owned get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_author_get_type ()")]
-	[Version (since = "0.4.0")]
 	public class Author : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
 		public Author (string name, string? uri, string? email_address);
+		[Version (since = "0.4.0")]
 		public unowned string get_email_address ();
+		[Version (since = "0.4.0")]
 		public unowned string get_name ();
+		[Version (since = "0.4.0")]
 		public unowned string get_uri ();
+		[Version (since = "0.4.0")]
 		public void set_email_address (string? email_address);
+		[Version (since = "0.4.0")]
 		public void set_name (string name);
+		[Version (since = "0.4.0")]
 		public void set_uri (string? uri);
+		[Version (since = "0.4.0")]
 		public string email_address { get; set; }
+		[Version (since = "0.4.0")]
 		public string name { get; set; }
+		[Version (since = "0.4.0")]
 		public string uri { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_authorization_domain_get_type ()")]
@@ -391,18 +399,26 @@ namespace GData {
 		public async void query_own_calendars_async (GData.Query? query, GLib.Cancellable? cancellable, owned GData.QueryProgressCallback? progress_callback);
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_category_get_type ()")]
-	[Version (since = "0.4.0")]
 	public class Category : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
 		public Category (string term, string? scheme, string? label);
+		[Version (since = "0.4.0")]
 		public unowned string get_label ();
+		[Version (since = "0.4.0")]
 		public unowned string get_scheme ();
+		[Version (since = "0.4.0")]
 		public unowned string get_term ();
+		[Version (since = "0.4.0")]
 		public void set_label (string? label);
+		[Version (since = "0.4.0")]
 		public void set_scheme (string? scheme);
+		[Version (since = "0.4.0")]
 		public void set_term (string term);
+		[Version (since = "0.4.0")]
 		public string label { get; set; }
+		[Version (since = "0.4.0")]
 		public string scheme { get; set; }
+		[Version (since = "0.4.0")]
 		public string term { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_client_login_authorizer_get_type ()")]
@@ -1051,47 +1067,68 @@ namespace GData {
 		public int64 updated { get; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_query_get_type ()")]
-	[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
+	[Version (since = "0.15.1")]
 	public class FreebaseQuery : GData.Query {
 		[CCode (has_construct_function = false)]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public FreebaseQuery (string mql);
 		[CCode (has_construct_function = false)]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public FreebaseQuery.from_variant (GLib.Variant variant);
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public GLib.Variant variant { owned get; construct; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_result_get_type ()")]
-	[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
+	[Version (since = "0.15.1")]
 	public class FreebaseResult : GData.Entry {
 		[CCode (has_construct_function = false)]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public FreebaseResult ();
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public GLib.Variant? dup_variant ();
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public GLib.Variant variant { owned get; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_search_query_get_type ()")]
-	[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
+	[Version (since = "0.15.1")]
 	public class FreebaseSearchQuery : GData.Query {
 		[CCode (has_construct_function = false)]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public FreebaseSearchQuery (string search_terms);
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public void add_filter (string property, string value);
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public void add_location (uint64 radius, double lat, double lon);
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public void close_filter ();
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public unowned string? get_language ();
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public bool get_stemmed ();
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public void open_filter (GData.FreebaseSearchFilterType filter_type);
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public void set_language (string? lang);
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public void set_stemmed (bool stemmed);
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public string language { get; set; }
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public bool stemmed { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_search_result_get_type ()")]
-	[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
+	[Version (since = "0.15.1")]
 	public class FreebaseSearchResult : GData.FreebaseResult {
 		[CCode (has_construct_function = false)]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public FreebaseSearchResult ();
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public unowned GData.FreebaseSearchResultItem? get_item (uint i);
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public uint get_num_items ();
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public uint get_total_hits ();
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gdata_freebase_search_result_item_get_type ()")]
@@ -1114,19 +1151,29 @@ namespace GData {
 		public double get_score ();
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_service_get_type ()")]
-	[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
+	[Version (since = "0.15.1")]
 	public class FreebaseService : GData.Service {
 		[CCode (has_construct_function = false)]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public FreebaseService (string? developer_key, GData.Authorizer? authorizer);
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public GLib.InputStream get_image (GData.FreebaseTopicValue value, GLib.Cancellable? cancellable, uint max_width, uint max_height) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public static unowned GData.AuthorizationDomain get_primary_authorization_domain ();
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public GData.FreebaseTopicResult get_topic (GData.FreebaseTopicQuery query, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public async void get_topic_async (GData.FreebaseTopicQuery query, GLib.Cancellable? cancellable);
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public GData.FreebaseResult query (GData.FreebaseQuery query, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public async void query_async (GData.FreebaseQuery query, GLib.Cancellable? cancellable);
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public GData.FreebaseSearchResult search (GData.FreebaseSearchQuery query, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public async void search_async (GData.FreebaseSearchQuery query, GLib.Cancellable? cancellable);
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public string developer_key { owned get; construct; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", ref_function = "gdata_freebase_topic_object_ref", type_id = "gdata_freebase_topic_object_get_type ()", unref_function = "gdata_freebase_topic_object_unref")]
@@ -1150,24 +1197,33 @@ namespace GData {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_topic_query_get_type ()")]
-	[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
+	[Version (since = "0.15.1")]
 	public class FreebaseTopicQuery : GData.Query {
 		[CCode (has_construct_function = false)]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public FreebaseTopicQuery (string id);
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public unowned string[]? get_filter ();
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public unowned string? get_language ();
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public void set_filter ([CCode (array_length = false, array_null_terminated = true)] string[]? filter);
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public void set_language (string? lang);
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public string[] filter { get; set; }
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public string language { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_topic_result_get_type ()")]
-	[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
+	[Version (since = "0.15.1")]
 	public class FreebaseTopicResult : GData.FreebaseResult {
 		[CCode (has_construct_function = false)]
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public FreebaseTopicResult ();
+		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
 		public GData.FreebaseTopicObject dup_object ();
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", ref_function = "gdata_freebase_topic_value_ref", type_id = "gdata_freebase_topic_value_get_type ()", unref_function = "gdata_freebase_topic_value_unref")]
@@ -1310,50 +1366,73 @@ namespace GData {
 		public string uri { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_gd_email_address_get_type ()")]
-	[Version (since = "0.4.0")]
+	[Version (since = "0.2.0")]
 	public class GDEmailAddress : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.2.0")]
 		public GDEmailAddress (string address, string? relation_type, string? label, bool is_primary);
+		[Version (since = "0.4.0")]
 		public unowned string get_address ();
 		[Version (since = "0.6.0")]
 		public unowned string get_display_name ();
+		[Version (since = "0.4.0")]
 		public unowned string get_label ();
+		[Version (since = "0.4.0")]
 		public unowned string get_relation_type ();
+		[Version (since = "0.4.0")]
 		public void set_address (string address);
 		[Version (since = "0.6.0")]
 		public void set_display_name (string? display_name);
+		[Version (since = "0.4.0")]
 		public void set_is_primary (bool is_primary);
+		[Version (since = "0.4.0")]
 		public void set_label (string? label);
+		[Version (since = "0.4.0")]
 		public void set_relation_type (string? relation_type);
+		[Version (since = "0.4.0")]
 		public string address { get; set; }
 		[Version (since = "0.6.0")]
 		public string display_name { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.4.0")]
 		public bool is_primary { get; set; }
+		[Version (since = "0.4.0")]
 		public string label { get; set; }
+		[Version (since = "0.4.0")]
 		public string relation_type { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", lower_case_csuffix = "gd_im_address", type_id = "gdata_gd_im_address_get_type ()")]
-	[Version (since = "0.4.0")]
+	[Version (since = "0.2.0")]
 	public class GDIMAddress : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.2.0")]
 		public GDIMAddress (string address, string? protocol, string? relation_type, string? label, bool is_primary);
+		[Version (since = "0.4.0")]
 		public unowned string get_address ();
+		[Version (since = "0.4.0")]
 		public unowned string get_label ();
+		[Version (since = "0.4.0")]
 		public unowned string get_protocol ();
+		[Version (since = "0.4.0")]
 		public unowned string get_relation_type ();
+		[Version (since = "0.4.0")]
 		public void set_address (string address);
+		[Version (since = "0.4.0")]
 		public void set_is_primary (bool is_primary);
+		[Version (since = "0.4.0")]
 		public void set_label (string? label);
+		[Version (since = "0.4.0")]
 		public void set_protocol (string? protocol);
+		[Version (since = "0.4.0")]
 		public void set_relation_type (string? relation_type);
+		[Version (since = "0.4.0")]
 		public string address { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.4.0")]
 		public bool is_primary { get; set; }
+		[Version (since = "0.4.0")]
 		public string label { get; set; }
+		[Version (since = "0.4.0")]
 		public string protocol { get; set; }
+		[Version (since = "0.4.0")]
 		public string relation_type { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_gd_name_get_type ()")]
@@ -1381,79 +1460,105 @@ namespace GData {
 		public string suffix { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_gd_organization_get_type ()")]
-	[Version (since = "0.4.0")]
+	[Version (since = "0.2.0")]
 	public class GDOrganization : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.2.0")]
 		public GDOrganization (string? name, string? title, string? relation_type, string? label, bool is_primary);
 		[Version (since = "0.5.0")]
 		public unowned string get_department ();
 		[Version (since = "0.5.0")]
 		public unowned string get_job_description ();
+		[Version (since = "0.4.0")]
 		public unowned string get_label ();
 		[Version (since = "0.6.0")]
 		public unowned GData.GDWhere get_location ();
+		[Version (since = "0.4.0")]
 		public unowned string get_name ();
+		[Version (since = "0.4.0")]
 		public unowned string get_relation_type ();
 		[Version (since = "0.5.0")]
 		public unowned string get_symbol ();
+		[Version (since = "0.4.0")]
 		public unowned string get_title ();
 		[Version (since = "0.5.0")]
 		public void set_department (string? department);
+		[Version (since = "0.4.0")]
 		public void set_is_primary (bool is_primary);
 		[Version (since = "0.5.0")]
 		public void set_job_description (string? job_description);
+		[Version (since = "0.4.0")]
 		public void set_label (string? label);
 		[Version (since = "0.6.0")]
 		public void set_location (GData.GDWhere? location);
+		[Version (since = "0.4.0")]
 		public void set_name (string? name);
+		[Version (since = "0.4.0")]
 		public void set_relation_type (string? relation_type);
 		[Version (since = "0.5.0")]
 		public void set_symbol (string? symbol);
+		[Version (since = "0.4.0")]
 		public void set_title (string? title);
 		[Version (since = "0.5.0")]
 		public string department { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.4.0")]
 		public bool is_primary { get; set; }
 		[Version (since = "0.5.0")]
 		public string job_description { get; set; }
+		[Version (since = "0.4.0")]
 		public string label { get; set; }
 		[Version (since = "0.6.0")]
 		public GData.GDWhere location { get; set; }
+		[Version (since = "0.4.0")]
 		public string name { get; set; }
+		[Version (since = "0.4.0")]
 		public string relation_type { get; set; }
 		[Version (since = "0.5.0")]
 		public string symbol { get; set; }
+		[Version (since = "0.4.0")]
 		public string title { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_gd_phone_number_get_type ()")]
-	[Version (since = "0.4.0")]
+	[Version (since = "0.2.0")]
 	public class GDPhoneNumber : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.2.0")]
 		public GDPhoneNumber (string number, string? relation_type, string? label, string? uri, bool is_primary);
+		[Version (since = "0.4.0")]
 		public unowned string get_label ();
+		[Version (since = "0.4.0")]
 		public unowned string get_number ();
+		[Version (since = "0.4.0")]
 		public unowned string get_relation_type ();
+		[Version (since = "0.4.0")]
 		public unowned string get_uri ();
+		[Version (since = "0.4.0")]
 		public void set_is_primary (bool is_primary);
+		[Version (since = "0.4.0")]
 		public void set_label (string? label);
+		[Version (since = "0.4.0")]
 		public void set_number (string number);
+		[Version (since = "0.4.0")]
 		public void set_relation_type (string? relation_type);
+		[Version (since = "0.4.0")]
 		public void set_uri (string? uri);
 		[NoAccessorMethod]
+		[Version (since = "0.4.0")]
 		public bool is_primary { get; set; }
+		[Version (since = "0.4.0")]
 		public string label { get; set; }
+		[Version (since = "0.4.0")]
 		public string number { get; set; }
+		[Version (since = "0.4.0")]
 		public string relation_type { get; set; }
+		[Version (since = "0.4.0")]
 		public string uri { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_gd_postal_address_get_type ()")]
-	[Version (since = "0.4.0")]
+	[Version (since = "0.2.0")]
 	public class GDPostalAddress : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.2.0")]
 		public GDPostalAddress (string? relation_type, string? label, bool is_primary);
+		[Version (since = "0.4.0")]
 		public unowned string get_address ();
 		[Version (since = "0.5.0")]
 		public unowned string get_agent ();
@@ -1465,6 +1570,7 @@ namespace GData {
 		public unowned string get_country_code ();
 		[Version (since = "0.5.0")]
 		public unowned string get_house_name ();
+		[Version (since = "0.4.0")]
 		public unowned string get_label ();
 		[Version (since = "0.5.0")]
 		public unowned string get_mail_class ();
@@ -1476,6 +1582,7 @@ namespace GData {
 		public unowned string get_postcode ();
 		[Version (since = "0.5.0")]
 		public unowned string get_region ();
+		[Version (since = "0.4.0")]
 		public unowned string get_relation_type ();
 		[Version (since = "0.5.0")]
 		public unowned string get_street ();
@@ -1483,6 +1590,7 @@ namespace GData {
 		public unowned string get_subregion ();
 		[Version (since = "0.5.0")]
 		public unowned string get_usage ();
+		[Version (since = "0.4.0")]
 		public void set_address (string? address);
 		[Version (since = "0.5.0")]
 		public void set_agent (string? agent);
@@ -1492,7 +1600,9 @@ namespace GData {
 		public void set_country (string? country, string? country_code);
 		[Version (since = "0.5.0")]
 		public void set_house_name (string? house_name);
+		[Version (since = "0.4.0")]
 		public void set_is_primary (bool is_primary);
+		[Version (since = "0.4.0")]
 		public void set_label (string? label);
 		[Version (since = "0.5.0")]
 		public void set_mail_class (string? mail_class);
@@ -1504,6 +1614,7 @@ namespace GData {
 		public void set_postcode (string? postcode);
 		[Version (since = "0.5.0")]
 		public void set_region (string? region);
+		[Version (since = "0.4.0")]
 		public void set_relation_type (string? relation_type);
 		[Version (since = "0.5.0")]
 		public void set_street (string? street);
@@ -1511,6 +1622,7 @@ namespace GData {
 		public void set_subregion (string? subregion);
 		[Version (since = "0.5.0")]
 		public void set_usage (string? usage);
+		[Version (since = "0.4.0")]
 		public string address { get; set; }
 		[Version (since = "0.5.0")]
 		public string agent { get; set; }
@@ -1523,7 +1635,9 @@ namespace GData {
 		[Version (since = "0.5.0")]
 		public string house_name { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.4.0")]
 		public bool is_primary { get; set; }
+		[Version (since = "0.4.0")]
 		public string label { get; set; }
 		[Version (since = "0.5.0")]
 		public string mail_class { get; set; }
@@ -1535,6 +1649,7 @@ namespace GData {
 		public string postcode { get; set; }
 		[Version (since = "0.5.0")]
 		public string region { get; set; }
+		[Version (since = "0.4.0")]
 		public string relation_type { get; set; }
 		[Version (since = "0.5.0")]
 		public string street { get; set; }
@@ -1544,75 +1659,111 @@ namespace GData {
 		public string usage { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_gd_reminder_get_type ()")]
-	[Version (since = "0.4.0")]
+	[Version (since = "0.2.0")]
 	public class GDReminder : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.2.0")]
 		public GDReminder (string? method, int64 absolute_time, int relative_time);
+		[Version (since = "0.4.0")]
 		public int64 get_absolute_time ();
+		[Version (since = "0.4.0")]
 		public unowned string get_method ();
+		[Version (since = "0.4.0")]
 		public int get_relative_time ();
+		[Version (since = "0.4.0")]
 		public void set_absolute_time (int64 absolute_time);
+		[Version (since = "0.4.0")]
 		public void set_method (string? method);
+		[Version (since = "0.4.0")]
 		public void set_relative_time (int relative_time);
+		[Version (since = "0.4.0")]
 		public int64 absolute_time { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.4.0")]
 		public bool is_absolute_time { get; }
+		[Version (since = "0.4.0")]
 		public string method { get; set; }
+		[Version (since = "0.4.0")]
 		public int relative_time { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_gd_when_get_type ()")]
-	[Version (since = "0.4.0")]
+	[Version (since = "0.2.0")]
 	public class GDWhen : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.2.0")]
 		public GDWhen (int64 start_time, int64 end_time, bool is_date);
 		[Version (since = "0.7.0")]
 		public void add_reminder (GData.GDReminder reminder);
+		[Version (since = "0.4.0")]
 		public int64 get_end_time ();
+		[Version (since = "0.4.0")]
 		public unowned GLib.List<GData.GDReminder> get_reminders ();
+		[Version (since = "0.4.0")]
 		public int64 get_start_time ();
+		[Version (since = "0.4.0")]
 		public unowned string get_value_string ();
+		[Version (since = "0.4.0")]
 		public void set_end_time (int64 end_time);
+		[Version (since = "0.4.0")]
 		public void set_is_date (bool is_date);
+		[Version (since = "0.4.0")]
 		public void set_start_time (int64 start_time);
+		[Version (since = "0.4.0")]
 		public void set_value_string (string? value_string);
+		[Version (since = "0.4.0")]
 		public int64 end_time { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "0.4.0")]
 		public bool is_date { get; set; }
+		[Version (since = "0.4.0")]
 		public int64 start_time { get; set; }
+		[Version (since = "0.4.0")]
 		public string value_string { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_gd_where_get_type ()")]
-	[Version (since = "0.4.0")]
+	[Version (since = "0.2.0")]
 	public class GDWhere : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.2.0")]
 		public GDWhere (string? relation_type, string? value_string, string? label);
+		[Version (since = "0.4.0")]
 		public unowned string get_label ();
+		[Version (since = "0.4.0")]
 		public unowned string get_relation_type ();
+		[Version (since = "0.4.0")]
 		public unowned string get_value_string ();
+		[Version (since = "0.4.0")]
 		public void set_label (string? label);
+		[Version (since = "0.4.0")]
 		public void set_relation_type (string? relation_type);
+		[Version (since = "0.4.0")]
 		public void set_value_string (string? value_string);
+		[Version (since = "0.4.0")]
 		public string label { get; set; }
+		[Version (since = "0.4.0")]
 		public string relation_type { get; set; }
+		[Version (since = "0.4.0")]
 		public string value_string { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_gd_who_get_type ()")]
-	[Version (since = "0.4.0")]
+	[Version (since = "0.2.0")]
 	public class GDWho : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.2.0")]
 		public GDWho (string? relation_type, string? value_string, string? email_address);
+		[Version (since = "0.4.0")]
 		public unowned string get_email_address ();
+		[Version (since = "0.4.0")]
 		public unowned string get_relation_type ();
+		[Version (since = "0.4.0")]
 		public unowned string get_value_string ();
+		[Version (since = "0.4.0")]
 		public void set_email_address (string? email_address);
+		[Version (since = "0.4.0")]
 		public void set_relation_type (string? relation_type);
+		[Version (since = "0.4.0")]
 		public void set_value_string (string? value_string);
+		[Version (since = "0.4.0")]
 		public string email_address { get; set; }
+		[Version (since = "0.4.0")]
 		public string relation_type { get; set; }
+		[Version (since = "0.4.0")]
 		public string value_string { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_generator_get_type ()")]
@@ -1641,80 +1792,126 @@ namespace GData {
 		public Goa.Object goa_object { get; construct; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_link_get_type ()")]
-	[Version (since = "0.4.0")]
 	public class Link : GData.Parsable, GData.Comparable {
 		[CCode (has_construct_function = false)]
 		public Link (string uri, string? relation_type);
+		[Version (since = "0.4.0")]
 		public unowned string? get_content_type ();
+		[Version (since = "0.4.0")]
 		public unowned string? get_language ();
+		[Version (since = "0.4.0")]
 		public int get_length ();
+		[Version (since = "0.4.0")]
 		public unowned string? get_relation_type ();
+		[Version (since = "0.4.0")]
 		public unowned string get_title ();
+		[Version (since = "0.4.0")]
 		public unowned string get_uri ();
+		[Version (since = "0.4.0")]
 		public void set_content_type (string? content_type);
+		[Version (since = "0.4.0")]
 		public void set_language (string? language);
+		[Version (since = "0.4.0")]
 		public void set_length (int length);
+		[Version (since = "0.4.0")]
 		public void set_relation_type (string? relation_type);
+		[Version (since = "0.4.0")]
 		public void set_title (string? title);
+		[Version (since = "0.4.0")]
 		public void set_uri (string uri);
+		[Version (since = "0.4.0")]
 		public string content_type { get; set; }
+		[Version (since = "0.4.0")]
 		public string language { get; set; }
+		[Version (since = "0.4.0")]
 		public int length { get; set; }
+		[Version (since = "0.4.0")]
 		public string relation_type { get; set; }
+		[Version (since = "0.4.0")]
 		public string title { get; set; }
+		[Version (since = "0.4.0")]
 		public string uri { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_media_category_get_type ()")]
-	[Version (since = "0.4.0")]
 	public class MediaCategory : GData.Parsable {
 		[CCode (has_construct_function = false)]
 		public MediaCategory (string category, string? scheme, string? label);
+		[Version (since = "0.4.0")]
 		public unowned string get_category ();
+		[Version (since = "0.4.0")]
 		public unowned string get_label ();
+		[Version (since = "0.4.0")]
 		public unowned string get_scheme ();
+		[Version (since = "0.4.0")]
 		public void set_category (string category);
+		[Version (since = "0.4.0")]
 		public void set_label (string? label);
+		[Version (since = "0.4.0")]
 		public void set_scheme (string? scheme);
+		[Version (since = "0.4.0")]
 		public string category { get; set; }
+		[Version (since = "0.4.0")]
 		public string label { get; set; }
+		[Version (since = "0.4.0")]
 		public string scheme { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_media_content_get_type ()")]
-	[Version (since = "0.4.0")]
 	public class MediaContent : GData.Parsable {
 		[CCode (has_construct_function = false)]
 		protected MediaContent ();
 		[Version (since = "0.8.0")]
 		public GData.DownloadStream download (GData.Service service, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "0.4.0")]
 		public unowned string get_content_type ();
+		[Version (since = "0.4.0")]
 		public int64 get_duration ();
+		[Version (since = "0.4.0")]
 		public GData.MediaExpression get_expression ();
+		[Version (since = "0.4.0")]
 		public size_t get_filesize ();
+		[Version (since = "0.4.0")]
 		public uint get_height ();
+		[Version (since = "0.4.0")]
 		public GData.MediaMedium get_medium ();
+		[Version (since = "0.4.0")]
 		public unowned string get_uri ();
+		[Version (since = "0.4.0")]
 		public uint get_width ();
+		[Version (since = "0.4.0")]
 		public string content_type { get; }
+		[Version (since = "0.4.0")]
 		public int64 duration { get; }
+		[Version (since = "0.4.0")]
 		public GData.MediaExpression expression { get; }
+		[Version (since = "0.4.0")]
 		public ulong filesize { get; }
+		[Version (since = "0.4.0")]
 		public uint height { get; }
 		[NoAccessorMethod]
+		[Version (since = "0.4.0")]
 		public bool is_default { get; }
+		[Version (since = "0.4.0")]
 		public GData.MediaMedium medium { get; }
+		[Version (since = "0.4.0")]
 		public string uri { get; }
+		[Version (since = "0.4.0")]
 		public uint width { get; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_media_credit_get_type ()")]
-	[Version (since = "0.4.0")]
 	public class MediaCredit : GData.Parsable {
 		[CCode (has_construct_function = false)]
 		protected MediaCredit ();
+		[Version (since = "0.4.0")]
 		public unowned string get_credit ();
+		[Version (since = "0.4.0")]
 		public unowned string get_role ();
+		[Version (since = "0.4.0")]
 		public unowned string get_scheme ();
+		[Version (since = "0.4.0")]
 		public string credit { get; }
+		[Version (since = "0.4.0")]
 		public string role { get; }
+		[Version (since = "0.4.0")]
 		public string scheme { get; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_media_thumbnail_get_type ()")]
@@ -2441,17 +2638,24 @@ namespace GData {
 		public string developer_key { get; construct; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", lower_case_csuffix = "youtube_state", type_id = "gdata_youtube_state_get_type ()")]
-	[Version (since = "0.4.0")]
 	public class YouTubeState : GData.Parsable {
 		[CCode (has_construct_function = false)]
 		protected YouTubeState ();
+		[Version (since = "0.4.0")]
 		public unowned string get_help_uri ();
+		[Version (since = "0.4.0")]
 		public unowned string get_message ();
+		[Version (since = "0.4.0")]
 		public unowned string get_name ();
+		[Version (since = "0.4.0")]
 		public unowned string get_reason_code ();
+		[Version (since = "0.4.0")]
 		public string help_uri { get; construct; }
+		[Version (since = "0.4.0")]
 		public string message { get; construct; }
+		[Version (since = "0.4.0")]
 		public string name { get; construct; }
+		[Version (since = "0.4.0")]
 		public string reason_code { get; construct; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", lower_case_csuffix = "youtube_video", type_id = "gdata_youtube_video_get_type ()")]
