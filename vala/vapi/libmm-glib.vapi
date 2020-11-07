@@ -1383,6 +1383,8 @@ namespace MM {
 		public async bool disable_pin (string pin, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
 		public bool disable_pin_sync (string pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.16")]
+		public string dup_eid ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "1.12")]
 		public string[] dup_emergency_numbers ();
@@ -1402,6 +1404,8 @@ namespace MM {
 		public bool enable_pin_sync (string pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.16")]
 		public bool get_active ();
+		[Version (since = "1.16")]
+		public unowned string get_eid ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "1.12")]
 		public unowned string[] get_emergency_numbers ();
@@ -2209,6 +2213,8 @@ namespace MM {
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
 		[NoAccessorMethod]
 		public abstract bool active { get; set; }
+		[NoAccessorMethod]
+		public abstract string eid { owned get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
 		public abstract string[] emergency_numbers { owned get; set; }
@@ -2692,7 +2698,8 @@ namespace MM {
 		GPS,
 		QMI,
 		MBIM,
-		AUDIO;
+		AUDIO,
+		IGNORED;
 		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_POWER_STATE_", type_id = "mm_modem_power_state_get_type ()")]
@@ -3682,6 +3689,8 @@ namespace MM {
 	public const string SIM_METHOD_SENDPUK;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_ACTIVE")]
 	public const string SIM_PROPERTY_ACTIVE;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_EID")]
+	public const string SIM_PROPERTY_EID;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_EMERGENCYNUMBERS")]
 	public const string SIM_PROPERTY_EMERGENCYNUMBERS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_IMSI")]

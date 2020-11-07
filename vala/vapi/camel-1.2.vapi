@@ -584,6 +584,8 @@ namespace Camel {
 		public static long util_add_months (long t, int months);
 		[Version (since = "3.30")]
 		public static int util_compare_date (int64 datetime1, int64 datetime2);
+		[Version (since = "3.40")]
+		public static uint64 util_hash_message_id (string message_id, bool needs_decode);
 		[Version (since = "3.30")]
 		public static long util_make_time (int argc, Camel.SExpResult argv);
 	}
@@ -2988,7 +2990,8 @@ namespace Camel {
 		PRESERVE_8BIT,
 		FORMAT_FLOWED,
 		QUOTE_CITATION,
-		DIV
+		DIV,
+		PRESERVE_TABS
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_MIME_FILTER_YENC_DIRECTION_", type_id = "camel_mime_filter_yenc_direction_get_type ()")]
 	public enum MimeFilterYencDirection {

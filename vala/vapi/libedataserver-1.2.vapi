@@ -369,6 +369,18 @@ namespace E {
 		public virtual bool unset_last_credentials_required_arguments_impl (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.18")]
 		public bool unset_last_credentials_required_arguments_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (cname = "e_webdav_discover_sources")]
+		[Version (since = "3.18")]
+		public async void webdav_discover_sources (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, GLib.Cancellable? cancellable);
+		[CCode (cname = "e_webdav_discover_sources_full")]
+		[Version (since = "3.30")]
+		public async void webdav_discover_sources_full (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, [CCode (delegate_target_pos = 4.5, scope = "async")] E.WebDAVDiscoverRefSourceFunc? ref_source_func, GLib.Cancellable? cancellable);
+		[CCode (cname = "e_webdav_discover_sources_full_sync")]
+		[Version (since = "3.30")]
+		public bool webdav_discover_sources_full_sync (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, [CCode (delegate_target_pos = 4.5)] E.WebDAVDiscoverRefSourceFunc? ref_source_func, out string? out_certificate_pem, out GLib.TlsCertificateFlags? out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string>? out_calendar_user_addresses, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (cname = "e_webdav_discover_sources_sync")]
+		[Version (since = "3.18")]
+		public bool webdav_discover_sources_sync (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Source.with_uid (string uid, GLib.MainContext? main_context) throws GLib.Error;
 		public virtual async bool write (GLib.Cancellable? cancellable) throws GLib.Error;
@@ -683,13 +695,20 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		protected SourceLocal ();
 		public GLib.File? dup_custom_file ();
+		[Version (since = "3.40")]
+		public string dup_email_address ();
 		public unowned GLib.File? get_custom_file ();
+		[Version (since = "3.40")]
+		public unowned string? get_email_address ();
 		[Version (since = "3.34")]
 		public bool get_writable ();
 		public void set_custom_file (GLib.File? custom_file);
+		[Version (since = "3.40")]
+		public void set_email_address (string? email_address);
 		[Version (since = "3.34")]
 		public void set_writable (bool writable);
 		public GLib.File custom_file { get; set construct; }
+		public string email_address { get; set construct; }
 		public bool writable { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_mdn_get_type ()")]
@@ -1248,6 +1267,19 @@ namespace E {
 		[Version (since = "3.26")]
 		public unowned GLib.SList<E.WebDAVPrivilege> get_privileges ();
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", lower_case_csuffix = "webdav_discovered_source", type_id = "e_webdav_discovered_source_get_type ()")]
+	[Compact]
+	public class WebDAVDiscoveredSource {
+		public weak string color;
+		public weak string description;
+		public weak string display_name;
+		public weak string href;
+		public uint32 supports;
+		[Version (since = "3.40")]
+		public E.WebDAVDiscoveredSource copy ();
+		[Version (since = "3.40")]
+		public void free ();
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", lower_case_csuffix = "webdav_privilege", type_id = "e_webdav_privilege_get_type ()")]
 	[Compact]
 	public class WebDAVPrivilege {
@@ -1351,7 +1383,7 @@ namespace E {
 		public bool traverse_mkcol_response (Soup.Message? message, GLib.ByteArray xml_data) throws GLib.Error;
 		public bool traverse_multistatus_response (Soup.Message? message, GLib.ByteArray xml_data) throws GLib.Error;
 		public bool unlock_sync (string? uri, string lock_token, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public bool update_properties_sync (string? uri, GLib.SList<E.WebDAVResource> changes, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool update_properties_sync (string? uri, GLib.SList<E.WebDAVPropertyChange> changes, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static void util_free_privileges (GLib.Node? privileges);
 		public static string util_maybe_dequote (ref string? text);
 	}
@@ -1442,14 +1474,6 @@ namespace E {
 		public weak string names;
 		public weak string hint;
 		public weak E.FreeFormExpBuildSexpFunc build_sexp;
-	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
-	public struct WebDAVDiscoveredSource {
-		public weak string href;
-		public uint32 supports;
-		public weak string display_name;
-		public weak string description;
-		public weak string color;
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_CLIENT_ERROR_", has_type_id = false)]
 	[Version (since = "3.2")]
@@ -2217,19 +2241,10 @@ namespace E {
 	public static unowned string util_utf8_strstrcasedecomp (string haystack, string needle);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.18")]
-	public static void webdav_discover_free_discovered_sources (GLib.SList<E.WebDAVDiscoveredSource?> discovered_sources);
+	public static void webdav_discover_free_discovered_sources (GLib.SList<E.WebDAVDiscoveredSource> discovered_sources);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.18")]
-	public static async bool webdav_discover_sources (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, GLib.Cancellable? cancellable, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource?> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Version (since = "3.30")]
-	public static async void webdav_discover_sources_full (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, [CCode (delegate_target_pos = 5.5, scope = "async")] E.WebDAVDiscoverRefSourceFunc? ref_source_func, GLib.Cancellable? cancellable);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Version (since = "3.30")]
-	public static bool webdav_discover_sources_full_sync (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, [CCode (delegate_target_pos = 5.5)] E.WebDAVDiscoverRefSourceFunc? ref_source_func, out string? out_certificate_pem, out GLib.TlsCertificateFlags? out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource?> out_discovered_sources, out GLib.SList<string>? out_calendar_user_addresses, GLib.Cancellable? cancellable = null) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Version (since = "3.18")]
-	public static bool webdav_discover_sources_sync (E.Source source, string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource?> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	public static bool webdav_discover_sources_finish (E.Source source, GLib.AsyncResult result, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void xml_destroy_hash (GLib.HashTable<string,string> hash);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]

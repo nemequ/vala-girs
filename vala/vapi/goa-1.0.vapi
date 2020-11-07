@@ -55,7 +55,7 @@ namespace Goa {
 		[CCode (cname = "goa_client_new", has_construct_function = false)]
 		public async Client (GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.List<Goa.Object> get_accounts ();
-		public unowned Goa.Manager get_manager ();
+		public unowned Goa.Manager? get_manager ();
 		public unowned GLib.DBusObjectManager get_object_manager ();
 		[Version (since = "3.6")]
 		public Goa.Object lookup_by_id (string id);

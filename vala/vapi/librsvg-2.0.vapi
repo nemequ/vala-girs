@@ -48,6 +48,8 @@ namespace Rsvg {
 		public bool get_geometry_for_layer (string? id, Rsvg.Rectangle viewport, out Rsvg.Rectangle out_ink_rect, out Rsvg.Rectangle out_logical_rect) throws GLib.Error;
 		[Version (since = "2.46")]
 		public void get_intrinsic_dimensions (out bool out_has_width, out Rsvg.Length out_width, out bool out_has_height, out Rsvg.Length out_height, out bool out_has_viewbox, out Rsvg.Rectangle out_viewbox);
+		[Version (since = "2.52")]
+		public bool get_intrinsic_size_in_pixels (out double out_width, out double out_height);
 		[Version (deprecated = true, deprecated_since = "2.36", replacement = "")]
 		public unowned string get_metadata ();
 		public Gdk.Pixbuf? get_pixbuf ();
@@ -62,9 +64,9 @@ namespace Rsvg {
 		public void internal_set_testing (bool testing);
 		[Version (since = "2.32")]
 		public bool read_stream_sync (GLib.InputStream stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "2.14")]
+		[Version (deprecated = true, deprecated_since = "2.52.", since = "2.14")]
 		public bool render_cairo (Cairo.Context cr);
-		[Version (since = "2.14")]
+		[Version (deprecated = true, deprecated_since = "2.52.", since = "2.14")]
 		public bool render_cairo_sub (Cairo.Context cr, string? id);
 		[Version (since = "2.46")]
 		public bool render_document (Cairo.Context cr, Rsvg.Rectangle viewport) throws GLib.Error;
