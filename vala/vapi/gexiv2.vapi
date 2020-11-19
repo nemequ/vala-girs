@@ -53,8 +53,10 @@ namespace GExiv2 {
 		public static unowned string? get_tag_label (string tag);
 		public long get_tag_long (string tag);
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public string[]? get_tag_multiple (string tag);
 		public GLib.Bytes? get_tag_raw (string tag);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public string? get_tag_string (string tag);
 		public static unowned string? get_tag_type (string tag);
 		public string? get_xmp_packet ();
@@ -82,9 +84,16 @@ namespace GExiv2 {
 		public void set_metadata_pixel_width (int width);
 		public void set_orientation (GExiv2.Orientation orientation);
 		public bool set_tag_long (string tag, long value);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool set_tag_multiple (string tag, [CCode (array_length = false, array_null_terminated = true)] string[] values);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool set_tag_string (string tag, string value);
 		public bool set_xmp_tag_struct (string tag, GExiv2.StructureType type);
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[]? try_get_tag_multiple (string tag) throws GLib.Error;
+		public string? try_get_tag_string (string tag) throws GLib.Error;
+		public bool try_set_tag_multiple (string tag, [CCode (array_length = false, array_null_terminated = true)] string[] values) throws GLib.Error;
+		public bool try_set_tag_string (string tag, string value) throws GLib.Error;
 		public static void unregister_all_xmp_namespaces ();
 		public static bool unregister_xmp_namespace (string name);
 		[Version (since = "0.12.1")]

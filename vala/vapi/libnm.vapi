@@ -130,6 +130,9 @@ namespace NM {
 		[Version (since = "1.8")]
 		public static GLib.HashTable<string,GLib.Variant> parse_variant_attributes (string string, char attr_separator, char key_value_separator, bool ignore_unknown, NM.VariantAttributeSpec spec) throws GLib.Error;
 		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.30")]
+		public static void print (int output_mode, string msg);
+		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool same_ssid ([CCode (array_length_cname = "len1", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] ssid1, [CCode (array_length_cname = "len2", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] ssid2, bool ignore_trailing_null);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool security_valid (NM.Utils.SecurityType type, NM.DeviceWifiCapabilities wifi_caps, bool have_ap, bool adhoc, NM.80211ApFlags ap_flags, NM.80211ApSecurityFlags ap_wpa, NM.80211ApSecurityFlags ap_rsn);
@@ -3169,6 +3172,24 @@ namespace NM {
 		[NoAccessorMethod]
 		public string username { owned get; set; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_hostname_get_type ()")]
+	[Version (since = "1.30")]
+	public class SettingHostname : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		public SettingHostname ();
+		public NM.Ternary get_from_dhcp ();
+		public NM.Ternary get_from_dns_lookup ();
+		public NM.Ternary get_only_from_default ();
+		public int get_priority ();
+		[NoAccessorMethod]
+		public NM.Ternary from_dhcp { get; set; }
+		[NoAccessorMethod]
+		public NM.Ternary from_dns_lookup { get; set; }
+		[NoAccessorMethod]
+		public NM.Ternary only_from_default { get; set; }
+		[NoAccessorMethod]
+		public int priority { get; set; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ip4_config_get_type ()")]
 	public class SettingIP4Config : NM.SettingIPConfig {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_DHCP_CLIENT_ID")]
@@ -3795,6 +3816,25 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.20")]
 		public string devargs { owned get; set; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_external_ids_get_type ()")]
+	public class SettingOvsExternalIDs : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.30")]
+		public SettingOvsExternalIDs ();
+		[Version (since = "1.30")]
+		public static bool check_key (string? key) throws GLib.Error;
+		[Version (since = "1.30")]
+		public static bool check_val (string? val) throws GLib.Error;
+		[Version (since = "1.30")]
+		public unowned string get_data (string key);
+		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
+		public unowned string[] get_data_keys ();
+		[Version (since = "1.30")]
+		public void set_data (string key, string? val);
+		[NoAccessorMethod]
+		[Version (since = "1.30")]
+		public GLib.HashTable<string,string> data { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_interface_get_type ()")]
 	public class SettingOvsInterface : NM.Setting {
@@ -7052,6 +7092,16 @@ namespace NM {
 	public const string SETTING_DUMMY_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ETHTOOL_SETTING_NAME")]
 	public const string SETTING_ETHTOOL_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_HOSTNAME_FROM_DHCP")]
+	public const string SETTING_HOSTNAME_FROM_DHCP;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_HOSTNAME_FROM_DNS_LOOKUP")]
+	public const string SETTING_HOSTNAME_FROM_DNS_LOOKUP;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_HOSTNAME_ONLY_FROM_DEFAULT")]
+	public const string SETTING_HOSTNAME_ONLY_FROM_DEFAULT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_HOSTNAME_PRIORITY")]
+	public const string SETTING_HOSTNAME_PRIORITY;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_HOSTNAME_SETTING_NAME")]
+	public const string SETTING_HOSTNAME_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_ENCRYPT")]
 	public const string SETTING_MACSEC_ENCRYPT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CAK")]
@@ -7104,6 +7154,10 @@ namespace NM {
 	public const string SETTING_OVS_DPDK_DEVARGS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_SETTING_NAME")]
 	public const string SETTING_OVS_DPDK_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_EXTERNAL_IDS_DATA")]
+	public const string SETTING_OVS_EXTERNAL_IDS_DATA;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_EXTERNAL_IDS_SETTING_NAME")]
+	public const string SETTING_OVS_EXTERNAL_IDS_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_INTERFACE_SETTING_NAME")]
 	public const string SETTING_OVS_INTERFACE_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_INTERFACE_TYPE")]

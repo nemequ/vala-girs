@@ -79,6 +79,8 @@ namespace Vte {
 		public Vte.CursorShape get_cursor_shape ();
 		[Version (since = "0.58")]
 		public bool get_enable_bidi ();
+		[Version (since = "0.64")]
+		public bool get_enable_fallback_scrolling ();
 		[Version (since = "0.58")]
 		public bool get_enable_shaping ();
 		[Version (since = "0.62")]
@@ -175,6 +177,8 @@ namespace Vte {
 		public void set_delete_binding (Vte.EraseBinding binding);
 		[Version (since = "0.58")]
 		public void set_enable_bidi (bool enable_bidi);
+		[Version (since = "0.64")]
+		public void set_enable_fallback_scrolling (bool enable);
 		[Version (since = "0.58")]
 		public void set_enable_shaping (bool enable_shaping);
 		[Version (since = "0.62")]
@@ -229,6 +233,7 @@ namespace Vte {
 		public Vte.EraseBinding delete_binding { get; set; }
 		[Version (since = "0.58")]
 		public bool enable_bidi { get; set; }
+		public bool enable_fallback_scrolling { get; set; }
 		[Version (since = "0.58")]
 		public bool enable_shaping { get; set; }
 		[Version (since = "0.62")]

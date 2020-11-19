@@ -847,7 +847,7 @@ namespace ECal {
 		[NoAccessorMethod]
 		public bool timers_enabled { get; set; }
 		public virtual signal void changed ();
-		public virtual signal void format_time (void* rd, void* itt, ref void* inout_buffer, int buffer_size);
+		public virtual signal void format_time (ECal.ReminderWatcher rd, ICal.Time itt, ref void* inout_buffer, int buffer_size);
 		public signal void triggered (GLib.SList<ECal.ReminderData> reminders, bool snoozed);
 	}
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "ETimezoneCache", type_cname = "ETimezoneCacheInterface", type_id = "e_timezone_cache_get_type ()")]

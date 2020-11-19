@@ -16,6 +16,10 @@ namespace Hdy {
 		public unowned string get_icon_name ();
 		[Version (since = "0.0.6")]
 		public unowned string? get_subtitle ();
+		[Version (since = "1.1")]
+		public int get_subtitle_lines ();
+		[Version (since = "1.1")]
+		public int get_title_lines ();
 		[Version (since = "0.0.6")]
 		public bool get_use_underline ();
 		[Version (since = "0.0.7")]
@@ -24,6 +28,10 @@ namespace Hdy {
 		public void set_icon_name (string icon_name);
 		[Version (since = "0.0.6")]
 		public void set_subtitle (string? subtitle);
+		[Version (since = "1.1")]
+		public void set_subtitle_lines (int subtitle_lines);
+		[Version (since = "1.1")]
+		public void set_title_lines (int title_lines);
 		[Version (since = "0.0.6")]
 		public void set_use_underline (bool use_underline);
 		[Version (since = "0.0.7")]
@@ -32,6 +40,10 @@ namespace Hdy {
 		public string icon_name { get; set; }
 		[Version (since = "0.0.6")]
 		public string subtitle { get; set; }
+		[Version (since = "1.1")]
+		public int subtitle_lines { get; set; }
+		[Version (since = "1.1")]
+		public int title_lines { get; set; }
 		[Version (since = "0.0.6")]
 		public bool use_underline { get; set; }
 		[Version (since = "1.0")]

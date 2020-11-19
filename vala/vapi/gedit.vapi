@@ -40,7 +40,6 @@ namespace Gedit {
 		public string mime_type { owned get; }
 		[NoAccessorMethod]
 		public string shortname { owned get; }
-		public virtual signal void cursor_moved ();
 		public virtual signal void load ();
 		public virtual signal void loaded ();
 		public virtual signal void save ();
@@ -104,18 +103,6 @@ namespace Gedit {
 		public virtual signal void dispatch (Gedit.Message message);
 		public virtual signal void registered (string object_path, string method);
 		public virtual signal void unregistered (string object_path, string method);
-	}
-	[CCode (cheader_filename = "gedit/gedit-progress-info-bar.h", type_id = "gedit_progress_info_bar_get_type ()")]
-	public class ProgressInfoBar : Gtk.InfoBar, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
-		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		public ProgressInfoBar (string icon_name, string markup, bool has_cancel);
-		public void pulse ();
-		public void set_fraction (double fraction);
-		public void set_icon_name (string icon_name);
-		public void set_markup (string markup);
-		public void set_text (string text);
-		[NoAccessorMethod]
-		public bool has_cancel_button { construct; }
 	}
 	[CCode (cheader_filename = "gedit/gedit-statusbar.h", type_id = "gedit_statusbar_get_type ()")]
 	public class Statusbar : Gtk.Statusbar, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {

@@ -77,6 +77,40 @@ namespace E {
 		public virtual signal bool activated (ECal.ReminderData rd);
 		public virtual signal void changed ();
 	}
+	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", lower_case_csuffix = "webdav_discover_content", type_id = "e_webdav_discover_content_get_type ()")]
+	public class WebDAVDiscoverContent : Gtk.Grid, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "3.18")]
+		public WebDAVDiscoverContent (E.CredentialsPrompter credentials_prompter, E.Source? source, string? base_url, uint supports_filter);
+		[Version (since = "3.18")]
+		public unowned string get_base_url ();
+		[Version (since = "3.18")]
+		public bool get_multiselect ();
+		[Version (since = "3.18")]
+		public bool get_selected (int index, out string out_href, out uint out_supports, out string out_display_name, out string out_color);
+		[Version (since = "3.18")]
+		public unowned Gtk.TreeSelection get_tree_selection ();
+		[Version (since = "3.18")]
+		public string get_user_address ();
+		[Version (since = "3.18")]
+		public async bool refresh (string? display_name, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.18")]
+		public void set_base_url (string base_url);
+		[Version (since = "3.18")]
+		public void set_multiselect (bool multiselect);
+		[Version (since = "3.18")]
+		public void show_error (GLib.Error? error);
+	}
+	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", lower_case_csuffix = "webdav_discover_dialog", type_id = "e_webdav_discover_dialog_get_type ()")]
+	public class WebDAVDiscoverDialog : Gtk.Dialog, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkDialog*")]
+		[Version (since = "3.18")]
+		public WebDAVDiscoverDialog (Gtk.Window parent, string title, E.CredentialsPrompter credentials_prompter, E.Source source, string? base_url, uint supports_filter);
+		[Version (since = "3.18")]
+		public unowned E.WebDAVDiscoverContent get_content ();
+		[Version (since = "3.18")]
+		public void refresh ();
+	}
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", cprefix = "E_CREDENTIALS_PROMPTER_PROMPT_FLAG_", has_type_id = false)]
 	[Flags]
 	[Version (since = "3.16")]
@@ -102,43 +136,4 @@ namespace E {
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
 	[Version (since = "3.16")]
 	public static E.TrustPromptResponse trust_prompt_run_modal (Gtk.Window parent, string? source_extension, string? source_display_name, string host, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, string? error_text);
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static unowned string webdav_discover_content_get_base_url (Gtk.Widget content);
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static bool webdav_discover_content_get_multiselect (Gtk.Widget content);
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static bool webdav_discover_content_get_selected (Gtk.Widget content, int index, out string out_href, out uint out_supports, out string out_display_name, out string out_color);
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static unowned Gtk.TreeSelection webdav_discover_content_get_tree_selection (Gtk.Widget content);
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static string webdav_discover_content_get_user_address (Gtk.Widget content);
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static Gtk.Widget webdav_discover_content_new (E.CredentialsPrompter credentials_prompter, E.Source? source, string? base_url, uint supports_filter);
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static async bool webdav_discover_content_refresh (Gtk.Widget content, string? display_name, GLib.Cancellable? cancellable) throws GLib.Error;
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static void webdav_discover_content_set_base_url (Gtk.Widget content, string base_url);
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static void webdav_discover_content_set_multiselect (Gtk.Widget content, bool multiselect);
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static void webdav_discover_content_show_error (Gtk.Widget content, GLib.Error? error);
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static unowned Gtk.Widget webdav_discover_dialog_get_content (Gtk.Dialog dialog);
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static Gtk.Dialog webdav_discover_dialog_new (Gtk.Window parent, string title, E.CredentialsPrompter credentials_prompter, E.Source source, string? base_url, uint supports_filter);
-	[CCode (cheader_filename = "libedataserverui/libedataserverui.h")]
-	[Version (since = "3.18")]
-	public static void webdav_discover_dialog_refresh (Gtk.Dialog dialog);
 }

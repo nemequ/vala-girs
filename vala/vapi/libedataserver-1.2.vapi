@@ -1385,6 +1385,8 @@ namespace E {
 		public bool unlock_sync (string? uri, string lock_token, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool update_properties_sync (string? uri, GLib.SList<E.WebDAVPropertyChange> changes, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static void util_free_privileges (GLib.Node? privileges);
+		[Version (since = "3.40")]
+		public static bool util_item_href_equal (string href1, string href2);
 		public static string util_maybe_dequote (ref string? text);
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_xml_document_get_type ()")]

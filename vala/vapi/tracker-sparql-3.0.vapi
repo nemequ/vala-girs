@@ -65,8 +65,8 @@ namespace Tracker {
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]
         public abstract class Sparql.Connection : GLib.Object {
 		public extern static new Connection remote_new (string uri_base);
-		public extern static new Connection new (Sparql.ConnectionFlags flags, GLib.File store, GLib.File? ontology, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.IOError;
-		public extern async static new Connection new_async (Sparql.ConnectionFlags flags, GLib.File store, GLib.File? ontology, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.IOError;
+		public extern static new Connection new (Sparql.ConnectionFlags flags, GLib.File? store, GLib.File? ontology, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.IOError;
+		public extern async static new Connection new_async (Sparql.ConnectionFlags flags, GLib.File? store, GLib.File? ontology, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.IOError;
 		public extern static new Connection bus_new (string service_name, string? object_path, GLib.DBusConnection? dbus_connection = null) throws Sparql.Error, GLib.IOError, GLib.DBusError, GLib.Error;
 
 		public abstract Cursor query (string sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
@@ -122,7 +122,7 @@ namespace Tracker {
 		public abstract Sparql.ValueType get_value_type (int column);
 
 		public abstract unowned string? get_variable_name (int column);
-		public abstract unowned string? get_string (int column, out long length = null);
+		public abstract unowned string? get_string (int column, out long? length = null);
 
 		public abstract bool next (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async abstract bool next_async (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -140,7 +140,7 @@ namespace Tracker {
 		public NamespaceManager ();
 		public void add_prefix (string prefix, string namespace);
 		public bool has_prefix (string prefix);
-		public string lookup_prefix (string prefix);
+		public string? lookup_prefix (string prefix);
 		public string expand_uri (string compact_uri);
 
 		public static NamespaceManager get_default ();
@@ -148,7 +148,7 @@ namespace Tracker {
 
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]
 	public class Resource : GLib.Object {
-		public Resource (string identifier);
+		public Resource (string? identifier);
 
 		public void set_value (string predicate, GLib.Value value);
 		public void set_boolean (string predicate, bool object);
@@ -183,8 +183,9 @@ namespace Tracker {
 
 		public int identifier_compare_func (string identifier);
 
-		public string print_turtle (NamespaceManager? namespace_manager);
-		public string print_sparql_update (NamespaceManager? namespace_manager, string graph);
+		public string print_turtle (NamespaceManager? namespaces);
+		public string print_sparql_update (NamespaceManager? namespaces, string? graph_id);
+		public string print_jsonld (NamespaceManager? namespaces);
 	}
 
 	[CCode (cprefix = "TRACKER_NOTIFIER_FLAG_", cheader_filename = "libtracker-sparql/tracker-sparql.h")]
