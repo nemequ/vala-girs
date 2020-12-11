@@ -20,14 +20,14 @@ namespace ECal {
 		public static async E.Client connect (E.Source source, ECal.ClientSourceType source_type, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.8")]
 		public static E.Client connect_sync (E.Source source, ECal.ClientSourceType source_type, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool create_object (ICal.Component icalcomp, uint32 opflags, GLib.Cancellable? cancellable, out string? out_uid) throws GLib.Error;
-		public bool create_object_sync (ICal.Component icalcomp, uint32 opflags, out string? out_uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool create_object (ICal.Component icalcomp, ECal.OperationFlags opflags, GLib.Cancellable? cancellable, out string? out_uid) throws GLib.Error;
+		public bool create_object_sync (ICal.Component icalcomp, ECal.OperationFlags opflags, out string? out_uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.6")]
-		public async bool create_objects (GLib.SList<ICal.Component> icalcomps, uint32 opflags, GLib.Cancellable? cancellable, out GLib.SList<string>? out_uids) throws GLib.Error;
+		public async bool create_objects (GLib.SList<ICal.Component> icalcomps, ECal.OperationFlags opflags, GLib.Cancellable? cancellable, out GLib.SList<string>? out_uids) throws GLib.Error;
 		[Version (since = "3.6")]
-		public bool create_objects_sync (GLib.SList<ICal.Component> icalcomps, uint32 opflags, out GLib.SList<string>? out_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool discard_alarm (string uid, string rid, string auid, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool discard_alarm_sync (string uid, string rid, string auid, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool create_objects_sync (GLib.SList<ICal.Component> icalcomps, ECal.OperationFlags opflags, out GLib.SList<string>? out_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool discard_alarm (string uid, string rid, string auid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool discard_alarm_sync (string uid, string rid, string auid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static GLib.Error error_create (ECal.ClientError code, string? custom_msg);
 		public static GLib.Quark error_quark ();
 		public static unowned string error_to_string (ECal.ClientError code);
@@ -57,22 +57,22 @@ namespace ECal {
 		public bool get_timezone_sync (string tzid, out unowned ICal.Timezone out_zone, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_view (string sexp, GLib.Cancellable? cancellable, out ECal.ClientView out_view) throws GLib.Error;
 		public bool get_view_sync (string sexp, out ECal.ClientView out_view, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool modify_object (ICal.Component icalcomp, ECal.ObjModType mod, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool modify_object_sync (ICal.Component icalcomp, ECal.ObjModType mod, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool modify_object (ICal.Component icalcomp, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool modify_object_sync (ICal.Component icalcomp, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.6")]
-		public async bool modify_objects (GLib.SList<ICal.Component> icalcomps, ECal.ObjModType mod, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool modify_objects (GLib.SList<ICal.Component> icalcomps, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.6")]
-		public bool modify_objects_sync (GLib.SList<ICal.Component> icalcomps, ECal.ObjModType mod, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool receive_objects (ICal.Component icalcomp, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool receive_objects_sync (ICal.Component icalcomp, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool remove_object (string uid, string rid, ECal.ObjModType mod, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool remove_object_sync (string uid, string rid, ECal.ObjModType mod, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool modify_objects_sync (GLib.SList<ICal.Component> icalcomps, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool receive_objects (ICal.Component icalcomp, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool receive_objects_sync (ICal.Component icalcomp, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool remove_object (string uid, string rid, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool remove_object_sync (string uid, string rid, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.6")]
-		public async bool remove_objects (GLib.SList<ECal.ComponentId> ids, ECal.ObjModType mod, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool remove_objects (GLib.SList<ECal.ComponentId> ids, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.6")]
-		public bool remove_objects_sync (GLib.SList<ECal.ComponentId> ids, ECal.ObjModType mod, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool send_objects (ICal.Component icalcomp, uint32 opflags, GLib.Cancellable? cancellable, out GLib.SList<string> out_users, out ICal.Component out_modified_icalcomp) throws GLib.Error;
-		public bool send_objects_sync (ICal.Component icalcomp, uint32 opflags, out GLib.SList<string> out_users, out ICal.Component out_modified_icalcomp, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool remove_objects_sync (GLib.SList<ECal.ComponentId> ids, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool send_objects (ICal.Component icalcomp, ECal.OperationFlags opflags, GLib.Cancellable? cancellable, out GLib.SList<string> out_users, out ICal.Component out_modified_icalcomp) throws GLib.Error;
+		public bool send_objects_sync (ICal.Component icalcomp, ECal.OperationFlags opflags, out GLib.SList<string> out_users, out ICal.Component out_modified_icalcomp, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void set_default_timezone (ICal.Timezone zone);
 		[Version (since = "3.34")]
 		public static unowned ICal.Timezone? tzlookup_cb (string tzid, ECal.Client ecalclient, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -674,7 +674,7 @@ namespace ECal {
 		[Version (since = "3.34")]
 		public void set_from_property (ICal.Property property);
 		[Version (since = "3.34")]
-		public void take (ICal.Parameter param);
+		public void take (owned ICal.Parameter param);
 	}
 	[CCode (cheader_filename = "libecal/libecal.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_cal_component_period_get_type ()")]
 	[Compact]
@@ -738,7 +738,7 @@ namespace ECal {
 		[Version (since = "3.34")]
 		public void set_from_component (ICal.Component component);
 		[Version (since = "3.34")]
-		public void take (ICal.Property prop);
+		public void take (owned ICal.Property prop);
 	}
 	[CCode (cheader_filename = "libecal/libecal.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_cal_component_range_get_type ()")]
 	[Compact]
@@ -847,7 +847,7 @@ namespace ECal {
 		[NoAccessorMethod]
 		public bool timers_enabled { get; set; }
 		public virtual signal void changed ();
-		public virtual signal void format_time (ECal.ReminderWatcher rd, ICal.Time itt, ref void* inout_buffer, int buffer_size);
+		public virtual signal void format_time (ECal.ReminderData rd, ICal.Time itt, ref void* inout_buffer, int buffer_size);
 		public signal void triggered (GLib.SList<ECal.ReminderData> reminders, bool snoozed);
 	}
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "ETimezoneCache", type_cname = "ETimezoneCacheInterface", type_id = "e_timezone_cache_get_type ()")]

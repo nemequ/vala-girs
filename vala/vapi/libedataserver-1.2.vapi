@@ -123,7 +123,7 @@ namespace E {
 	public class Flag {
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_gdata_oauth2_authorizer_get_type ()")]
-	public class GDataOAuth2Authorizer : GLib.Object {
+	public class GDataOAuth2Authorizer : GLib.Object, GData.Authorizer {
 		[CCode (has_construct_function = false)]
 		[Version (since = "3.28")]
 		public GDataOAuth2Authorizer (E.Source source, GLib.Type service_type);

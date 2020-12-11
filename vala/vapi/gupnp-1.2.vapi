@@ -47,34 +47,6 @@ namespace GUPnP {
 		public Soup.Session session { get; }
 		public uint subscription_timeout { get; construct; }
 	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_context_filter_get_type ()")]
-	public class ContextFilter : GLib.Object {
-		[CCode (has_construct_function = false)]
-		[Version (since = "0.20.5")]
-		public ContextFilter ();
-		[Version (since = "0.20.5")]
-		public bool add_entry (string entry);
-		[Version (since = "0.20.8")]
-		public void add_entryv ([CCode (array_length = false, array_null_terminated = true)] string[] entries);
-		[Version (since = "0.20.5")]
-		public bool check_context (GUPnP.Context context);
-		[Version (since = "0.20.5")]
-		public void clear ();
-		[Version (since = "0.20.5")]
-		public bool get_enabled ();
-		[Version (since = "0.20.5")]
-		public unowned GLib.List<string> get_entries ();
-		[Version (since = "0.20.5")]
-		public bool is_empty ();
-		[Version (since = "0.20.5")]
-		public bool remove_entry (string entry);
-		[Version (since = "0.20.5")]
-		public void set_enabled (bool enable);
-		[Version (since = "0.20.5")]
-		public bool enabled { get; set construct; }
-		[Version (since = "0.20.5")]
-		public GLib.List<string> entries { get; construct; }
-	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_context_manager_get_type ()")]
 	public abstract class ContextManager : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -83,24 +55,24 @@ namespace GUPnP {
 		public static GUPnP.ContextManager create (uint port);
 		[Version (since = "1.1.0")]
 		public static GUPnP.ContextManager create_full (GSSDP.UDAVersion uda_version, GLib.SocketFamily family, uint port);
-		public unowned GUPnP.ContextFilter get_context_filter ();
 		[Version (since = "0.19.1")]
 		public uint get_port ();
 		public GLib.SocketFamily get_socket_family ();
 		public GSSDP.UDAVersion get_uda_version ();
+		public unowned GUPnP.WhiteList get_white_list ();
 		[Version (since = "0.13.0")]
 		public void manage_control_point (GUPnP.ControlPoint control_point);
 		[Version (since = "0.13.0")]
 		public void manage_root_device (GUPnP.RootDevice root_device);
 		[Version (since = "0.20.3")]
 		public void rescan_control_points ();
-		public GUPnP.ContextFilter context_filter { get; }
 		[NoAccessorMethod]
 		[Version (since = "1.1.0")]
 		public GLib.SocketFamily family { get; construct; }
 		public uint port { get; construct; }
 		[Version (since = "1.1.2")]
 		public GSSDP.UDAVersion uda_version { get; construct; }
+		public GUPnP.WhiteList white_list { get; }
 		public signal void context_available (GUPnP.Context context);
 		public signal void context_unavailable (GUPnP.Context context);
 	}

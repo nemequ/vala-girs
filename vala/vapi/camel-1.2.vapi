@@ -868,14 +868,19 @@ namespace Camel {
 		public bool get_filter_all ();
 		[Version (since = "3.24")]
 		public bool get_filter_junk ();
+		[Version (since = "3.40")]
+		public bool get_maildir_alt_flag_sep ();
 		public unowned string get_path ();
 		[Version (since = "3.24")]
 		public void set_filter_all (bool filter_all);
 		[Version (since = "3.24")]
 		public void set_filter_junk (bool filter_junk);
+		[Version (since = "3.40")]
+		public void set_maildir_alt_flag_sep (bool maildir_alt_flag_sep);
 		public void set_path (string path);
 		public bool filter_all { get; set construct; }
 		public bool filter_junk { get; set construct; }
+		public bool maildir_alt_flag_sep { get; set construct; }
 		public string path { get; set construct; }
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_medium_get_type ()")]
@@ -1481,7 +1486,7 @@ namespace Camel {
 		[Version (since = "3.24")]
 		public int get_limit_value ();
 		public bool get_stay_synchronized ();
-		[Version (since = "3.18")]
+		[Version (deprecated = true, deprecated_since = "3.40", since = "3.18")]
 		public int get_store_changes_interval ();
 		[Version (since = "3.24")]
 		public void set_limit_by_age (bool limit_by_age);
@@ -1490,13 +1495,12 @@ namespace Camel {
 		[Version (since = "3.24")]
 		public void set_limit_value (bool limit_value);
 		public void set_stay_synchronized (bool stay_synchronized);
-		[Version (since = "3.18")]
+		[Version (deprecated = true, deprecated_since = "3.40", since = "3.18")]
 		public void set_store_changes_interval (int interval);
 		public bool limit_by_age { get; set construct; }
 		public Camel.TimeUnit limit_unit { get; set construct; }
 		public int limit_value { get; set construct; }
 		public bool stay_synchronized { get; set construct; }
-		public int store_changes_interval { get; set construct; }
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_offline_store_get_type ()")]
 	public class OfflineStore : Camel.Store, GLib.Initable {
@@ -1880,6 +1884,8 @@ namespace Camel {
 		[Version (since = "3.24")]
 		public GLib.GenericArray<Camel.Folder> dup_opened_folders ();
 		public static GLib.Quark error_quark ();
+		[Version (since = "3.40")]
+		public virtual bool get_can_auto_save_changes ();
 		[Version (since = "3.24")]
 		public unowned Camel.DB get_db ();
 		[Version (since = "3.24")]
@@ -1943,8 +1949,13 @@ namespace Camel {
 		[CCode (has_construct_function = false)]
 		protected StoreSettings ();
 		public bool get_filter_inbox ();
+		[Version (since = "3.40")]
+		public int get_store_changes_interval ();
 		public void set_filter_inbox (bool filter_inbox);
+		[Version (since = "3.40")]
+		public void set_store_changes_interval (int interval);
 		public bool filter_inbox { get; set construct; }
+		public int store_changes_interval { get; set construct; }
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_store_summary_get_type ()")]
 	public class StoreSummary : GLib.Object {

@@ -886,6 +886,8 @@ namespace NM {
 		public const string UDI;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VENDOR")]
 		public const string VENDOR;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VETH_PEER")]
+		public const string VETH_PEER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VRF_TABLE")]
 		public const string VRF_TABLE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_AGEING")]
@@ -1418,6 +1420,15 @@ namespace NM {
 		public int64 owner { get; }
 		[Version (since = "1.2")]
 		public bool vnet_hdr { get; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_veth_get_type ()")]
+	public class DeviceVeth : NM.DeviceEthernet {
+		[CCode (has_construct_function = false)]
+		protected DeviceVeth ();
+		[Version (since = "1.30")]
+		public unowned NM.Device get_peer ();
+		[Version (since = "1.30")]
+		public NM.Device peer { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_vlan_get_type ()")]
 	public class DeviceVlan : NM.Device {
@@ -4443,6 +4454,17 @@ namespace NM {
 		[Version (since = "1.8")]
 		public GLib.HashTable<string,string> data { owned get; set; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_veth_get_type ()")]
+	public class SettingVeth : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.30")]
+		public SettingVeth ();
+		[Version (since = "1.30")]
+		public unowned string get_peer ();
+		[NoAccessorMethod]
+		[Version (since = "1.30")]
+		public string peer { owned get; set; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_vlan_get_type ()")]
 	public class SettingVlan : NM.Setting {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VLAN_EGRESS_PRIORITY_MAP")]
@@ -7198,6 +7220,10 @@ namespace NM {
 	public const string SETTING_USER_DATA;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_SETTING_NAME")]
 	public const string SETTING_USER_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VETH_PEER")]
+	public const string SETTING_VETH_PEER;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VETH_SETTING_NAME")]
+	public const string SETTING_VETH_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VRF_SETTING_NAME")]
 	public const string SETTING_VRF_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VRF_TABLE")]

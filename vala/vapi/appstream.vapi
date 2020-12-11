@@ -13,7 +13,7 @@ namespace AppStream {
 		[Version (since = "0.12.1")]
 		public unowned AppStream.AgreementSection? get_section_default ();
 		[Version (since = "0.12.1")]
-		public GLib.GenericArray<weak AppStream.AgreementSection> get_sections ();
+		public unowned GLib.GenericArray<AppStream.AgreementSection> get_sections ();
 		[Version (since = "0.12.1")]
 		public unowned string get_version_id ();
 		[Version (since = "0.12.1")]
@@ -474,7 +474,7 @@ namespace AppStream {
 		public bool refresh_cache (bool force) throws GLib.Error;
 		public bool save_cache_file (string fname) throws GLib.Error;
 		[Version (since = "0.9.7")]
-		public GLib.GenericArray<weak AppStream.Component> search (string search);
+		public GLib.GenericArray<AppStream.Component> search (string search);
 		public void set_cache_flags (AppStream.CacheFlags flags);
 		[Version (since = "0.12.7")]
 		public void set_cache_location (string fname);
@@ -498,6 +498,8 @@ namespace AppStream {
 		public Relation ();
 		[Version (since = "0.12.0")]
 		public AppStream.RelationCompare get_compare ();
+		[Version (since = "0.12.12")]
+		public AppStream.DisplaySideKind get_display_side_kind ();
 		[Version (since = "0.12.0")]
 		public AppStream.RelationItemKind get_item_kind ();
 		[Version (since = "0.12.0")]
@@ -506,18 +508,36 @@ namespace AppStream {
 		public unowned string get_value ();
 		[Version (since = "0.12.11")]
 		public AppStream.ControlKind get_value_control_kind ();
+		[Version (since = "0.12.12")]
+		public AppStream.DisplayLengthKind get_value_display_length_kind ();
 		[Version (since = "0.12.0")]
 		public int get_value_int ();
+		[Version (since = "0.12.12")]
+		public int get_value_px ();
+		[Version (since = "0.12.12")]
+		public unowned string get_value_str ();
 		[Version (since = "0.12.0")]
 		public unowned string get_version ();
 		[Version (since = "0.12.0")]
 		public void set_compare (AppStream.RelationCompare compare);
+		[Version (since = "0.12.12")]
+		public void set_display_side_kind (AppStream.DisplaySideKind kind);
 		[Version (since = "0.12.0")]
 		public void set_item_kind (AppStream.RelationItemKind kind);
 		[Version (since = "0.12.0")]
 		public void set_kind (AppStream.RelationKind kind);
 		[Version (since = "0.12.0")]
 		public void set_value (string value);
+		[Version (since = "0.12.12")]
+		public void set_value_control_kind (AppStream.ControlKind kind);
+		[Version (since = "0.12.12")]
+		public void set_value_display_length_kind (AppStream.DisplayLengthKind kind);
+		[Version (since = "0.12.12")]
+		public void set_value_int (int value);
+		[Version (since = "0.12.12")]
+		public void set_value_px (int logical_px);
+		[Version (since = "0.12.12")]
+		public void set_value_str (string value);
 		[Version (since = "0.12.0")]
 		public void set_version (string version);
 		[Version (since = "0.12.0")]
@@ -824,10 +844,36 @@ namespace AppStream {
 		GAMEPAD,
 		VOICE,
 		VISION,
+		TV_REMOTE,
 		LAST;
 		[Version (since = "0.12.11")]
 		public static AppStream.ControlKind from_string (string kind_str);
 		[Version (since = "0.12.11")]
+		public unowned string to_string ();
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_DISPLAY_LENGTH_KIND_", type_id = "as_display_length_kind_get_type ()")]
+	public enum DisplayLengthKind {
+		UNKNOWN,
+		XSMALL,
+		SMALL,
+		MEDIUM,
+		LARGE,
+		XLARGE,
+		LAST;
+		[Version (since = "0.12.12")]
+		public static AppStream.DisplayLengthKind from_string (string kind_str);
+		[Version (since = "0.12.12")]
+		public unowned string to_string ();
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_DISPLAY_SIDE_KIND_", type_id = "as_display_side_kind_get_type ()")]
+	public enum DisplaySideKind {
+		UNKNOWN,
+		SHORTEST,
+		LONGEST,
+		LAST;
+		[Version (since = "0.12.12")]
+		public static AppStream.DisplaySideKind from_string (string kind_str);
+		[Version (since = "0.12.12")]
 		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_FORMAT_KIND_", type_id = "as_format_kind_get_type ()")]
@@ -989,6 +1035,7 @@ namespace AppStream {
 		MEMORY,
 		FIRMWARE,
 		CONTROL,
+		DISPLAY_LENGTH,
 		LAST;
 		[Version (since = "0.12.0")]
 		public static AppStream.RelationItemKind from_string (string kind_str);
@@ -1146,7 +1193,7 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h")]
 	public static string get_current_distro_component_id ();
 	[CCode (cheader_filename = "appstream.h")]
-	public static GLib.GenericArray<weak AppStream.Category> get_default_categories (bool with_special);
+	public static GLib.GenericArray<AppStream.Category> get_default_categories (bool with_special);
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.12.7")]
 	public static string get_license_url (string license);

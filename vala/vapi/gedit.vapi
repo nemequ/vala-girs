@@ -28,9 +28,7 @@ namespace Gedit {
 		public string get_mime_type ();
 		public unowned Gtk.SourceSearchContext get_search_context ();
 		public string get_short_name_for_display ();
-		public string get_uri_for_display ();
 		public bool is_untitled ();
-		public bool is_untouched ();
 		public void set_language (Gtk.SourceLanguage? lang);
 		public void set_search_context (Gtk.SourceSearchContext? search_context);
 		[NoAccessorMethod]
@@ -38,8 +36,6 @@ namespace Gedit {
 		[NoAccessorMethod]
 		public bool empty_search { get; }
 		public string mime_type { owned get; }
-		[NoAccessorMethod]
-		public string shortname { owned get; }
 		public virtual signal void load ();
 		public virtual signal void loaded ();
 		public virtual signal void save ();
@@ -140,7 +136,6 @@ namespace Gedit {
 	public class View : Gtk.SourceView, Atk.Implementor, Gtk.Buildable, Gtk.Scrollable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public View (Gedit.Document doc);
-		public void set_font (bool default_font, string font_name);
 		public virtual signal void drop_uris ([CCode (array_length = false, array_null_terminated = true)] string[] uri_list);
 	}
 	[CCode (cheader_filename = "gedit/gedit-window.h", type_id = "gedit_window_get_type ()")]
@@ -210,8 +205,7 @@ namespace Gedit {
 		DEBUG_DOCUMENT,
 		DEBUG_COMMANDS,
 		DEBUG_APP,
-		DEBUG_UTILS,
-		DEBUG_METADATA
+		DEBUG_UTILS
 	}
 	[CCode (cheader_filename = "gedit/gedit-tab.h", cprefix = "GEDIT_TAB_", type_id = "gedit_tab_state_get_type ()")]
 	public enum TabState {

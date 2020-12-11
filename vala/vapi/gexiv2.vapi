@@ -90,9 +90,13 @@ namespace GExiv2 {
 		public bool set_tag_string (string tag, string value);
 		public bool set_xmp_tag_struct (string tag, GExiv2.StructureType type);
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "0.12.2")]
 		public string[]? try_get_tag_multiple (string tag) throws GLib.Error;
+		[Version (since = "0.12.2")]
 		public string? try_get_tag_string (string tag) throws GLib.Error;
+		[Version (since = "0.12.2")]
 		public bool try_set_tag_multiple (string tag, [CCode (array_length = false, array_null_terminated = true)] string[] values) throws GLib.Error;
+		[Version (since = "0.12.2")]
 		public bool try_set_tag_string (string tag, string value) throws GLib.Error;
 		public static void unregister_all_xmp_namespaces ();
 		public static bool unregister_xmp_namespace (string name);

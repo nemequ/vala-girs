@@ -15,13 +15,13 @@ namespace E {
 		[Version (since = "3.4")]
 		public string create_cache_filename (string uid, string filename, int fileindex);
 		[Version (since = "3.10")]
-		public async bool create_objects (string calobjs, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool create_objects (string calobjs, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
-		public bool create_objects_sync (string calobjs, uint32 opflags, GLib.Queue out_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool create_objects_sync (string calobjs, ECal.OperationFlags opflags, GLib.Queue out_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.10")]
-		public async bool discard_alarm (string uid, string rid, string alarm_uid, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool discard_alarm (string uid, string rid, string alarm_uid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
-		public bool discard_alarm_sync (string uid, string rid, string alarm_uid, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool discard_alarm_sync (string uid, string rid, string alarm_uid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.10")]
 		public string dup_cache_dir ();
 		[Version (since = "3.34")]
@@ -60,7 +60,7 @@ namespace E {
 		[NoWrapper]
 		public virtual void impl_add_timezone (E.DataCal cal, uint32 opid, GLib.Cancellable? cancellable, string tzobject);
 		[NoWrapper]
-		public virtual void impl_discard_alarm (E.DataCal cal, uint32 opid, GLib.Cancellable? cancellable, string uid, string rid, string auid, uint32 opflags);
+		public virtual void impl_discard_alarm (E.DataCal cal, uint32 opid, GLib.Cancellable? cancellable, string uid, string rid, string auid, ECal.OperationFlags opflags);
 		[NoWrapper]
 		public virtual void impl_get_attachment_uris (E.DataCal cal, uint32 opid, GLib.Cancellable? cancellable, string uid, string rid);
 		[NoWrapper]
@@ -74,11 +74,11 @@ namespace E {
 		[NoWrapper]
 		public virtual void impl_open (E.DataCal cal, uint32 opid, GLib.Cancellable? cancellable = null);
 		[NoWrapper]
-		public virtual void impl_receive_objects (E.DataCal cal, uint32 opid, GLib.Cancellable? cancellable, string calobj, uint32 opflags);
+		public virtual void impl_receive_objects (E.DataCal cal, uint32 opid, GLib.Cancellable? cancellable, string calobj, ECal.OperationFlags opflags);
 		[NoWrapper]
 		public virtual void impl_refresh (E.DataCal cal, uint32 opid, GLib.Cancellable? cancellable = null);
 		[NoWrapper]
-		public virtual void impl_send_objects (E.DataCal cal, uint32 opid, GLib.Cancellable? cancellable, string calobj, uint32 opflags);
+		public virtual void impl_send_objects (E.DataCal cal, uint32 opid, GLib.Cancellable? cancellable, string calobj, ECal.OperationFlags opflags);
 		[NoWrapper]
 		public virtual void impl_start_view (E.DataCalView view);
 		[NoWrapper]
@@ -92,9 +92,9 @@ namespace E {
 		public static bool mail_account_get_default (E.SourceRegistry registry, string address, string name);
 		public static bool mail_account_is_valid (E.SourceRegistry registry, string user, string name);
 		[Version (since = "3.10")]
-		public async bool modify_objects (string calobjs, ECal.ObjModType mod, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool modify_objects (string calobjs, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
-		public bool modify_objects_sync (string calobjs, ECal.ObjModType mod, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool modify_objects_sync (string calobjs, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.4")]
 		public void notify_component_created (ECal.Component component);
 		[Version (since = "3.4")]
@@ -111,9 +111,9 @@ namespace E {
 		[Version (since = "3.10")]
 		public GLib.SimpleAsyncResult prepare_for_completion (uint opid, GLib.Queue result_queue);
 		[Version (since = "3.10")]
-		public async bool receive_objects (string calobj, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool receive_objects (string calobj, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
-		public bool receive_objects_sync (string calobj, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool receive_objects_sync (string calobj, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.10")]
 		public E.DataCal ref_data_cal ();
 		[Version (since = "3.12")]
@@ -123,17 +123,17 @@ namespace E {
 		[Version (since = "3.10")]
 		public bool refresh_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.10")]
-		public async bool remove_objects (GLib.List<ECal.ComponentId> component_ids, ECal.ObjModType mod, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool remove_objects (GLib.List<ECal.ComponentId> component_ids, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
-		public bool remove_objects_sync (GLib.List<ECal.ComponentId> component_ids, ECal.ObjModType mod, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool remove_objects_sync (GLib.List<ECal.ComponentId> component_ids, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.2")]
 		public void remove_view (E.DataCalView view);
 		[Version (since = "3.26")]
 		public void schedule_custom_operation (GLib.Cancellable? use_cancellable, owned E.CalBackendCustomOpFunc func);
 		[Version (since = "3.10")]
-		public async string send_objects (string calobj, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async string send_objects (string calobj, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
-		public string send_objects_sync (string calobj, uint32 opflags, GLib.Queue out_users, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public string send_objects_sync (string calobj, ECal.OperationFlags opflags, GLib.Queue out_users, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "2.32")]
 		public void set_cache_dir (string cache_dir);
 		[Version (since = "3.10")]
@@ -184,10 +184,10 @@ namespace E {
 		[NoWrapper]
 		public virtual void add_timezone_sync (E.DataCal cal, GLib.Cancellable? cancellable, string tzobject) throws GLib.Error;
 		[Version (since = "3.6")]
-		public void create_objects (E.DataCal cal, GLib.Cancellable? cancellable, GLib.SList<string> calobjs, uint32 opflags, out GLib.SList<string> uids, out GLib.SList<ECal.Component> new_components) throws GLib.Error;
-		public void discard_alarm (E.DataCal cal, GLib.Cancellable? cancellable, string uid, string rid, string auid, uint32 opflags) throws GLib.Error;
+		public void create_objects (E.DataCal cal, GLib.Cancellable? cancellable, GLib.SList<string> calobjs, ECal.OperationFlags opflags, out GLib.SList<string> uids, out GLib.SList<ECal.Component> new_components) throws GLib.Error;
+		public void discard_alarm (E.DataCal cal, GLib.Cancellable? cancellable, string uid, string rid, string auid, ECal.OperationFlags opflags) throws GLib.Error;
 		[NoWrapper]
-		public virtual void discard_alarm_sync (E.DataCal cal, GLib.Cancellable? cancellable, string uid, string rid, string auid, uint32 opflags) throws GLib.Error;
+		public virtual void discard_alarm_sync (E.DataCal cal, GLib.Cancellable? cancellable, string uid, string rid, string auid, ECal.OperationFlags opflags) throws GLib.Error;
 		[Version (since = "3.2")]
 		public void get_attachment_uris (E.DataCal cal, GLib.Cancellable? cancellable, string uid, string rid, GLib.SList<string> attachments) throws GLib.Error;
 		public void get_free_busy (E.DataCal cal, GLib.Cancellable? cancellable, GLib.SList<string> users, long start, long end, out GLib.SList<string> freebusyobjects) throws GLib.Error;
@@ -199,20 +199,20 @@ namespace E {
 		[NoWrapper]
 		public virtual void get_timezone_sync (E.DataCal cal, GLib.Cancellable? cancellable, string tzid, string tzobject) throws GLib.Error;
 		[Version (since = "3.6")]
-		public void modify_objects (E.DataCal cal, GLib.Cancellable? cancellable, GLib.SList<string> calobjs, ECal.ObjModType mod, uint32 opflags, out GLib.SList<ECal.Component> old_components, out GLib.SList<ECal.Component> new_components) throws GLib.Error;
+		public void modify_objects (E.DataCal cal, GLib.Cancellable? cancellable, GLib.SList<string> calobjs, ECal.ObjModType mod, ECal.OperationFlags opflags, out GLib.SList<ECal.Component> old_components, out GLib.SList<ECal.Component> new_components) throws GLib.Error;
 		public void open (E.DataCal cal, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoWrapper]
 		public virtual void open_sync (E.DataCal cal, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public void receive_objects (E.DataCal cal, GLib.Cancellable? cancellable, string calobj, uint32 opflags) throws GLib.Error;
+		public void receive_objects (E.DataCal cal, GLib.Cancellable? cancellable, string calobj, ECal.OperationFlags opflags) throws GLib.Error;
 		[NoWrapper]
-		public virtual void receive_objects_sync (E.DataCal cal, GLib.Cancellable? cancellable, string calobj, uint32 opflags) throws GLib.Error;
+		public virtual void receive_objects_sync (E.DataCal cal, GLib.Cancellable? cancellable, string calobj, ECal.OperationFlags opflags) throws GLib.Error;
 		[Version (since = "2.30")]
 		public void refresh (E.DataCal cal, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoWrapper]
 		public virtual void refresh_sync (E.DataCal cal, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.6")]
-		public void remove_objects (E.DataCal cal, GLib.Cancellable? cancellable, GLib.SList<ECal.ComponentId> ids, ECal.ObjModType mod, uint32 opflags, out GLib.SList<ECal.Component> old_components, out GLib.SList<ECal.Component> new_components) throws GLib.Error;
-		public void send_objects (E.DataCal cal, GLib.Cancellable? cancellable, string calobj, uint32 opflags, GLib.SList<string> users, out string modified_calobj) throws GLib.Error;
+		public void remove_objects (E.DataCal cal, GLib.Cancellable? cancellable, GLib.SList<ECal.ComponentId> ids, ECal.ObjModType mod, ECal.OperationFlags opflags, out GLib.SList<ECal.Component> old_components, out GLib.SList<ECal.Component> new_components) throws GLib.Error;
+		public void send_objects (E.DataCal cal, GLib.Cancellable? cancellable, string calobj, ECal.OperationFlags opflags, GLib.SList<string> users, out string modified_calobj) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libedata-cal/libedata-cal.h", type_id = "e_cal_cache_get_type ()")]
 	[Version (since = "3.26")]
@@ -311,9 +311,9 @@ namespace E {
 		public bool process_changes_sync (GLib.SList<E.CalMetaBackendInfo>? created_objects, GLib.SList<E.CalMetaBackendInfo>? modified_objects, GLib.SList<E.CalMetaBackendInfo>? removed_objects, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public E.CalCache ref_cache ();
 		public bool refresh_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public virtual bool remove_component_sync (E.ConflictResolution conflict_resolution, string uid, string? extra, string? object, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual bool remove_component_sync (E.ConflictResolution conflict_resolution, string uid, string? extra, string? object, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual bool requires_reconnect ();
-		public virtual bool save_component_sync (bool overwrite_existing, E.ConflictResolution conflict_resolution, GLib.SList<ECal.Component> instances, string? extra, uint32 opflags, out string out_new_uid, out string out_new_extra, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual bool save_component_sync (bool overwrite_existing, E.ConflictResolution conflict_resolution, GLib.SList<ECal.Component> instances, string? extra, ECal.OperationFlags opflags, out string out_new_uid, out string out_new_extra, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void schedule_refresh ();
 		public virtual bool search_components_sync (string? expr, out GLib.SList<ECal.Component> out_components, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual bool search_sync (string? expr, out GLib.SList<string> out_icalstrings, GLib.Cancellable? cancellable = null) throws GLib.Error;

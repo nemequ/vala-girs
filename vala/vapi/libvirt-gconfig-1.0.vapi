@@ -273,8 +273,10 @@ namespace GVirConfig {
 		[CCode (has_construct_function = false)]
 		protected DomainController ();
 		public uint get_index ();
+		public uint get_ports ();
 		public void set_address (GVirConfig.DomainAddress? address);
 		public void set_index (uint index);
+		public void set_ports (uint ports);
 	}
 	[CCode (cheader_filename = "libvirt-gconfig/libvirt-gconfig.h", type_id = "gvir_config_domain_controller_usb_get_type ()")]
 	public class DomainControllerUsb : GVirConfig.DomainController {

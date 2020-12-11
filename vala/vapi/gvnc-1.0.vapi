@@ -269,7 +269,8 @@ namespace Vnc {
 		POINTER_CHANGE,
 		EXT_KEY_EVENT,
 		AUDIO,
-		LED_STATE
+		LED_STATE,
+		ALPHA_CURSOR
 	}
 	[CCode (cheader_filename = "gvnc.h", cname = "VNC_LEDSTATE_CAPS_LOCK")]
 	public const int LEDSTATE_CAPS_LOCK;
