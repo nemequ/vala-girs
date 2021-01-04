@@ -16,7 +16,8 @@ namespace NM {
 			WPA2_PSK,
 			WPA2_ENTERPRISE,
 			SAE,
-			OWE
+			OWE,
+			WPA3_SUITE_B_192
 		}
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_UTILS_HWADDR_LEN_MAX")]
 		public const int HWADDR_LEN_MAX;
@@ -5756,7 +5757,8 @@ namespace NM {
 		KEY_MGMT_802_1X,
 		KEY_MGMT_SAE,
 		KEY_MGMT_OWE,
-		KEY_MGMT_OWE_TM
+		KEY_MGMT_OWE_TM,
+		KEY_MGMT_EAP_SUITE_B_192
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_802_11_MODE_", type_id = "nm_802_11_mode_get_type ()")]
 	public enum @80211Mode {

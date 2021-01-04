@@ -69,5 +69,5 @@ namespace MediaArt {
 	public static async bool remove_async (string artist, string? album, int io_priority, GLib.Object? source_object, GLib.Cancellable? cancellable) throws GLib.Error;
 	[CCode (cheader_filename = "libmediaart/mediaart.h")]
 	[Version (since = "0.2.0")]
-	public static string strip_invalid_entities (string original);
+	public static string strip_invalid_entities (string? original);
 }

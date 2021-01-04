@@ -262,7 +262,9 @@ namespace Retro {
 		WHEELDOWN,
 		MIDDLE,
 		HORIZ_WHEELUP,
-		HORIZ_WHEELDOWN
+		HORIZ_WHEELDOWN,
+		BUTTON_4,
+		BUTTON_5
 	}
 	[CCode (cheader_filename = "retro-gtk.h", cprefix = "RETRO_POINTER_ID_", type_id = "retro_pointer_id_get_type ()")]
 	public enum PointerId {

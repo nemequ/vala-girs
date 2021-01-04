@@ -86,6 +86,7 @@ namespace Vnc {
 		public int get_ledstate ();
 		public unowned string get_name ();
 		public unowned Vnc.PixelFormat get_pixel_format ();
+		public bool get_power_control ();
 		public bool get_shared ();
 		public int get_width ();
 		public bool has_error ();
@@ -97,6 +98,7 @@ namespace Vnc {
 		public bool open_fd_with_hostname (int fd, string? hostname);
 		public bool open_host (string host, string port);
 		public bool pointer_event (uint8 button_mask, uint16 x, uint16 y);
+		public bool power_control (Vnc.ConnectionPowerAction action);
 		public bool set_audio (Vnc.Audio audio);
 		public bool set_audio_format (Vnc.AudioFormat fmt);
 		public bool set_auth_subtype (uint type);
@@ -117,6 +119,7 @@ namespace Vnc {
 		public virtual signal void vnc_bell ();
 		public virtual signal void vnc_connected ();
 		public virtual signal void vnc_cursor_changed (Vnc.Cursor cursor);
+		public virtual signal void vnc_desktop_rename (string name);
 		public virtual signal void vnc_desktop_resize (int width, int height);
 		public virtual signal void vnc_disconnected ();
 		public virtual signal void vnc_error (string message);
@@ -125,6 +128,8 @@ namespace Vnc {
 		public virtual signal void vnc_led_state ();
 		public virtual signal void vnc_pixel_format_changed (void* format);
 		public virtual signal void vnc_pointer_mode_changed (bool absPointer);
+		public virtual signal void vnc_power_control_failed ();
+		public virtual signal void vnc_power_control_initialized ();
 		public virtual signal void vnc_server_cut_text (string text);
 	}
 	[CCode (cheader_filename = "gvnc.h", type_id = "vnc_cursor_get_type ()")]
@@ -165,6 +170,7 @@ namespace Vnc {
 		public PixelFormat ();
 		public Vnc.PixelFormat copy ();
 		public void free ();
+		public bool match (Vnc.PixelFormat other);
 	}
 	[CCode (cheader_filename = "gvnc.h", type_cname = "VncAudioInterface", type_id = "vnc_audio_get_type ()")]
 	public interface Audio : GLib.Object {
@@ -261,6 +267,7 @@ namespace Vnc {
 		TIGHT_JPEG8,
 		TIGHT_JPEG9,
 		DESKTOP_RESIZE,
+		LAST_RECT,
 		[CCode (cname = "VNC_CONNECTION_ENCODING_WMVi")]
 		WMVI,
 		CURSOR_POS,
@@ -270,7 +277,15 @@ namespace Vnc {
 		EXT_KEY_EVENT,
 		AUDIO,
 		LED_STATE,
+		DESKTOP_NAME,
+		XVP,
 		ALPHA_CURSOR
+	}
+	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_POWER_ACTION_", type_id = "vnc_connection_power_action_get_type ()")]
+	public enum ConnectionPowerAction {
+		SHUTDOWN,
+		REBOOT,
+		RESET
 	}
 	[CCode (cheader_filename = "gvnc.h", cname = "VNC_LEDSTATE_CAPS_LOCK")]
 	public const int LEDSTATE_CAPS_LOCK;

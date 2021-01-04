@@ -2461,7 +2461,7 @@ namespace Camel {
 		public weak Camel.FolderThreadNode? next;
 		public weak Camel.FolderThreadNode? parent;
 		public weak Camel.FolderThreadNode? child;
-		public weak Camel.MessageInfo message;
+		public weak Camel.MessageInfo? message;
 		public weak string root_subject;
 		public uint32 order;
 		public uint32 re;

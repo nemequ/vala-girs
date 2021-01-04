@@ -59,6 +59,8 @@ namespace GExiv2 {
 		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public string? get_tag_string (string tag);
 		public static unowned string? get_tag_type (string tag);
+		[Version (since = "0.12.2")]
+		public static string get_xmp_namespace_for_tag (string tag);
 		public string? get_xmp_packet ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_xmp_tags ();

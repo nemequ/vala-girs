@@ -945,17 +945,17 @@ color map entry at position @idx.</doc>
            glib:type-name="VncConnection"
            glib:get-type="vnc_connection_get_type"
            glib:type-struct="ConnectionClass">
-      <source-position filename="../src/vncconnection.h" line="89"/>
+      <source-position filename="../src/vncconnection.h" line="92"/>
       <constructor name="new" c:identifier="vnc_connection_new">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="5234">Create a new connection object, which is initially
+             line="5405">Create a new connection object, which is initially
 in the disconnected state.</doc>
-        <source-position filename="../src/vncconnection.h" line="165"/>
+        <source-position filename="../src/vncconnection.h" line="177"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="5240">the new connection</doc>
+               line="5411">the new connection</doc>
           <type name="Connection" c:type="VncConnection*"/>
         </return-value>
       </constructor>
@@ -1065,6 +1065,20 @@ in the disconnected state.</doc>
           </instance-parameter>
           <parameter name="cursor" transfer-ownership="none">
             <type name="Cursor" c:type="VncCursor*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="vnc_desktop_rename">
+        <source-position filename="../src/vncconnection.h" line="85"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="conn" transfer-ownership="none">
+            <type name="Connection" c:type="VncConnection*"/>
+          </instance-parameter>
+          <parameter name="name" transfer-ownership="none">
+            <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
       </virtual-method>
@@ -1183,6 +1197,28 @@ in the disconnected state.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="vnc_power_control_failed">
+        <source-position filename="../src/vncconnection.h" line="84"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="conn" transfer-ownership="none">
+            <type name="Connection" c:type="VncConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="vnc_power_control_initialized">
+        <source-position filename="../src/vncconnection.h" line="83"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="conn" transfer-ownership="none">
+            <type name="Connection" c:type="VncConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="vnc_server_cut_text">
         <source-position filename="../src/vncconnection.h" line="69"/>
         <return-value transfer-ownership="none">
@@ -1200,14 +1236,35 @@ in the disconnected state.</doc>
       <method name="audio_disable" c:identifier="vnc_connection_audio_disable">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1803">Tell the server that it is no longer permitted to send
+             line="1830">Tell the server that it is no longer permitted to send
 audio. The client may continue to receive audio for a
 time after this, since packets may already be in flight.</doc>
-        <source-position filename="../src/vncconnection.h" line="227"/>
+        <source-position filename="../src/vncconnection.h" line="240"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="1811">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="1838">TRUE if the connection is ok, FALSE if it has an error</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="conn" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/vncconnection.c"
+                 line="1832">the connection object</doc>
+            <type name="Connection" c:type="VncConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="audio_enable" c:identifier="vnc_connection_audio_enable">
+        <doc xml:space="preserve"
+             filename="../src/vncconnection.c"
+             line="1803">Tell the server that it is permitted to send audio
+data.</doc>
+        <source-position filename="../src/vncconnection.h" line="239"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/vncconnection.c"
+               line="1810">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -1219,30 +1276,9 @@ time after this, since packets may already be in flight.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="audio_enable" c:identifier="vnc_connection_audio_enable">
-        <doc xml:space="preserve"
-             filename="../src/vncconnection.c"
-             line="1776">Tell the server that it is permitted to send audio
-data.</doc>
-        <source-position filename="../src/vncconnection.h" line="226"/>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve"
-               filename="../src/vncconnection.c"
-               line="1783">TRUE if the connection is ok, FALSE if it has an error</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="conn" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="../src/vncconnection.c"
-                 line="1778">the connection object</doc>
-            <type name="Connection" c:type="VncConnection*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="client_cut_text"
               c:identifier="vnc_connection_client_cut_text">
-        <source-position filename="../src/vncconnection.h" line="180"/>
+        <source-position filename="../src/vncconnection.h" line="192"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -1265,52 +1301,52 @@ data.</doc>
               c:identifier="vnc_connection_framebuffer_update_request">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1887">Request that the server send a framebuffer update when the
+             line="1914">Request that the server send a framebuffer update when the
 region positioned at (@x, @y) wth size (@width, @height)
 sees damage. The update sent may be a subset of the region
 requested, if @incremental is FALSE.</doc>
-        <source-position filename="../src/vncconnection.h" line="189"/>
+        <source-position filename="../src/vncconnection.h" line="201"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="1901">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="1928">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1889">the connection object</doc>
+                 line="1916">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="incremental" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1890">TRUE to only receive region with changes</doc>
+                 line="1917">TRUE to only receive region with changes</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
           <parameter name="x" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1891">horizontal offset to region of update</doc>
+                 line="1918">horizontal offset to region of update</doc>
             <type name="guint16" c:type="guint16"/>
           </parameter>
           <parameter name="y" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1892">vertical offset to region of update</doc>
+                 line="1919">vertical offset to region of update</doc>
             <type name="guint16" c:type="guint16"/>
           </parameter>
           <parameter name="width" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1893">horizontal size of region of update</doc>
+                 line="1920">horizontal size of region of update</doc>
             <type name="guint16" c:type="guint16"/>
           </parameter>
           <parameter name="height" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1894">vertical size of region of update</doc>
+                 line="1921">vertical size of region of update</doc>
             <type name="guint16" c:type="guint16"/>
           </parameter>
         </parameters>
@@ -1319,21 +1355,21 @@ requested, if @incremental is FALSE.</doc>
               c:identifier="vnc_connection_get_abs_pointer">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="6259">Determine if the remote server supports absolute pointer
+             line="6430">Determine if the remote server supports absolute pointer
 motion events. This will only be valid once the
 "vnc-initialized" signal has been emitted.</doc>
-        <source-position filename="../src/vncconnection.h" line="215"/>
+        <source-position filename="../src/vncconnection.h" line="227"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="6267">TRUE if the server supports absolute pointer mode</doc>
+               line="6438">TRUE if the server supports absolute pointer mode</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="6261">the connection object</doc>
+                 line="6432">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1342,19 +1378,19 @@ motion events. This will only be valid once the
               c:identifier="vnc_connection_get_audio_format">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1761">Get the current audio format specification</doc>
-        <source-position filename="../src/vncconnection.h" line="224"/>
+             line="1788">Get the current audio format specification</doc>
+        <source-position filename="../src/vncconnection.h" line="237"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="1767">the current audio format</doc>
+               line="1794">the current audio format</doc>
           <type name="AudioFormat" c:type="const VncAudioFormat*"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1763">the connection object</doc>
+                 line="1790">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1362,20 +1398,20 @@ motion events. This will only be valid once the
       <method name="get_cursor" c:identifier="vnc_connection_get_cursor">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="6242">Get the cursor currently associated with the desktop,
+             line="6413">Get the cursor currently associated with the desktop,
 if any.</doc>
-        <source-position filename="../src/vncconnection.h" line="213"/>
+        <source-position filename="../src/vncconnection.h" line="225"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="6249">the cursor or NULL</doc>
+               line="6420">the cursor or NULL</doc>
           <type name="Cursor" c:type="VncCursor*"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="6244">the VNC connection</doc>
+                 line="6415">the VNC connection</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1384,22 +1420,22 @@ if any.</doc>
               c:identifier="vnc_connection_get_ext_key_event">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="6223">Determine if the remote server supports the extended
+             line="6394">Determine if the remote server supports the extended
 keyboard event which transmits raw XT scancodes.
 This will only be valid once the "vnc-initialized"
 signal has been emitted</doc>
-        <source-position filename="../src/vncconnection.h" line="216"/>
+        <source-position filename="../src/vncconnection.h" line="228"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="6232">TRUE if supported, FALSE otherwise</doc>
+               line="6403">TRUE if supported, FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="6225">the connection object</doc>
+                 line="6396">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1407,21 +1443,21 @@ signal has been emitted</doc>
       <method name="get_height" c:identifier="vnc_connection_get_height">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="6206">Get the height of the remote display. The height will
+             line="6377">Get the height of the remote display. The height will
 only be set once the "vnc-initialized" signal has
 been emitted</doc>
-        <source-position filename="../src/vncconnection.h" line="211"/>
+        <source-position filename="../src/vncconnection.h" line="223"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="6214">the desktop height</doc>
+               line="6385">the desktop height</doc>
           <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="6208">the connection object</doc>
+                 line="6379">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1429,21 +1465,21 @@ been emitted</doc>
       <method name="get_ledstate" c:identifier="vnc_connection_get_ledstate">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="6276">Get the current LED state bitmap. This is only
+             line="6447">Get the current LED state bitmap. This is only
 valid once the "vnc-initialized" signal has been
 emitted.</doc>
-        <source-position filename="../src/vncconnection.h" line="217"/>
+        <source-position filename="../src/vncconnection.h" line="230"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="6284">the LED state</doc>
+               line="6455">the LED state</doc>
           <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="6278">the connection object</doc>
+                 line="6449">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1451,21 +1487,21 @@ emitted.</doc>
       <method name="get_name" c:identifier="vnc_connection_get_name">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="6172">Get the name of the remote display. A name will only
+             line="6343">Get the name of the remote display. A name will only
 be available once the "vnc-initialized" signal has
 been emitted</doc>
-        <source-position filename="../src/vncconnection.h" line="209"/>
+        <source-position filename="../src/vncconnection.h" line="221"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="6180">the remote display name</doc>
+               line="6351">the remote display name</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="6174">the connection object</doc>
+                 line="6345">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1474,19 +1510,42 @@ been emitted</doc>
               c:identifier="vnc_connection_get_pixel_format">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1525">Get a specification of the current pixel format</doc>
-        <source-position filename="../src/vncconnection.h" line="199"/>
+             line="1552">Get a specification of the current pixel format</doc>
+        <source-position filename="../src/vncconnection.h" line="211"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="1531">the current pixel format</doc>
+               line="1558">the current pixel format</doc>
           <type name="PixelFormat" c:type="const VncPixelFormat*"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1527">the connection object</doc>
+                 line="1554">the connection object</doc>
+            <type name="Connection" c:type="VncConnection*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_power_control"
+              c:identifier="vnc_connection_get_power_control">
+        <doc xml:space="preserve"
+             filename="../src/vncconnection.c"
+             line="6464">Determine if the remote server supports power control.
+This will only be valid once the "vnc-initialized"
+signal has been emitted.</doc>
+        <source-position filename="../src/vncconnection.h" line="229"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/vncconnection.c"
+               line="6472">TRUE if the server supports power control</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="conn" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/vncconnection.c"
+                 line="6466">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1494,19 +1553,19 @@ been emitted</doc>
       <method name="get_shared" c:identifier="vnc_connection_get_shared">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1566">Get the sharing state for the connection</doc>
-        <source-position filename="../src/vncconnection.h" line="202"/>
+             line="1593">Get the sharing state for the connection</doc>
+        <source-position filename="../src/vncconnection.h" line="214"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="1572">TRUE if other clients are permitted, FALSE otherwise</doc>
+               line="1599">TRUE if other clients are permitted, FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1568">the connection object</doc>
+                 line="1595">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1514,21 +1573,21 @@ been emitted</doc>
       <method name="get_width" c:identifier="vnc_connection_get_width">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="6189">Get the width of the remote display. The width will
+             line="6360">Get the width of the remote display. The width will
 only be set once the "vnc-initialized" signal has
 been emitted</doc>
-        <source-position filename="../src/vncconnection.h" line="210"/>
+        <source-position filename="../src/vncconnection.h" line="222"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="6197">the desktop width</doc>
+               line="6368">the desktop width</doc>
           <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="6191">the connection object</doc>
+                 line="6362">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1536,20 +1595,20 @@ been emitted</doc>
       <method name="has_error" c:identifier="vnc_connection_has_error">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1509">Determine if the current connection is in an error
+             line="1536">Determine if the current connection is in an error
 state</doc>
-        <source-position filename="../src/vncconnection.h" line="204"/>
+        <source-position filename="../src/vncconnection.h" line="216"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="1516">TRUE if an error has occurred, FALSE otherwise</doc>
+               line="1543">TRUE if an error has occurred, FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1511">the connection object</doc>
+                 line="1538">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1558,21 +1617,21 @@ state</doc>
               c:identifier="vnc_connection_is_initialized">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="5412">Determine if the connection to the remote desktop is
+             line="5583">Determine if the connection to the remote desktop is
 fully initialized and thus receiving framebuffer
 updates.</doc>
-        <source-position filename="../src/vncconnection.h" line="178"/>
+        <source-position filename="../src/vncconnection.h" line="190"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="5420">TRUE if initialized, FALSE if closed or still negotiating</doc>
+               line="5591">TRUE if initialized, FALSE if closed or still negotiating</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5414">the connection object</doc>
+                 line="5585">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1580,19 +1639,19 @@ updates.</doc>
       <method name="is_open" c:identifier="vnc_connection_is_open">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="5388">Check if the connection is currently open</doc>
-        <source-position filename="../src/vncconnection.h" line="171"/>
+             line="5559">Check if the connection is currently open</doc>
+        <source-position filename="../src/vncconnection.h" line="183"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="5394">TRUE if open, FALSE if closing/closed</doc>
+               line="5565">TRUE if open, FALSE if closing/closed</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5390">the connection object</doc>
+                 line="5561">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -1600,40 +1659,40 @@ updates.</doc>
       <method name="key_event" c:identifier="vnc_connection_key_event">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1959">Send a key press/release event to the server. By default the
+             line="1986">Send a key press/release event to the server. By default the
 event will be sent with the X11 key code from @key. If the
 extended key event protocol extension is active, the @scancode
 will be sent instead.</doc>
-        <source-position filename="../src/vncconnection.h" line="186"/>
+        <source-position filename="../src/vncconnection.h" line="198"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="1971">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="1998">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1961">the connection object</doc>
+                 line="1988">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="down_flag" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1962">TRUE if this is a key press, FALSE for a key release</doc>
+                 line="1989">TRUE if this is a key press, FALSE for a key release</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
           <parameter name="key" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1963">the X11 key code</doc>
+                 line="1990">the X11 key code</doc>
             <type name="guint32" c:type="guint32"/>
           </parameter>
           <parameter name="scancode" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1964">the XT scan code</doc>
+                 line="1991">the XT scan code</doc>
             <type name="guint16" c:type="guint16"/>
           </parameter>
         </parameters>
@@ -1641,7 +1700,7 @@ will be sent instead.</doc>
       <method name="open_addr" c:identifier="vnc_connection_open_addr">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="5903">Open a socket connection to server identified by @addr.
+             line="6074">Open a socket connection to server identified by @addr.
 @addr may refer to either a TCP address (IPv4/6) or
 a UNIX socket address. The @hostname provided should
 reflect the name of the host that the @addr provides a
@@ -1651,24 +1710,24 @@ For example, if @addr points to a proxy server, then
 endpoint. This will be used by some authentication
 schemes, for example x509 certificate validation
 against @hostname.</doc>
-        <source-position filename="../src/vncconnection.h" line="170"/>
+        <source-position filename="../src/vncconnection.h" line="182"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="5920">TRUE if a connection was opened, FALSE if already open</doc>
+               line="6091">TRUE if a connection was opened, FALSE if already open</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5905">the connection object</doc>
+                 line="6076">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="addr" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5906">the socket address</doc>
+                 line="6077">the socket address</doc>
             <type name="Gio.SocketAddress" c:type="GSocketAddress*"/>
           </parameter>
           <parameter name="hostname"
@@ -1677,7 +1736,7 @@ against @hostname.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5907">the hostname</doc>
+                 line="6078">the hostname</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1685,30 +1744,30 @@ against @hostname.</doc>
       <method name="open_fd" c:identifier="vnc_connection_open_fd">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="5816">Open a connection using @fd as the transport. If @fd
+             line="5987">Open a connection using @fd as the transport. If @fd
 refers to a TCP connection, it is recommended to use
 vnc_connection_open_fd_with_hostname instead, to
 provide the remote hostname. This allows use of
 x509 based authentication which requires a hostname
 to be available.</doc>
-        <source-position filename="../src/vncconnection.h" line="167"/>
+        <source-position filename="../src/vncconnection.h" line="179"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="5828">TRUE if a connection was opened, FALSE if already open</doc>
+               line="5999">TRUE if a connection was opened, FALSE if already open</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5818">the connection object</doc>
+                 line="5989">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="fd" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5819">file descriptor to use for the connection</doc>
+                 line="5990">file descriptor to use for the connection</doc>
             <type name="gint" c:type="int"/>
           </parameter>
         </parameters>
@@ -1717,29 +1776,29 @@ to be available.</doc>
               c:identifier="vnc_connection_open_fd_with_hostname">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="5836">Open a connection using @fd as the transport. The
+             line="6007">Open a connection using @fd as the transport. The
 @hostname provided should reflect the name of the
 host that the @fd provides a connection to. This
 will be used by some authentication schemes, for
 example x509 certificate validation against @hostname.</doc>
-        <source-position filename="../src/vncconnection.h" line="168"/>
+        <source-position filename="../src/vncconnection.h" line="180"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="5848">TRUE if a connection was opened, FALSE if already open</doc>
+               line="6019">TRUE if a connection was opened, FALSE if already open</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5838">the connection object</doc>
+                 line="6009">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="fd" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5839">file descriptor to use for the connection</doc>
+                 line="6010">file descriptor to use for the connection</doc>
             <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="hostname"
@@ -1748,7 +1807,7 @@ example x509 certificate validation against @hostname.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5840">the host associated with the connection</doc>
+                 line="6011">the host associated with the connection</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1756,32 +1815,32 @@ example x509 certificate validation against @hostname.</doc>
       <method name="open_host" c:identifier="vnc_connection_open_host">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="5871">Open a TCP connection to the remote desktop at @host
+             line="6042">Open a TCP connection to the remote desktop at @host
 listening on @port.</doc>
-        <source-position filename="../src/vncconnection.h" line="169"/>
+        <source-position filename="../src/vncconnection.h" line="181"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="5880">TRUE if a connection was opened, FALSE if already open</doc>
+               line="6051">TRUE if a connection was opened, FALSE if already open</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5873">the connection object</doc>
+                 line="6044">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="host" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5874">the host name or IP address</doc>
+                 line="6045">the host name or IP address</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="port" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5875">the service name or port number</doc>
+                 line="6046">the service name or port number</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1789,65 +1848,98 @@ listening on @port.</doc>
       <method name="pointer_event" c:identifier="vnc_connection_pointer_event">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1997">Send a pointer event to the server, reflecting either movement
+             line="2024">Send a pointer event to the server, reflecting either movement
 of the pointer, or a change in state of its buttons, or both.</doc>
-        <source-position filename="../src/vncconnection.h" line="183"/>
+        <source-position filename="../src/vncconnection.h" line="195"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="2007">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="2034">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1999">the connection object</doc>
+                 line="2026">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="button_mask" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="2000">the new state of the buttons</doc>
+                 line="2027">the new state of the buttons</doc>
             <type name="guint8" c:type="guint8"/>
           </parameter>
           <parameter name="x" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="2001">the new horizontal position of the pointer</doc>
+                 line="2028">the new horizontal position of the pointer</doc>
             <type name="guint16" c:type="guint16"/>
           </parameter>
           <parameter name="y" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="2002">the new veritical position of the pointer</doc>
+                 line="2029">the new veritical position of the pointer</doc>
             <type name="guint16" c:type="guint16"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="power_control" c:identifier="vnc_connection_power_control">
+        <doc xml:space="preserve"
+             filename="../src/vncconnection.c"
+             line="6482">Perform a power control action on the remote server.
+
+This is only valid if the "vnc-power-control" signal
+has been emitted with a VNC_CONNECTION_POWER_STATUS_INIT
+code.
+
+The action should be assumed to be accepted unless
+"vnc-power-control" signal is emitted with a
+VNC_CONNECTION_POWER_STATUS_FAIL code.</doc>
+        <source-position filename="../src/vncconnection.h" line="242"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../src/vncconnection.c"
+               line="6496">TRUE if the action was sent, FALSE if
+power control is not supported</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="conn" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/vncconnection.c"
+                 line="6484">the connection object</doc>
+            <type name="Connection" c:type="VncConnection*"/>
+          </instance-parameter>
+          <parameter name="action" transfer-ownership="none">
+            <type name="ConnectionPowerAction"
+                  c:type="VncConnectionPowerAction"/>
           </parameter>
         </parameters>
       </method>
       <method name="set_audio" c:identifier="vnc_connection_set_audio">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1693">Set the audio sink to use for playing back audio from
+             line="1720">Set the audio sink to use for playing back audio from
 the remote session.</doc>
-        <source-position filename="../src/vncconnection.h" line="219"/>
+        <source-position filename="../src/vncconnection.h" line="232"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="1701">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="1728">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1695">the connection object</doc>
+                 line="1722">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="audio" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1696">the audio sink</doc>
+                 line="1723">the audio sink</doc>
             <type name="Audio" c:type="VncAudio*"/>
           </parameter>
         </parameters>
@@ -1856,29 +1948,29 @@ the remote session.</doc>
               c:identifier="vnc_connection_set_audio_format">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1733">Set the audio format specification to use for playback
+             line="1760">Set the audio format specification to use for playback
 from the remote session. The format should only be set
 when the audio stream is not active, otherwise it will
 be impossible to determine when the server has switched
 to sending data in the new format</doc>
-        <source-position filename="../src/vncconnection.h" line="222"/>
+        <source-position filename="../src/vncconnection.h" line="235"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="1744">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="1771">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1735">the connection object</doc>
+                 line="1762">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="fmt" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1736">the audio format</doc>
+                 line="1763">the audio format</doc>
             <type name="AudioFormat" c:type="const VncAudioFormat*"/>
           </parameter>
         </parameters>
@@ -1887,26 +1979,26 @@ to sending data in the new format</doc>
               c:identifier="vnc_connection_set_auth_subtype">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="5989">If a multi-level authentication scheme was requested, this
+             line="6160">If a multi-level authentication scheme was requested, this
 identifies which auth type to use for the second phase.</doc>
-        <source-position filename="../src/vncconnection.h" line="175"/>
+        <source-position filename="../src/vncconnection.h" line="187"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="5997">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="6168">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5991">the connection object</doc>
+                 line="6162">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="type" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5992">the auth sub-type</doc>
+                 line="6163">the auth sub-type</doc>
             <type name="guint" c:type="unsigned int"/>
           </parameter>
         </parameters>
@@ -1914,26 +2006,26 @@ identifies which auth type to use for the second phase.</doc>
       <method name="set_auth_type" c:identifier="vnc_connection_set_auth_type">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="5949">Set the authentication type to use to complete the
+             line="6120">Set the authentication type to use to complete the
 connection.</doc>
-        <source-position filename="../src/vncconnection.h" line="174"/>
+        <source-position filename="../src/vncconnection.h" line="186"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="5957">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="6128">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5951">the connection object</doc>
+                 line="6122">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="type" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5952">the requested auth type</doc>
+                 line="6123">the requested auth type</doc>
             <type name="guint" c:type="unsigned int"/>
           </parameter>
         </parameters>
@@ -1942,34 +2034,34 @@ connection.</doc>
               c:identifier="vnc_connection_set_credential">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="6089">Sets the value of the authentication credential
+             line="6260">Sets the value of the authentication credential
 @type to the string @data.
 
 @type is one of the VncConnectionCredential enum vlaues</doc>
-        <source-position filename="../src/vncconnection.h" line="176"/>
+        <source-position filename="../src/vncconnection.h" line="188"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="6100">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="6271">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="6091">the connection object</doc>
+                 line="6262">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="type" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="6092">the authentication credential type</doc>
+                 line="6263">the authentication credential type</doc>
             <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="data" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="6093">the value associated with the credential</doc>
+                 line="6264">the value associated with the credential</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -1977,33 +2069,33 @@ connection.</doc>
       <method name="set_encodings" c:identifier="vnc_connection_set_encodings">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1832">Inform the server of the list of encodings that it is
+             line="1859">Inform the server of the list of encodings that it is
 allowed to send. This should be done before requesting
 any framebuffer updates</doc>
-        <source-position filename="../src/vncconnection.h" line="194"/>
+        <source-position filename="../src/vncconnection.h" line="206"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="1842">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="1869">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1834">the connection object</doc>
+                 line="1861">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="n_encoding" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1835">number of entries in @encoding</doc>
+                 line="1862">number of entries in @encoding</doc>
             <type name="gint" c:type="int"/>
           </parameter>
           <parameter name="encoding" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1836">the list of permitted encodings</doc>
+                 line="1863">the list of permitted encodings</doc>
             <array length="0" zero-terminated="0" c:type="gint32*">
               <type name="gint32" c:type="gint32"/>
             </array>
@@ -2014,26 +2106,26 @@ any framebuffer updates</doc>
               c:identifier="vnc_connection_set_framebuffer">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="6133">Set the framebuffer object to which frame buffer updates
+             line="6304">Set the framebuffer object to which frame buffer updates
 will be written.</doc>
-        <source-position filename="../src/vncconnection.h" line="206"/>
+        <source-position filename="../src/vncconnection.h" line="218"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="6141">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="6312">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="6135">the connection object</doc>
+                 line="6306">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="fb" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="6136">the framebuffer object</doc>
+                 line="6307">the framebuffer object</doc>
             <type name="Framebuffer" c:type="VncFramebuffer*"/>
           </parameter>
         </parameters>
@@ -2042,29 +2134,29 @@ will be written.</doc>
               c:identifier="vnc_connection_set_pixel_format">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1649">Tell the server what pixel format  to use for
+             line="1676">Tell the server what pixel format  to use for
 framebuffer updates. It is only safe to use this
 when no framebuffer updates are pending, otherwise
 it is impossible to determine when the server has
 switched over to using the new format.</doc>
-        <source-position filename="../src/vncconnection.h" line="196"/>
+        <source-position filename="../src/vncconnection.h" line="208"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="1660">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="1687">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1651">the connection object</doc>
+                 line="1678">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="fmt" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1652">the new pixel format</doc>
+                 line="1679">the new pixel format</doc>
             <type name="PixelFormat" c:type="const VncPixelFormat*"/>
           </parameter>
         </parameters>
@@ -2072,28 +2164,28 @@ switched over to using the new format.</doc>
       <method name="set_shared" c:identifier="vnc_connection_set_shared">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="1541">Set the shared state for the connection. A TRUE value
+             line="1568">Set the shared state for the connection. A TRUE value
 allow allow this client to co-exist with other existing
 clients. A FALSE value will cause other clients to be
 dropped</doc>
-        <source-position filename="../src/vncconnection.h" line="201"/>
+        <source-position filename="../src/vncconnection.h" line="213"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/vncconnection.c"
-               line="1551">TRUE if the connection is ok, FALSE if it has an error</doc>
+               line="1578">TRUE if the connection is ok, FALSE if it has an error</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1543">the connection object</doc>
+                 line="1570">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
           <parameter name="sharedFlag" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="1544">the new sharing state</doc>
+                 line="1571">the new sharing state</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -2101,9 +2193,9 @@ dropped</doc>
       <method name="shutdown" c:identifier="vnc_connection_shutdown">
         <doc xml:space="preserve"
              filename="../src/vncconnection.c"
-             line="5355">Initiate a shutdown of the current connection
+             line="5526">Initiate a shutdown of the current connection
 by closing its socket</doc>
-        <source-position filename="../src/vncconnection.h" line="172"/>
+        <source-position filename="../src/vncconnection.h" line="184"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -2111,7 +2203,7 @@ by closing its socket</doc>
           <instance-parameter name="conn" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/vncconnection.c"
-                 line="5357">the connection object</doc>
+                 line="5528">the connection object</doc>
             <type name="Connection" c:type="VncConnection*"/>
           </instance-parameter>
         </parameters>
@@ -2198,6 +2290,16 @@ by closing its socket</doc>
           </parameter>
         </parameters>
       </glib:signal>
+      <glib:signal name="vnc-desktop-rename" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="object" transfer-ownership="none">
+            <type name="utf8" c:type="gchar*"/>
+          </parameter>
+        </parameters>
+      </glib:signal>
       <glib:signal name="vnc-desktop-resize" when="first">
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -2277,6 +2379,16 @@ by closing its socket</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
+      </glib:signal>
+      <glib:signal name="vnc-power-control-failed" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+      <glib:signal name="vnc-power-control-initialized" when="first">
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
       </glib:signal>
       <glib:signal name="vnc-server-cut-text" when="first">
         <return-value transfer-ownership="none">
@@ -2412,7 +2524,7 @@ by closing its socket</doc>
     <record name="ConnectionClass"
             c:type="VncConnectionClass"
             glib:is-gtype-struct-for="Connection">
-      <source-position filename="../src/vncconnection.h" line="89"/>
+      <source-position filename="../src/vncconnection.h" line="92"/>
       <field name="parent_class">
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
@@ -2688,8 +2800,50 @@ by closing its socket</doc>
           </parameters>
         </callback>
       </field>
+      <field name="vnc_power_control_initialized">
+        <callback name="vnc_power_control_initialized">
+          <source-position filename="../src/vncconnection.h" line="83"/>
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="conn" transfer-ownership="none">
+              <type name="Connection" c:type="VncConnection*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="vnc_power_control_failed">
+        <callback name="vnc_power_control_failed">
+          <source-position filename="../src/vncconnection.h" line="84"/>
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="conn" transfer-ownership="none">
+              <type name="Connection" c:type="VncConnection*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="vnc_desktop_rename">
+        <callback name="vnc_desktop_rename">
+          <source-position filename="../src/vncconnection.h" line="85"/>
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="conn" transfer-ownership="none">
+              <type name="Connection" c:type="VncConnection*"/>
+            </parameter>
+            <parameter name="name" transfer-ownership="none">
+              <type name="utf8" c:type="const char*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
       <field name="_vnc_reserved">
-        <array zero-terminated="0" fixed-size="18">
+        <array zero-terminated="0" fixed-size="15">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
@@ -2808,6 +2962,11 @@ by closing its socket</doc>
               c:identifier="VNC_CONNECTION_ENCODING_DESKTOP_RESIZE"
               glib:nick="desktop-resize">
       </member>
+      <member name="last_rect"
+              value="-224"
+              c:identifier="VNC_CONNECTION_ENCODING_LAST_RECT"
+              glib:nick="last-rect">
+      </member>
       <member name="wmvi"
               value="1464686185"
               c:identifier="VNC_CONNECTION_ENCODING_WMVi"
@@ -2848,10 +3007,40 @@ by closing its socket</doc>
               c:identifier="VNC_CONNECTION_ENCODING_LED_STATE"
               glib:nick="led-state">
       </member>
+      <member name="desktop_name"
+              value="-307"
+              c:identifier="VNC_CONNECTION_ENCODING_DESKTOP_NAME"
+              glib:nick="desktop-name">
+      </member>
+      <member name="xvp"
+              value="-309"
+              c:identifier="VNC_CONNECTION_ENCODING_XVP"
+              glib:nick="xvp">
+      </member>
       <member name="alpha_cursor"
               value="-314"
               c:identifier="VNC_CONNECTION_ENCODING_ALPHA_CURSOR"
               glib:nick="alpha-cursor">
+      </member>
+    </enumeration>
+    <enumeration name="ConnectionPowerAction"
+                 glib:type-name="VncConnectionPowerAction"
+                 glib:get-type="vnc_connection_power_action_get_type"
+                 c:type="VncConnectionPowerAction">
+      <member name="shutdown"
+              value="2"
+              c:identifier="VNC_CONNECTION_POWER_ACTION_SHUTDOWN"
+              glib:nick="shutdown">
+      </member>
+      <member name="reboot"
+              value="3"
+              c:identifier="VNC_CONNECTION_POWER_ACTION_REBOOT"
+              glib:nick="reboot">
+      </member>
+      <member name="reset"
+              value="4"
+              c:identifier="VNC_CONNECTION_POWER_ACTION_RESET"
+              glib:nick="reset">
       </member>
     </enumeration>
     <record name="ConnectionPrivate"
@@ -4447,6 +4636,20 @@ vnc_pixel_format_free when no longer required.</doc>
                  line="82">the format to free</doc>
             <type name="PixelFormat" c:type="VncPixelFormat*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="match" c:identifier="vnc_pixel_format_match">
+        <source-position filename="../src/vncpixelformat.h" line="55"/>
+        <return-value transfer-ownership="none">
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="format" transfer-ownership="none">
+            <type name="PixelFormat" c:type="const VncPixelFormat*"/>
+          </instance-parameter>
+          <parameter name="other" transfer-ownership="none">
+            <type name="PixelFormat" c:type="const VncPixelFormat*"/>
+          </parameter>
         </parameters>
       </method>
     </record>

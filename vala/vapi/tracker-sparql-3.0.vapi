@@ -122,7 +122,7 @@ namespace Tracker {
 		public abstract Sparql.ValueType get_value_type (int column);
 
 		public abstract unowned string? get_variable_name (int column);
-		public abstract unowned string? get_string (int column, out long? length = null);
+		public abstract unowned string? get_string (int column, out long length = null);
 
 		public abstract bool next (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async abstract bool next_async (GLib.Cancellable? cancellable = null) throws GLib.Error;

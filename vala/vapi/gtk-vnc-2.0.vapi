@@ -79,6 +79,7 @@ namespace Vnc {
 		public signal void vnc_auth_unsupported (uint object);
 		public signal void vnc_bell ();
 		public virtual signal void vnc_connected ();
+		public signal void vnc_desktop_rename (string object);
 		public signal void vnc_desktop_resize (int object, int p0);
 		public virtual signal void vnc_disconnected ();
 		public signal void vnc_error (string object);
@@ -87,6 +88,8 @@ namespace Vnc {
 		public signal void vnc_keyboard_ungrab ();
 		public signal void vnc_pointer_grab ();
 		public signal void vnc_pointer_ungrab ();
+		public signal void vnc_power_control_failed ();
+		public signal void vnc_power_control_initialized ();
 		public signal void vnc_server_cut_text (string object);
 	}
 	[CCode (cheader_filename = "gtk-vnc.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "vnc_grab_sequence_get_type ()")]

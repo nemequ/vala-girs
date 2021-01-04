@@ -59,6 +59,8 @@ namespace Hdy {
 	public class Avatar : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Avatar (int size, string? text, bool show_initials);
+		[Version (since = "1.1")]
+		public Gdk.Pixbuf draw_to_pixbuf (int size, int scale_factor);
 		[Version (since = "1.0")]
 		public unowned string? get_icon_name ();
 		public bool get_show_initials ();
@@ -228,8 +230,14 @@ namespace Hdy {
 		public unowned Gtk.Widget get_visible_child ();
 		[Version (since = "1.0")]
 		public unowned string get_visible_child_name ();
+		[Version (since = "1.1")]
+		public void insert_child_after (Gtk.Widget child, Gtk.Widget? sibling);
 		[Version (since = "1.0")]
 		public bool navigate (Hdy.NavigationDirection direction);
+		[Version (since = "1.1")]
+		public void prepend (Gtk.Widget child);
+		[Version (since = "1.1")]
+		public void reorder_child_after (Gtk.Widget child, Gtk.Widget? sibling);
 		[Version (since = "1.0")]
 		public void set_can_swipe_back (bool can_swipe_back);
 		[Version (since = "1.0")]
@@ -317,6 +325,98 @@ namespace Hdy {
 		public string subtitle { get; set; }
 		[Version (since = "1.0")]
 		public bool use_underline { get; set; }
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_flap_get_type ()")]
+	public class Flap : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "1.1")]
+		public Flap ();
+		[Version (since = "1.1")]
+		public unowned Gtk.Widget? get_content ();
+		[Version (since = "1.1")]
+		public unowned Gtk.Widget? get_flap ();
+		[Version (since = "1.1")]
+		public Gtk.PackType get_flap_position ();
+		[Version (since = "1.1")]
+		public uint get_fold_duration ();
+		[Version (since = "1.1")]
+		public Hdy.FlapFoldPolicy get_fold_policy ();
+		[Version (since = "1.1")]
+		public bool get_folded ();
+		[Version (since = "1.1")]
+		public bool get_locked ();
+		[Version (since = "1.1")]
+		public bool get_modal ();
+		[Version (since = "1.1")]
+		public uint get_reveal_duration ();
+		[Version (since = "1.1")]
+		public bool get_reveal_flap ();
+		[Version (since = "1.1")]
+		public double get_reveal_progress ();
+		[Version (since = "1.1")]
+		public unowned Gtk.Widget? get_separator ();
+		[Version (since = "1.1")]
+		public bool get_swipe_to_close ();
+		[Version (since = "1.1")]
+		public bool get_swipe_to_open ();
+		[Version (since = "1.1")]
+		public Hdy.FlapTransitionType get_transition_type ();
+		[Version (since = "1.1")]
+		public void set_content (Gtk.Widget? content);
+		[Version (since = "1.1")]
+		public void set_flap (Gtk.Widget? flap);
+		[Version (since = "1.1")]
+		public void set_flap_position (Gtk.PackType position);
+		[Version (since = "1.1")]
+		public void set_fold_duration (uint duration);
+		[Version (since = "1.1")]
+		public void set_fold_policy (Hdy.FlapFoldPolicy policy);
+		[Version (since = "1.1")]
+		public void set_locked (bool locked);
+		[Version (since = "1.1")]
+		public void set_modal (bool modal);
+		[Version (since = "1.1")]
+		public void set_reveal_duration (uint duration);
+		[Version (since = "1.1")]
+		public void set_reveal_flap (bool reveal_flap);
+		[Version (since = "1.1")]
+		public void set_separator (Gtk.Widget? separator);
+		[Version (since = "1.1")]
+		public void set_swipe_to_close (bool swipe_to_close);
+		[Version (since = "1.1")]
+		public void set_swipe_to_open (bool swipe_to_open);
+		[Version (since = "1.1")]
+		public void set_transition_type (Hdy.FlapTransitionType transition_type);
+		[Version (since = "1.1")]
+		public Gtk.Widget content { get; set; }
+		[Version (since = "1.1")]
+		public Gtk.Widget flap { get; set; }
+		[Version (since = "1.1")]
+		public Gtk.PackType flap_position { get; set; }
+		[Version (since = "1.1")]
+		public uint fold_duration { get; set; }
+		[Version (since = "1.1")]
+		public Hdy.FlapFoldPolicy fold_policy { get; set; }
+		[Version (since = "1.1")]
+		public bool folded { get; }
+		[Version (since = "1.1")]
+		public bool locked { get; set; }
+		[Version (since = "1.1")]
+		public bool modal { get; set; }
+		[Version (since = "1.1")]
+		public uint reveal_duration { get; set; }
+		[Version (since = "1.1")]
+		public bool reveal_flap { get; set; }
+		[Version (since = "1.1")]
+		public double reveal_progress { get; }
+		[Version (since = "1.1")]
+		public Gtk.Widget separator { get; set; }
+		[Version (since = "1.1")]
+		public bool swipe_to_close { get; set; }
+		[Version (since = "1.1")]
+		public bool swipe_to_open { get; set; }
+		[Version (since = "1.1")]
+		public Hdy.FlapTransitionType transition_type { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_header_bar_get_type ()")]
 	public class HeaderBar : Gtk.Container, Atk.Implementor, Gtk.Buildable {
@@ -496,8 +596,14 @@ namespace Hdy {
 		public Hdy.LeafletTransitionType get_transition_type ();
 		public unowned Gtk.Widget get_visible_child ();
 		public unowned string get_visible_child_name ();
+		[Version (since = "1.1")]
+		public void insert_child_after (Gtk.Widget child, Gtk.Widget? sibling);
 		[Version (since = "1.0")]
 		public bool navigate (Hdy.NavigationDirection direction);
+		[Version (since = "1.1")]
+		public void prepend (Gtk.Widget child);
+		[Version (since = "1.1")]
+		public void reorder_child_after (Gtk.Widget child, Gtk.Widget? sibling);
 		[Version (since = "0.0.12")]
 		public void set_can_swipe_back (bool can_swipe_back);
 		[Version (since = "0.0.12")]
@@ -667,6 +773,30 @@ namespace Hdy {
 		public float xalign { get; set; }
 		[Version (since = "1.0")]
 		public float yalign { get; set; }
+	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_status_page_get_type ()")]
+	public class StatusPage : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "1.1")]
+		public StatusPage ();
+		[Version (since = "1.1")]
+		public unowned string? get_description ();
+		[Version (since = "1.1")]
+		public unowned string? get_icon_name ();
+		[Version (since = "1.1")]
+		public unowned string? get_title ();
+		[Version (since = "1.1")]
+		public void set_description (string? description);
+		[Version (since = "1.1")]
+		public void set_icon_name (string? icon_name);
+		[Version (since = "1.1")]
+		public void set_title (string? title);
+		[Version (since = "1.1")]
+		public string description { get; set; }
+		[Version (since = "1.1")]
+		public string icon_name { get; set; }
+		[Version (since = "1.1")]
+		public string title { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_swipe_group_get_type ()")]
 	public class SwipeGroup : GLib.Object, Gtk.Buildable {
@@ -869,6 +999,20 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_DECK_TRANSITION_TYPE_", type_id = "hdy_deck_transition_type_get_type ()")]
 	[Version (since = "1.0")]
 	public enum DeckTransitionType {
+		OVER,
+		UNDER,
+		SLIDE
+	}
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_FLAP_FOLD_POLICY_", type_id = "hdy_flap_fold_policy_get_type ()")]
+	[Version (since = "1.1")]
+	public enum FlapFoldPolicy {
+		NEVER,
+		ALWAYS,
+		AUTO
+	}
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_FLAP_TRANSITION_TYPE_", type_id = "hdy_flap_transition_type_get_type ()")]
+	[Version (since = "1.1")]
+	public enum FlapTransitionType {
 		OVER,
 		UNDER,
 		SLIDE

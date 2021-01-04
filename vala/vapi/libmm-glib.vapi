@@ -2325,6 +2325,15 @@ namespace MM {
 		DHCP;
 		public unowned string get_string ();
 	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_PROPERTIES_CMP_FLAGS_", has_type_id = false)]
+	[Flags]
+	public enum BearerPropertiesCmpFlags {
+		NONE,
+		LOOSE,
+		NO_PASSWORD,
+		NO_ALLOW_ROAMING,
+		NO_RM_PROTOCOL
+	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_TYPE_", type_id = "mm_bearer_type_get_type ()")]
 	public enum BearerType {
 		UNKNOWN,
