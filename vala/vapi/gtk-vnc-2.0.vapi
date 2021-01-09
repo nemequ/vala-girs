@@ -16,6 +16,7 @@ namespace Vnc {
 		public void client_cut_text (string text);
 		public void close ();
 		public void force_grab (bool enable);
+		public bool get_allow_resize ();
 		public unowned Vnc.Connection get_connection ();
 		public Vnc.DisplayDepthColor get_depth ();
 		public bool get_force_size ();
@@ -44,6 +45,7 @@ namespace Vnc {
 		public void send_keys ([CCode (array_length_cname = "nkeyvals", array_length_pos = 1.1)] uint[] keyvals);
 		public void send_keys_ex ([CCode (array_length_cname = "nkeyvals", array_length_pos = 1.5)] uint[] keyvals, Vnc.DisplayKeyEvent kind);
 		public void send_pointer (int x, int y, int button_mask);
+		public void set_allow_resize (bool enable);
 		public bool set_credential (int type, string data);
 		public void set_depth (Vnc.DisplayDepthColor depth);
 		public void set_force_size (bool enable);
@@ -56,6 +58,7 @@ namespace Vnc {
 		public bool set_scaling (bool enable);
 		public void set_shared_flag (bool shared);
 		public void set_smoothing (bool enable);
+		public bool allow_resize { get; set construct; }
 		public Vnc.Connection connection { get; }
 		public Vnc.DisplayDepthColor depth { get; set construct; }
 		public bool force_size { get; set construct; }

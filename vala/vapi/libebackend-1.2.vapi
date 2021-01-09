@@ -204,6 +204,8 @@ namespace E {
 		[Version (since = "3.38")]
 		public bool freeze_populate ();
 		public unowned string get_cache_dir ();
+		[Version (since = "3.40")]
+		public bool get_part_enabled (E.CollectionBackendParts parts);
 		[Version (since = "3.38")]
 		public bool get_populate_frozen ();
 		[Version (since = "3.32")]
@@ -476,6 +478,16 @@ namespace E {
 		NONE,
 		COMMIT,
 		ROLLBACK
+	}
+	[CCode (cheader_filename = "libebackend/libebackend.h", cprefix = "E_COLLECTION_BACKEND_PART_", type_id = "e_collection_backend_parts_get_type ()")]
+	[Flags]
+	[Version (since = "3.40")]
+	public enum CollectionBackendParts {
+		NONE,
+		CALENDAR,
+		CONTACTS,
+		MAIL,
+		ANY
 	}
 	[CCode (cheader_filename = "libebackend/libebackend.h", cprefix = "E_DBUS_SERVER_EXIT_", type_id = "e_dbus_server_exit_code_get_type ()")]
 	[Version (since = "3.6")]

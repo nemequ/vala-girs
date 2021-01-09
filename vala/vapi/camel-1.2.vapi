@@ -362,7 +362,6 @@ namespace Camel {
 		public string dup_display_name ();
 		[Version (since = "3.8")]
 		public string dup_full_name ();
-		public static GLib.Quark error_quark ();
 		[Version (since = "3.0")]
 		public async bool expunge (int io_priority, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.0")]
@@ -1719,7 +1718,6 @@ namespace Camel {
 		public string dup_display_name ();
 		[Version (since = "3.12")]
 		public string dup_password ();
-		public static GLib.Quark error_quark ();
 		[Version (since = "3.2")]
 		public Camel.ServiceConnectionStatus get_connection_status ();
 		[Version (since = "3.2")]
@@ -1883,7 +1881,6 @@ namespace Camel {
 		public virtual bool delete_folder_sync (string folder_name, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.24")]
 		public GLib.GenericArray<Camel.Folder> dup_opened_folders ();
-		public static GLib.Quark error_quark ();
 		[Version (since = "3.40")]
 		public virtual bool get_can_auto_save_changes ();
 		[Version (since = "3.24")]
@@ -2836,23 +2833,11 @@ namespace Camel {
 		BASIC_AND_MAILING_LIST,
 		ALL
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FETCH_", has_type_id = false)]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FETCH_", type_id = "camel_fetch_type_get_type ()")]
 	[Version (since = "3.4")]
 	public enum FetchType {
 		OLD_MESSAGES,
 		NEW_MESSAGES
-	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FOLDER_ERROR_", has_type_id = false)]
-	[Version (since = "2.32")]
-	public enum FolderError {
-		INVALID,
-		INVALID_STATE,
-		NON_EMPTY,
-		NON_UID,
-		INSUFFICIENT_PERMISSION,
-		INVALID_PATH,
-		INVALID_UID,
-		SUMMARY_INVALID
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FOLDER_", type_id = "camel_folder_flags_get_type ()")]
 	[Flags]
@@ -3109,7 +3094,7 @@ namespace Camel {
 		SMIME,
 		PGP
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SEXP_RES_", has_type_id = false)]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SEXP_RES_", type_id = "camel_sexp_result_type_get_type ()")]
 	[Version (since = "3.4")]
 	public enum SExpResultType {
 		ARRAY_PTR,
@@ -3119,7 +3104,7 @@ namespace Camel {
 		TIME,
 		UNDEFINED
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SEXP_TERM_", has_type_id = false)]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SEXP_TERM_", type_id = "camel_sexp_term_type_get_type ()")]
 	[Version (since = "3.4")]
 	public enum SExpTermType {
 		INT,
@@ -3157,15 +3142,6 @@ namespace Camel {
 		CONNECTED,
 		DISCONNECTING
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SERVICE_ERROR_", has_type_id = false)]
-	[Version (since = "2.32")]
-	public enum ServiceError {
-		INVALID,
-		URL_INVALID,
-		UNAVAILABLE,
-		CANT_AUTHENTICATE,
-		NOT_CONNECTED
-	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SESSION_ALERT_", type_id = "camel_session_alert_type_get_type ()")]
 	public enum SessionAlertType {
 		INFO,
@@ -3177,12 +3153,6 @@ namespace Camel {
 	public enum SortType {
 		ASCENDING,
 		DESCENDING
-	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_ERROR_", has_type_id = false)]
-	[Version (since = "2.32")]
-	public enum StoreError {
-		INVALID,
-		NO_FOLDER
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_", type_id = "camel_store_flags_get_type ()")]
 	[Flags]
@@ -3197,7 +3167,7 @@ namespace Camel {
 		CAN_DELETE_FOLDERS_AT_ONCE,
 		SUPPORTS_INITIAL_SETUP
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_FOLDER_", has_type_id = false)]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_FOLDER_", type_id = "camel_store_get_folder_flags_get_type ()")]
 	[Flags]
 	public enum StoreGetFolderFlags {
 		NONE,
@@ -3288,7 +3258,7 @@ namespace Camel {
 		public static Camel.TransferEncoding from_string (string string);
 		public unowned string to_string ();
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_URL_HIDE_", has_type_id = false)]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_URL_HIDE_", type_id = "camel_url_flags_get_type ()")]
 	[Flags]
 	public enum URLFlags {
 		PARAMS,
@@ -3344,6 +3314,36 @@ namespace Camel {
 	public errordomain Error {
 		[CCode (cname = "CAMEL_ERROR_GENERIC")]
 		ERROR_GENERIC;
+		public static GLib.Quark quark ();
+	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FOLDER_ERROR_")]
+	[Version (since = "2.32")]
+	public errordomain FolderError {
+		INVALID,
+		INVALID_STATE,
+		NON_EMPTY,
+		NON_UID,
+		INSUFFICIENT_PERMISSION,
+		INVALID_PATH,
+		INVALID_UID,
+		SUMMARY_INVALID;
+		public static GLib.Quark quark ();
+	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SERVICE_ERROR_")]
+	[Version (since = "2.32")]
+	public errordomain ServiceError {
+		INVALID,
+		URL_INVALID,
+		UNAVAILABLE,
+		CANT_AUTHENTICATE,
+		NOT_CONNECTED;
+		public static GLib.Quark quark ();
+	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_ERROR_")]
+	[Version (since = "2.32")]
+	public errordomain StoreError {
+		INVALID,
+		NO_FOLDER;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_target = false)]

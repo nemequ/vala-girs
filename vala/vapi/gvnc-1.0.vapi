@@ -108,6 +108,7 @@ namespace Vnc {
 		public bool set_framebuffer (Vnc.Framebuffer fb);
 		public bool set_pixel_format (Vnc.PixelFormat fmt);
 		public bool set_shared (bool sharedFlag);
+		public Vnc.ConnectionResizeStatus set_size (uint width, uint height);
 		public void shutdown ();
 		[NoAccessorMethod]
 		public Vnc.Framebuffer framebuffer { owned get; set; }
@@ -278,6 +279,7 @@ namespace Vnc {
 		AUDIO,
 		LED_STATE,
 		DESKTOP_NAME,
+		EXTENDED_DESKTOP_RESIZE,
 		XVP,
 		ALPHA_CURSOR
 	}
@@ -286,6 +288,15 @@ namespace Vnc {
 		SHUTDOWN,
 		REBOOT,
 		RESET
+	}
+	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_RESIZE_STATUS_", type_id = "vnc_connection_resize_status_get_type ()")]
+	public enum ConnectionResizeStatus {
+		UNSUPPORTED,
+		OK,
+		ADMIN_PROHIBITED,
+		OUT_OF_RESOURCES,
+		INVALID_LAOUT,
+		FORWARDED
 	}
 	[CCode (cheader_filename = "gvnc.h", cname = "VNC_LEDSTATE_CAPS_LOCK")]
 	public const int LEDSTATE_CAPS_LOCK;
