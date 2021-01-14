@@ -75,7 +75,7 @@ the gdk-pixbuf library.  Currently only RGB is supported.</doc>
                     c:identifier="GDK_IS_PIXBUF_ANIMATION_ITER_CLASS"
                     introspectable="0">
       <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
-                       line="198"/>
+                       line="197"/>
       <parameters>
         <parameter name="klass">
         </parameter>
@@ -234,7 +234,7 @@ interpolation is just as fast and results in higher quality.</doc>
                     c:identifier="GDK_PIXBUF_ANIMATION_ITER_CLASS"
                     introspectable="0">
       <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
-                       line="197"/>
+                       line="196"/>
       <parameters>
         <parameter name="klass">
         </parameter>
@@ -244,7 +244,7 @@ interpolation is just as fast and results in higher quality.</doc>
                     c:identifier="GDK_PIXBUF_ANIMATION_ITER_GET_CLASS"
                     introspectable="0">
       <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
-                       line="199"/>
+                       line="198"/>
       <parameters>
         <parameter name="obj">
         </parameter>
@@ -3821,10 +3821,13 @@ back to a bilevel clipping mask.</doc>
            c:type="GdkPixbufAnimation"
            parent="GObject.Object"
            glib:type-name="GdkPixbufAnimation"
-           glib:get-type="gdk_pixbuf_animation_get_type">
+           glib:get-type="gdk_pixbuf_animation_get_type"
+           glib:type-struct="PixbufAnimationClass">
       <doc xml:space="preserve"
            filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
            line="39">An opaque struct representing an animation.</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                       line="174"/>
       <constructor name="new_from_file"
                    c:identifier="gdk_pixbuf_animation_new_from_file"
                    throws="1">
@@ -4011,6 +4014,136 @@ result of the operation.</doc>
           </parameter>
         </parameters>
       </function>
+      <virtual-method name="get_iter" invoker="get_iter">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+             line="651">Get an iterator for displaying an animation. The iterator provides
+the frames that should be displayed at a given time. It should be
+freed after use with g_object_unref().
+
+@start_time would normally come from g_get_current_time(), and marks
+the beginning of animation playback. After creating an iterator, you
+should immediately display the pixbuf returned by
+gdk_pixbuf_animation_iter_get_pixbuf(). Then, you should install
+a timeout (with g_timeout_add()) or by some other mechanism ensure
+that you'll update the image after
+gdk_pixbuf_animation_iter_get_delay_time() milliseconds. Each time
+the image is updated, you should reinstall the timeout with the new,
+possibly-changed delay time.
+
+As a shortcut, if @start_time is %NULL, the result of
+g_get_current_time() will be used automatically.
+
+To update the image (i.e. possibly change the result of
+gdk_pixbuf_animation_iter_get_pixbuf() to a new frame of the animation),
+call gdk_pixbuf_animation_iter_advance().
+
+If you're using #GdkPixbufLoader, in addition to updating the image
+after the delay time, you should also update it whenever you
+receive the area_updated signal and
+gdk_pixbuf_animation_iter_on_currently_loading_frame() returns
+%TRUE. In this case, the frame currently being fed into the loader
+has received new data, so needs to be refreshed. The delay time for
+a frame may also be modified after an area_updated signal, for
+example if the delay time for a frame is encoded in the data after
+the frame itself. So your timeout should be reinstalled after any
+area_updated signal.
+
+A delay time of -1 is possible, indicating "infinite."</doc>
+        <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                         line="172"/>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+               line="690">an iterator to move over the animation</doc>
+          <type name="PixbufAnimationIter" c:type="GdkPixbufAnimationIter*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="animation" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="653">a #GdkPixbufAnimation</doc>
+            <type name="PixbufAnimation" c:type="GdkPixbufAnimation*"/>
+          </instance-parameter>
+          <parameter name="start_time"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="654">time when the animation starts playing</doc>
+            <type name="GLib.TimeVal" c:type="const GTimeVal*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_size">
+        <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                         line="168"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="animation" transfer-ownership="none">
+            <type name="PixbufAnimation" c:type="GdkPixbufAnimation*"/>
+          </instance-parameter>
+          <parameter name="width" transfer-ownership="none">
+            <type name="gint" c:type="int*"/>
+          </parameter>
+          <parameter name="height" transfer-ownership="none">
+            <type name="gint" c:type="int*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_static_image" invoker="get_static_image">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+             line="585">If an animation is really just a plain image (has only one frame),
+this function returns that image. If the animation is an animation,
+this function returns a reasonable thing to display as a static
+unanimated image, which might be the first frame, or something more
+sophisticated. If an animation hasn't loaded any frames yet, this
+function will return %NULL.</doc>
+        <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                         line="166"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+               line="596">unanimated image representing the animation</doc>
+          <type name="Pixbuf" c:type="GdkPixbuf*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="animation" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="587">a #GdkPixbufAnimation</doc>
+            <type name="PixbufAnimation" c:type="GdkPixbufAnimation*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="is_static_image" invoker="is_static_image">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+             line="566">If you load a file with gdk_pixbuf_animation_new_from_file() and it
+turns out to be a plain, unanimated image, then this function will
+return %TRUE. Use gdk_pixbuf_animation_get_static_image() to retrieve
+the image.</doc>
+        <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                         line="164"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+               line="575">%TRUE if the "animation" was really just an image</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="animation" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="568">a #GdkPixbufAnimation</doc>
+            <type name="PixbufAnimation" c:type="GdkPixbufAnimation*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <method name="get_height" c:identifier="gdk_pixbuf_animation_get_height">
         <doc xml:space="preserve"
              filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
@@ -4216,17 +4349,262 @@ the image.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
     </class>
+    <record name="PixbufAnimationClass"
+            c:type="GdkPixbufAnimationClass"
+            glib:is-gtype-struct-for="PixbufAnimation">
+      <doc xml:space="preserve"
+           filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+           line="134">Modules supporting animations must derive a type from
+#GdkPixbufAnimation, providing suitable implementations of the
+virtual functions.</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                       line="174"/>
+      <field name="parent_class">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+             line="136">the parent class</doc>
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="is_static_image">
+        <callback name="is_static_image">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                           line="164"/>
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="575">%TRUE if the "animation" was really just an image</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="animation" transfer-ownership="none">
+              <doc xml:space="preserve"
+                   filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                   line="568">a #GdkPixbufAnimation</doc>
+              <type name="PixbufAnimation" c:type="GdkPixbufAnimation*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_static_image">
+        <callback name="get_static_image">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                           line="166"/>
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="596">unanimated image representing the animation</doc>
+            <type name="Pixbuf" c:type="GdkPixbuf*"/>
+          </return-value>
+          <parameters>
+            <parameter name="animation" transfer-ownership="none">
+              <doc xml:space="preserve"
+                   filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                   line="587">a #GdkPixbufAnimation</doc>
+              <type name="PixbufAnimation" c:type="GdkPixbufAnimation*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_size">
+        <callback name="get_size">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                           line="168"/>
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="animation" transfer-ownership="none">
+              <type name="PixbufAnimation" c:type="GdkPixbufAnimation*"/>
+            </parameter>
+            <parameter name="width" transfer-ownership="none">
+              <type name="gint" c:type="int*"/>
+            </parameter>
+            <parameter name="height" transfer-ownership="none">
+              <type name="gint" c:type="int*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_iter">
+        <callback name="get_iter">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                           line="172"/>
+          <return-value transfer-ownership="full">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="690">an iterator to move over the animation</doc>
+            <type name="PixbufAnimationIter" c:type="GdkPixbufAnimationIter*"/>
+          </return-value>
+          <parameters>
+            <parameter name="animation" transfer-ownership="none">
+              <doc xml:space="preserve"
+                   filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                   line="653">a #GdkPixbufAnimation</doc>
+              <type name="PixbufAnimation" c:type="GdkPixbufAnimation*"/>
+            </parameter>
+            <parameter name="start_time"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve"
+                   filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                   line="654">time when the animation starts playing</doc>
+              <type name="GLib.TimeVal" c:type="const GTimeVal*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
     <class name="PixbufAnimationIter"
            c:symbol-prefix="pixbuf_animation_iter"
            c:type="GdkPixbufAnimationIter"
            parent="GObject.Object"
            glib:type-name="GdkPixbufAnimationIter"
-           glib:get-type="gdk_pixbuf_animation_iter_get_type">
+           glib:get-type="gdk_pixbuf_animation_iter_get_type"
+           glib:type-struct="PixbufAnimationIterClass">
       <doc xml:space="preserve"
            filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
            line="47">An opaque struct representing an iterator which points to a
 certain position in an animation.</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                       line="219"/>
+      <virtual-method name="advance" invoker="advance">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+             line="793">Possibly advances an animation to a new frame. Chooses the frame based
+on the start time passed to gdk_pixbuf_animation_get_iter().
+
+@current_time would normally come from g_get_current_time(), and
+must be greater than or equal to the time passed to
+gdk_pixbuf_animation_get_iter(), and must increase or remain
+unchanged each time gdk_pixbuf_animation_iter_get_pixbuf() is
+called. That is, you can't go backward in time; animations only
+play forward.
+
+As a shortcut, pass %NULL for the current time and g_get_current_time()
+will be invoked on your behalf. So you only need to explicitly pass
+@current_time if you're doing something odd like playing the animation
+at double speed.
+
+If this function returns %FALSE, there's no need to update the animation
+display, assuming the display had been rendered prior to advancing;
+if %TRUE, you need to call gdk_pixbuf_animation_iter_get_pixbuf()
+and update the display with the new pixbuf.</doc>
+        <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                         line="217"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+               line="818">%TRUE if the image may need updating</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="iter" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="795">a #GdkPixbufAnimationIter</doc>
+            <type name="PixbufAnimationIter" c:type="GdkPixbufAnimationIter*"/>
+          </instance-parameter>
+          <parameter name="current_time"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="796">current time</doc>
+            <type name="GLib.TimeVal" c:type="const GTimeVal*"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_delay_time" invoker="get_delay_time">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+             line="721">Gets the number of milliseconds the current pixbuf should be displayed,
+or -1 if the current pixbuf should be displayed forever. g_timeout_add()
+conveniently takes a timeout in milliseconds, so you can use a timeout
+to schedule the next update.
+
+Note that some formats, like GIF, might clamp the timeout values in the
+image file to avoid updates that are just too quick. The minimum timeout
+for GIF images is currently 20 milliseconds.</doc>
+        <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                         line="211"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+               line="734">delay time in milliseconds (thousandths of a second)</doc>
+          <type name="gint" c:type="int"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="iter" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="723">an animation iterator</doc>
+            <type name="PixbufAnimationIter" c:type="GdkPixbufAnimationIter*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="get_pixbuf" invoker="get_pixbuf">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+             line="745">Gets the current pixbuf which should be displayed; the pixbuf might not
+be the same size as the animation itself
+(gdk_pixbuf_animation_get_width(), gdk_pixbuf_animation_get_height()).
+This pixbuf should be displayed for
+gdk_pixbuf_animation_iter_get_delay_time() milliseconds. The caller
+of this function does not own a reference to the returned pixbuf;
+the returned pixbuf will become invalid when the iterator advances
+to the next frame, which may happen anytime you call
+gdk_pixbuf_animation_iter_advance(). Copy the pixbuf to keep it
+(don't just add a reference), as it may get recycled as you advance
+the iterator.</doc>
+        <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                         line="213"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+               line="761">the pixbuf to be displayed</doc>
+          <type name="Pixbuf" c:type="GdkPixbuf*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="iter" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="747">an animation iterator</doc>
+            <type name="PixbufAnimationIter" c:type="GdkPixbufAnimationIter*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <virtual-method name="on_currently_loading_frame"
+                      invoker="on_currently_loading_frame">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+             line="772">Used to determine how to respond to the area_updated signal on
+#GdkPixbufLoader when loading an animation. area_updated is emitted
+for an area of the frame currently streaming in to the loader. So if
+you're on the currently loading frame, you need to redraw the screen for
+the updated area.</doc>
+        <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                         line="215"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+               line="782">%TRUE if the frame we're on is partially loaded, or the last frame</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="iter" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="774">a #GdkPixbufAnimationIter</doc>
+            <type name="PixbufAnimationIter" c:type="GdkPixbufAnimationIter*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
       <method name="advance" c:identifier="gdk_pixbuf_animation_iter_advance">
         <doc xml:space="preserve"
              filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
@@ -4362,7 +4740,120 @@ the updated area.</doc>
           </instance-parameter>
         </parameters>
       </method>
+      <field name="parent_instance">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
     </class>
+    <record name="PixbufAnimationIterClass"
+            c:type="GdkPixbufAnimationIterClass"
+            glib:is-gtype-struct-for="PixbufAnimationIter">
+      <doc xml:space="preserve"
+           filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+           line="179">Modules supporting animations must derive a type from
+#GdkPixbufAnimationIter, providing suitable implementations of the
+virtual functions.</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                       line="219"/>
+      <field name="parent_class">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+             line="181">the parent class</doc>
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="get_delay_time">
+        <callback name="get_delay_time">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                           line="211"/>
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="734">delay time in milliseconds (thousandths of a second)</doc>
+            <type name="gint" c:type="int"/>
+          </return-value>
+          <parameters>
+            <parameter name="iter" transfer-ownership="none">
+              <doc xml:space="preserve"
+                   filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                   line="723">an animation iterator</doc>
+              <type name="PixbufAnimationIter"
+                    c:type="GdkPixbufAnimationIter*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="get_pixbuf">
+        <callback name="get_pixbuf">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                           line="213"/>
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="761">the pixbuf to be displayed</doc>
+            <type name="Pixbuf" c:type="GdkPixbuf*"/>
+          </return-value>
+          <parameters>
+            <parameter name="iter" transfer-ownership="none">
+              <doc xml:space="preserve"
+                   filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                   line="747">an animation iterator</doc>
+              <type name="PixbufAnimationIter"
+                    c:type="GdkPixbufAnimationIter*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="on_currently_loading_frame">
+        <callback name="on_currently_loading_frame">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                           line="215"/>
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="782">%TRUE if the frame we're on is partially loaded, or the last frame</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="iter" transfer-ownership="none">
+              <doc xml:space="preserve"
+                   filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                   line="774">a #GdkPixbufAnimationIter</doc>
+              <type name="PixbufAnimationIter"
+                    c:type="GdkPixbufAnimationIter*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="advance">
+        <callback name="advance">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                           line="217"/>
+          <return-value transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                 line="818">%TRUE if the image may need updating</doc>
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="iter" transfer-ownership="none">
+              <doc xml:space="preserve"
+                   filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                   line="795">a #GdkPixbufAnimationIter</doc>
+              <type name="PixbufAnimationIter"
+                    c:type="GdkPixbufAnimationIter*"/>
+            </parameter>
+            <parameter name="current_time"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1">
+              <doc xml:space="preserve"
+                   filename="../gdk-pixbuf/gdk-pixbuf-animation.c"
+                   line="796">current time</doc>
+              <type name="GLib.TimeVal" c:type="const GTimeVal*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+    </record>
     <callback name="PixbufDestroyNotify" c:type="GdkPixbufDestroyNotify">
       <doc xml:space="preserve"
            filename="../gdk-pixbuf/gdk-pixbuf-core.h"
@@ -4473,10 +4964,72 @@ domain.</doc>
     </enumeration>
     <record name="PixbufFormat"
             c:type="GdkPixbufFormat"
+            version="2.2"
             glib:type-name="GdkPixbufFormat"
             glib:get-type="gdk_pixbuf_format_get_type"
             c:symbol-prefix="pixbuf_format">
-      <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h" line="42"/>
+      <doc xml:space="preserve"
+           filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+           line="333">A #GdkPixbufFormat contains information about the image format accepted by a
+module. Only modules should access the fields directly, applications should
+use the &lt;function&gt;gdk_pixbuf_format_*&lt;/function&gt; functions.</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h" line="363"/>
+      <field name="name" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="335">the name of the image format.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="signature" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="336">the signature of the module.</doc>
+        <type name="PixbufModulePattern" c:type="GdkPixbufModulePattern*"/>
+      </field>
+      <field name="domain" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="337">the message domain for the @description.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="description" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="338">a description of the image format.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </field>
+      <field name="mime_types" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="339">a %NULL-terminated array of MIME types for the image format.</doc>
+        <type name="utf8" c:type="gchar**"/>
+      </field>
+      <field name="extensions" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="340">a %NULL-terminated array of typical filename extensions for the
+ image format.</doc>
+        <type name="utf8" c:type="gchar**"/>
+      </field>
+      <field name="flags" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="342">a combination of #GdkPixbufFormatFlags.</doc>
+        <type name="guint32" c:type="guint32"/>
+      </field>
+      <field name="disabled" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="343">a boolean determining whether the loader is disabled.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </field>
+      <field name="license" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="344">a string containing license information, typically set to
+ shorthands like "GPL", "LGPL", etc.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </field>
       <method name="copy" c:identifier="gdk_pixbuf_format_copy" version="2.22">
         <doc xml:space="preserve"
              filename="../gdk-pixbuf/gdk-pixbuf-io.c"
@@ -4765,6 +5318,37 @@ with an inappropriate license, see gdk_pixbuf_format_get_license().</doc>
         </parameters>
       </method>
     </record>
+    <bitfield name="PixbufFormatFlags"
+              version="2.2"
+              c:type="GdkPixbufFormatFlags">
+      <doc xml:space="preserve"
+           filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+           line="314">Flags which allow a module to specify further details about the supported
+operations.</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h" line="331"/>
+      <member name="writable"
+              value="1"
+              c:identifier="GDK_PIXBUF_FORMAT_WRITABLE">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="316">the module can write out images in the format.</doc>
+      </member>
+      <member name="scalable"
+              value="2"
+              c:identifier="GDK_PIXBUF_FORMAT_SCALABLE">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="317">the image format is scalable</doc>
+      </member>
+      <member name="threadsafe"
+              value="4"
+              c:identifier="GDK_PIXBUF_FORMAT_THREADSAFE">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="318">the module is threadsafe. gdk-pixbuf
+    ignores modules that are not marked as threadsafe. (Since 2.28).</doc>
+      </member>
+    </bitfield>
     <class name="PixbufLoader"
            c:symbol-prefix="pixbuf_loader"
            c:type="GdkPixbufLoader"
@@ -5336,6 +5920,510 @@ the desired size to which the image should be scaled.</doc>
         </callback>
       </field>
     </record>
+    <record name="PixbufModule" c:type="GdkPixbufModule">
+      <doc xml:space="preserve"
+           filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+           line="214">A #GdkPixbufModule contains the necessary functions to load and save
+images in a certain file format.
+
+A #GdkPixbufModule can be loaded dynamically from a #GModule.
+Each loadable module must contain a #GdkPixbufModuleFillVtableFunc function
+named &lt;function&gt;fill_vtable&lt;/function&gt;, which will get called when the module
+is loaded and must set the function pointers of the #GdkPixbufModule.</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h" line="289"/>
+      <field name="module_name" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="216">the name of the module, usually the same as the
+ usual file extension for images of this type, eg. "xpm", "jpeg" or "png".</doc>
+        <type name="utf8" c:type="char*"/>
+      </field>
+      <field name="module_path" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="218">the path from which the module is loaded.</doc>
+        <type name="utf8" c:type="char*"/>
+      </field>
+      <field name="module" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="219">the loaded #GModule.</doc>
+        <type name="GModule.Module" c:type="GModule*"/>
+      </field>
+      <field name="info" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="220">a #GdkPixbufFormat holding information about the module.</doc>
+        <type name="PixbufFormat" c:type="GdkPixbufFormat*"/>
+      </field>
+      <field name="load" introspectable="0">
+        <callback name="load" introspectable="0" throws="1">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="246"/>
+          <return-value>
+            <type name="Pixbuf" c:type="GdkPixbuf*"/>
+          </return-value>
+          <parameters>
+            <parameter name="f" transfer-ownership="none">
+              <type name="gpointer" c:type="FILE*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="load_xpm_data" introspectable="0">
+        <callback name="load_xpm_data" introspectable="0">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="248"/>
+          <return-value>
+            <type name="Pixbuf" c:type="GdkPixbuf*"/>
+          </return-value>
+          <parameters>
+            <parameter name="data" transfer-ownership="none">
+              <type name="utf8" c:type="const char**"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="begin_load" introspectable="0">
+        <callback name="begin_load" introspectable="0" throws="1">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="252"/>
+          <return-value transfer-ownership="none">
+            <type name="gpointer" c:type="gpointer"/>
+          </return-value>
+          <parameters>
+            <parameter name="size_func" transfer-ownership="none">
+              <type name="PixbufModuleSizeFunc"
+                    c:type="GdkPixbufModuleSizeFunc"/>
+            </parameter>
+            <parameter name="prepared_func" transfer-ownership="none">
+              <type name="PixbufModulePreparedFunc"
+                    c:type="GdkPixbufModulePreparedFunc"/>
+            </parameter>
+            <parameter name="updated_func"
+                       transfer-ownership="none"
+                       closure="3">
+              <type name="PixbufModuleUpdatedFunc"
+                    c:type="GdkPixbufModuleUpdatedFunc"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="3">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="stop_load">
+        <callback name="stop_load" throws="1">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="257"/>
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="context" transfer-ownership="none">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="load_increment">
+        <callback name="load_increment" throws="1">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="259"/>
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="context" transfer-ownership="none">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+            <parameter name="buf" transfer-ownership="none">
+              <type name="guint8" c:type="const guchar*"/>
+            </parameter>
+            <parameter name="size" transfer-ownership="none">
+              <type name="guint" c:type="guint"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="load_animation" introspectable="0">
+        <callback name="load_animation" introspectable="0" throws="1">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="265"/>
+          <return-value>
+            <type name="PixbufAnimation" c:type="GdkPixbufAnimation*"/>
+          </return-value>
+          <parameters>
+            <parameter name="f" transfer-ownership="none">
+              <type name="gpointer" c:type="FILE*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="save">
+        <callback name="save" throws="1">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="269"/>
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="f" transfer-ownership="none">
+              <type name="gpointer" c:type="FILE*"/>
+            </parameter>
+            <parameter name="pixbuf" transfer-ownership="none">
+              <type name="Pixbuf" c:type="GdkPixbuf*"/>
+            </parameter>
+            <parameter name="param_keys" transfer-ownership="none">
+              <type name="utf8" c:type="gchar**"/>
+            </parameter>
+            <parameter name="param_values" transfer-ownership="none">
+              <type name="utf8" c:type="gchar**"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="save_to_callback" introspectable="0">
+        <callback name="save_to_callback" introspectable="0" throws="1">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="275"/>
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="save_func" transfer-ownership="none" closure="1">
+              <type name="PixbufSaveFunc" c:type="GdkPixbufSaveFunc"/>
+            </parameter>
+            <parameter name="user_data"
+                       transfer-ownership="none"
+                       nullable="1"
+                       allow-none="1"
+                       closure="1">
+              <type name="gpointer" c:type="gpointer"/>
+            </parameter>
+            <parameter name="pixbuf" transfer-ownership="none">
+              <type name="Pixbuf" c:type="GdkPixbuf*"/>
+            </parameter>
+            <parameter name="option_keys" transfer-ownership="none">
+              <type name="utf8" c:type="gchar**"/>
+            </parameter>
+            <parameter name="option_values" transfer-ownership="none">
+              <type name="utf8" c:type="gchar**"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="is_save_option_supported">
+        <callback name="is_save_option_supported">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="282"/>
+          <return-value transfer-ownership="none">
+            <type name="gboolean" c:type="gboolean"/>
+          </return-value>
+          <parameters>
+            <parameter name="option_key" transfer-ownership="none">
+              <type name="utf8" c:type="const gchar*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="_reserved1" introspectable="0">
+        <callback name="_reserved1">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="285"/>
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_reserved2" introspectable="0">
+        <callback name="_reserved2">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="286"/>
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_reserved3" introspectable="0">
+        <callback name="_reserved3">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="287"/>
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+      <field name="_reserved4" introspectable="0">
+        <callback name="_reserved4">
+          <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+                           line="288"/>
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+        </callback>
+      </field>
+    </record>
+    <callback name="PixbufModuleFillInfoFunc"
+              c:type="GdkPixbufModuleFillInfoFunc"
+              version="2.2">
+      <doc xml:space="preserve"
+           filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+           line="303">Defines the type of the function used to fill a
+#GdkPixbufFormat structure with information about a module.</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h" line="312"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="info" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="305">a #GdkPixbufFormat.</doc>
+          <type name="PixbufFormat" c:type="GdkPixbufFormat*"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <callback name="PixbufModuleFillVtableFunc"
+              c:type="GdkPixbufModuleFillVtableFunc"
+              version="2.2">
+      <doc xml:space="preserve"
+           filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+           line="291">Defines the type of the function used to set the vtable of a
+#GdkPixbufModule when it is loaded.</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h" line="301"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="module" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="293">a #GdkPixbufModule.</doc>
+          <type name="PixbufModule" c:type="GdkPixbufModule*"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <record name="PixbufModulePattern"
+            c:type="GdkPixbufModulePattern"
+            version="2.2">
+      <doc xml:space="preserve"
+           filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+           line="170">The signature of a module is a set of prefixes. Prefixes are encoded as
+pairs of ordinary strings, where the second string, called the mask, if
+not %NULL, must be of the same length as the first one and may contain
+' ', '!', 'x', 'z', and 'n' to indicate bytes that must be matched,
+not matched, "don't-care"-bytes, zeros and non-zeros.
+Each prefix has an associated integer that describes the relevance of
+the prefix, with 0 meaning a mismatch and 100 a "perfect match".
+
+Starting with gdk-pixbuf 2.8, the first byte of the mask may be '*',
+indicating an unanchored pattern that matches not only at the beginning,
+but also in the middle. Versions prior to 2.8 will interpret the '*'
+like an 'x'.
+
+The signature of a module is stored as an array of
+#GdkPixbufModulePatterns. The array is terminated by a pattern
+where the @prefix is %NULL.
+
+
+&lt;informalexample&gt;&lt;programlisting&gt;
+GdkPixbufModulePattern *signature[] = {
+  { "abcdx", " !x z", 100 },
+  { "bla", NULL,  90 },
+  { NULL, NULL, 0 }
+};
+&lt;/programlisting&gt;
+The example matches e.g. "auud\0" with relevance 100, and "blau" with
+relevance 90.&lt;/informalexample&gt;</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h" line="212"/>
+      <field name="prefix" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="172">the prefix for this pattern</doc>
+        <type name="utf8" c:type="char*"/>
+      </field>
+      <field name="mask" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="173">mask containing bytes which modify how the prefix is matched against
+ test data</doc>
+        <type name="utf8" c:type="char*"/>
+      </field>
+      <field name="relevance" writable="1">
+        <doc xml:space="preserve"
+             filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+             line="175">relevance of this pattern</doc>
+        <type name="gint" c:type="int"/>
+      </field>
+    </record>
+    <callback name="PixbufModulePreparedFunc"
+              c:type="GdkPixbufModulePreparedFunc"
+              version="2.2">
+      <doc xml:space="preserve"
+           filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+           line="126">Defines the type of the function that gets called once the initial
+setup of @pixbuf is done.
+
+#GdkPixbufLoader uses a function of this type to emit the
+"&lt;link linkend="GdkPixbufLoader-area-prepared"&gt;area_prepared&lt;/link&gt;"
+signal.</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h" line="141"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="pixbuf" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="128">the #GdkPixbuf that is currently being loaded.</doc>
+          <type name="Pixbuf" c:type="GdkPixbuf*"/>
+        </parameter>
+        <parameter name="anim" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="129">if an animation is being loaded, the #GdkPixbufAnimation, else %NULL.</doc>
+          <type name="PixbufAnimation" c:type="GdkPixbufAnimation*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="2">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="130">the loader.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <callback name="PixbufModuleSizeFunc"
+              c:type="GdkPixbufModuleSizeFunc"
+              version="2.2">
+      <doc xml:space="preserve"
+           filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+           line="100">Defines the type of the function that gets called once the size
+of the loaded image is known.
+
+The function is expected to set @width and @height to the desired
+size to which the image should be scaled. If a module has no efficient
+way to achieve the desired scaling during the loading of the image, it may
+either ignore the size request, or only approximate it - gdk-pixbuf will
+then perform the required scaling on the completely loaded image.
+
+If the function sets @width or @height to zero, the module should interpret
+this as a hint that it will be closed soon and shouldn't allocate further
+resources. This convention is used to implement gdk_pixbuf_get_file_info()
+efficiently.</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h" line="122"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="width" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="102">pointer to a location containing the current image width</doc>
+          <type name="gint" c:type="gint*"/>
+        </parameter>
+        <parameter name="height" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="103">pointer to a location containing the current image height</doc>
+          <type name="gint" c:type="gint*"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="2">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="104">the loader.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <callback name="PixbufModuleUpdatedFunc"
+              c:type="GdkPixbufModuleUpdatedFunc"
+              version="2.2">
+      <doc xml:space="preserve"
+           filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+           line="145">Defines the type of the function that gets called every time a region
+of @pixbuf is updated.
+
+#GdkPixbufLoader uses a function of this type to emit the
+"&lt;link linkend="GdkPixbufLoader-area-updated"&gt;area_updated&lt;/link&gt;"
+signal.</doc>
+      <source-position filename="../gdk-pixbuf/gdk-pixbuf-io.h" line="163"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="pixbuf" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="147">the #GdkPixbuf that is currently being loaded.</doc>
+          <type name="Pixbuf" c:type="GdkPixbuf*"/>
+        </parameter>
+        <parameter name="x" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="148">the X origin of the updated area.</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="y" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="149">the Y origin of the updated area.</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="width" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="150">the width of the updated area.</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="height" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="151">the height of the updated area.</doc>
+          <type name="gint" c:type="int"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="5">
+          <doc xml:space="preserve"
+               filename="../gdk-pixbuf/gdk-pixbuf-io.h"
+               line="152">the loader.</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <class name="PixbufNonAnim"
+           c:symbol-prefix="pixbuf_non_anim"
+           parent="PixbufAnimation"
+           glib:type-name="GdkPixbufNonAnim"
+           glib:get-type="gdk_pixbuf_non_anim_get_type">
+      <constructor name="new" c:identifier="gdk_pixbuf_non_anim_new">
+        <source-position filename="../gdk-pixbuf/gdk-pixbuf-animation.h"
+                         line="226"/>
+        <return-value transfer-ownership="full">
+          <type name="PixbufAnimation" c:type="GdkPixbufAnimation*"/>
+        </return-value>
+        <parameters>
+          <parameter name="pixbuf" transfer-ownership="none">
+            <type name="Pixbuf" c:type="GdkPixbuf*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+    </class>
     <enumeration name="PixbufRotation"
                  glib:type-name="GdkPixbufRotation"
                  glib:get-type="gdk_pixbuf_rotation_get_type"
