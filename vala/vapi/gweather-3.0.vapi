@@ -8,8 +8,10 @@ namespace GWeather {
 		public Info (GWeather.Location? location);
 		public void abort ();
 		public string get_apparent ();
+		public unowned string get_application_id ();
 		public unowned string get_attribution ();
 		public string get_conditions ();
+		public unowned string get_contact_info ();
 		public string get_dew ();
 		public GWeather.Provider get_enabled_providers ();
 		public unowned GLib.SList<GWeather.Info> get_forecast_list ();
@@ -50,13 +52,17 @@ namespace GWeather {
 		public bool is_valid ();
 		public bool network_error ();
 		public int next_sun_event ();
+		public void set_application_id (string application_id);
+		public void set_contact_info (string contact_info);
 		public void set_enabled_providers (GWeather.Provider providers);
 		public void set_location (GWeather.Location? location);
 		public static void store_cache ();
 		public void update ();
+		public string application_id { get; set; }
+		public string contact_info { get; set; }
 		public GWeather.Provider enabled_providers { get; set; }
 		public GWeather.Location location { get; set construct; }
-		public virtual signal void updated ();
+		public signal void updated ();
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", ref_function = "gweather_location_ref", type_id = "gweather_location_get_type ()", unref_function = "gweather_location_unref")]
 	[Compact]
@@ -67,14 +73,15 @@ namespace GWeather {
 		[Version (since = "3.12")]
 		public async GWeather.Location detect_nearest_city (double lat, double lon, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool equal (GWeather.Location two);
-		public unowned GWeather.Location find_by_country_code (string country_code);
-		public unowned GWeather.Location find_by_station_code (string station_code);
+		public GWeather.Location find_by_country_code (string country_code);
+		public GWeather.Location find_by_station_code (string station_code);
 		[Version (since = "3.12")]
 		public GWeather.Location find_nearest_city (double lat, double lon);
 		[Version (since = "3.12")]
 		public GWeather.Location find_nearest_city_full (double lat, double lon, owned GWeather.FilterFunc? func);
 		public void free_timezones (GWeather.Timezone zones);
 		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (deprecated = true, deprecated_since = "40.")]
 		public unowned GWeather.Location[] get_children ();
 		public string? get_city_name ();
 		public unowned string? get_code ();
@@ -88,14 +95,16 @@ namespace GWeather {
 		public unowned string get_english_sort_name ();
 		public GWeather.LocationLevel get_level ();
 		public unowned string get_name ();
-		public unowned GWeather.Location? get_parent ();
+		public GWeather.Location? get_parent ();
 		public unowned string get_sort_name ();
 		public unowned GWeather.Timezone? get_timezone ();
 		public unowned string? get_timezone_str ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public GWeather.Timezone[] get_timezones ();
-		public static unowned GWeather.Location? get_world ();
+		public static GWeather.Location? get_world ();
 		public bool has_coords ();
+		[Version (since = "40")]
+		public GWeather.Location next_child (owned GWeather.Location child);
 		public GWeather.Location @ref ();
 		public unowned GLib.Variant serialize ();
 		public void unref ();
@@ -118,7 +127,7 @@ namespace GWeather {
 	[Compact]
 	public class Timezone {
 		[Version (since = "3.12")]
-		public static unowned GWeather.Timezone get_by_tzid (string tzid);
+		public static GWeather.Timezone get_by_tzid (string tzid);
 		public int get_dst_offset ();
 		public unowned string get_name ();
 		public int get_offset ();
@@ -246,7 +255,7 @@ namespace GWeather {
 		METAR,
 		IWIN,
 		YAHOO,
-		YR_NO,
+		MET_NO,
 		OWM,
 		ALL
 	}
