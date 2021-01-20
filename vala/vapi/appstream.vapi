@@ -134,9 +134,12 @@ namespace AppStream {
 		public void add_launchable (AppStream.Launchable launchable);
 		[Version (since = "0.6.2")]
 		public void add_provided (AppStream.Provided prov);
+		public void add_provided_item (AppStream.ProvidedKind kind, string item);
 		[Version (since = "0.12.0")]
 		public void add_relation (AppStream.Relation relation);
 		public void add_release (AppStream.Release release);
+		[Version (since = "0.14.0")]
+		public void add_review (AppStream.Review review);
 		public void add_screenshot (AppStream.Screenshot sshot);
 		public void add_suggested (AppStream.Suggested suggested);
 		[Version (since = "0.9.2")]
@@ -148,6 +151,8 @@ namespace AppStream {
 		public unowned GLib.GenericArray<AppStream.Component> get_addons ();
 		[Version (since = "0.12.1")]
 		public unowned AppStream.Agreement? get_agreement_by_kind (AppStream.AgreementKind kind);
+		[Version (since = "0.14.0")]
+		public unowned string get_branch ();
 		[Version (since = "0.8.0")]
 		public unowned AppStream.Bundle? get_bundle (AppStream.BundleKind bundle_kind);
 		[Version (since = "0.10")]
@@ -206,6 +211,8 @@ namespace AppStream {
 		public unowned GLib.GenericArray<AppStream.Release> get_releases ();
 		[Version (since = "0.12.0")]
 		public unowned GLib.GenericArray<AppStream.Relation> get_requires ();
+		[Version (since = "0.14.0")]
+		public unowned GLib.GenericArray<AppStream.Review> get_reviews ();
 		[Version (since = "0.10.2")]
 		public AppStream.ComponentScope get_scope ();
 		public unowned GLib.GenericArray<AppStream.Screenshot> get_screenshots ();
@@ -231,6 +238,8 @@ namespace AppStream {
 		public bool is_ignored ();
 		public bool is_member_of_category (AppStream.Category category);
 		public bool is_valid ();
+		[Version (since = "0.14.0")]
+		public bool load_from_bytes (AppStream.Context context, AppStream.FormatKind format, GLib.Bytes bytes) throws GLib.Error;
 		[Version (since = "0.12.10")]
 		public bool load_from_xml_data (AppStream.Context context, string data) throws GLib.Error;
 		[Version (since = "0.9.7")]
@@ -238,6 +247,8 @@ namespace AppStream {
 		[Version (since = "0.9.8")]
 		public uint search_matches_all (string terms);
 		public void set_active_locale (string? locale);
+		[Version (since = "0.14.0")]
+		public void set_branch (string branch);
 		public void set_compulsory_for_desktop (string desktop);
 		public void set_data_id (string value);
 		public void set_description (string value, string? locale);
@@ -292,6 +303,8 @@ namespace AppStream {
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.11.0")]
 		public ContentRating ();
+		[Version (since = "0.14.0")]
+		public void add_attribute (string id, AppStream.ContentRatingValue value);
 		[Version (since = "0.12.12")]
 		public static AppStream.ContentRatingValue attribute_from_csm_age (string id, uint age);
 		[Version (since = "0.12.12")]
@@ -429,11 +442,14 @@ namespace AppStream {
 		public AppStream.FormatStyle get_format_style ();
 		public AppStream.FormatVersion get_format_version ();
 		public unowned string get_locale ();
+		public unowned string get_media_baseurl ();
 		public unowned string get_origin ();
 		public AppStream.ParseFlags get_parse_flags ();
 		public bool get_update_existing ();
 		public bool get_write_header ();
-		public void parse (string data, AppStream.FormatKind format) throws GLib.Error;
+		public bool parse (string data, AppStream.FormatKind format) throws GLib.Error;
+		[Version (since = "0.14.0")]
+		public bool parse_bytes (GLib.Bytes bytes, AppStream.FormatKind format) throws GLib.Error;
 		public void parse_desktop_data (string data, string cid) throws GLib.Error;
 		public void parse_file (GLib.File file, AppStream.FormatKind format) throws GLib.Error;
 		public void save_collection (string fname, AppStream.FormatKind format) throws GLib.Error;
@@ -442,6 +458,7 @@ namespace AppStream {
 		public void set_format_style (AppStream.FormatStyle mode);
 		public void set_format_version (AppStream.FormatVersion version);
 		public void set_locale (string locale);
+		public void set_media_baseurl (string url);
 		public void set_origin (string origin);
 		public void set_parse_flags (AppStream.ParseFlags flags);
 		public void set_update_existing (bool update);
@@ -453,6 +470,8 @@ namespace AppStream {
 		public Pool ();
 		public bool add_component (AppStream.Component cpt) throws GLib.Error;
 		public void add_metadata_location (string directory);
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] build_search_tokens (string search);
 		public void clear ();
 		public bool clear2 () throws GLib.Error;
 		public void clear_metadata_locations ();
@@ -480,6 +499,32 @@ namespace AppStream {
 		public void set_cache_location (string fname);
 		public void set_flags (AppStream.PoolFlags flags);
 		public void set_locale (string locale);
+	}
+	[CCode (cheader_filename = "appstream.h", type_id = "as_profile_get_type ()")]
+	public class Profile : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.14.0")]
+		public Profile ();
+		[Version (since = "0.14.0")]
+		public void clear ();
+		[Version (since = "0.14.0")]
+		public void dump ();
+		[Version (since = "0.14.0")]
+		public void prune (uint duration);
+		[Version (since = "0.14.0")]
+		public void set_autodump (uint delay);
+		[Version (since = "0.14.0")]
+		public void set_autoprune (uint duration);
+		[Version (since = "0.14.0")]
+		public void set_duration_min (uint duration_min);
+	}
+	[CCode (cheader_filename = "appstream.h", has_type_id = false)]
+	[Compact]
+	public class ProfileTask {
+		[Version (since = "0.14.0")]
+		public void free ();
+		[Version (since = "0.14.0")]
+		public void set_threaded (bool threaded);
 	}
 	[CCode (cheader_filename = "appstream.h", type_id = "as_provided_get_type ()")]
 	public class Provided : GLib.Object {
@@ -603,6 +648,84 @@ namespace AppStream {
 		public void set_version (string version);
 		public int vercmp (AppStream.Release rel2);
 	}
+	[CCode (cheader_filename = "appstream.h", type_id = "as_review_get_type ()")]
+	public class Review : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.14.0")]
+		public Review ();
+		[Version (since = "0.14.0")]
+		public void add_flags (AppStream.ReviewFlags flags);
+		[Version (since = "0.14.0")]
+		public void add_metadata (string key, string value);
+		[Version (since = "0.14.0")]
+		public bool equal (AppStream.Review review2);
+		[Version (since = "0.14.0")]
+		public unowned GLib.DateTime get_date ();
+		[Version (since = "0.14.0")]
+		public unowned string get_description ();
+		[Version (since = "0.14.0")]
+		public AppStream.ReviewFlags get_flags ();
+		[Version (since = "0.14.0")]
+		public unowned string get_id ();
+		[Version (since = "0.14.0")]
+		public unowned string get_locale ();
+		[Version (since = "0.14.0")]
+		public unowned string get_metadata_item (string key);
+		[Version (since = "0.14.0")]
+		public int get_priority ();
+		[Version (since = "0.14.0")]
+		public int get_rating ();
+		[Version (since = "0.14.0")]
+		public unowned string get_reviewer_id ();
+		[Version (since = "0.14.0")]
+		public unowned string get_reviewer_name ();
+		[Version (since = "0.14.0")]
+		public unowned string get_summary ();
+		[Version (since = "0.14.0")]
+		public unowned string get_version ();
+		[Version (since = "0.14.0")]
+		public void set_date (GLib.DateTime date);
+		[Version (since = "0.14.0")]
+		public void set_description (string description);
+		[Version (since = "0.14.0")]
+		public void set_flags (AppStream.ReviewFlags flags);
+		[Version (since = "0.14.0")]
+		public void set_id (string id);
+		[Version (since = "0.14.0")]
+		public void set_locale (string locale);
+		[Version (since = "0.14.0")]
+		public void set_priority (int priority);
+		[Version (since = "0.14.0")]
+		public void set_rating (int rating);
+		[Version (since = "0.14.0")]
+		public void set_reviewer_id (string reviewer_id);
+		[Version (since = "0.14.0")]
+		public void set_reviewer_name (string reviewer_name);
+		[Version (since = "0.14.0")]
+		public void set_summary (string summary);
+		[Version (since = "0.14.0")]
+		public void set_version (string version);
+		[Version (since = "0.14.0")]
+		public AppStream.Review date { get; set construct; }
+		[Version (since = "0.14.0")]
+		public string description { get; set construct; }
+		[Version (since = "0.14.0")]
+		public uint64 flags { get; set construct; }
+		[Version (since = "0.14.0")]
+		public string id { get; set construct; }
+		[Version (since = "0.14.0")]
+		public string locale { get; set construct; }
+		[Version (since = "0.14.0")]
+		public int rating { get; set construct; }
+		[Version (since = "0.14.0")]
+		public string reviewer_id { get; set construct; }
+		[Version (since = "0.14.0")]
+		public string reviewer_name { get; set construct; }
+		[Version (since = "0.14.0")]
+		public string summary { get; set construct; }
+		[Version (since = "0.14.0")]
+		public string version { get; set construct; }
+	}
 	[CCode (cheader_filename = "appstream.h", type_id = "as_screenshot_get_type ()")]
 	public class Screenshot : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -611,6 +734,8 @@ namespace AppStream {
 		public void add_video (AppStream.Video video);
 		public unowned string get_active_locale ();
 		public unowned string get_caption ();
+		[Version (since = "0.14.0")]
+		public unowned AppStream.Image get_image (uint width, uint height);
 		public unowned GLib.GenericArray<AppStream.Image> get_images ();
 		[Version (since = "0.10")]
 		public unowned GLib.GenericArray<AppStream.Image> get_images_all ();
@@ -712,8 +837,7 @@ namespace AppStream {
 		UNKNOWN,
 		GENERIC,
 		EULA,
-		PRIVACY,
-		LAST;
+		PRIVACY;
 		[Version (since = "0.12.1")]
 		public static AppStream.AgreementKind from_string (string value);
 		[Version (since = "0.12.1")]
@@ -723,8 +847,7 @@ namespace AppStream {
 	public enum ArtifactKind {
 		UNKNOWN,
 		SOURCE,
-		BINARY,
-		LAST;
+		BINARY;
 		public static AppStream.ArtifactKind from_string (string kind);
 		public unowned string to_string ();
 	}
@@ -737,7 +860,7 @@ namespace AppStream {
 		APPIMAGE,
 		SNAP,
 		TARBALL,
-		LAST;
+		CABINET;
 		public static AppStream.BundleKind from_string (string bundle_str);
 		[Version (since = "0.8.0")]
 		public unowned string to_string ();
@@ -756,13 +879,14 @@ namespace AppStream {
 		SHA1,
 		SHA256,
 		BLAKE2B,
-		BLAKE2S,
-		LAST;
+		BLAKE2S;
 		public static AppStream.ChecksumKind from_string (string kind_str);
 		public unowned string to_string ();
 	}
-	[CCode (cheader_filename = "appstream.h", cprefix = "AS_COMPONENT_KIND_", type_id = "as_component_kind_get_type ()")]
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_COMPONENT_KIND_", has_type_id = false)]
 	public enum ComponentKind {
+		[Version (deprecated = true, replacement = "INPUT_METHOD")]
+		INPUTMETHOD,
 		UNKNOWN,
 		GENERIC,
 		DESKTOP_APP,
@@ -771,7 +895,7 @@ namespace AppStream {
 		ADDON,
 		FONT,
 		CODEC,
-		INPUTMETHOD,
+		INPUT_METHOD,
 		FIRMWARE,
 		DRIVER,
 		LOCALIZATION,
@@ -779,8 +903,7 @@ namespace AppStream {
 		REPOSITORY,
 		OPERATING_SYSTEM,
 		ICON_THEME,
-		RUNTIME,
-		LAST;
+		RUNTIME;
 		public static AppStream.ComponentKind from_string (string kind_str);
 		public unowned string to_string ();
 	}
@@ -788,8 +911,7 @@ namespace AppStream {
 	public enum ComponentScope {
 		UNKNOWN,
 		SYSTEM,
-		USER,
-		LAST;
+		USER;
 		public static AppStream.ComponentScope from_string (string scope_str);
 		public unowned string to_string ();
 	}
@@ -811,8 +933,7 @@ namespace AppStream {
 		MDA,
 		GRAC,
 		ESRB,
-		IARC,
-		LAST;
+		IARC;
 		public string? format_age (uint age);
 		public static AppStream.ContentRatingSystem from_locale (string locale);
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
@@ -827,8 +948,7 @@ namespace AppStream {
 		NONE,
 		MILD,
 		MODERATE,
-		INTENSE,
-		LAST;
+		INTENSE;
 		[Version (since = "0.11.0")]
 		public static AppStream.ContentRatingValue from_string (string value);
 		[Version (since = "0.11.0")]
@@ -844,12 +964,21 @@ namespace AppStream {
 		GAMEPAD,
 		VOICE,
 		VISION,
-		TV_REMOTE,
-		LAST;
+		TV_REMOTE;
 		[Version (since = "0.12.11")]
 		public static AppStream.ControlKind from_string (string kind_str);
 		[Version (since = "0.12.11")]
 		public unowned string to_string ();
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_DATA_ID_MATCH_FLAG_", type_id = "as_data_id_match_flags_get_type ()")]
+	[Flags]
+	public enum DataIdMatchFlags {
+		NONE,
+		SCOPE,
+		BUNDLE_KIND,
+		ORIGIN,
+		ID,
+		BRANCH
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_DISPLAY_LENGTH_KIND_", type_id = "as_display_length_kind_get_type ()")]
 	public enum DisplayLengthKind {
@@ -858,8 +987,7 @@ namespace AppStream {
 		SMALL,
 		MEDIUM,
 		LARGE,
-		XLARGE,
-		LAST;
+		XLARGE;
 		[Version (since = "0.12.12")]
 		public static AppStream.DisplayLengthKind from_string (string kind_str);
 		[Version (since = "0.12.12")]
@@ -869,8 +997,7 @@ namespace AppStream {
 	public enum DisplaySideKind {
 		UNKNOWN,
 		SHORTEST,
-		LONGEST,
-		LAST;
+		LONGEST;
 		[Version (since = "0.12.12")]
 		public static AppStream.DisplaySideKind from_string (string kind_str);
 		[Version (since = "0.12.12")]
@@ -881,8 +1008,7 @@ namespace AppStream {
 		UNKNOWN,
 		XML,
 		YAML,
-		DESKTOP_ENTRY,
-		LAST;
+		DESKTOP_ENTRY;
 		[Version (since = "0.10")]
 		public static AppStream.FormatKind from_string (string kind_str);
 		[Version (since = "0.10")]
@@ -892,19 +1018,24 @@ namespace AppStream {
 	public enum FormatStyle {
 		UNKNOWN,
 		METAINFO,
-		COLLECTION,
-		LAST
+		COLLECTION
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_FORMAT_VERSION_", type_id = "as_format_version_get_type ()")]
 	public enum FormatVersion {
-		V0_6,
-		V0_7,
-		V0_8,
-		V0_9,
-		V0_10,
-		V0_11,
-		V0_12,
-		LAST;
+		[CCode (cname = "AS_FORMAT_VERSION_V0_6")]
+		@6,
+		[CCode (cname = "AS_FORMAT_VERSION_V0_7")]
+		@7,
+		[CCode (cname = "AS_FORMAT_VERSION_V0_8")]
+		@8,
+		[CCode (cname = "AS_FORMAT_VERSION_V0_9")]
+		@9,
+		[CCode (cname = "AS_FORMAT_VERSION_V0_10")]
+		@10,
+		[CCode (cname = "AS_FORMAT_VERSION_V0_11")]
+		@11,
+		[CCode (cname = "AS_FORMAT_VERSION_V0_12")]
+		@12;
 		[Version (since = "0.10")]
 		public static AppStream.FormatVersion from_string (string version_str);
 		[Version (since = "0.10")]
@@ -916,8 +1047,7 @@ namespace AppStream {
 		CACHED,
 		STOCK,
 		LOCAL,
-		REMOTE,
-		LAST;
+		REMOTE;
 		public static AppStream.IconKind from_string (string kind_str);
 		public unowned string to_string ();
 	}
@@ -925,8 +1055,7 @@ namespace AppStream {
 	public enum ImageKind {
 		UNKNOWN,
 		SOURCE,
-		THUMBNAIL,
-		LAST;
+		THUMBNAIL;
 		public static AppStream.ImageKind from_string (string kind);
 		public unowned string to_string ();
 	}
@@ -934,8 +1063,7 @@ namespace AppStream {
 	public enum IssueKind {
 		UNKNOWN,
 		GENERIC,
-		CVE,
-		LAST;
+		CVE;
 		public static AppStream.IssueKind from_string (string kind_str);
 		public unowned string to_string ();
 	}
@@ -945,8 +1073,7 @@ namespace AppStream {
 		ERROR,
 		WARNING,
 		INFO,
-		PEDANTIC,
-		LAST;
+		PEDANTIC;
 		public static AppStream.IssueSeverity from_string (string str);
 		public unowned string to_string ();
 	}
@@ -956,8 +1083,7 @@ namespace AppStream {
 		DESKTOP_ID,
 		SERVICE,
 		COCKPIT_MANIFEST,
-		URL,
-		LAST;
+		URL;
 		[Version (since = "0.11.0")]
 		public static AppStream.LaunchableKind from_string (string kind_str);
 		[Version (since = "0.11.0")]
@@ -968,8 +1094,7 @@ namespace AppStream {
 		NONE,
 		REPLACE,
 		APPEND,
-		REMOVE_COMPONENT,
-		LAST;
+		REMOVE_COMPONENT;
 		public static AppStream.MergeKind from_string (string kind_str);
 		public unowned string to_string ();
 	}
@@ -1003,8 +1128,7 @@ namespace AppStream {
 		DBUS_USER,
 		FIRMWARE_RUNTIME,
 		FIRMWARE_FLASHED,
-		ID,
-		LAST;
+		ID;
 		public static AppStream.ProvidedKind from_string (string kind_str);
 		public unowned string to_l10n_string ();
 		public unowned string to_string ();
@@ -1017,8 +1141,7 @@ namespace AppStream {
 		LT,
 		GT,
 		LE,
-		GE,
-		LAST;
+		GE;
 		[Version (since = "0.12.0")]
 		public static AppStream.RelationCompare from_string (string compare_str);
 		[Version (since = "0.12.0")]
@@ -1035,8 +1158,7 @@ namespace AppStream {
 		MEMORY,
 		FIRMWARE,
 		CONTROL,
-		DISPLAY_LENGTH,
-		LAST;
+		DISPLAY_LENGTH;
 		[Version (since = "0.12.0")]
 		public static AppStream.RelationItemKind from_string (string kind_str);
 		[Version (since = "0.12.0")]
@@ -1046,8 +1168,7 @@ namespace AppStream {
 	public enum RelationKind {
 		UNKNOWN,
 		REQUIRES,
-		RECOMMENDS,
-		LAST;
+		RECOMMENDS;
 		[Version (since = "0.12.0")]
 		public static AppStream.RelationKind from_string (string kind_str);
 		[Version (since = "0.12.0")]
@@ -1058,8 +1179,7 @@ namespace AppStream {
 	public enum ReleaseKind {
 		UNKNOWN,
 		STABLE,
-		DEVELOPMENT,
-		LAST;
+		DEVELOPMENT;
 		public static AppStream.ReleaseKind from_string (string kind_str);
 		public unowned string to_string ();
 	}
@@ -1067,17 +1187,23 @@ namespace AppStream {
 	[Version (since = "0.12.5")]
 	public enum ReleaseUrlKind {
 		UNKNOWN,
-		DETAILS,
-		LAST;
+		DETAILS;
 		public static AppStream.ReleaseUrlKind from_string (string kind_str);
 		public unowned string to_string ();
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_REVIEW_FLAG_", type_id = "as_review_flags_get_type ()")]
+	[Flags]
+	[Version (since = "0.14.0")]
+	public enum ReviewFlags {
+		NONE,
+		SELF,
+		VOTED
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_SCREENSHOT_KIND_", type_id = "as_screenshot_kind_get_type ()")]
 	public enum ScreenshotKind {
 		UNKNOWN,
 		DEFAULT,
-		EXTRA,
-		LAST;
+		EXTRA;
 		public static AppStream.ScreenshotKind from_string (string kind);
 		public unowned string to_string ();
 	}
@@ -1085,16 +1211,27 @@ namespace AppStream {
 	public enum ScreenshotMediaKind {
 		UNKNOWN,
 		IMAGE,
-		VIDEO,
-		LAST
+		VIDEO
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_SEARCH_TOKEN_MATCH_", has_type_id = false)]
+	[Flags]
+	public enum SearchTokenMatch {
+		NONE,
+		MIMETYPE,
+		PKGNAME,
+		ORIGIN,
+		DESCRIPTION,
+		SUMMARY,
+		KEYWORD,
+		NAME,
+		ID
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_SIZE_KIND_", type_id = "as_size_kind_get_type ()")]
 	[Version (since = "0.8.6")]
 	public enum SizeKind {
 		UNKNOWN,
 		DOWNLOAD,
-		INSTALLED,
-		LAST;
+		INSTALLED;
 		public static AppStream.SizeKind from_string (string size_kind);
 		public unowned string to_string ();
 	}
@@ -1102,8 +1239,7 @@ namespace AppStream {
 	public enum SuggestedKind {
 		UNKNOWN,
 		UPSTREAM,
-		HEURISTIC,
-		LAST;
+		HEURISTIC;
 		public static AppStream.SuggestedKind from_string (string kind_str);
 		public unowned string to_string ();
 	}
@@ -1111,8 +1247,7 @@ namespace AppStream {
 	public enum TranslationKind {
 		UNKNOWN,
 		GETTEXT,
-		QT,
-		LAST;
+		QT;
 		public static AppStream.TranslationKind from_string (string kind_str);
 		public unowned string to_string ();
 	}
@@ -1122,8 +1257,7 @@ namespace AppStream {
 		LOW,
 		MEDIUM,
 		HIGH,
-		CRITICAL,
-		LAST;
+		CRITICAL;
 		[Version (since = "0.6.5")]
 		public static AppStream.UrgencyKind from_string (string urgency_kind);
 		[Version (since = "0.6.5")]
@@ -1138,8 +1272,7 @@ namespace AppStream {
 		HELP,
 		DONATION,
 		TRANSLATE,
-		CONTACT,
-		LAST;
+		CONTACT;
 		public static AppStream.UrlKind from_string (string url_kind);
 		public unowned string to_string ();
 	}
@@ -1150,12 +1283,17 @@ namespace AppStream {
 		DUPLICATE_CHECK,
 		NO_TRANSLATION_FALLBACK
 	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_VERCMP_FLAG_", type_id = "as_vercmp_flags_get_type ()")]
+	[Flags]
+	public enum VercmpFlags {
+		NONE,
+		IGNORE_EPOCH
+	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_VIDEO_CODEC_KIND_", type_id = "as_video_codec_kind_get_type ()")]
 	public enum VideoCodecKind {
 		UNKNOWN,
 		VP9,
-		AV1,
-		LAST;
+		AV1;
 		public static AppStream.VideoCodecKind from_string (string str);
 		public unowned string to_string ();
 	}
@@ -1163,8 +1301,7 @@ namespace AppStream {
 	public enum VideoContainerKind {
 		UNKNOWN,
 		MKV,
-		WEBM,
-		LAST;
+		WEBM;
 		public static AppStream.VideoContainerKind from_string (string str);
 		public unowned string to_string ();
 	}
@@ -1174,8 +1311,7 @@ namespace AppStream {
 		PARSE,
 		FORMAT_UNEXPECTED,
 		NO_COMPONENT,
-		VALUE_MISSING,
-		LAST;
+		VALUE_MISSING;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_POOL_ERROR_")]
@@ -1184,10 +1320,21 @@ namespace AppStream {
 		TARGET_NOT_WRITABLE,
 		INCOMPLETE,
 		COLLISION,
-		OLD_CACHE,
-		LAST;
+		OLD_CACHE;
 		public static GLib.Quark quark ();
 	}
+	[CCode (cheader_filename = "appstream.h", cname = "AS_IMAGE_LARGE_HEIGHT")]
+	public const int IMAGE_LARGE_HEIGHT;
+	[CCode (cheader_filename = "appstream.h", cname = "AS_IMAGE_LARGE_WIDTH")]
+	public const int IMAGE_LARGE_WIDTH;
+	[CCode (cheader_filename = "appstream.h", cname = "AS_IMAGE_NORMAL_HEIGHT")]
+	public const int IMAGE_NORMAL_HEIGHT;
+	[CCode (cheader_filename = "appstream.h", cname = "AS_IMAGE_NORMAL_WIDTH")]
+	public const int IMAGE_NORMAL_WIDTH;
+	[CCode (cheader_filename = "appstream.h", cname = "AS_IMAGE_THUMBNAIL_HEIGHT")]
+	public const int IMAGE_THUMBNAIL_HEIGHT;
+	[CCode (cheader_filename = "appstream.h", cname = "AS_IMAGE_THUMBNAIL_WIDTH")]
+	public const int IMAGE_THUMBNAIL_WIDTH;
 	[CCode (cheader_filename = "appstream.h")]
 	public static unowned string get_appstream_version ();
 	[CCode (cheader_filename = "appstream.h")]
@@ -1197,6 +1344,8 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.12.7")]
 	public static string get_license_url (string license);
+	[CCode (cheader_filename = "appstream.h")]
+	public static uint gstring_replace (GLib.StringBuilder string, string search, string replace);
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.12.10")]
 	public static bool is_spdx_license_exception_id (string exception_id);
@@ -1216,6 +1365,9 @@ namespace AppStream {
 	public static string license_to_spdx_id (string license);
 	[CCode (cheader_filename = "appstream.h")]
 	public static string markup_convert_simple (string markup) throws GLib.Error;
+	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "appstream.h")]
+	[Version (since = "0.14.0")]
+	public static string[] markup_strsplit_words (string text, uint line_len);
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.9.8")]
 	public static string? spdx_license_detokenize (string license_tokens);
@@ -1223,7 +1375,24 @@ namespace AppStream {
 	[Version (since = "0.9.8")]
 	public static string[]? spdx_license_tokenize (string license);
 	[CCode (cheader_filename = "appstream.h")]
+	[Version (since = "0.14.0")]
+	public static string utils_build_data_id (AppStream.ComponentScope scope, AppStream.BundleKind bundle_kind, string origin, string cid, string branch);
+	[CCode (cheader_filename = "appstream.h")]
 	public static int utils_compare_versions (string a, string b);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (since = "0.14.0")]
+	public static bool utils_data_id_equal (string data_id1, string data_id2);
+	[CCode (cheader_filename = "appstream.h")]
+	public static string utils_data_id_get_cid (string data_id);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (since = "0.14.0")]
+	public static uint utils_data_id_hash (string data_id);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (since = "0.14.0")]
+	public static bool utils_data_id_match (string data_id1, string data_id2, AppStream.DataIdMatchFlags match_flags);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (since = "0.14.0")]
+	public static bool utils_data_id_valid (string data_id);
 	[CCode (cheader_filename = "appstream.h")]
 	public static bool utils_is_category_name (string category_name);
 	[CCode (cheader_filename = "appstream.h")]
@@ -1237,4 +1406,8 @@ namespace AppStream {
 	public static bool utils_locale_is_compatible (string locale1, string locale2);
 	[CCode (cheader_filename = "appstream.h")]
 	public static void utils_sort_components_into_categories (GLib.GenericArray<AppStream.Component> cpts, GLib.GenericArray<AppStream.Category> categories, bool check_duplicates);
+	[CCode (cheader_filename = "appstream.h")]
+	public static int vercmp (string a, string b, AppStream.VercmpFlags flags);
+	[CCode (cheader_filename = "appstream.h")]
+	public static int vercmp_simple (string a, string b);
 }

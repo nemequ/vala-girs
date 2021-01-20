@@ -2,23 +2,6 @@
 
 [CCode (cprefix = "Shumate", gir_namespace = "Shumate", gir_version = "0.0", lower_case_cprefix = "shumate_")]
 namespace Shumate {
-	[CCode (cheader_filename = "shumate/shumate.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "shumate_bounding_box_get_type ()")]
-	[Compact]
-	public class BoundingBox {
-		public double bottom;
-		public double left;
-		public double right;
-		public double top;
-		[CCode (has_construct_function = false)]
-		public BoundingBox ();
-		public void compose (Shumate.BoundingBox other);
-		public Shumate.BoundingBox copy ();
-		public bool covers (double latitude, double longitude);
-		public void extend (double latitude, double longitude);
-		public void free ();
-		public void get_center (out double latitude, out double longitude);
-		public bool is_valid ();
-	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_coordinate_get_type ()")]
 	public class Coordinate : GLib.InitiallyUnowned, Shumate.Location {
 		[CCode (has_construct_function = false)]
@@ -355,7 +338,6 @@ namespace Shumate {
 		public GLib.List<weak Shumate.MapSource> get_overlay_sources ();
 		public Shumate.State get_state ();
 		public unowned Shumate.Viewport get_viewport ();
-		public Shumate.BoundingBox get_world ();
 		public bool get_zoom_on_double_click ();
 		public void go_to (double latitude, double longitude);
 		public void remove_layer (Shumate.Layer layer);
@@ -364,7 +346,6 @@ namespace Shumate {
 		public void set_deceleration (double rate);
 		public void set_kinetic_mode (bool kinetic);
 		public void set_map_source (Shumate.MapSource map_source);
-		public void set_world (Shumate.BoundingBox bbox);
 		public void set_zoom_on_double_click (bool value);
 		[CCode (has_construct_function = false)]
 		public View.simple ();
