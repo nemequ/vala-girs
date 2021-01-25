@@ -144,12 +144,15 @@ namespace Gda {
 		public unowned string get_dsn ();
 		public unowned GLib.List<Gda.ConnectionEvent> get_events ();
 		public unowned Gda.MetaStore get_meta_store ();
+		public Gda.DataModel get_meta_store_data (Gda.ConnectionMetaType meta_type, GLib.Error error, int nb_filters, ...);
 		public Gda.DataModel get_meta_store_data_v (Gda.ConnectionMetaType meta_type, GLib.List<Gda.Holder> filters) throws GLib.Error;
 		public Gda.ConnectionOptions get_options ();
 		public unowned Gda.PStmt get_prepared_statement (Gda.Statement gda_stmt);
 		public unowned Gda.ServerProvider get_provider ();
 		public unowned string get_provider_name ();
 		public unowned Gda.TransactionStatus get_transaction_status ();
+		[Version (since = "4.2.3")]
+		public bool insert_row_into_table (string table, GLib.Error error, ...);
 		[Version (since = "4.2.3")]
 		public bool insert_row_into_table_v (string table, GLib.SList<string> col_names, GLib.SList<GLib.Value?> values) throws GLib.Error;
 		public bool is_opened ();
@@ -172,11 +175,14 @@ namespace Gda {
 		public int statement_execute_non_select (Gda.Statement stmt, Gda.Set? @params, out Gda.Set last_insert_row) throws GLib.Error;
 		public Gda.DataModel statement_execute_select (Gda.Statement stmt, Gda.Set? @params) throws GLib.Error;
 		public Gda.DataModel statement_execute_select_full (Gda.Statement stmt, Gda.Set? @params, Gda.StatementModelUsage model_usage, [CCode (array_length = false)] GLib.Type[]? col_types) throws GLib.Error;
+		public Gda.DataModel statement_execute_select_fullv (Gda.Statement stmt, Gda.Set? @params, Gda.StatementModelUsage model_usage, GLib.Error error, ...);
 		public bool statement_prepare (Gda.Statement stmt) throws GLib.Error;
 		public string statement_to_sql (Gda.Statement stmt, Gda.Set? @params, Gda.StatementSqlFlag flags, out GLib.SList<weak Gda.Holder> params_used) throws GLib.Error;
 		public static void string_split (string string, string out_cnc_params, string out_provider, string out_username, string? out_password);
 		public bool supports_feature (Gda.ConnectionFeature feature);
 		public bool update_meta_store (Gda.MetaContext? context) throws GLib.Error;
+		[Version (since = "4.2.3")]
+		public bool update_row_in_table (string table, string condition_column_name, GLib.Value condition_value, GLib.Error error, ...);
 		[Version (since = "4.2.3")]
 		public bool update_row_in_table_v (string table, string condition_column_name, GLib.Value condition_value, GLib.SList<string> col_names, GLib.SList<GLib.Value?> values) throws GLib.Error;
 		public string value_to_sql_string (GLib.Value from);
@@ -259,12 +265,14 @@ namespace Gda {
 		public virtual signal bool diff_computed (void* diff);
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_data_model_array_get_type ()")]
-	public class DataModelArray : GLib.Object, Gda.DataModel {
+	public class DataModelArray : GLib.Object, Gda.DataModel, Gda.DataModel {
 		[CCode (has_construct_function = false)]
 		protected DataModelArray ();
 		public void clear ();
 		public unowned Gda.Row get_row (int row) throws GLib.Error;
 		public static Gda.DataModel @new (int cols);
+		[CCode (cname = "gda_data_model_array_new_with_g_types")]
+		public static Gda.DataModel new_with_g_types (int cols, ...);
 		[Version (since = "4.2.6")]
 		public static Gda.DataModel new_with_g_types_v (int cols, [CCode (array_length = false)] GLib.Type[] types);
 		public void set_n_columns (int cols);
@@ -352,11 +360,11 @@ namespace Gda {
 		[NoAccessorMethod]
 		public string @base { owned get; construct; }
 		[NoAccessorMethod]
+		public Gda.Connection cnc { owned get; construct; }
+		[NoAccessorMethod]
 		public string filter { owned get; construct; }
 		[NoAccessorMethod]
 		public int scope { get; construct; }
-		[NoAccessorMethod]
-		public bool use_rdn { get; set; }
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", type_id = "gda_data_pivot_get_type ()")]
 	public class DataPivot : GLib.Object, Gda.DataModel {
@@ -678,6 +686,8 @@ namespace Gda {
 		[CCode (cname = "gda_meta_store_extract_v")]
 		[Version (since = "4.2.6")]
 		public Gda.DataModel extract (string select_sql, GLib.HashTable<string,GLib.Value?>? vars) throws GLib.Error;
+		[CCode (cname = "gda_meta_store_extract")]
+		public Gda.DataModel? extract_v (Gda.MetaStore store, string select_sql, ...) throws GLib.Error;
 		public bool get_attribute_value (string att_name, out string att_value) throws GLib.Error;
 		public unowned Gda.Connection get_internal_connection ();
 		public int get_version ();
@@ -831,6 +841,7 @@ namespace Gda {
 		public uint add_item_to_sequence (string seq_path);
 		public bool del_item_from_sequence (string item_path);
 		public static GLib.Quark error_quark ();
+		public unowned Gda.ServerOperationNode? get_node_info (string path_format, ...);
 		public string get_node_parent (string path);
 		public string get_node_path_portion (string path);
 		public Gda.ServerOperationNodeType get_node_type (string path, Gda.ServerOperationNodeStatus? status);
@@ -848,6 +859,8 @@ namespace Gda {
 		[CCode (cname = "gda_server_operation_get_value_at_path")]
 		[Version (since = "4.2.6")]
 		public unowned GLib.Value? get_value_at (string path);
+		[CCode (cname = "gda_server_operation_get_value_at")]
+		public unowned GLib.Value? get_value_at_format (string path_format, ...);
 		public bool is_valid (string? xml_file) throws GLib.Error;
 		public bool load_data_from_xml ([CCode (type = "xmlNodePtr")] Xml.Node* node) throws GLib.Error;
 		public static unowned string op_type_to_string (Gda.ServerOperationType type);
@@ -861,6 +874,8 @@ namespace Gda {
 		public bool perform_drop_table () throws GLib.Error;
 		[Version (since = "4.2.3")]
 		public static Gda.ServerOperation? prepare_create_database (string provider, string? db_name) throws GLib.Error;
+		[Version (since = "4.2.3")]
+		public static Gda.ServerOperation? prepare_create_table (Gda.Connection cnc, string table_name, GLib.Error error, ...);
 		[Version (since = "4.2.3")]
 		public static Gda.ServerOperation? prepare_drop_database (string provider, string? db_name) throws GLib.Error;
 		[Version (since = "4.2.3")]
@@ -970,6 +985,8 @@ namespace Gda {
 		public unowned Gda.SetSource get_source_for_model (Gda.DataModel model);
 		public bool is_valid () throws GLib.Error;
 		public void merge_with_set (Gda.Set set_to_merge);
+		[CCode (cname = "gda_set_new_inline")]
+		public static Gda.Set new_inline (int nb, ...);
 		[CCode (has_construct_function = false)]
 		[Version (since = "4.2")]
 		public Set.read_only (GLib.SList<Gda.Holder> holders);
@@ -1082,19 +1099,27 @@ namespace Gda {
 		[Version (since = "4.2")]
 		public SqlBuilder (Gda.SqlStatementType stmt_type);
 		[Version (since = "4.2")]
+		public Gda.SqlBuilderId add_case (Gda.SqlBuilderId test_expr, Gda.SqlBuilderId else_expr, ...);
+		[Version (since = "4.2")]
 		public Gda.SqlBuilderId add_case_v (Gda.SqlBuilderId test_expr, Gda.SqlBuilderId else_expr, [CCode (array_length_cname = "args_size", array_length_pos = 4.1)] Gda.SqlBuilderId[] when_array, [CCode (array_length_cname = "args_size", array_length_pos = 4.1)] Gda.SqlBuilderId[] then_array);
 		[Version (since = "4.2")]
 		public Gda.SqlBuilderId add_cond (Gda.SqlOperatorType op, Gda.SqlBuilderId op1, Gda.SqlBuilderId op2, Gda.SqlBuilderId op3);
 		[Version (since = "4.2")]
 		public Gda.SqlBuilderId add_cond_v (Gda.SqlOperatorType op, [CCode (array_length_cname = "op_ids_size", array_length_pos = 2.1)] Gda.SqlBuilderId[] op_ids);
 		[Version (since = "4.2")]
+		public Gda.SqlBuilderId add_expr (Gda.DataHandler? dh, GLib.Type type, ...);
+		[Version (since = "4.2")]
 		public Gda.SqlBuilderId add_expr_value (Gda.DataHandler? dh, GLib.Value? value);
 		[Version (since = "4.2")]
 		public Gda.SqlBuilderId add_field_id (string field_name, string? table_name);
 		[Version (since = "4.2")]
+		public void add_field_value (string field_name, GLib.Type type, ...);
+		[Version (since = "4.2")]
 		public void add_field_value_as_gvalue (string field_name, GLib.Value? value);
 		[Version (since = "4.2")]
 		public void add_field_value_id (Gda.SqlBuilderId field_id, Gda.SqlBuilderId value_id);
+		[Version (since = "4.2")]
+		public Gda.SqlBuilderId add_function (string func_name, ...);
 		[Version (since = "4.2")]
 		public Gda.SqlBuilderId add_function_v (string func_name, [CCode (array_length_cname = "args_size", array_length_pos = 2.1)] Gda.SqlBuilderId[] args);
 		[Version (since = "4.2")]
@@ -1653,7 +1678,7 @@ namespace Gda {
 		public weak string view_def;
 		public bool is_updatable;
 	}
-	[CCode (cheader_filename = "libgda/libgda.h")]
+	[CCode (cheader_filename = "libgda/libgda.h", has_type_id = false)]
 	public struct Mutex : GLib.RecMutex {
 		public void free ();
 		public void @lock ();

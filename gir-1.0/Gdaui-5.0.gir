@@ -10956,6 +10956,237 @@ For more information and limitations, see gdaui_tree_store_new().</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
+    <docsection name="gdaui-basic-form">
+      <doc xml:space="preserve"
+           filename="gdaui-basic-form.h"
+           line="60">The #GdauiBasicForm widget is a form containing an entry for each #GdaHolder object
+contained in a #GdaSet (specified when the form is created). A typical usage is when the
+user is requested to enter a value which will be used in a statement (without any error checking for clarity):
+&lt;programlisting&gt;
+GdaStatement *stmt;
+GdaSet *params;
+stmt = gda_sql_parser_parse_string (parser, "SELECT * FROM customers where name LIKE ##name::string", NULL, NULL);
+gda_statement_get_parameters (stmt, &amp;amp;params, NULL);
+
+GtkWidget *form;
+gint result;
+form = gdaui_basic_form_new_in_dialog (params, NULL, "Customer search", "Enter Customer search expression");
+result = gtk_dialog_run (GTK_DIALOG (form));
+gtk_widget_destroy (form);
+if (result == GTK_RESPONSE_ACCEPT) {
+   // execute statement
+   GdaDataModel *model;
+   model = gda_connection_statement_execute_select (cnc, stmt, params, NULL);
+   [...]
+}
+g_object_unref (params);
+g_object_unref (stmt);
+&lt;/programlisting&gt;
+
+The default layout within a #GdauiBasicForm is a vertical column: all the data entry widgets are aligned
+in a single column. This behaviour can be changed using the gdaui_basic_form_set_layout_from_file() method or
+setting the &lt;link linkend="GdauiBasicForm--xml-layout"&gt;xml-layout&lt;/link&gt; property.
+
+&lt;anchor id="GdauiBasicFormXMLLayout"/&gt;
+The #GdauiBasicForm class parses textual descriptions of XML layout which
+which can be described by the following DTD.
+
+&lt;programlisting&gt;&lt;![CDATA[
+&lt;!ELEMENT gdaui_layouts (gdaui_form | gdaui_grid)&gt;
+
+&lt;!ELEMENT gdaui_form (gdaui_section | gdaui_column | gdaui_notebook)*&gt;
+&lt;!ATTLIST gdaui_form
+         name CDATA #REQUIRED
+	  container (columns|rows|hpaned|vpaned) #IMPLIED&gt;
+
+&lt;!ELEMENT gdaui_section (gdaui_section | gdaui_column | gdaui_notebook)*&gt;
+&lt;!ATTLIST gdaui_section
+         title CDATA #IMPLIED &gt;
+
+&lt;!ELEMENT gdaui_notebook (gdaui_section | gdaui_column | gdaui_notebook)*&gt;
+
+&lt;!ELEMENT gdaui_column (gdaui_entry | gdaui_placeholder)*&gt;
+
+&lt;!ELEMENT gdaui_entry EMPTY&gt;
+&lt;!ATTLIST gdaui_entry
+         name CDATA #REQUIRED
+	  editable (true|false) #IMPLIED
+	  label CDATA #IMPLIED
+	  plugin CDATA #IMPLIED&gt;
+
+&lt;!ELEMENT gdaui_placeholder EMPTY&gt;
+&lt;!ATTLIST gdaui_placeholder
+	  id CDATA #REQUIRED
+	  label CDATA #IMPLIED&gt;
+]]&gt;&lt;/programlisting&gt;
+
+&lt;example&gt;
+ &lt;title&gt;A GdauiBasicForm layout example&lt;/title&gt;
+ &lt;programlisting&gt;&lt;![CDATA[
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;gdaui_layouts&gt;
+ &lt;gdaui_form name="customers" container="hpaned"&gt;
+   &lt;gdaui_section title="Summary"&gt;
+     &lt;gdaui_column&gt;
+	&lt;gdaui_entry name="id" editable="no"/&gt;
+	&lt;gdaui_entry name="name"/&gt;
+	&lt;gdaui_entry name="comments" plugin="text"/&gt;
+	&lt;gdaui_entry name="total_orders" label="Total ordered" plugin="number:NB_DECIMALS=2;CURRENCY=€"/&gt;
+     &lt;/gdaui_column&gt;
+   &lt;/gdaui_section&gt;
+   &lt;gdaui_section title="Photo"&gt;
+     &lt;gdaui_column&gt;
+	&lt;gdaui_entry name="photo" plugin="picture"/&gt;
+     &lt;/gdaui_column&gt;
+   &lt;/gdaui_section&gt;
+ &lt;/gdaui_form&gt;
+&lt;/gdaui_layouts&gt;
+]]&gt;&lt;/programlisting&gt;
+&lt;/example&gt;</doc>
+    </docsection>
+    <docsection name="gdaui-cloud">
+      <doc xml:space="preserve"
+           filename="gdaui-cloud.h"
+           line="53">The #GdauiCloud widget displays a string for each row in a #GdaDataModel for which the size
+is variable (determined either by some data in the data model, or by a function provided by
+the programmer).
+
+Depending on the selection mode of the widget, each string can be selected by the user and
+the "selection-changed" signal is emitted.</doc>
+    </docsection>
+    <docsection name="gdaui-data-entry">
+      <doc xml:space="preserve"
+           filename="gdaui-data-entry.h"
+           line="88">The #GdaUiDataEntry is an interface for widgets (simple or complex)
+which lets the user view and/or modify a #GValue.
+
+This interface is implemented by widgets which feature data editing (usually composed of an editing
+area and a button to have some more control on the value being edited).
+The interface allows to control how the widget works and to query the value and the attributes
+of the data held by the widget.
+
+The widget can store the original value (to be able to tell if the value has been changed
+by the user) and a default value (which will be returned if the user explicitly forces the widget
+to be set to the default value).
+Control methods allow to set the type of value to be edited (the requested type must be
+compatible with what the widget can handle), set the value (which replaces the currently edited
+value), set the value and the original value (the value passed as argument is set and is also
+considered to be the original value).
+
+#GdaUiDataEntry widgets are normally created using the gdaui_new_data_entry() function.</doc>
+    </docsection>
+    <docsection name="gdaui-data-filter">
+      <doc xml:space="preserve"
+           filename="gdaui-data-filter.h"
+           line="54">The #GdauiDataFilter widget can be used as a standalone widget, but is also
+used internally by the #GdauiDataProxyInfo widget for its search option.</doc>
+    </docsection>
+    <docsection name="gdaui-data-proxy">
+      <doc xml:space="preserve"
+           filename="gdaui-data-proxy.h"
+           line="71">The #GdauiDataProxy interface is implemented by widgets which allow modifications
+to a #GdaDataModel (through a #GdaDataProxy to actually proxy the changes before they
+are written to the data model).</doc>
+    </docsection>
+    <docsection name="gdaui-data-proxy-info">
+      <doc xml:space="preserve"
+           filename="gdaui-data-proxy-info.h"
+           line="73">The #GdauiDataProxyInfo widget is a container widget which, depending on how it is configured:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;proposes action buttons to change the currently displayed row, add new row, ...&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;displays information about the number of rows in a #GdauiDataProxy&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;</doc>
+    </docsection>
+    <docsection name="gdaui-data-selector">
+      <doc xml:space="preserve"
+           filename="gdaui-data-selector.h"
+           line="57">The #GdauiDataSelector interface is implemented by widgets which allow the user
+to select some data from a #GdaDataModel. Depending on the actual widget, the selection
+can be a single row or more than one row.
+
+This interface allows one to set and get the #GdaDataModel from which data is to be selected
+and offers a few other common behaviours.
+
+Please note that any row number in this interface is in reference to the #GdaDataModel returned by
+the gdaui_data_selector_get_model() method.</doc>
+    </docsection>
+    <docsection name="gdaui-data-store">
+      <doc xml:space="preserve"
+           filename="gdaui-data-store.h"
+           line="69">The #GdauiDataStore object implements the #GtkTreeModel interface
+on top of a #GdaDataModel to be able to display its contents
+in a #GtkTreeView.</doc>
+    </docsection>
+    <docsection name="gdaui-login">
+      <doc xml:space="preserve"
+           filename="gdaui-login.h"
+           line="64">The #GdauiLogin widget can be used when the user needs to enter
+data to open a connection. It can be customized in several ways:
+&lt;itemizedlist&gt;
+  &lt;listitem&gt;&lt;para&gt;data source (DSN) selection can be shown or hidden&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;the button to launch the control center to declare new data sources can be
+shown or hidden&lt;/para&gt;&lt;/listitem&gt;
+  &lt;listitem&gt;&lt;para&gt;the form to open a connection not using a DSN can be shown or hidden&lt;/para&gt;&lt;/listitem&gt;
+&lt;/itemizedlist&gt;</doc>
+    </docsection>
+    <docsection name="gdaui-plugins">
+      <doc xml:space="preserve"
+           filename="gdaui-plugin.h"
+           line="80">This section describes the functions used to declare UI plugins: data entry and cell renderers.</doc>
+    </docsection>
+    <docsection name="gdaui-raw-form">
+      <doc xml:space="preserve"
+           filename="gdaui-raw-form.h"
+           line="53">The #GdauiForm widget which uses the #GdauiRawForm and adds decorations such as
+information about data model size, and features searching.</doc>
+    </docsection>
+    <docsection name="gdaui-raw-grid">
+      <doc xml:space="preserve"
+           filename="gdaui-raw-grid.h"
+           line="54">The #GdauiGrid widget which uses the #GdauiRawGrid and adds decorations such as
+information about data model size, and features searching.</doc>
+    </docsection>
+    <docsection name="gdaui-rt-editor">
+      <doc xml:space="preserve"
+           filename="gdaui-rt-editor.h"
+           line="55">The text entered in the editor can be formatted using bold, underline, title, ... attributes
+and then extracted using a subset of the &lt;ulink url="http://www.txt2tags.org/markup.html"&gt;txt2tags&lt;/ulink&gt;
+markup. Use this widget to edit textual fields where some markup is desirable to organize the text.
+
+For example the real text used to obtain the formatting in the figure is:
+&lt;programlisting&gt;
+blah //italic// blah.
+and ** BOLD!//both italic and bold// Bold!**
+Nice Picture: [[[R2RrUAA...y8vLy8tYQwAA]]] Yes
+- List item --One--
+- List item **Two**
+- sub1
+- sub2&lt;/programlisting&gt;
+where the picture's serialized data has been truncated here for readability
+(between the [[[ and ]]] markers). Pictures are usually inserted using the incorporated
+tollbar and not y hand (even though it's possible).</doc>
+    </docsection>
+    <docsection name="gdaui-server-operation">
+      <doc xml:space="preserve"
+           filename="gdaui-server-operation.h"
+           line="55">The #GdauiServerOperation widget allows the user to enter information to perform
+Data Definition queries (all queries which are not SELECT, INSERT, UPDATE or DELETE).
+For example the figure shows a #GdauiServerOperation widget set to create an index in an
+SQLite database.</doc>
+    </docsection>
+    <docsection name="gdaui-tree-store">
+      <doc xml:space="preserve"
+           filename="gdaui-tree-store.h"
+           line="59">The #GdauiTreeStore implements the #GtkTreeModel interface required
+to display data from a #GdaTree in a #GtkTreeView widget.
+
+To allow a tree to be populated only on request (ie. when the user expands a row), each
+#GdaTreeNode can give the attribute named #GDA_ATTRIBUTE_TREE_NODE_UNKNOWN_CHILDREN
+a boolean %TRUE #GValue to tell the #GdauiTreeStore data model to artificially add
+a dummy child for the row corresponding to the #GdaTreeNode. Then the programmer
+can connect to the &lt;link linkend="GtkTreeView-test-expand-row"&gt;GtkTreeView::test-expand-row&lt;/link&gt;
+signal and update the requested children.</doc>
+    </docsection>
     <function name="new_data_entry" c:identifier="gdaui_new_data_entry">
       <doc xml:space="preserve"
            filename="gdaui-init.c"
