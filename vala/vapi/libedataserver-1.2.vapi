@@ -371,10 +371,10 @@ namespace E {
 		public bool unset_last_credentials_required_arguments_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (cname = "e_webdav_discover_sources")]
 		[Version (since = "3.18")]
-		public async void webdav_discover_sources (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, GLib.Cancellable? cancellable);
-		[CCode (cname = "e_webdav_discover_sources_full")]
+		public async bool webdav_discover_sources (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, GLib.Cancellable? cancellable, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses) throws GLib.Error;
+		[CCode (cname = "e_webdav_discover_sources_full", finish_name = "e_webdav_discover_sources_finish")]
 		[Version (since = "3.30")]
-		public async void webdav_discover_sources_full (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, [CCode (delegate_target_pos = 4.5, scope = "async")] E.WebDAVDiscoverRefSourceFunc? ref_source_func, GLib.Cancellable? cancellable);
+		public async bool webdav_discover_sources_full (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, [CCode (delegate_target_pos = 4.5, scope = "async")] E.WebDAVDiscoverRefSourceFunc? ref_source_func, GLib.Cancellable? cancellable, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses) throws GLib.Error;
 		[CCode (cname = "e_webdav_discover_sources_full_sync")]
 		[Version (since = "3.30")]
 		public bool webdav_discover_sources_full_sync (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, [CCode (delegate_target_pos = 4.5)] E.WebDAVDiscoverRefSourceFunc? ref_source_func, out string? out_certificate_pem, out GLib.TlsCertificateFlags? out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string>? out_calendar_user_addresses, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -2244,9 +2244,6 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.18")]
 	public static void webdav_discover_free_discovered_sources (GLib.SList<E.WebDAVDiscoveredSource> discovered_sources);
-	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Version (since = "3.18")]
-	public static bool webdav_discover_sources_finish (E.Source source, GLib.AsyncResult result, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses) throws GLib.Error;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void xml_destroy_hash (GLib.HashTable<string,string> hash);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]

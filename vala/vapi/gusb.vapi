@@ -102,6 +102,8 @@ namespace GUsb {
 		public uint16 get_spec ();
 		[Version (since = "0.1.0")]
 		public string get_string_descriptor (uint8 desc_index) throws GLib.Error;
+		[Version (since = "0.3.6")]
+		public GLib.Bytes get_string_descriptor_bytes (uint8 desc_index, uint16 langid) throws GLib.Error;
 		[Version (since = "0.1.0")]
 		public uint16 get_vid ();
 		[Version (since = "0.2.4")]
@@ -258,6 +260,11 @@ namespace GUsb {
 		FAILED,
 		PERMISSION_DENIED,
 		LAST
+	}
+	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_LANGID_", has_type_id = false)]
+	public enum DeviceLangid {
+		INVALID,
+		ENGLISH_UNITED_STATES
 	}
 	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_RECIPIENT_", has_type_id = false)]
 	public enum DeviceRecipient {
