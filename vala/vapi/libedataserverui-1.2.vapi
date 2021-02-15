@@ -87,7 +87,7 @@ namespace E {
 		[Version (since = "3.18")]
 		public bool get_multiselect ();
 		[Version (since = "3.18")]
-		public bool get_selected (int index, out string out_href, out uint out_supports, out string out_display_name, out string out_color);
+		public bool get_selected (int index, out string out_href, out uint out_supports, out string out_display_name, out string out_color, out uint out_order);
 		[Version (since = "3.18")]
 		public unowned Gtk.TreeSelection get_tree_selection ();
 		[Version (since = "3.18")]

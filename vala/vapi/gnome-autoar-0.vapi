@@ -5,7 +5,7 @@ namespace Autoar {
 	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h", type_id = "autoar_compressor_get_type ()")]
 	public class Compressor : GLib.Object {
 		[CCode (has_construct_function = false)]
-		protected Compressor ();
+		public Compressor (GLib.List<GLib.File> source_files, GLib.File output_file, Autoar.Format format, Autoar.Filter filter, bool create_top_level_directory);
 		public uint get_completed_files ();
 		public uint64 get_completed_size ();
 		public bool get_create_top_level_directory ();
@@ -16,6 +16,7 @@ namespace Autoar {
 		public unowned GLib.File get_output_file ();
 		public bool get_output_is_dest ();
 		public uint64 get_size ();
+		public unowned GLib.List<GLib.File> get_source_files ();
 		public static GLib.Quark quark ();
 		public void set_notify_interval (int64 notify_interval);
 		public void set_output_is_dest (bool output_is_dest);
@@ -30,7 +31,6 @@ namespace Autoar {
 		public GLib.File output_file { get; construct; }
 		public bool output_is_dest { get; set construct; }
 		public uint64 size { get; }
-		[NoAccessorMethod]
 		public void* source_files { get; construct; }
 		public signal void cancelled ();
 		public signal void completed ();
@@ -52,7 +52,7 @@ namespace Autoar {
 		public uint get_total_files ();
 		public uint64 get_total_size ();
 		public static GLib.Quark quark ();
-		public void set_delete_after_extraction (bool delete_if_succeed);
+		public void set_delete_after_extraction (bool delete_after_extraction);
 		public void set_notify_interval (int64 notify_interval);
 		public void set_output_is_dest (bool output_is_dest);
 		public void start (GLib.Cancellable? cancellable = null);
@@ -72,6 +72,7 @@ namespace Autoar {
 		public signal GLib.Object decide_destination (GLib.File destination, void* files);
 		public signal void error (GLib.Error error);
 		public signal void progress (uint64 completed_size, uint completed_files);
+		public signal string request_passphrase ();
 		public signal void scanned (uint files);
 	}
 	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h", cprefix = "AUTOAR_CONFLICT_", has_type_id = false)]

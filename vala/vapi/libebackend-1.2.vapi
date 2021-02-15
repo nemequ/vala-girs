@@ -345,7 +345,7 @@ namespace E {
 	}
 	[CCode (cheader_filename = "libebackend/libebackend.h", type_id = "e_source_registry_server_get_type ()")]
 	[Version (since = "3.6")]
-	public class SourceRegistryServer : E.DataFactory, E.Extensible, GLib.Initable {
+	public class SourceRegistryServer : E.DataFactory, E.OAuth2Support, E.Extensible, GLib.Initable {
 		[CCode (has_construct_function = false, type = "EDBusServer*")]
 		public SourceRegistryServer ();
 		public void add_source (E.Source source);
@@ -362,6 +362,8 @@ namespace E {
 		public E.CollectionBackendFactory? ref_backend_factory (E.Source source);
 		[Version (since = "3.16")]
 		public E.SourceCredentialsProvider ref_credentials_provider ();
+		[Version (since = "3.40")]
+		public E.OAuth2Support? ref_oauth2_support ();
 		public E.Source? ref_source (string uid);
 		public void remove_source (E.Source source);
 		public virtual signal void files_loaded ();

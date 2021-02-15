@@ -104,7 +104,7 @@ namespace GWeather {
 		public static GWeather.Location? get_world ();
 		public bool has_coords ();
 		[Version (since = "40")]
-		public GWeather.Location next_child (owned GWeather.Location child);
+		public GWeather.Location? next_child (owned GWeather.Location? child);
 		public GWeather.Location @ref ();
 		public unowned GLib.Variant serialize ();
 		public void unref ();
@@ -279,7 +279,8 @@ namespace GWeather {
 		KPH,
 		MPH,
 		KNOTS,
-		BFT
+		BFT;
+		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", cprefix = "GWEATHER_TEMP_UNIT_", type_id = "gweather_temperature_unit_get_type ()")]
 	public enum TemperatureUnit {

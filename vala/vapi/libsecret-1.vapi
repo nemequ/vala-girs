@@ -138,10 +138,10 @@ namespace Secret {
 		public static Secret.Service get_sync (Secret.ServiceFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool load_collections (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool load_collections_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async int @lock (GLib.List<GLib.DBusProxy> objects, GLib.Cancellable? cancellable, out GLib.List<GLib.DBusProxy> locked) throws GLib.Error;
-		public async int lock_dbus_paths ([CCode (array_length = false, array_null_terminated = true)] string[] paths, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] locked) throws GLib.Error;
-		public int lock_dbus_paths_sync ([CCode (array_length = false, array_null_terminated = true)] string[] paths, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] locked) throws GLib.Error;
-		public int lock_sync (GLib.List<GLib.DBusProxy> objects, GLib.Cancellable? cancellable, out GLib.List<GLib.DBusProxy> locked) throws GLib.Error;
+		public async int @lock (GLib.List<GLib.DBusProxy> objects, GLib.Cancellable? cancellable, out GLib.List<GLib.DBusProxy>? locked) throws GLib.Error;
+		public async int lock_dbus_paths ([CCode (array_length = false, array_null_terminated = true)] string[] paths, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[]? locked) throws GLib.Error;
+		public int lock_dbus_paths_sync ([CCode (array_length = false, array_null_terminated = true)] string[] paths, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[]? locked) throws GLib.Error;
+		public int lock_sync (GLib.List<GLib.DBusProxy> objects, GLib.Cancellable? cancellable, out GLib.List<GLib.DBusProxy>? locked) throws GLib.Error;
 		public Secret.Value lookup_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static async Secret.Service open (GLib.Type service_gtype, string? service_bus_name, Secret.ServiceFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static Secret.Service open_sync (GLib.Type service_gtype, string? service_bus_name, Secret.ServiceFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -153,18 +153,18 @@ namespace Secret {
 		public virtual GLib.Variant prompt_sync (Secret.Prompt prompt, GLib.Cancellable? cancellable, GLib.VariantType return_type) throws GLib.Error;
 		public async string? read_alias_dbus_path (string alias, GLib.Cancellable? cancellable) throws GLib.Error;
 		public string? read_alias_dbus_path_sync (string alias, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool search_for_dbus_paths (Secret.Schema? schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] unlocked, [CCode (array_length = false, array_null_terminated = true)] out string[] locked) throws GLib.Error;
-		public bool search_for_dbus_paths_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] unlocked, [CCode (array_length = false, array_null_terminated = true)] out string[] locked) throws GLib.Error;
+		public async bool search_for_dbus_paths (Secret.Schema? schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[]? unlocked, [CCode (array_length = false, array_null_terminated = true)] out string[]? locked) throws GLib.Error;
+		public bool search_for_dbus_paths_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[]? unlocked, [CCode (array_length = false, array_null_terminated = true)] out string[]? locked) throws GLib.Error;
 		public GLib.List<Secret.Item> search_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, Secret.SearchFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool set_alias (string alias, Secret.Collection? collection, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool set_alias_sync (string alias, Secret.Collection? collection, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool set_alias_to_dbus_path (string alias, string? collection_path, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool set_alias_to_dbus_path_sync (string alias, string? collection_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool store_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, string? collection, string label, Secret.Value value, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async int @unlock (GLib.List<GLib.DBusProxy> objects, GLib.Cancellable? cancellable, out GLib.List<GLib.DBusProxy> unlocked) throws GLib.Error;
-		public async int unlock_dbus_paths ([CCode (array_length = false, array_null_terminated = true)] string[] paths, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] unlocked) throws GLib.Error;
-		public int unlock_dbus_paths_sync ([CCode (array_length = false, array_null_terminated = true)] string[] paths, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] unlocked) throws GLib.Error;
-		public int unlock_sync (GLib.List<GLib.DBusProxy> objects, GLib.Cancellable? cancellable, out GLib.List<GLib.DBusProxy> unlocked) throws GLib.Error;
+		public async int @unlock (GLib.List<GLib.DBusProxy> objects, GLib.Cancellable? cancellable, out GLib.List<GLib.DBusProxy>? unlocked) throws GLib.Error;
+		public async int unlock_dbus_paths ([CCode (array_length = false, array_null_terminated = true)] string[] paths, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[]? unlocked) throws GLib.Error;
+		public int unlock_dbus_paths_sync ([CCode (array_length = false, array_null_terminated = true)] string[] paths, GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[]? unlocked) throws GLib.Error;
+		public int unlock_sync (GLib.List<GLib.DBusProxy> objects, GLib.Cancellable? cancellable, out GLib.List<GLib.DBusProxy>? unlocked) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libsecret/secret.h", ref_function = "secret_value_ref", type_id = "secret_value_get_type ()", unref_function = "secret_value_unref")]
 	[Compact]

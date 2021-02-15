@@ -333,6 +333,8 @@ namespace ECal {
 		[CCode (has_construct_function = false)]
 		[Version (since = "3.34")]
 		public ComponentAlarm.from_component (ICal.Component component);
+		[Version (since = "3.40")]
+		public unowned ICal.Time? get_acknowledged ();
 		[Version (since = "3.34")]
 		public ECal.ComponentAlarmAction get_action ();
 		[Version (since = "3.34")]
@@ -357,6 +359,8 @@ namespace ECal {
 		public bool has_attachments ();
 		[Version (since = "3.34")]
 		public bool has_attendees ();
+		[Version (since = "3.40")]
+		public void set_acknowledged (ICal.Time? when);
 		[Version (since = "3.34")]
 		public void set_action (ECal.ComponentAlarmAction action);
 		[Version (since = "3.34")]
@@ -375,6 +379,8 @@ namespace ECal {
 		public void set_trigger (ECal.ComponentAlarmTrigger? trigger);
 		[Version (since = "3.34")]
 		public void set_uid (string? uid);
+		[Version (since = "3.40")]
+		public void take_acknowledged (owned ICal.Time? when);
 	}
 	[CCode (cheader_filename = "libecal/libecal.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_cal_component_alarm_instance_get_type ()")]
 	[Compact]
@@ -1280,6 +1286,9 @@ namespace ECal {
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.30")]
 	public static string util_seconds_to_string (int64 seconds);
+	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.40")]
+	public static bool util_set_alarm_acknowledged (ECal.Component component, string auid, int64 when);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (deprecated = true, deprecated_since = "3.38", since = "3.16")]
 	public static ICal.Component? util_split_at_instance (ICal.Component icalcomp, ICal.Time rid, ICal.Time? master_dtstart);

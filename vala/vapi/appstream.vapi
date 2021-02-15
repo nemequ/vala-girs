@@ -50,11 +50,13 @@ namespace AppStream {
 		public AppStream.BundleKind get_bundle_kind ();
 		public unowned AppStream.Checksum? get_checksum (AppStream.ChecksumKind kind);
 		public unowned GLib.GenericArray<AppStream.Checksum> get_checksums ();
+		public unowned string get_filename ();
 		public AppStream.ArtifactKind get_kind ();
 		public unowned GLib.GenericArray<string> get_locations ();
 		public unowned string get_platform ();
 		public uint64 get_size (AppStream.SizeKind kind);
 		public void set_bundle_kind (AppStream.BundleKind kind);
+		public void set_filename (string filename);
 		public void set_kind (AppStream.ArtifactKind kind);
 		public void set_platform (string platform);
 		public void set_size (uint64 size, AppStream.SizeKind kind);
@@ -436,6 +438,8 @@ namespace AppStream {
 		public void clear_components ();
 		public string component_to_metainfo (AppStream.FormatKind format) throws GLib.Error;
 		public string components_to_collection (AppStream.FormatKind format) throws GLib.Error;
+		[Version (since = "0.14.0")]
+		public static AppStream.FormatStyle file_guess_style (string filename);
 		public unowned string get_architecture ();
 		public unowned AppStream.Component? get_component ();
 		public unowned GLib.GenericArray<AppStream.Component> get_components ();
@@ -450,10 +454,10 @@ namespace AppStream {
 		public bool parse (string data, AppStream.FormatKind format) throws GLib.Error;
 		[Version (since = "0.14.0")]
 		public bool parse_bytes (GLib.Bytes bytes, AppStream.FormatKind format) throws GLib.Error;
-		public void parse_desktop_data (string data, string cid) throws GLib.Error;
-		public void parse_file (GLib.File file, AppStream.FormatKind format) throws GLib.Error;
-		public void save_collection (string fname, AppStream.FormatKind format) throws GLib.Error;
-		public void save_metainfo (string fname, AppStream.FormatKind format) throws GLib.Error;
+		public bool parse_desktop_data (string data, string cid) throws GLib.Error;
+		public bool parse_file (GLib.File file, AppStream.FormatKind format) throws GLib.Error;
+		public bool save_collection (string fname, AppStream.FormatKind format) throws GLib.Error;
+		public bool save_metainfo (string fname, AppStream.FormatKind format) throws GLib.Error;
 		public void set_architecture (string arch);
 		public void set_format_style (AppStream.FormatStyle mode);
 		public void set_format_version (AppStream.FormatVersion version);
@@ -499,32 +503,6 @@ namespace AppStream {
 		public void set_cache_location (string fname);
 		public void set_flags (AppStream.PoolFlags flags);
 		public void set_locale (string locale);
-	}
-	[CCode (cheader_filename = "appstream.h", type_id = "as_profile_get_type ()")]
-	public class Profile : GLib.Object {
-		[CCode (has_construct_function = false)]
-		[Version (since = "0.14.0")]
-		public Profile ();
-		[Version (since = "0.14.0")]
-		public void clear ();
-		[Version (since = "0.14.0")]
-		public void dump ();
-		[Version (since = "0.14.0")]
-		public void prune (uint duration);
-		[Version (since = "0.14.0")]
-		public void set_autodump (uint delay);
-		[Version (since = "0.14.0")]
-		public void set_autoprune (uint duration);
-		[Version (since = "0.14.0")]
-		public void set_duration_min (uint duration_min);
-	}
-	[CCode (cheader_filename = "appstream.h", has_type_id = false)]
-	[Compact]
-	public class ProfileTask {
-		[Version (since = "0.14.0")]
-		public void free ();
-		[Version (since = "0.14.0")]
-		public void set_threaded (bool threaded);
 	}
 	[CCode (cheader_filename = "appstream.h", type_id = "as_provided_get_type ()")]
 	public class Provided : GLib.Object {
@@ -781,6 +759,8 @@ namespace AppStream {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_tags ();
 		public void set_check_urls (bool value);
+		[Version (since = "0.14.0")]
+		public bool validate_bytes (GLib.Bytes metadata);
 		public bool validate_data (string metadata);
 		public bool validate_file (GLib.File metadata_file);
 		public bool validate_tree (string root_dir);
@@ -1035,7 +1015,11 @@ namespace AppStream {
 		[CCode (cname = "AS_FORMAT_VERSION_V0_11")]
 		@11,
 		[CCode (cname = "AS_FORMAT_VERSION_V0_12")]
-		@12;
+		@12,
+		[CCode (cname = "AS_FORMAT_VERSION_V0_13")]
+		@13,
+		[CCode (cname = "AS_FORMAT_VERSION_V0_14")]
+		@14;
 		[Version (since = "0.10")]
 		public static AppStream.FormatVersion from_string (string version_str);
 		[Version (since = "0.10")]
@@ -1097,6 +1081,13 @@ namespace AppStream {
 		REMOVE_COMPONENT;
 		public static AppStream.MergeKind from_string (string kind_str);
 		public unowned string to_string ();
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_METADATA_LOCATION_", type_id = "as_metadata_location_get_type ()")]
+	public enum MetadataLocation {
+		SHARED,
+		STATE,
+		CACHE,
+		USER
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_PARSE_FLAG_", type_id = "as_parse_flags_get_type ()")]
 	[Flags]
@@ -1323,6 +1314,12 @@ namespace AppStream {
 		OLD_CACHE;
 		public static GLib.Quark quark ();
 	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_UTILS_ERROR_")]
+	public errordomain UtilsError {
+		FAILED;
+		[Version (since = "0.14.0")]
+		public static GLib.Quark quark ();
+	}
 	[CCode (cheader_filename = "appstream.h", cname = "AS_IMAGE_LARGE_HEIGHT")]
 	public const int IMAGE_LARGE_HEIGHT;
 	[CCode (cheader_filename = "appstream.h", cname = "AS_IMAGE_LARGE_WIDTH")]
@@ -1335,6 +1332,12 @@ namespace AppStream {
 	public const int IMAGE_THUMBNAIL_HEIGHT;
 	[CCode (cheader_filename = "appstream.h", cname = "AS_IMAGE_THUMBNAIL_WIDTH")]
 	public const int IMAGE_THUMBNAIL_WIDTH;
+	[CCode (cheader_filename = "appstream.h", cname = "AS_MAJOR_VERSION")]
+	public const int MAJOR_VERSION;
+	[CCode (cheader_filename = "appstream.h", cname = "AS_MICRO_VERSION")]
+	public const int MICRO_VERSION;
+	[CCode (cheader_filename = "appstream.h", cname = "AS_MINOR_VERSION")]
+	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "appstream.h")]
 	public static unowned string get_appstream_version ();
 	[CCode (cheader_filename = "appstream.h")]
@@ -1394,10 +1397,16 @@ namespace AppStream {
 	[Version (since = "0.14.0")]
 	public static bool utils_data_id_valid (string data_id);
 	[CCode (cheader_filename = "appstream.h")]
+	[Version (since = "0.14.0")]
+	public static bool utils_install_metadata_file (AppStream.MetadataLocation location, string filename, string origin, string destdir) throws GLib.Error;
+	[CCode (cheader_filename = "appstream.h")]
 	public static bool utils_is_category_name (string category_name);
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.10.0")]
 	public static bool utils_is_desktop_environment (string desktop);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (since = "0.14.0")]
+	public static bool utils_is_platform_triplet (string triplet);
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.9.8")]
 	public static bool utils_is_tld (string tld);
@@ -1410,4 +1419,7 @@ namespace AppStream {
 	public static int vercmp (string a, string b, AppStream.VercmpFlags flags);
 	[CCode (cheader_filename = "appstream.h")]
 	public static int vercmp_simple (string a, string b);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (since = "0.14.0")]
+	public static unowned string version_string ();
 }

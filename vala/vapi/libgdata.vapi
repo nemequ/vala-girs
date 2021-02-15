@@ -751,6 +751,21 @@ namespace GData {
 		[CCode (has_construct_function = false)]
 		public DocumentsDrawing (string? id);
 	}
+	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_documents_drive_get_type ()")]
+	public class DocumentsDrive : GData.Entry {
+		[CCode (has_construct_function = false)]
+		protected DocumentsDrive ();
+		[Version (since = "0.18.0")]
+		public unowned string? get_name ();
+		[Version (since = "0.18.0")]
+		public string name { get; }
+	}
+	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_documents_drive_query_get_type ()")]
+	public class DocumentsDriveQuery : GData.Query {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.18.0")]
+		public DocumentsDriveQuery (string? q);
+	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_documents_entry_get_type ()")]
 	[Version (since = "0.4.0")]
 	public abstract class DocumentsEntry : GData.Entry, GData.AccessHandler {
@@ -773,9 +788,14 @@ namespace GData {
 		public int64 get_quota_used ();
 		[Version (since = "0.11.0")]
 		public unowned string get_resource_id ();
+		[Version (since = "0.18.0")]
+		public int64 get_shared_with_me_date ();
 		[Version (since = "0.17.11")]
 		public bool remove_documents_property (GData.DocumentsProperty property);
 		public void set_writers_can_invite (bool writers_can_invite);
+		[NoAccessorMethod]
+		[Version (since = "0.18.0")]
+		public bool can_edit { get; }
 		[Version (deprecated = true, deprecated_since = "0.11.0", since = "0.4.0")]
 		public string document_id { get; }
 		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.4.0")]
@@ -791,6 +811,8 @@ namespace GData {
 		public int64 quota_used { get; }
 		[Version (since = "0.11.0")]
 		public string resource_id { get; }
+		[Version (since = "0.18.0")]
+		public int64 shared_with_me_date { get; }
 		[NoAccessorMethod]
 		public bool writers_can_invite { get; set; }
 	}
@@ -902,6 +924,10 @@ namespace GData {
 		public GData.DocumentsFeed query_documents (GData.DocumentsQuery? query, GLib.Cancellable? cancellable, GData.QueryProgressCallback? progress_callback) throws GLib.Error;
 		[Version (since = "0.9.1")]
 		public async void query_documents_async (GData.DocumentsQuery? query, GLib.Cancellable? cancellable, owned GData.QueryProgressCallback? progress_callback);
+		[Version (since = "0.18.0")]
+		public GData.DocumentsFeed query_drives (GData.DocumentsDriveQuery? query, GLib.Cancellable? cancellable, GData.QueryProgressCallback? progress_callback) throws GLib.Error;
+		[Version (since = "0.18.0")]
+		public async void query_drives_async (GData.DocumentsDriveQuery? query, GLib.Cancellable? cancellable, owned GData.QueryProgressCallback? progress_callback);
 		[Version (since = "0.8.0")]
 		public GData.DocumentsEntry remove_entry_from_folder (GData.DocumentsEntry entry, GData.DocumentsFolder folder, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "0.8.0")]

@@ -1116,9 +1116,9 @@ namespace Camel {
 		public size_t outsize;
 		[CCode (has_construct_function = false)]
 		protected MimeFilter ();
-		public void backup ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gsize")] string[] data);
-		public virtual void complete ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] string[] @in, size_t prespace, [CCode (array_length_cname = "outlen", array_length_pos = 3.5, array_length_type = "gsize")] out string[] @out, out size_t outprespace);
-		public virtual void filter ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] string[] @in, size_t prespace, [CCode (array_length_cname = "outlen", array_length_pos = 3.5, array_length_type = "gsize")] out string[] @out, out size_t outprespace);
+		public void backup ([CCode (array_length_cname = "length", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] data);
+		public virtual void complete ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] @in, size_t prespace, [CCode (array_length_cname = "outlen", array_length_pos = 3.5, array_length_type = "gsize")] out uint8[] @out, out size_t outprespace);
+		public virtual void filter ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] @in, size_t prespace, [CCode (array_length_cname = "outlen", array_length_pos = 3.5, array_length_type = "gsize")] out uint8[] @out, out size_t outprespace);
 		public static Camel.MimeFilter @new ();
 		public virtual void reset ();
 		public void set_size (size_t size, int keep);
@@ -1285,7 +1285,7 @@ namespace Camel {
 		public int64 seek (int64 offset, int whence);
 		public int set_header_regex (string matchstr);
 		public Camel.MimeParserState state ();
-		public Camel.MimeParserState step ([CCode (array_length_cname = "datalength", array_length_pos = 1.1)] ref string[]? databuffer);
+		public Camel.MimeParserState step ([CCode (array_length_cname = "datalength", array_length_pos = 1.1, array_length_type = "gsize")] ref uint8[] databuffer);
 		public unowned Camel.Stream? stream ();
 		[Version (since = "2.22")]
 		public int64 tell ();
@@ -1318,7 +1318,7 @@ namespace Camel {
 		public unowned string get_disposition ();
 		public Camel.TransferEncoding get_encoding ();
 		public unowned string get_filename ();
-		public void set_content ([CCode (array_length_cname = "length", array_length_pos = 1.5)] string[]? data, string? type);
+		public void set_content ([CCode (array_length_cname = "length", array_length_pos = 1.5)] uint8[]? data, string? type);
 		public void set_content_id (string contentid);
 		public void set_content_languages (GLib.List<string> content_languages);
 		public void set_content_location (string location);

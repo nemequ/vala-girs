@@ -6872,6 +6872,8 @@ namespace NM {
 	public const string ETHTOOL_OPTNAME_FEATURE_LOOPBACK;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_LRO")]
 	public const string ETHTOOL_OPTNAME_FEATURE_LRO;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_MACSEC_HW_OFFLOAD")]
+	public const string ETHTOOL_OPTNAME_FEATURE_MACSEC_HW_OFFLOAD;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_NTUPLE")]
 	public const string ETHTOOL_OPTNAME_FEATURE_NTUPLE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX")]
@@ -6886,6 +6888,10 @@ namespace NM {
 	public const string ETHTOOL_OPTNAME_FEATURE_RX_FCS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_GRO_HW")]
 	public const string ETHTOOL_OPTNAME_FEATURE_RX_GRO_HW;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_GRO_LIST")]
+	public const string ETHTOOL_OPTNAME_FEATURE_RX_GRO_LIST;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_UDP_GRO_FORWARDING")]
+	public const string ETHTOOL_OPTNAME_FEATURE_RX_UDP_GRO_FORWARDING;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_UDP_TUNNEL_PORT_OFFLOAD")]
 	public const string ETHTOOL_OPTNAME_FEATURE_RX_UDP_TUNNEL_PORT_OFFLOAD;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_VLAN_FILTER")]
@@ -6898,6 +6904,8 @@ namespace NM {
 	public const string ETHTOOL_OPTNAME_FEATURE_SG;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TLS_HW_RECORD")]
 	public const string ETHTOOL_OPTNAME_FEATURE_TLS_HW_RECORD;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TLS_HW_RX_OFFLOAD")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TLS_HW_RX_OFFLOAD;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TLS_HW_TX_OFFLOAD")]
 	public const string ETHTOOL_OPTNAME_FEATURE_TLS_HW_TX_OFFLOAD;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TSO")]
@@ -6924,6 +6932,8 @@ namespace NM {
 	public const string ETHTOOL_OPTNAME_FEATURE_TX_GRE_CSUM_SEGMENTATION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GRE_SEGMENTATION")]
 	public const string ETHTOOL_OPTNAME_FEATURE_TX_GRE_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GSO_LIST")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_GSO_LIST;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GSO_PARTIAL")]
 	public const string ETHTOOL_OPTNAME_FEATURE_TX_GSO_PARTIAL;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GSO_ROBUST")]
@@ -6948,6 +6958,8 @@ namespace NM {
 	public const string ETHTOOL_OPTNAME_FEATURE_TX_TCP_MANGLEID_SEGMENTATION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP_SEGMENTATION")]
 	public const string ETHTOOL_OPTNAME_FEATURE_TX_TCP_SEGMENTATION;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TUNNEL_REMCSUM_SEGMENTATION")]
+	public const string ETHTOOL_OPTNAME_FEATURE_TX_TUNNEL_REMCSUM_SEGMENTATION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_UDP_SEGMENTATION")]
 	public const string ETHTOOL_OPTNAME_FEATURE_TX_UDP_SEGMENTATION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_CSUM_SEGMENTATION")]

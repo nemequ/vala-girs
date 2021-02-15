@@ -16,9 +16,9 @@ namespace Hdy {
 		public unowned string get_icon_name ();
 		[Version (since = "0.0.6")]
 		public unowned string? get_subtitle ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public int get_subtitle_lines ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public int get_title_lines ();
 		[Version (since = "0.0.6")]
 		public bool get_use_underline ();
@@ -28,9 +28,9 @@ namespace Hdy {
 		public void set_icon_name (string icon_name);
 		[Version (since = "0.0.6")]
 		public void set_subtitle (string? subtitle);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_subtitle_lines (int subtitle_lines);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_title_lines (int title_lines);
 		[Version (since = "0.0.6")]
 		public void set_use_underline (bool use_underline);
@@ -40,9 +40,9 @@ namespace Hdy {
 		public string icon_name { get; set; }
 		[Version (since = "0.0.6")]
 		public string subtitle { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public int subtitle_lines { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public int title_lines { get; set; }
 		[Version (since = "0.0.6")]
 		public bool use_underline { get; set; }
@@ -59,21 +59,30 @@ namespace Hdy {
 	public class Avatar : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Avatar (int size, string? text, bool show_initials);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Gdk.Pixbuf draw_to_pixbuf (int size, int scale_factor);
+		[Version (since = "1.2")]
+		public async Gdk.Pixbuf draw_to_pixbuf_async (int size, int scale_factor, GLib.Cancellable? cancellable);
 		[Version (since = "1.0")]
 		public unowned string? get_icon_name ();
+		[Version (since = "1.2")]
+		public unowned GLib.LoadableIcon? get_loadable_icon ();
 		public bool get_show_initials ();
 		public int get_size ();
 		public unowned string? get_text ();
 		[Version (since = "1.0")]
 		public void set_icon_name (string? icon_name);
+		[Version (deprecated = true, deprecated_since = "1.2")]
 		public void set_image_load_func (owned Hdy.AvatarImageLoadFunc? load_image);
+		[Version (since = "1.2")]
+		public void set_loadable_icon (GLib.LoadableIcon? icon);
 		public void set_show_initials (bool show_initials);
 		public void set_size (int size);
 		public void set_text (string? text);
 		[Version (since = "1.0")]
 		public string icon_name { get; set; }
+		[Version (since = "1.2")]
+		public GLib.LoadableIcon loadable_icon { get; set; }
 		public bool show_initials { get; set; }
 		public int size { get; set; }
 		public string text { get; set; }
@@ -83,7 +92,7 @@ namespace Hdy {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "1.0")]
 		public Carousel ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_allow_long_swipes ();
 		[Version (since = "1.0")]
 		public bool get_allow_mouse_drag ();
@@ -109,7 +118,7 @@ namespace Hdy {
 		public void scroll_to (Gtk.Widget widget);
 		[Version (since = "1.0")]
 		public void scroll_to_full (Gtk.Widget widget, int64 duration);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_allow_long_swipes (bool allow_long_swipes);
 		[Version (since = "1.0")]
 		public void set_allow_mouse_drag (bool allow_mouse_drag);
@@ -121,7 +130,7 @@ namespace Hdy {
 		public void set_reveal_duration (uint reveal_duration);
 		[Version (since = "1.0")]
 		public void set_spacing (uint spacing);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool allow_long_swipes { get; set; }
 		[Version (since = "1.0")]
 		public bool allow_mouse_drag { get; set; }
@@ -236,13 +245,13 @@ namespace Hdy {
 		public unowned Gtk.Widget get_visible_child ();
 		[Version (since = "1.0")]
 		public unowned string get_visible_child_name ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void insert_child_after (Gtk.Widget child, Gtk.Widget? sibling);
 		[Version (since = "1.0")]
 		public bool navigate (Hdy.NavigationDirection direction);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void prepend (Gtk.Widget child);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void reorder_child_after (Gtk.Widget child, Gtk.Widget? sibling);
 		[Version (since = "1.0")]
 		public void set_can_swipe_back (bool can_swipe_back);
@@ -335,93 +344,93 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_flap_get_type ()")]
 	public class Flap : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Flap ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Gtk.Widget? get_content ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Gtk.Widget? get_flap ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Gtk.PackType get_flap_position ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public uint get_fold_duration ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Hdy.FlapFoldPolicy get_fold_policy ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_folded ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_locked ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_modal ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public uint get_reveal_duration ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_reveal_flap ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public double get_reveal_progress ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Gtk.Widget? get_separator ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_swipe_to_close ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_swipe_to_open ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Hdy.FlapTransitionType get_transition_type ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_content (Gtk.Widget? content);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_flap (Gtk.Widget? flap);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_flap_position (Gtk.PackType position);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_fold_duration (uint duration);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_fold_policy (Hdy.FlapFoldPolicy policy);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_locked (bool locked);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_modal (bool modal);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_reveal_duration (uint duration);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_reveal_flap (bool reveal_flap);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_separator (Gtk.Widget? separator);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_swipe_to_close (bool swipe_to_close);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_swipe_to_open (bool swipe_to_open);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_transition_type (Hdy.FlapTransitionType transition_type);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Gtk.Widget content { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Gtk.Widget flap { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Gtk.PackType flap_position { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public uint fold_duration { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Hdy.FlapFoldPolicy fold_policy { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool folded { get; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool locked { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool modal { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public uint reveal_duration { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool reveal_flap { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public double reveal_progress { get; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Gtk.Widget separator { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool swipe_to_close { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool swipe_to_open { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Hdy.FlapTransitionType transition_type { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_header_bar_get_type ()")]
@@ -602,13 +611,13 @@ namespace Hdy {
 		public Hdy.LeafletTransitionType get_transition_type ();
 		public unowned Gtk.Widget get_visible_child ();
 		public unowned string get_visible_child_name ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void insert_child_after (Gtk.Widget child, Gtk.Widget? sibling);
 		[Version (since = "1.0")]
 		public bool navigate (Hdy.NavigationDirection direction);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void prepend (Gtk.Widget child);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void reorder_child_after (Gtk.Widget child, Gtk.Widget? sibling);
 		[Version (since = "0.0.12")]
 		public void set_can_swipe_back (bool can_swipe_back);
@@ -783,25 +792,25 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_status_page_get_type ()")]
 	public class StatusPage : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public StatusPage ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned string? get_description ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned string? get_icon_name ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned string? get_title ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_description (string? description);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_icon_name (string? icon_name);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_title (string? title);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public string description { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public string icon_name { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public string title { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_swipe_group_get_type ()")]
@@ -821,7 +830,7 @@ namespace Hdy {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public SwipeTracker (Hdy.Swipeable swipeable);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_allow_long_swipes ();
 		[Version (since = "1.0")]
 		public bool get_allow_mouse_drag ();
@@ -831,7 +840,7 @@ namespace Hdy {
 		public bool get_reversed ();
 		[Version (since = "1.0")]
 		public unowned Hdy.Swipeable get_swipeable ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_allow_long_swipes (bool allow_long_swipes);
 		[Version (since = "1.0")]
 		public void set_allow_mouse_drag (bool allow_mouse_drag);
@@ -841,7 +850,7 @@ namespace Hdy {
 		public void set_reversed (bool reversed);
 		[Version (since = "1.0")]
 		public void shift_position (double delta);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool allow_long_swipes { get; set; }
 		[Version (since = "1.0")]
 		public bool allow_mouse_drag { get; set; }
@@ -861,227 +870,227 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_tab_bar_get_type ()")]
 	public class TabBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public TabBar ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_autohide ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Gtk.Widget? get_end_action_widget ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_expand_tabs ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Gtk.TargetList? get_extra_drag_dest_targets ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_inverted ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_is_overflowing ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Gtk.Widget? get_start_action_widget ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_tabs_revealed ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Hdy.TabView? get_view ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_autohide (bool autohide);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_end_action_widget (Gtk.Widget? widget);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_expand_tabs (bool expand_tabs);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_extra_drag_dest_targets (Gtk.TargetList? extra_drag_dest_targets);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_inverted (bool inverted);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_start_action_widget (Gtk.Widget? widget);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_view (Hdy.TabView? view);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool autohide { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Gtk.Widget end_action_widget { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool expand_tabs { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Gtk.TargetList extra_drag_dest_targets { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool inverted { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool is_overflowing { get; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Gtk.Widget start_action_widget { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool tabs_revealed { get; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Hdy.TabView view { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public signal void extra_drag_data_received (Hdy.TabPage page, Gdk.DragContext context, Gtk.SelectionData data, uint info, uint time);
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_tab_page_get_type ()")]
 	public class TabPage : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected TabPage ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Gtk.Widget get_child ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned GLib.Icon? get_icon ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_indicator_activatable ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned GLib.Icon? get_indicator_icon ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_loading ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_needs_attention ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Hdy.TabPage? get_parent ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_pinned ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_selected ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned string? get_title ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned string? get_tooltip ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_icon (GLib.Icon? icon);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_indicator_activatable (bool activatable);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_indicator_icon (GLib.Icon? indicator_icon);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_loading (bool loading);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_needs_attention (bool needs_attention);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_title (string? title);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_tooltip (string? tooltip);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Gtk.Widget child { get; construct; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public GLib.Icon icon { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool indicator_activatable { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public GLib.Icon indicator_icon { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool loading { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool needs_attention { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Hdy.TabPage parent { get; construct; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool pinned { get; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool selected { get; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public string title { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public string tooltip { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_tab_view_get_type ()")]
 	public class TabView : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public TabView ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Hdy.TabPage add_page (Gtk.Widget child, Hdy.TabPage? parent);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Hdy.TabPage append (Gtk.Widget child);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Hdy.TabPage append_pinned (Gtk.Widget child);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void close_other_pages (Hdy.TabPage page);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void close_page_finish (Hdy.TabPage page, bool confirm);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void close_pages_after (Hdy.TabPage page);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void close_pages_before (Hdy.TabPage page);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned GLib.Icon get_default_icon ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool get_is_transferring_page ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned GLib.MenuModel? get_menu_model ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public int get_n_pages ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public int get_n_pinned_pages ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Hdy.TabPage get_nth_page (int position);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Hdy.TabPage get_page (Gtk.Widget child);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public int get_page_position (Hdy.TabPage page);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned GLib.ListModel get_pages ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Hdy.TabPage? get_selected_page ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Gtk.Widget? get_shortcut_widget ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Hdy.TabPage insert (Gtk.Widget child, int position);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Hdy.TabPage insert_pinned (Gtk.Widget child, int position);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Hdy.TabPage prepend (Gtk.Widget child);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public unowned Hdy.TabPage prepend_pinned (Gtk.Widget child);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool reorder_backward (Hdy.TabPage page);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool reorder_first (Hdy.TabPage page);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool reorder_forward (Hdy.TabPage page);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool reorder_last (Hdy.TabPage page);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool reorder_page (Hdy.TabPage page, int position);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool select_next_page ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool select_previous_page ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_default_icon (GLib.Icon default_icon);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_menu_model (GLib.MenuModel? menu_model);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_page_pinned (Hdy.TabPage page, bool pinned);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_selected_page (Hdy.TabPage selected_page);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void set_shortcut_widget (Gtk.Widget? widget);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public void transfer_page (Hdy.TabPage page, Hdy.TabView other_view, int position);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public GLib.Icon default_icon { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public bool is_transferring_page { get; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public GLib.MenuModel menu_model { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public int n_pages { get; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public int n_pinned_pages { get; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Hdy.TabPage selected_page { get; set; }
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public Gtk.Widget shortcut_widget { get; set; }
 		[HasEmitter]
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public signal bool close_page (Hdy.TabPage page);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public signal unowned Hdy.TabView? create_window ();
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public signal void indicator_activated (Hdy.TabPage page);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public signal void page_attached (Hdy.TabPage page, int position);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public signal void page_detached (Hdy.TabPage page, int position);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public signal void page_reordered (Hdy.TabPage page, int position);
-		[Version (since = "1.1")]
+		[Version (since = "1.2")]
 		public signal void setup_menu (Hdy.TabPage page);
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_title_bar_get_type ()")]
@@ -1242,14 +1251,14 @@ namespace Hdy {
 		SLIDE
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_FLAP_FOLD_POLICY_", type_id = "hdy_flap_fold_policy_get_type ()")]
-	[Version (since = "1.1")]
+	[Version (since = "1.2")]
 	public enum FlapFoldPolicy {
 		NEVER,
 		ALWAYS,
 		AUTO
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_FLAP_TRANSITION_TYPE_", type_id = "hdy_flap_transition_type_get_type ()")]
-	[Version (since = "1.1")]
+	[Version (since = "1.2")]
 	public enum FlapTransitionType {
 		OVER,
 		UNDER,
@@ -1287,6 +1296,7 @@ namespace Hdy {
 		WIDE
 	}
 	[CCode (cheader_filename = "handy.h", instance_pos = 1.9)]
+	[Version (deprecated = true, deprecated_since = "1.2")]
 	public delegate Gdk.Pixbuf? AvatarImageLoadFunc (int size);
 	[CCode (cheader_filename = "handy.h", instance_pos = 1.9)]
 	public delegate string ComboRowGetEnumValueNameFunc (Hdy.EnumValueObject value);

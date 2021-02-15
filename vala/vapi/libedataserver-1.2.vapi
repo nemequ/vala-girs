@@ -406,6 +406,11 @@ namespace E {
 	public class SourceAddressBook : E.SourceBackend {
 		[CCode (has_construct_function = false)]
 		protected SourceAddressBook ();
+		[Version (since = "3.40")]
+		public uint get_order ();
+		[Version (since = "3.40")]
+		public void set_order (uint order);
+		public uint order { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_alarms_get_type ()")]
 	[Version (since = "3.6")]
@@ -1159,10 +1164,15 @@ namespace E {
 		protected SourceSelectable ();
 		public string? dup_color ();
 		public unowned string? get_color ();
+		[Version (since = "3.40")]
+		public uint get_order ();
 		public bool get_selected ();
 		public void set_color (string? color);
+		[Version (since = "3.40")]
+		public void set_order (uint order);
 		public void set_selected (bool selected);
 		public string color { get; set construct; }
+		public uint order { get; set construct; }
 		public bool selected { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_task_list_get_type ()")]
@@ -1212,6 +1222,8 @@ namespace E {
 		public unowned string get_color ();
 		public unowned string get_display_name ();
 		public unowned string get_email_address ();
+		[Version (since = "3.40")]
+		public uint get_order ();
 		public unowned string get_resource_path ();
 		public unowned string get_resource_query ();
 		[Version (since = "3.8")]
@@ -1224,6 +1236,8 @@ namespace E {
 		public void set_color (string? color);
 		public void set_display_name (string? display_name);
 		public void set_email_address (string? email_address);
+		[Version (since = "3.40")]
+		public void set_order (uint order);
 		public void set_resource_path (string? resource_path);
 		public void set_resource_query (string? resource_query);
 		public void set_soup_uri (Soup.URI soup_uri);
@@ -1241,6 +1255,7 @@ namespace E {
 		public string color { get; set construct; }
 		public string display_name { get; set construct; }
 		public string email_address { get; set construct; }
+		public uint order { get; set construct; }
 		public string resource_path { get; set construct; }
 		public string resource_query { get; set construct; }
 		[NoAccessorMethod]
@@ -1274,6 +1289,7 @@ namespace E {
 		public weak string description;
 		public weak string display_name;
 		public weak string href;
+		public uint order;
 		public uint32 supports;
 		[Version (since = "3.40")]
 		public E.WebDAVDiscoveredSource copy ();
@@ -1327,10 +1343,11 @@ namespace E {
 		public weak string href;
 		public E.WebDAVResourceKind kind;
 		public long last_modified;
+		public uint order;
 		public uint32 supports;
 		[CCode (has_construct_function = false)]
 		[Version (since = "3.26")]
-		public WebDAVResource (E.WebDAVResourceKind kind, uint32 supports, string href, string? etag, string? display_name, string? content_type, size_t content_length, long creation_date, long last_modified, string? description, string? color);
+		public WebDAVResource (E.WebDAVResourceKind kind, uint32 supports, string href, string? etag, string? display_name, string? content_type, size_t content_length, long creation_date, long last_modified, string? description, string? color, uint order);
 		[Version (since = "3.26")]
 		public E.WebDAVResource copy ();
 		[Version (since = "3.26")]
@@ -1683,6 +1700,7 @@ namespace E {
 		LAST_MODIFIED,
 		DESCRIPTION,
 		COLOR,
+		ORDER,
 		ONLY_CALENDAR,
 		ONLY_ADDRESSBOOK
 	}
@@ -2201,6 +2219,9 @@ namespace E {
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.4")]
 	public static string[] util_slist_to_strv (GLib.SList<string> strings);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.40")]
+	public static int util_source_compare_for_sort (void* source_a, void* source_b);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.32")]
 	public static int util_strcmp0 (string str1, string str2);
