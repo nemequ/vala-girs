@@ -1180,6 +1180,12 @@ namespace ECal {
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	public static void util_add_timezones_from_component (ICal.Component vcal_comp, ICal.Component icalcomp);
 	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.40")]
+	public static void util_clamp_vtimezone (ref ICal.Component vtimezone, ICal.Time from, ICal.Time? to);
+	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.40")]
+	public static void util_clamp_vtimezone_by_component (ref ICal.Component vtimezone, ICal.Component component);
+	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.34")]
 	public static string? util_component_dup_x_property (ICal.Component icalcomp, string x_name);
 	[CCode (cheader_filename = "libecal/libecal.h")]

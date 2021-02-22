@@ -1449,6 +1449,8 @@ namespace MM {
 		public unowned string get_password ();
 		[Version (since = "1.0")]
 		public unowned string get_pin ();
+		[Version (since = "1.16")]
+		public MM.ModemCdmaRmProtocol get_rm_protocol ();
 		[Version (since = "1.0")]
 		public unowned string get_user ();
 		[Version (since = "1.0")]
@@ -1467,6 +1469,8 @@ namespace MM {
 		public void set_password (string password);
 		[Version (since = "1.0")]
 		public void set_pin (string pin);
+		[Version (since = "1.16")]
+		public void set_rm_protocol (MM.ModemCdmaRmProtocol protocol);
 		[Version (since = "1.0")]
 		public void set_user (string user);
 	}

@@ -12,16 +12,19 @@ namespace GExiv2 {
 		public void clear_iptc ();
 		public bool clear_tag (string tag);
 		public void clear_xmp ();
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public void delete_gps_info ();
 		public void erase_exif_thumbnail ();
 		[Version (deprecated = true, deprecated_since = "0.10.3")]
 		public void free ();
 		public bool from_app1_segment ([CCode (array_length_cname = "n_data", array_length_pos = 1.1, array_length_type = "glong")] uint8[] data) throws GLib.Error;
 		public bool from_stream (GLib.InputStream stream) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public string? generate_xmp_packet (GExiv2.XmpFormatFlags xmp_format_flags, uint32 padding);
 		public string? get_comment ();
 		[Version (since = "0.12.2")]
 		public GLib.Bytes? get_exif_data (GExiv2.ByteOrder byte_order) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool get_exif_tag_rational (string tag, out int nom, out int den);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_exif_tags ();
@@ -29,9 +32,13 @@ namespace GExiv2 {
 		public bool get_exposure_time (out int nom, out int den);
 		public double get_fnumber ();
 		public double get_focal_length ();
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool get_gps_altitude (out double altitude);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool get_gps_info (out double longitude, out double latitude, out double altitude);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool get_gps_latitude (out double latitude);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool get_gps_longitude (out double longitude);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_iptc_tags ();
@@ -48,19 +55,26 @@ namespace GExiv2 {
 		public bool get_supports_exif ();
 		public bool get_supports_iptc ();
 		public bool get_supports_xmp ();
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public static unowned string? get_tag_description (string tag);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public string? get_tag_interpreted_string (string tag);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public static unowned string? get_tag_label (string tag);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public long get_tag_long (string tag);
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public string[]? get_tag_multiple (string tag);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public GLib.Bytes? get_tag_raw (string tag);
 		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public string? get_tag_string (string tag);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public static unowned string? get_tag_type (string tag);
 		[Version (since = "0.12.2")]
 		public static string get_xmp_namespace_for_tag (string tag);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public string? get_xmp_packet ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_xmp_tags ();
@@ -78,31 +92,73 @@ namespace GExiv2 {
 		public bool save_external (string path) throws GLib.Error;
 		public bool save_file (string path) throws GLib.Error;
 		public void set_comment (string comment);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool set_exif_tag_rational (string tag, int nom, int den);
 		public void set_exif_thumbnail_from_buffer ([CCode (array_length_cname = "size", array_length_pos = 1.1)] uint8[] buffer);
 		public bool set_exif_thumbnail_from_file (string path) throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool set_gps_info (double longitude, double latitude, double altitude);
 		public void set_metadata_pixel_height (int height);
 		public void set_metadata_pixel_width (int width);
 		public void set_orientation (GExiv2.Orientation orientation);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool set_tag_long (string tag, long value);
 		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool set_tag_multiple (string tag, [CCode (array_length = false, array_null_terminated = true)] string[] values);
 		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool set_tag_string (string tag, string value);
+		[Version (deprecated = true, deprecated_since = "0.12.2")]
 		public bool set_xmp_tag_struct (string tag, GExiv2.StructureType type);
+		[Version (since = "0.12.2")]
+		public void try_delete_gps_info () throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public string? try_generate_xmp_packet (GExiv2.XmpFormatFlags xmp_format_flags, uint32 padding) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public bool try_get_exif_tag_rational (string tag, out int nom, out int den) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public bool try_get_gps_altitude (out double altitude) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public bool try_get_gps_info (out double longitude, out double latitude, out double altitude) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public bool try_get_gps_latitude (out double latitude) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public bool try_get_gps_longitude (out double longitude) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public static unowned string? try_get_tag_description (string tag) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public string? try_get_tag_interpreted_string (string tag) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public static unowned string? try_get_tag_label (string tag) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public long try_get_tag_long (string tag) throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "0.12.2")]
 		public string[]? try_get_tag_multiple (string tag) throws GLib.Error;
 		[Version (since = "0.12.2")]
+		public GLib.Bytes? try_get_tag_raw (string tag) throws GLib.Error;
+		[Version (since = "0.12.2")]
 		public string? try_get_tag_string (string tag) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public static unowned string? try_get_tag_type (string tag) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public string? try_get_xmp_packet () throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public bool try_set_exif_tag_rational (string tag, int nom, int den) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public bool try_set_gps_info (double longitude, double latitude, double altitude) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public bool try_set_tag_long (string tag, long value) throws GLib.Error;
 		[Version (since = "0.12.2")]
 		public bool try_set_tag_multiple (string tag, [CCode (array_length = false, array_null_terminated = true)] string[] values) throws GLib.Error;
 		[Version (since = "0.12.2")]
 		public bool try_set_tag_string (string tag, string value) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public bool try_set_xmp_tag_struct (string tag, GExiv2.StructureType type) throws GLib.Error;
+		[Version (since = "0.12.2")]
+		public bool try_update_gps_info (double longitude, double latitude, double altitude) throws GLib.Error;
 		public static void unregister_all_xmp_namespaces ();
 		public static bool unregister_xmp_namespace (string name);
-		[Version (since = "0.12.1")]
+		[Version (deprecated = true, deprecated_since = "0.12.2", since = "0.12.1")]
 		public bool update_gps_info (double longitude, double latitude, double altitude);
 	}
 	[CCode (cheader_filename = "gexiv2/gexiv2.h", type_id = "gexiv2_preview_image_get_type ()")]

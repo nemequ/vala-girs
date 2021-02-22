@@ -116,6 +116,8 @@ namespace Adw {
 		[Version (since = "1.0")]
 		public void append (Gtk.Widget child);
 		[Version (since = "1.0")]
+		public bool get_allow_long_swipes ();
+		[Version (since = "1.0")]
 		public bool get_allow_mouse_drag ();
 		[Version (since = "1.0")]
 		public uint get_animation_duration ();
@@ -144,6 +146,8 @@ namespace Adw {
 		[Version (since = "1.0")]
 		public void scroll_to_full (Gtk.Widget widget, int64 duration);
 		[Version (since = "1.0")]
+		public void set_allow_long_swipes (bool allow_long_swipes);
+		[Version (since = "1.0")]
 		public void set_allow_mouse_drag (bool allow_mouse_drag);
 		[Version (since = "1.0")]
 		public void set_animation_duration (uint duration);
@@ -153,6 +157,8 @@ namespace Adw {
 		public void set_reveal_duration (uint reveal_duration);
 		[Version (since = "1.0")]
 		public void set_spacing (uint spacing);
+		[Version (since = "1.0")]
+		public bool allow_long_swipes { get; set; }
 		[Version (since = "1.0")]
 		public bool allow_mouse_drag { get; set; }
 		[Version (since = "1.0")]
@@ -806,6 +812,8 @@ namespace Adw {
 		[Version (since = "1.0")]
 		public SwipeTracker (Adw.Swipeable swipeable);
 		[Version (since = "1.0")]
+		public bool get_allow_long_swipes ();
+		[Version (since = "1.0")]
 		public bool get_allow_mouse_drag ();
 		[Version (since = "1.0")]
 		public bool get_enabled ();
@@ -814,6 +822,8 @@ namespace Adw {
 		[Version (since = "1.0")]
 		public unowned Adw.Swipeable get_swipeable ();
 		[Version (since = "1.0")]
+		public void set_allow_long_swipes (bool allow_long_swipes);
+		[Version (since = "1.0")]
 		public void set_allow_mouse_drag (bool allow_mouse_drag);
 		[Version (since = "1.0")]
 		public void set_enabled (bool enabled);
@@ -821,6 +831,8 @@ namespace Adw {
 		public void set_reversed (bool reversed);
 		[Version (since = "1.0")]
 		public void shift_position (double delta);
+		[Version (since = "1.0")]
+		public bool allow_long_swipes { get; set; }
 		[Version (since = "1.0")]
 		public bool allow_mouse_drag { get; set; }
 		[Version (since = "1.0")]
