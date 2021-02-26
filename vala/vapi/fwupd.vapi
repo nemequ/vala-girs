@@ -123,9 +123,13 @@ namespace Fwupd {
 		public bool install_bytes (string device_id, GLib.Bytes bytes, Fwupd.InstallFlags install_flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.5.0")]
 		public async bool install_bytes_async (string device_id, GLib.Bytes bytes, Fwupd.InstallFlags install_flags, GLib.Cancellable? cancellable) throws GLib.Error;
-		[Version (since = "1.4.5")]
+		[Version (deprecated = true, deprecated_since = "1.5.6", since = "1.4.5")]
 		public bool install_release (Fwupd.Device device, Fwupd.Release release, Fwupd.InstallFlags install_flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "1.5.0")]
+		[Version (since = "1.5.6")]
+		public bool install_release2 (Fwupd.Device device, Fwupd.Release release, Fwupd.InstallFlags install_flags, Fwupd.ClientDownloadFlags download_flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.5.6")]
+		public async void install_release2_async (Fwupd.Device device, Fwupd.Release release, Fwupd.InstallFlags install_flags, Fwupd.ClientDownloadFlags download_flags, GLib.Cancellable? cancellable);
+		[Version (deprecated = true, deprecated_since = "1.5.6", since = "1.5.0")]
 		public async bool install_release_async (Fwupd.Device device, Fwupd.Release release, Fwupd.InstallFlags install_flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.2.8")]
 		public bool modify_config (string key, string value, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -410,6 +414,7 @@ namespace Fwupd {
 		public Fwupd.Device parent { get; set construct; }
 		public string protocol { get; set; }
 		public uint status { get; set; }
+		public uint update_state { get; set; }
 		public uint version_format { get; set; }
 	}
 	[CCode (cheader_filename = "fwupd.h", type_id = "fwupd_plugin_get_type ()")]
@@ -459,6 +464,8 @@ namespace Fwupd {
 		public void add_flag (Fwupd.ReleaseFlags flag);
 		[Version (since = "1.3.2")]
 		public void add_issue (string issue);
+		[Version (since = "1.5.6")]
+		public void add_location (string location);
 		[Version (since = "1.0.4")]
 		public void add_metadata (GLib.HashTable<void*,void*> hash);
 		[Version (since = "1.0.4")]
@@ -501,6 +508,8 @@ namespace Fwupd {
 		public unowned GLib.GenericArray<string> get_issues ();
 		[Version (since = "0.9.3")]
 		public unowned string get_license ();
+		[Version (since = "1.5.6")]
+		public unowned GLib.GenericArray<string> get_locations ();
 		[Version (since = "1.0.4")]
 		public unowned GLib.HashTable<void*,void*> get_metadata ();
 		[Version (since = "1.0.4")]
@@ -527,7 +536,7 @@ namespace Fwupd {
 		public unowned string get_update_message ();
 		[Version (since = "1.4.0")]
 		public Fwupd.ReleaseUrgency get_urgency ();
-		[Version (since = "0.9.3")]
+		[Version (deprecated = true, deprecated_since = "1.5.6", since = "0.9.3")]
 		public unowned string get_uri ();
 		[Version (since = "0.9.3")]
 		public unowned string get_vendor ();
@@ -587,7 +596,7 @@ namespace Fwupd {
 		public void set_update_message (string update_message);
 		[Version (since = "1.4.0")]
 		public void set_urgency (Fwupd.ReleaseUrgency urgency);
-		[Version (since = "0.9.3")]
+		[Version (deprecated = true, deprecated_since = "1.5.6", since = "0.9.3")]
 		public void set_uri (string uri);
 		[Version (since = "0.9.3")]
 		public void set_vendor (string vendor);
@@ -778,8 +787,10 @@ namespace Fwupd {
 	public struct ReleaseFlags : uint64 {
 	}
 	[CCode (cheader_filename = "fwupd.h", cprefix = "FWUPD_CLIENT_DOWNLOAD_FLAG_", has_type_id = false)]
+	[Flags]
 	public enum ClientDownloadFlags {
-		NONE
+		NONE,
+		ONLY_IPFS
 	}
 	[CCode (cheader_filename = "fwupd.h", cprefix = "FWUPD_CLIENT_UPLOAD_FLAG_", has_type_id = false)]
 	[Flags]
@@ -1152,6 +1163,8 @@ namespace Fwupd {
 	public const string RESULT_KEY_ISSUES;
 	[CCode (cheader_filename = "fwupd.h", cname = "FWUPD_RESULT_KEY_LICENSE")]
 	public const string RESULT_KEY_LICENSE;
+	[CCode (cheader_filename = "fwupd.h", cname = "FWUPD_RESULT_KEY_LOCATIONS")]
+	public const string RESULT_KEY_LOCATIONS;
 	[CCode (cheader_filename = "fwupd.h", cname = "FWUPD_RESULT_KEY_METADATA")]
 	public const string RESULT_KEY_METADATA;
 	[CCode (cheader_filename = "fwupd.h", cname = "FWUPD_RESULT_KEY_MODIFIED")]
