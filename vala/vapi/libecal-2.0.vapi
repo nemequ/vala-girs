@@ -386,6 +386,7 @@ namespace ECal {
 	[Compact]
 	public class ComponentAlarmInstance {
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.34")]
 		public ComponentAlarmInstance (string uid, long instance_time, long occur_start, long occur_end);
 		[Version (since = "3.34")]
 		public ECal.ComponentAlarmInstance copy ();
@@ -393,6 +394,8 @@ namespace ECal {
 		public long get_occur_end ();
 		[Version (since = "3.34")]
 		public long get_occur_start ();
+		[Version (since = "3.40")]
+		public unowned string? get_rid ();
 		[Version (since = "3.34")]
 		public long get_time ();
 		[Version (since = "3.34")]
@@ -401,6 +404,8 @@ namespace ECal {
 		public void set_occur_end (long occur_end);
 		[Version (since = "3.34")]
 		public void set_occur_start (long occur_start);
+		[Version (since = "3.40")]
+		public void set_rid (string? rid);
 		[Version (since = "3.34")]
 		public void set_time (long instance_time);
 		[Version (since = "3.34")]

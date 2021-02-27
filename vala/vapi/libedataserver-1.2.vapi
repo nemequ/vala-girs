@@ -154,6 +154,8 @@ namespace E {
 		public Module (string filename);
 		public unowned string get_filename ();
 		public static GLib.List<weak E.Module> load_all_in_directory (string dirname);
+		[Version (since = "3.40")]
+		public static GLib.List<weak E.Module> load_all_in_directory_and_prefixes (string dirname, string? dirprefix);
 		[Version (since = "3.16")]
 		public static E.Module load_file (string filename);
 		public string filename { get; construct; }
@@ -2205,6 +2207,9 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.26")]
 	public static string util_generate_uid ();
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.40")]
+	public static GLib.GenericArray<weak string> util_get_directory_variants (string main_path, string replace_prefix, bool with_modules_dir);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static string util_get_source_full_name (void* registry, void* source);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]

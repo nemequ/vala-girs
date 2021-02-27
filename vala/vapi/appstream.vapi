@@ -851,7 +851,8 @@ namespace AppStream {
 		NONE,
 		USE_USER,
 		USE_SYSTEM,
-		NO_CLEAR
+		NO_CLEAR,
+		REFRESH_SYSTEM
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_CHECKSUM_KIND_", type_id = "as_checksum_kind_get_type ()")]
 	public enum ChecksumKind {
@@ -1208,7 +1209,7 @@ namespace AppStream {
 	[Flags]
 	public enum SearchTokenMatch {
 		NONE,
-		MIMETYPE,
+		MEDIATYPE,
 		PKGNAME,
 		ORIGIN,
 		DESCRIPTION,

@@ -3849,6 +3849,9 @@ namespace Camel {
 	[Version (since = "3.24")]
 	public static void util_bdata_put_string (GLib.StringBuilder bdata_str, string value);
 	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.40")]
+	public static GLib.GenericArray<weak string> util_get_directory_variants (string main_path, string replace_prefix, bool with_modules_dir);
+	[CCode (cheader_filename = "camel/camel.h")]
 	public static size_t uudecode_step ([CCode (array_length_cname = "inlen", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] @in, [CCode (array_length = false)] ref uint8[] @out, [CCode (array_length_cname = "state", array_length_pos = 2.5)] ref uint32[] save);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static size_t uuencode_close ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] @in, [CCode (array_length = false)] ref uint8[] @out, [CCode (array_length = false)] ref uint8 uubuf[60], [CCode (array_length_cname = "state", array_length_pos = 3.5)] ref uint32[] save);

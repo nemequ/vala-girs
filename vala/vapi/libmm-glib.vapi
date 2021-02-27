@@ -1419,6 +1419,8 @@ namespace MM {
 		public unowned string get_operator_name ();
 		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.18")]
+		public GLib.List<MM.SimPreferredNetwork> get_preferred_networks ();
 		[Version (since = "1.0")]
 		public async bool send_pin (string pin, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
@@ -1427,6 +1429,16 @@ namespace MM {
 		public async bool send_puk (string puk, string pin, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
 		public bool send_puk_sync (string puk, string pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	}
+	[CCode (cheader_filename = "libmm-glib.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "mm_sim_preferred_network_get_type ()")]
+	[Compact]
+	public class SimPreferredNetwork {
+		[Version (since = "1.18")]
+		public void free ();
+		[Version (since = "1.18")]
+		public MM.ModemAccessTechnology get_access_technology ();
+		[Version (since = "1.18")]
+		public unowned string get_operator_code ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_simple_connect_properties_get_type ()")]
 	public class SimpleConnectProperties : GLib.Object {
@@ -2228,6 +2240,8 @@ namespace MM {
 		public abstract string operator_identifier { owned get; set; }
 		[NoAccessorMethod]
 		public abstract string operator_name { owned get; set; }
+		[NoAccessorMethod]
+		public abstract GLib.Variant preferred_networks { owned get; set; }
 		[NoAccessorMethod]
 		public abstract string sim_identifier { owned get; set; }
 		public virtual signal bool handle_change_pin (GLib.DBusMethodInvocation invocation, string arg_old_pin, string arg_new_pin);
@@ -3712,6 +3726,8 @@ namespace MM {
 	public const string SIM_PROPERTY_OPERATORIDENTIFIER;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_OPERATORNAME")]
 	public const string SIM_PROPERTY_OPERATORNAME;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_PREFERREDNETWORKS")]
+	public const string SIM_PROPERTY_PREFERREDNETWORKS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_SIMIDENTIFIER")]
 	public const string SIM_PROPERTY_SIMIDENTIFIER;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SMS_METHOD_SEND")]
