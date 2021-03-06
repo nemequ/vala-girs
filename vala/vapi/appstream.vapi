@@ -204,6 +204,8 @@ namespace AppStream {
 		public unowned string get_pkgname ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_pkgnames ();
+		[Version (since = "0.6.1")]
+		public int get_priority ();
 		public unowned string get_project_group ();
 		public unowned string get_project_license ();
 		public unowned GLib.GenericArray<AppStream.Provided> get_provided ();
@@ -266,6 +268,8 @@ namespace AppStream {
 		public void set_name_variant_suffix (string value, string? locale);
 		public void set_origin (string origin);
 		public void set_pkgnames ([CCode (array_length = false, array_null_terminated = true)] string[] packages);
+		[Version (since = "0.6.1")]
+		public void set_priority (int priority);
 		public void set_project_group (string value);
 		public void set_project_license (string value);
 		public void set_scope (AppStream.ComponentScope scope);

@@ -1044,7 +1044,7 @@ namespace Gtk {
 		public virtual void populate (Gtk.SourceCompletionContext context);
 		public virtual void update_info (Gtk.SourceCompletionProposal proposal, Gtk.SourceCompletionInfo info);
 	}
-	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_scheme_chooser_get_type ()")]
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_cname = "GtkSourceStyleSchemeChooserInterface", type_id = "gtk_source_style_scheme_chooser_get_type ()")]
 	[GIR (name = "StyleSchemeChooser")]
 	public interface SourceStyleSchemeChooser : GLib.Object {
 		[Version (since = "3.16")]

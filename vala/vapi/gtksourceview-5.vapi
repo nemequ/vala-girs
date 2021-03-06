@@ -1162,11 +1162,11 @@ namespace Gtk {
 		public virtual signal void push_snippet (Gtk.SourceSnippet snippet, ref Gtk.TextIter location);
 		public virtual signal void show_completion ();
 	}
-	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_completion_proposal_get_type ()")]
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_cname = "GtkSourceCompletionProposalInterface", type_id = "gtk_source_completion_proposal_get_type ()")]
 	[GIR (name = "CompletionProposal")]
 	public interface SourceCompletionProposal : GLib.Object {
 	}
-	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_completion_provider_get_type ()")]
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_cname = "GtkSourceCompletionProviderInterface", type_id = "gtk_source_completion_provider_get_type ()")]
 	[GIR (name = "CompletionProvider")]
 	public interface SourceCompletionProvider : GLib.Object {
 		public virtual void activate (Gtk.SourceCompletionContext context, Gtk.SourceCompletionProposal proposal);
@@ -1180,7 +1180,7 @@ namespace Gtk {
 		public virtual async GLib.ListModel populate_async (Gtk.SourceCompletionContext context, GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual void refilter (Gtk.SourceCompletionContext context, GLib.ListModel model);
 	}
-	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_scheme_chooser_get_type ()")]
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_cname = "GtkSourceStyleSchemeChooserInterface", type_id = "gtk_source_style_scheme_chooser_get_type ()")]
 	[GIR (name = "StyleSchemeChooser")]
 	public interface SourceStyleSchemeChooser : GLib.Object {
 		[Version (since = "3.16")]

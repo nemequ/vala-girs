@@ -136,15 +136,18 @@ namespace Shumate {
 		public void animate_in_with_delay (uint delay);
 		public void animate_out ();
 		public void animate_out_with_delay (uint delay);
+		public unowned Gtk.Widget? get_child ();
 		public bool get_draggable ();
 		public bool get_selectable ();
 		public static unowned Gdk.RGBA? get_selection_color ();
 		public static unowned Gdk.RGBA? get_selection_text_color ();
 		public bool is_selected ();
+		public void set_child (Gtk.Widget? child);
 		public void set_draggable (bool value);
 		public void set_selectable (bool value);
 		public static void set_selection_color (Gdk.RGBA color);
 		public static void set_selection_text_color (Gdk.RGBA color);
+		public Gtk.Widget child { get; set; }
 		public bool draggable { get; set; }
 		public bool selectable { get; set; }
 	}
@@ -334,6 +337,7 @@ namespace Shumate {
 		public void center_on (double latitude, double longitude);
 		public bool get_animate_zoom ();
 		public double get_deceleration ();
+		public uint get_go_to_duration ();
 		public bool get_kinetic_mode ();
 		public GLib.List<weak Shumate.MapSource> get_overlay_sources ();
 		public Shumate.State get_state ();
@@ -344,6 +348,7 @@ namespace Shumate {
 		public void remove_overlay_source (Shumate.MapSource map_source);
 		public void set_animate_zoom (bool value);
 		public void set_deceleration (double rate);
+		public void set_go_to_duration (uint duration);
 		public void set_kinetic_mode (bool kinetic);
 		public void set_map_source (Shumate.MapSource map_source);
 		public void set_zoom_on_double_click (bool value);
@@ -352,8 +357,7 @@ namespace Shumate {
 		public void stop_go_to ();
 		public bool animate_zoom { get; set; }
 		public double deceleration { get; set; }
-		[NoAccessorMethod]
-		public uint goto_animation_duration { get; set; }
+		public uint go_to_duration { get; set; }
 		public bool kinetic_mode { get; set; }
 		public Shumate.State state { get; }
 		public bool zoom_on_double_click { get; set; }
