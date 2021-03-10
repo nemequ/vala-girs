@@ -68,6 +68,7 @@ namespace Tracker {
 		public extern static new Connection new (Sparql.ConnectionFlags flags, GLib.File? store, GLib.File? ontology, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.IOError;
 		public extern async static new Connection new_async (Sparql.ConnectionFlags flags, GLib.File? store, GLib.File? ontology, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.IOError;
 		public extern static new Connection bus_new (string service_name, string? object_path, GLib.DBusConnection? dbus_connection = null) throws Sparql.Error, GLib.IOError, GLib.DBusError, GLib.Error;
+		public extern async static new Connection bus_new_async (string service_name, string? object_path, GLib.DBusConnection? dbus_connection = null, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.IOError, GLib.DBusError, GLib.Error;
 
 		public abstract Cursor query (string sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
 		public async abstract Cursor query_async (string sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;

@@ -92,8 +92,8 @@ namespace Shumate {
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_map_source_desc_get_type ()")]
 	public class MapSourceDesc : GLib.Object {
 		[CCode (has_construct_function = false)]
-		protected MapSourceDesc ();
-		public void* get_data ();
+		public MapSourceDesc (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Shumate.MapProjection projection, string uri_format);
+		public virtual unowned Shumate.MapSource create_source ();
 		public unowned string get_id ();
 		public unowned string get_license ();
 		public unowned string get_license_uri ();
@@ -103,9 +103,6 @@ namespace Shumate {
 		public Shumate.MapProjection get_projection ();
 		public uint get_tile_size ();
 		public unowned string get_uri_format ();
-		[NoAccessorMethod]
-		public void* constructor { get; construct; }
-		public void* data { get; construct; }
 		public string id { get; construct; }
 		public string license { get; construct; }
 		public string license_uri { get; construct; }
@@ -120,7 +117,7 @@ namespace Shumate {
 	public class MapSourceFactory : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected MapSourceFactory ();
-		public unowned Shumate.MapSource create (string id);
+		public unowned Shumate.MapSource? create (string id);
 		public unowned Shumate.MapSource create_cached_source (string id);
 		public unowned Shumate.MapSource create_error_source (uint tile_size);
 		public unowned Shumate.MapSource create_memcached_source (string id);
@@ -244,15 +241,16 @@ namespace Shumate {
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_scale_get_type ()")]
 	public class Scale : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
 		[CCode (has_construct_function = false)]
-		public Scale (Shumate.Viewport viewport);
+		public Scale (Shumate.Viewport? viewport);
 		public uint get_max_width ();
 		public Shumate.Unit get_unit ();
+		public unowned Shumate.Viewport? get_viewport ();
 		public void set_max_width (uint value);
 		public void set_unit (Shumate.Unit unit);
+		public void set_viewport (Shumate.Viewport? viewport);
 		public uint max_width { get; set; }
 		public Shumate.Unit unit { get; set; }
-		[NoAccessorMethod]
-		public Shumate.Viewport viewport { owned get; construct; }
+		public Shumate.Viewport viewport { get; set; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_tile_get_type ()")]
 	public class Tile : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
@@ -336,29 +334,25 @@ namespace Shumate {
 		public void add_overlay_source (Shumate.MapSource map_source);
 		public void center_on (double latitude, double longitude);
 		public bool get_animate_zoom ();
-		public double get_deceleration ();
 		public uint get_go_to_duration ();
-		public bool get_kinetic_mode ();
 		public GLib.List<weak Shumate.MapSource> get_overlay_sources ();
 		public Shumate.State get_state ();
 		public unowned Shumate.Viewport get_viewport ();
 		public bool get_zoom_on_double_click ();
 		public void go_to (double latitude, double longitude);
+		public void insert_layer_above (Shumate.Layer layer, Shumate.Layer? next_sibling);
+		public void insert_layer_behind (Shumate.Layer layer, Shumate.Layer? next_sibling);
 		public void remove_layer (Shumate.Layer layer);
 		public void remove_overlay_source (Shumate.MapSource map_source);
 		public void set_animate_zoom (bool value);
-		public void set_deceleration (double rate);
 		public void set_go_to_duration (uint duration);
-		public void set_kinetic_mode (bool kinetic);
 		public void set_map_source (Shumate.MapSource map_source);
 		public void set_zoom_on_double_click (bool value);
 		[CCode (has_construct_function = false)]
 		public View.simple ();
 		public void stop_go_to ();
 		public bool animate_zoom { get; set; }
-		public double deceleration { get; set; }
 		public uint go_to_duration { get; set; }
-		public bool kinetic_mode { get; set; }
 		public Shumate.State state { get; }
 		public bool zoom_on_double_click { get; set; }
 		public signal void animation_completed ();

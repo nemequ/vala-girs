@@ -304,6 +304,12 @@ namespace Vnc {
 	public const int LEDSTATE_NUM_LOCK;
 	[CCode (cheader_filename = "gvnc.h", cname = "VNC_LEDSTATE_SCROLL_LOCK")]
 	public const int LEDSTATE_SCROLL_LOCK;
+	[CCode (cheader_filename = "gvnc.h", cname = "VNC_MAJOR_VERSION")]
+	public const int MAJOR_VERSION;
+	[CCode (cheader_filename = "gvnc.h", cname = "VNC_MICRO_VERSION")]
+	public const int MICRO_VERSION;
+	[CCode (cheader_filename = "gvnc.h", cname = "VNC_MINOR_VERSION")]
+	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "gvnc.h", cname = "VNC_PADDING")]
 	public const int PADDING;
 	[CCode (cheader_filename = "gvnc.h", cname = "VNC_PADDING_LARGE")]

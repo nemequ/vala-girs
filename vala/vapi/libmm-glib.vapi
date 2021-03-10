@@ -30,6 +30,8 @@ namespace MM {
 		public MM.BearerIpConfig get_ipv4_config ();
 		[Version (since = "1.0")]
 		public MM.BearerIpConfig get_ipv6_config ();
+		[Version (since = "1.18")]
+		public bool get_multiplexed ();
 		[Version (since = "1.0")]
 		public unowned string get_path ();
 		[Version (since = "1.0")]
@@ -78,6 +80,8 @@ namespace MM {
 		public unowned string get_apn ();
 		[Version (since = "1.0")]
 		public MM.BearerIpFamily get_ip_type ();
+		[Version (since = "1.18")]
+		public MM.BearerMultiplexSupport get_multiplex ();
 		[Version (deprecated = true, deprecated_since = "1.10.0.", since = "1.0")]
 		public unowned string get_number ();
 		[Version (since = "1.0")]
@@ -94,6 +98,8 @@ namespace MM {
 		public void set_apn (string apn);
 		[Version (since = "1.0")]
 		public void set_ip_type (MM.BearerIpFamily ip_type);
+		[Version (since = "1.18")]
+		public void set_multiplex (MM.BearerMultiplexSupport multiplex);
 		[Version (deprecated = true, deprecated_since = "1.10.0.", since = "1.0")]
 		public void set_number (string number);
 		[Version (since = "1.0")]
@@ -792,7 +798,9 @@ namespace MM {
 		public unowned string get_manufacturer ();
 		[Version (since = "1.0")]
 		public uint get_max_active_bearers ();
-		[Version (since = "1.0")]
+		[Version (since = "1.18")]
+		public uint get_max_active_multiplexed_bearers ();
+		[Version (deprecated = true, deprecated_since = "1.18.", since = "1.0")]
 		public uint get_max_bearers ();
 		[Version (since = "1.0")]
 		public unowned string get_model ();
@@ -1429,16 +1437,27 @@ namespace MM {
 		public async bool send_puk (string puk, string pin, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
 		public bool send_puk_sync (string puk, string pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.18")]
+		public async bool set_preferred_networks (GLib.List<MM.SimPreferredNetwork> preferred_networks, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.18")]
+		public bool set_preferred_networks_sync (GLib.List<MM.SimPreferredNetwork> preferred_networks, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libmm-glib.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "mm_sim_preferred_network_get_type ()")]
 	[Compact]
 	public class SimPreferredNetwork {
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.18")]
+		public SimPreferredNetwork ();
 		[Version (since = "1.18")]
 		public void free ();
 		[Version (since = "1.18")]
 		public MM.ModemAccessTechnology get_access_technology ();
 		[Version (since = "1.18")]
 		public unowned string get_operator_code ();
+		[Version (since = "1.18")]
+		public void set_access_technology (MM.ModemAccessTechnology access_technology);
+		[Version (since = "1.18")]
+		public void set_operator_code (string operator_code);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_simple_connect_properties_get_type ()")]
 	public class SimpleConnectProperties : GLib.Object {
@@ -1453,6 +1472,8 @@ namespace MM {
 		public unowned string get_apn ();
 		[Version (since = "1.0")]
 		public MM.BearerIpFamily get_ip_type ();
+		[Version (since = "1.18")]
+		public MM.BearerMultiplexSupport get_multiplex ();
 		[Version (deprecated = true, deprecated_since = "1.10.0.", since = "1.0")]
 		public unowned string get_number ();
 		[Version (since = "1.0")]
@@ -1473,6 +1494,8 @@ namespace MM {
 		public void set_apn (string apn);
 		[Version (since = "1.0")]
 		public void set_ip_type (MM.BearerIpFamily ip_type);
+		[Version (since = "1.18")]
+		public void set_multiplex (MM.BearerMultiplexSupport multiplex);
 		[Version (deprecated = true, deprecated_since = "1.10.0.", since = "1.0")]
 		public void set_number (string number);
 		[Version (since = "1.0")]
@@ -1686,6 +1709,8 @@ namespace MM {
 		[NoAccessorMethod]
 		public abstract uint ip_timeout { get; set; }
 		[NoAccessorMethod]
+		public abstract bool multiplexed { get; set; }
+		[NoAccessorMethod]
 		public abstract GLib.Variant properties { owned get; set; }
 		[NoAccessorMethod]
 		public abstract GLib.Variant stats { owned get; set; }
@@ -1768,6 +1793,8 @@ namespace MM {
 		public abstract string manufacturer { owned get; set; }
 		[NoAccessorMethod]
 		public abstract uint max_active_bearers { get; set; }
+		[NoAccessorMethod]
+		public abstract uint max_active_multiplexed_bearers { get; set; }
 		[NoAccessorMethod]
 		public abstract uint max_bearers { get; set; }
 		[NoAccessorMethod]
@@ -2221,10 +2248,13 @@ namespace MM {
 		public bool call_send_pin_sync (string arg_pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_send_puk (string arg_puk, string arg_pin, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_send_puk_sync (string arg_puk, string arg_pin, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_set_preferred_networks (GLib.Variant arg_preferred_networks, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_set_preferred_networks_sync (GLib.Variant arg_preferred_networks, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_change_pin (owned GLib.DBusMethodInvocation invocation);
 		public void complete_enable_pin (owned GLib.DBusMethodInvocation invocation);
 		public void complete_send_pin (owned GLib.DBusMethodInvocation invocation);
 		public void complete_send_puk (owned GLib.DBusMethodInvocation invocation);
+		public void complete_set_preferred_networks (owned GLib.DBusMethodInvocation invocation);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
 		[NoAccessorMethod]
@@ -2248,6 +2278,7 @@ namespace MM {
 		public virtual signal bool handle_enable_pin (GLib.DBusMethodInvocation invocation, string arg_pin, bool arg_enabled);
 		public virtual signal bool handle_send_pin (GLib.DBusMethodInvocation invocation, string arg_pin);
 		public virtual signal bool handle_send_puk (GLib.DBusMethodInvocation invocation, string arg_puk, string arg_pin);
+		public virtual signal bool handle_set_preferred_networks (GLib.DBusMethodInvocation invocation, GLib.Variant arg_preferred_networks);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusSms", type_id = "mm_gdbus_sms_get_type ()")]
 	public interface GdbusSms : GLib.Object {
@@ -2341,6 +2372,14 @@ namespace MM {
 		PPP,
 		STATIC,
 		DHCP;
+		public unowned string get_string ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_MULTIPLEX_SUPPORT_", type_id = "mm_bearer_multiplex_support_get_type ()")]
+	public enum BearerMultiplexSupport {
+		UNKNOWN,
+		NONE,
+		REQUESTED,
+		REQUIRED;
 		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_PROPERTIES_CMP_FLAGS_", has_type_id = false)]
@@ -3315,6 +3354,8 @@ namespace MM {
 	public const string BEARER_PROPERTY_IP6CONFIG;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_PROPERTY_IPTIMEOUT")]
 	public const string BEARER_PROPERTY_IPTIMEOUT;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_PROPERTY_MULTIPLEXED")]
+	public const string BEARER_PROPERTY_MULTIPLEXED;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_PROPERTY_PROPERTIES")]
 	public const string BEARER_PROPERTY_PROPERTIES;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_PROPERTY_STATS")]
@@ -3592,6 +3633,8 @@ namespace MM {
 	public const string MODEM_PROPERTY_MANUFACTURER;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_MAXACTIVEBEARERS")]
 	public const string MODEM_PROPERTY_MAXACTIVEBEARERS;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_MAXACTIVEMULTIPLEXEDBEARERS")]
+	public const string MODEM_PROPERTY_MAXACTIVEMULTIPLEXEDBEARERS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_MAXBEARERS")]
 	public const string MODEM_PROPERTY_MAXBEARERS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_MODEL")]
@@ -3714,6 +3757,8 @@ namespace MM {
 	public const string SIM_METHOD_SENDPIN;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_METHOD_SENDPUK")]
 	public const string SIM_METHOD_SENDPUK;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_METHOD_SETPREFERREDNETWORKS")]
+	public const string SIM_METHOD_SETPREFERREDNETWORKS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_ACTIVE")]
 	public const string SIM_PROPERTY_ACTIVE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_EID")]
