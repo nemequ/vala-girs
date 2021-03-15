@@ -104,6 +104,8 @@ namespace Vte {
 		public bool get_scroll_on_keystroke ();
 		[Version (since = "0.52")]
 		public bool get_scroll_on_output ();
+		[Version (since = "0.66")]
+		public bool get_scroll_unit_is_pixels ();
 		[Version (since = "0.52")]
 		public long get_scrollback_lines ();
 		public string? get_text ([CCode (delegate_target_pos = 1.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes?>? attributes);
@@ -115,6 +117,10 @@ namespace Vte {
 		public unowned string? get_window_title ();
 		[Version (since = "0.40")]
 		public unowned string? get_word_char_exceptions ();
+		[Version (since = "0.66")]
+		public Vte.Align get_xalign ();
+		[Version (since = "0.66")]
+		public Vte.Align get_yalign ();
 		[Version (since = "0.50")]
 		public string? hyperlink_check_event (Gdk.Event event);
 		[Version (deprecated = true, deprecated_since = "0.46")]
@@ -196,12 +202,18 @@ namespace Vte {
 		public void set_rewrap_on_resize (bool rewrap);
 		public void set_scroll_on_keystroke (bool scroll);
 		public void set_scroll_on_output (bool scroll);
+		[Version (since = "0.66")]
+		public void set_scroll_unit_is_pixels (bool enable);
 		public void set_scrollback_lines (long lines);
 		public void set_size (long columns, long rows);
 		[Version (since = "0.52")]
 		public void set_text_blink_mode (Vte.TextBlinkMode text_blink_mode);
 		[Version (since = "0.40")]
 		public void set_word_char_exceptions (string exceptions);
+		[Version (since = "0.66")]
+		public void set_xalign (Vte.Align align);
+		[Version (since = "0.66")]
+		public void set_yalign (Vte.Align align);
 		[Version (since = "0.48")]
 		public void spawn_async (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable);
 		[Version (deprecated = true, deprecated_since = "0.48")]
@@ -257,12 +269,18 @@ namespace Vte {
 		public bool rewrap_on_resize { get; set; }
 		public bool scroll_on_keystroke { get; set; }
 		public bool scroll_on_output { get; set; }
+		[Version (since = "0.66")]
+		public bool scroll_unit_is_pixels { get; set; }
 		public uint scrollback_lines { get; set; }
 		[Version (since = "0.52")]
 		public Vte.TextBlinkMode text_blink_mode { get; set; }
 		public string window_title { get; }
 		[Version (since = "0.40")]
 		public string word_char_exceptions { get; }
+		[Version (since = "0.66")]
+		public Vte.Align xalign { get; set; }
+		[Version (since = "0.66")]
+		public Vte.Align yalign { get; set; }
 		public virtual signal void bell ();
 		public virtual signal void char_size_changed (uint char_width, uint char_height);
 		public virtual signal void child_exited (int status);
@@ -313,6 +331,14 @@ namespace Vte {
 	}
 	[CCode (cheader_filename = "vte/vte.h", has_type_id = false)]
 	public struct CharAttributes {
+	}
+	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_ALIGN_", type_id = "vte_align_get_type ()")]
+	[Version (since = "0.66")]
+	public enum Align {
+		START,
+		CENTER,
+		END,
+		START_FILL
 	}
 	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_CURSOR_BLINK_", type_id = "vte_cursor_blink_mode_get_type ()")]
 	public enum CursorBlinkMode {

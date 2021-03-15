@@ -164,12 +164,16 @@ namespace Shumate {
 		public void remove_all ();
 		public void remove_marker (Shumate.Marker marker);
 		public void select_all_markers ();
+		public bool select_marker (Shumate.Marker marker);
 		public void set_all_markers_draggable ();
 		public void set_all_markers_undraggable ();
 		public void set_selection_mode (Gtk.SelectionMode mode);
 		public void show_all_markers ();
 		public void unselect_all_markers ();
+		public void unselect_marker (Shumate.Marker marker);
 		public Gtk.SelectionMode selection_mode { get; set; }
+		public signal void marker_selected (Shumate.Marker marker);
+		public signal void marker_unselected (Shumate.Marker marker);
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_memory_cache_get_type ()")]
 	public class MemoryCache : Shumate.TileCache {

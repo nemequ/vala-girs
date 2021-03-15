@@ -3695,6 +3695,7 @@ namespace NM {
 	[Version (since = "1.14")]
 	public class SettingMatch : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.32")]
 		public SettingMatch ();
 		[Version (since = "1.26")]
 		public void add_driver (string driver);

@@ -77,6 +77,7 @@ namespace Autoar {
 	}
 	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h", cprefix = "AUTOAR_CONFLICT_", has_type_id = false)]
 	public enum ConflictAction {
+		UNHANDLED,
 		SKIP,
 		OVERWRITE,
 		CHANGE_DESTINATION

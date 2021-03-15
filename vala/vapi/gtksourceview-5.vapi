@@ -491,6 +491,36 @@ namespace Gtk {
 		[NoAccessorMethod]
 		public string text { owned get; set construct; }
 	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_hover_get_type ()")]
+	[GIR (name = "Hover")]
+	public class SourceHover : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected SourceHover ();
+		public void add_provider (Gtk.SourceHoverProvider provider);
+		public void remove_provider (Gtk.SourceHoverProvider provider);
+		[NoAccessorMethod]
+		public uint hover_delay { get; set; }
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_hover_context_get_type ()")]
+	[GIR (name = "HoverContext")]
+	public class SourceHoverContext : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected SourceHoverContext ();
+		public bool get_bounds (Gtk.TextIter begin, Gtk.TextIter end);
+		public unowned Gtk.SourceBuffer get_buffer ();
+		public bool get_iter (Gtk.TextIter iter);
+		public unowned Gtk.SourceView get_view ();
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_hover_display_get_type ()")]
+	[GIR (name = "HoverDisplay")]
+	public class SourceHoverDisplay : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
+		[CCode (has_construct_function = false)]
+		protected SourceHoverDisplay ();
+		public void append (Gtk.Widget child);
+		public void insert_after (Gtk.Widget child, Gtk.Widget sibling);
+		public void prepend (Gtk.Widget child);
+		public void remove (Gtk.Widget child);
+	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_language_get_type ()")]
 	[GIR (name = "Language")]
 	public class SourceLanguage : GLib.Object {
@@ -1083,8 +1113,11 @@ namespace Gtk {
 		[Version (since = "2.8")]
 		public unowned Gtk.SourceGutter get_gutter (Gtk.TextWindowType window_type);
 		public bool get_highlight_current_line ();
+		public unowned Gtk.SourceHover get_hover ();
 		public bool get_indent_on_tab ();
 		public int get_indent_width ();
+		[Version (since = "5.0")]
+		public unowned Gtk.SourceIndenter? get_indenter ();
 		public bool get_insert_spaces_instead_of_tabs ();
 		public unowned Gtk.SourceMarkAttributes get_mark_attributes (string category, int priority);
 		public uint get_right_margin_position ();
@@ -1109,6 +1142,8 @@ namespace Gtk {
 		public void set_highlight_current_line (bool highlight);
 		public void set_indent_on_tab (bool enable);
 		public void set_indent_width (int width);
+		[Version (since = "5.0")]
+		public void set_indenter (Gtk.SourceIndenter? indenter);
 		public void set_insert_spaces_instead_of_tabs (bool enable);
 		public void set_mark_attributes (string category, Gtk.SourceMarkAttributes attributes, int priority);
 		public void set_right_margin_position (uint pos);
@@ -1133,6 +1168,8 @@ namespace Gtk {
 		public bool highlight_current_line { get; set; }
 		public bool indent_on_tab { get; set; }
 		public int indent_width { get; set; }
+		[Version (since = "5.0")]
+		public Gtk.SourceIndenter indenter { get; set; }
 		public bool insert_spaces_instead_of_tabs { get; set; }
 		public uint right_margin_position { get; set; }
 		public bool show_line_marks { get; set; }
@@ -1169,16 +1206,39 @@ namespace Gtk {
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_cname = "GtkSourceCompletionProviderInterface", type_id = "gtk_source_completion_provider_get_type ()")]
 	[GIR (name = "CompletionProvider")]
 	public interface SourceCompletionProvider : GLib.Object {
+		[Version (since = "5.0")]
 		public virtual void activate (Gtk.SourceCompletionContext context, Gtk.SourceCompletionProposal proposal);
+		[Version (since = "5.0")]
 		public virtual void display (Gtk.SourceCompletionContext context, Gtk.SourceCompletionProposal proposal, Gtk.SourceCompletionCell cell);
+		[Version (since = "5.0")]
 		public virtual int get_priority (Gtk.SourceCompletionContext context);
-		public virtual string get_title ();
+		[Version (since = "5.0")]
+		public virtual string? get_title ();
+		[Version (since = "5.0")]
 		public virtual bool is_trigger (Gtk.TextIter iter, unichar ch);
+		[Version (since = "5.0")]
 		public virtual bool key_activates (Gtk.SourceCompletionContext context, Gtk.SourceCompletionProposal proposal, uint keyval, Gdk.ModifierType state);
 		[Version (since = "5.0")]
 		public virtual GLib.GenericArray<Gtk.SourceCompletionProposal>? list_alternates (Gtk.SourceCompletionContext context, Gtk.SourceCompletionProposal proposal);
+		[Version (since = "5.0")]
 		public virtual async GLib.ListModel populate_async (Gtk.SourceCompletionContext context, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "5.0")]
 		public virtual void refilter (Gtk.SourceCompletionContext context, GLib.ListModel model);
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_cname = "GtkSourceHoverProviderInterface", type_id = "gtk_source_hover_provider_get_type ()")]
+	[GIR (name = "HoverProvider")]
+	public interface SourceHoverProvider : GLib.Object {
+		[NoWrapper]
+		public abstract bool populate (Gtk.SourceHoverContext context, Gtk.SourceHoverDisplay display) throws GLib.Error;
+		public abstract async bool populate_async (Gtk.SourceHoverContext context, Gtk.SourceHoverDisplay display, GLib.Cancellable? cancellable) throws GLib.Error;
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_cname = "GtkSourceIndenterInterface", type_id = "gtk_source_indenter_get_type ()")]
+	[GIR (name = "Indenter")]
+	public interface SourceIndenter : GLib.Object {
+		[Version (since = "5.0")]
+		public abstract void indent (Gtk.SourceView view, ref Gtk.TextIter iter);
+		[Version (since = "5.0")]
+		public abstract bool is_trigger (Gtk.SourceView view, Gtk.TextIter location, Gdk.ModifierType state, uint keyval);
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_cname = "GtkSourceStyleSchemeChooserInterface", type_id = "gtk_source_style_scheme_chooser_get_type ()")]
 	[GIR (name = "StyleSchemeChooser")]
