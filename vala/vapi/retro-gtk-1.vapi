@@ -27,6 +27,7 @@ namespace Retro {
 		public double get_speed_rate ();
 		public bool get_support_no_game ();
 		public unowned string get_system_directory ();
+		public unowned string get_user_name ();
 		public bool has_option (string key);
 		public Retro.ControllerIterator iterate_controllers ();
 		public Retro.OptionIterator iterate_options ();
@@ -48,6 +49,7 @@ namespace Retro {
 		public void set_save_directory (string save_directory);
 		public void set_speed_rate (double speed_rate);
 		public void set_system_directory (string system_directory);
+		public void set_user_name (string user_name);
 		public void stop ();
 		public uint api_version { get; }
 		public string content_directory { get; set; }
@@ -60,6 +62,7 @@ namespace Retro {
 		public double speed_rate { get; set; }
 		public bool support_no_game { get; }
 		public string system_directory { get; set; }
+		public string user_name { get; set; }
 		public signal void crashed (string message);
 		public signal void log (string log_domain, GLib.LogLevelFlags log_level, string message);
 		public signal void message (string message, uint frames);

@@ -1862,6 +1862,8 @@ namespace NM {
 		public uint8 get_to_len ();
 		[Version (since = "1.18")]
 		public uint8 get_tos ();
+		[Version (since = "1.32")]
+		public bool get_uid_range (out uint32 out_range_start, out uint32 out_range_end);
 		[Version (since = "1.18")]
 		public bool is_sealed ();
 		[Version (since = "1.18")]
@@ -1898,6 +1900,8 @@ namespace NM {
 		public void set_to (string? to, uint8 len);
 		[Version (since = "1.18")]
 		public void set_tos (uint8 tos);
+		[Version (since = "1.32")]
+		public void set_uid_range (uint32 uid_range_start, uint32 uid_range_end);
 		[Version (since = "1.18")]
 		public string to_string (NM.IPRoutingRuleAsStringFlags to_string_flags, GLib.HashTable<void*,void*>? extra_args) throws GLib.Error;
 		[Version (since = "1.18")]
@@ -5880,9 +5884,13 @@ namespace NM {
 	[Flags]
 	public enum ConnectionSerializationFlags {
 		ALL,
+		WITH_NON_SECRET,
 		NO_SECRETS,
+		WITH_SECRETS,
 		ONLY_SECRETS,
-		WITH_SECRETS_AGENT_OWNED
+		WITH_SECRETS_AGENT_OWNED,
+		WITH_SECRETS_SYSTEM_OWNED,
+		WITH_SECRETS_NOT_SAVED
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CONNECTIVITY_", type_id = "nm_connectivity_state_get_type ()")]
 	public enum ConnectivityState {

@@ -1200,6 +1200,8 @@ namespace Grl {
 	public const string CONFIG_KEY_SOURCE;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_CONFIG_KEY_USERNAME")]
 	public const string CONFIG_KEY_USERNAME;
+	[CCode (cheader_filename = "grilo.h", cname = "GRL_CONFIG_PATH_VAR")]
+	public const string CONFIG_PATH_VAR;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_COUNT_INFINITY")]
 	public const int COUNT_INFINITY;
 	[CCode (cheader_filename = "grilo.h", cname = "GRL_KEYID_FORMAT")]

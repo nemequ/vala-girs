@@ -35,6 +35,10 @@ namespace Tracker {
 	public enum Sparql.ConnectionFlags {
 		NONE     = 0,
 		READONLY = 1 << 0,
+		FTS_ENABLE_STEMMER = 1 << 1,
+		FTS_ENABLE_UNACCENT = 1 << 2,
+		FTS_ENABLE_STOP_WORDS = 1 << 3,
+		FTS_IGNORE_NUMBERS = 1 << 4,
 	}
 
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]
@@ -60,6 +64,8 @@ namespace Tracker {
 		public static string escape_uri_vprintf (string format, va_list args);
 		[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]
 		public static string get_uuid_urn ();
+		[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]
+		public static GLib.File get_ontology_nepomuk ();
 	}
 
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]
@@ -78,6 +84,8 @@ namespace Tracker {
 		public async virtual bool update_array_async (string[] sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
 		public virtual GLib.Variant? update_blank (string sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
 		public async virtual GLib.Variant? update_blank_async (string sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
+		public virtual void update_resource (string? graph, Resource resource, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
+		public async virtual void update_resource_async (string? graph, Resource resource, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
 
 		public virtual NamespaceManager? get_namespace_manager ();
 
@@ -88,6 +96,7 @@ namespace Tracker {
 		public extern static GLib.DBusConnection? get_dbus_connection ();
 
 		public virtual Statement? query_statement (string sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error;
+		public virtual Batch? create_batch ();
 
                 public virtual Notifier? create_notifier ();
                 public virtual void close ();
@@ -219,6 +228,16 @@ namespace Tracker {
 
 		public uint signal_subscribe (GLib.DBusConnection dbus_conn, string dbus_name, string? object_path, string? graph);
 		public void signal_unsubscribe (uint handler_id);
+	}
+
+	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]
+	public abstract class Batch : GLib.Object {
+		public Sparql.Connection connection { get; construct set; }
+
+		public abstract void add_sparql (string sparql);
+		public abstract void add_resource (string? graph, Resource resource);
+		public abstract bool execute (GLib.Cancellable? cancellable) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
+		public async abstract bool execute_async (GLib.Cancellable? cancellable) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
 	}
 
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]

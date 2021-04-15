@@ -836,8 +836,6 @@ namespace GMime {
 	public abstract class Stream : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Stream ();
-		public ssize_t buffer_gets (string buf, size_t max);
-		public void buffer_readln (GLib.ByteArray buffer);
 		public virtual int close ();
 		public void @construct (int64 start, int64 end);
 		public virtual bool eos ();
@@ -849,10 +847,10 @@ namespace GMime {
 		public void set_bounds (int64 start, int64 end);
 		public virtual GMime.Stream substream (int64 start, int64 end);
 		public virtual int64 tell ();
-		public virtual ssize_t write (string buf, size_t len);
+		public virtual ssize_t write ([CCode (array_length_cname = "len", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] buf);
 		public ssize_t write_string (string str);
 		public int64 write_to_stream (GMime.Stream dest);
-		public int64 writev (GMime.StreamIOVector vector, size_t count);
+		public int64 writev ([CCode (array_length_cname = "count", array_length_pos = 1.1, array_length_type = "gsize")] GMime.StreamIOVector[] vector);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_stream_buffer_get_type ()")]
 	public class StreamBuffer : GMime.Stream {
@@ -864,6 +862,8 @@ namespace GMime {
 		public weak GMime.Stream source;
 		[CCode (has_construct_function = false, type = "GMimeStream*")]
 		public StreamBuffer (GMime.Stream source, GMime.StreamBufferMode mode);
+		public ssize_t gets ([CCode (array_length_cname = "max", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] buf);
+		public void readln (GLib.ByteArray buffer);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_stream_cat_get_type ()")]
 	public class StreamCat : GMime.Stream {

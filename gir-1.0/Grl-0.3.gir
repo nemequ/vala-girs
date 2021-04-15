@@ -123,6 +123,12 @@ and/or use gtk-doc annotations.  -->
       <source-position filename="../src/data/grl-config.h" line="72"/>
       <type name="utf8" c:type="gchar*"/>
     </constant>
+    <constant name="CONFIG_PATH_VAR"
+              value="GRL_CONFIG_PATH"
+              c:type="GRL_CONFIG_PATH_VAR">
+      <source-position filename="../src/grl-registry.h" line="43"/>
+      <type name="utf8" c:type="gchar*"/>
+    </constant>
     <constant name="COUNT_INFINITY" value="-1" c:type="GRL_COUNT_INFINITY">
       <source-position filename="../src/grl-operation-options.h" line="96"/>
       <type name="gint" c:type="gint"/>
@@ -2668,7 +2674,7 @@ has a value old value is freed and the new one is set.</doc>
     <function-macro name="IS_REGISTRY"
                     c:identifier="GRL_IS_REGISTRY"
                     introspectable="0">
-      <source-position filename="../src/grl-registry.h" line="53"/>
+      <source-position filename="../src/grl-registry.h" line="54"/>
       <parameters>
         <parameter name="obj">
         </parameter>
@@ -2677,7 +2683,7 @@ has a value old value is freed and the new one is set.</doc>
     <function-macro name="IS_REGISTRY_CLASS"
                     c:identifier="GRL_IS_REGISTRY_CLASS"
                     introspectable="0">
-      <source-position filename="../src/grl-registry.h" line="62"/>
+      <source-position filename="../src/grl-registry.h" line="63"/>
       <parameters>
         <parameter name="klass">
         </parameter>
@@ -7619,7 +7625,7 @@ operation done with @options.</doc>
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-operation-options.c"
-             line="858">Stores the limits of the range in the filter for @key in @min_value and
+             line="886">Stores the limits of the range in the filter for @key in @min_value and
 @max_value. If some of the values has no limit, it will set a %NULL.</doc>
         <source-position filename="../src/grl-operation-options.h" line="148"/>
         <return-value transfer-ownership="none">
@@ -7629,13 +7635,13 @@ operation done with @options.</doc>
           <instance-parameter name="options" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-operation-options.c"
-                 line="860">a #GrlOperationOptions instance</doc>
+                 line="888">a #GrlOperationOptions instance</doc>
             <type name="OperationOptions" c:type="GrlOperationOptions*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-operation-options.c"
-                 line="861">a #GrlKeyID</doc>
+                 line="889">a #GrlKeyID</doc>
             <type name="KeyID" c:type="GrlKeyID"/>
           </parameter>
           <parameter name="min_value"
@@ -7646,7 +7652,7 @@ operation done with @options.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/grl-operation-options.c"
-                 line="862">the minimum value for the range</doc>
+                 line="890">the minimum value for the range</doc>
             <type name="GObject.Value" c:type="GValue**"/>
           </parameter>
           <parameter name="max_value"
@@ -7657,7 +7663,7 @@ operation done with @options.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/grl-operation-options.c"
-                 line="863">the maximum value for the range</doc>
+                 line="891">the maximum value for the range</doc>
             <type name="GObject.Value" c:type="GValue**"/>
           </parameter>
         </parameters>
@@ -7675,7 +7681,7 @@ operation done with @options.</doc>
           <instance-parameter name="options" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-operation-options.c"
-                 line="899">a #GrlOperationOptions instance</doc>
+                 line="927">a #GrlOperationOptions instance</doc>
             <type name="OperationOptions" c:type="GrlOperationOptions*"/>
           </instance-parameter>
         </parameters>
@@ -7930,16 +7936,18 @@ the inherent capabilities of @options.</doc>
               introspectable="0">
         <doc xml:space="preserve"
              filename="../src/grl-operation-options.c"
-             line="737">Set filter as "min1 &lt;= k1 &lt;= max1 AND min2 &lt;= k2 &lt;= max2 AND ..."
+             line="763">Set filter as "min1 &lt;= k1 &lt;= max1 AND min2 &lt;= k2 &lt;= max2 AND ..."
 
-The range can be open if some of the minX, maxX values are %NULL.
+For non numeric types, the range can be open if some of the minX, maxX
+values are %NULL. Leaving NULL for numeric types leads to underifned
+behavior.
 
 &lt;example&gt;
  Album must start with "T" and the bitrate should be 256kbs or greater.
  &lt;programlisting&gt;
   grl_operation_options_set_key_range_filters (my_options,
                                                GRL_METADATA_KEY_ALBUM, "Ta", "Tz",
-                                               GRL_METADATA_KEY_BITRATE, 256, NULL,
+                                               GRL_METADATA_KEY_BITRATE, 256, G_MAXINT,
                                                NULL);
  &lt;/programlisting&gt;
 &lt;/example&gt;</doc>
@@ -7947,20 +7955,20 @@ The range can be open if some of the minX, maxX values are %NULL.
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-operation-options.c"
-               line="756">%TRUE on success</doc>
+               line="784">%TRUE on success</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="options" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-operation-options.c"
-                 line="739">a #GrlOperationOptions instance</doc>
+                 line="765">a #GrlOperationOptions instance</doc>
             <type name="OperationOptions" c:type="GrlOperationOptions*"/>
           </instance-parameter>
           <parameter name="..." transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-operation-options.c"
-                 line="740">triplets of #GrlKeyID, minvalue, maxvalue</doc>
+                 line="766">triplets of #GrlKeyID, minvalue, maxvalue</doc>
             <varargs/>
           </parameter>
         </parameters>
@@ -7974,12 +7982,16 @@ The range can be open if some of the minX, maxX values are %NULL.
 
 If @min_value is %NULL, then filter is "@key &lt;= @max_value".
 
-If @max_value is %NULL, then filter is "@key &gt;= @min_value".</doc>
+If @max_value is %NULL, then filter is "@key &gt;= @min_value".
+
+Note that @key will always respect the limits defined at creation time.
+e.g: Core's GRL_METADATA_KEY_ORIENTATION has "max = 359" and "min = 0",
+user can set "@max_value = 180" but "@max_value = 720" would be ignored.</doc>
         <source-position filename="../src/grl-operation-options.h" line="140"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-operation-options.c"
-               line="708">%TRUE on success</doc>
+               line="712">%TRUE on success</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
@@ -8173,69 +8185,69 @@ inherent capabilities of @options.</doc>
                     c:identifier="GRL_PLUGIN_DEFINE"
                     version="0.3.0"
                     introspectable="0">
-      <source-position filename="../src/grl-registry.h" line="93"/>
+      <source-position filename="../src/grl-registry.h" line="94"/>
       <parameters>
         <parameter name="major">
           <doc xml:space="preserve"
                filename="../src/grl-registry.h"
-               line="76">the major version number of core that plugin was compiled for, as an integer</doc>
+               line="77">the major version number of core that plugin was compiled for, as an integer</doc>
         </parameter>
         <parameter name="minor">
           <doc xml:space="preserve"
                filename="../src/grl-registry.h"
-               line="77">the minor version number of core that plugin was compiled for, as an integer</doc>
+               line="78">the minor version number of core that plugin was compiled for, as an integer</doc>
         </parameter>
         <parameter name="id">
           <doc xml:space="preserve"
                filename="../src/grl-registry.h"
-               line="78">the plugin identifier</doc>
+               line="79">the plugin identifier</doc>
         </parameter>
         <parameter name="name">
           <doc xml:space="preserve"
                filename="../src/grl-registry.h"
-               line="79">name of plugin</doc>
+               line="80">name of plugin</doc>
         </parameter>
         <parameter name="description">
           <doc xml:space="preserve"
                filename="../src/grl-registry.h"
-               line="80">description of plugin</doc>
+               line="81">description of plugin</doc>
         </parameter>
         <parameter name="author">
           <doc xml:space="preserve"
                filename="../src/grl-registry.h"
-               line="81">author of plugin</doc>
+               line="82">author of plugin</doc>
         </parameter>
         <parameter name="version">
           <doc xml:space="preserve"
                filename="../src/grl-registry.h"
-               line="82">version of plugin</doc>
+               line="83">version of plugin</doc>
         </parameter>
         <parameter name="license">
           <doc xml:space="preserve"
                filename="../src/grl-registry.h"
-               line="83">license of plugin</doc>
+               line="84">license of plugin</doc>
         </parameter>
         <parameter name="site">
           <doc xml:space="preserve"
                filename="../src/grl-registry.h"
-               line="84">URL to provider of plugin</doc>
+               line="85">URL to provider of plugin</doc>
         </parameter>
         <parameter name="init">
           <doc xml:space="preserve"
                filename="../src/grl-registry.h"
-               line="85">the module initialization. It shall instantiate
+               line="86">the module initialization. It shall instantiate
 the #GrlPlugins provided</doc>
         </parameter>
         <parameter name="deinit">
           <doc xml:space="preserve"
                filename="../src/grl-registry.h"
-               line="87">function to execute when the registry needs to dispose
+               line="88">function to execute when the registry needs to dispose
 the module.</doc>
         </parameter>
         <parameter name="register_keys">
           <doc xml:space="preserve"
                filename="../src/grl-registry.h"
-               line="89">function to execute before loading the
+               line="90">function to execute before loading the
 plugin. It's aim is to register new keys</doc>
         </parameter>
       </parameters>
@@ -8581,7 +8593,7 @@ freed. Use g_list_free() when done using the list.</doc>
       </field>
     </record>
     <callback name="PluginDeinitFunc" c:type="GrlPluginDeinitFunc">
-      <source-position filename="../src/grl-registry.h" line="120"/>
+      <source-position filename="../src/grl-registry.h" line="121"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -8596,80 +8608,80 @@ freed. Use g_list_free() when done using the list.</doc>
             version="0.3.0">
       <doc xml:space="preserve"
            filename="../src/grl-registry.h"
-           line="125">This structure is used for the module loader</doc>
-      <source-position filename="../src/grl-registry.h" line="164"/>
+           line="126">This structure is used for the module loader</doc>
+      <source-position filename="../src/grl-registry.h" line="165"/>
       <field name="major_version" writable="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="127">the major version number of core that plugin was compiled for</doc>
+             line="128">the major version number of core that plugin was compiled for</doc>
         <type name="gint" c:type="gint"/>
       </field>
       <field name="minor_version" writable="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="128">the minor version number of core that plugin was compiled for</doc>
+             line="129">the minor version number of core that plugin was compiled for</doc>
         <type name="gint" c:type="gint"/>
       </field>
       <field name="id" writable="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="129">the plugin identifier</doc>
+             line="130">the plugin identifier</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="name" writable="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="130">name of plugin</doc>
+             line="131">name of plugin</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="description" writable="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="131">description of plugin</doc>
+             line="132">description of plugin</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="author" writable="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="132">author of plugin</doc>
+             line="133">author of plugin</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="version" writable="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="133">version of plugin</doc>
+             line="134">version of plugin</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="license" writable="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="134">license of plugin</doc>
+             line="135">license of plugin</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="site" writable="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="135">URL to provider of plugin</doc>
+             line="136">URL to provider of plugin</doc>
         <type name="utf8" c:type="gchar*"/>
       </field>
       <field name="init" introspectable="0" writable="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="136">the module initialization. It shall instantiate
+             line="137">the module initialization. It shall instantiate
 the #GrlPlugins provided</doc>
         <type name="PluginInitFunc" c:type="GrlPluginInitFunc"/>
       </field>
       <field name="deinit" writable="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="138">function to execute when the registry needs
+             line="139">function to execute when the registry needs
 to dispose the module.</doc>
         <type name="PluginDeinitFunc" c:type="GrlPluginDeinitFunc"/>
       </field>
       <field name="register_keys" writable="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="140">function to execute before loading the plugin. It's aim
+             line="141">function to execute before loading the plugin. It's aim
 is to register new keys</doc>
         <type name="PluginRegisterKeysFunc"
               c:type="GrlPluginRegisterKeysFunc"/>
@@ -8683,7 +8695,7 @@ is to register new keys</doc>
     <callback name="PluginInitFunc"
               c:type="GrlPluginInitFunc"
               introspectable="0">
-      <source-position filename="../src/grl-registry.h" line="116"/>
+      <source-position filename="../src/grl-registry.h" line="117"/>
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
@@ -8705,7 +8717,7 @@ is to register new keys</doc>
       <source-position filename="../src/grl-plugin.h" line="76"/>
     </record>
     <callback name="PluginRegisterKeysFunc" c:type="GrlPluginRegisterKeysFunc">
-      <source-position filename="../src/grl-registry.h" line="122"/>
+      <source-position filename="../src/grl-registry.h" line="123"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -8721,7 +8733,7 @@ is to register new keys</doc>
     <function-macro name="REGISTRY"
                     c:identifier="GRL_REGISTRY"
                     introspectable="0">
-      <source-position filename="../src/grl-registry.h" line="48"/>
+      <source-position filename="../src/grl-registry.h" line="49"/>
       <parameters>
         <parameter name="obj">
         </parameter>
@@ -8730,7 +8742,7 @@ is to register new keys</doc>
     <function-macro name="REGISTRY_CLASS"
                     c:identifier="GRL_REGISTRY_CLASS"
                     introspectable="0">
-      <source-position filename="../src/grl-registry.h" line="57"/>
+      <source-position filename="../src/grl-registry.h" line="58"/>
       <parameters>
         <parameter name="klass">
         </parameter>
@@ -8739,7 +8751,7 @@ is to register new keys</doc>
     <function-macro name="REGISTRY_GET_CLASS"
                     c:identifier="GRL_REGISTRY_GET_CLASS"
                     introspectable="0">
-      <source-position filename="../src/grl-registry.h" line="66"/>
+      <source-position filename="../src/grl-registry.h" line="67"/>
       <parameters>
         <parameter name="obj">
         </parameter>
@@ -8864,38 +8876,38 @@ is to register new keys</doc>
     <enumeration name="Rank" c:type="GrlRank">
       <doc xml:space="preserve"
            filename="../src/grl-registry.h"
-           line="168">Source priority ranks. Defines the order in which the resolver
+           line="169">Source priority ranks. Defines the order in which the resolver
 (or similar rank-picking mechanisms) will choose this source
 over an alternative one with the same function.
 
 These constants serve as a rough guidance for defining the rank
 of a GrlSource. Any value is valid, including values bigger
 than GRL_RANK_HIGHEST.</doc>
-      <source-position filename="../src/grl-registry.h" line="190"/>
+      <source-position filename="../src/grl-registry.h" line="191"/>
       <member name="lowest" value="-64" c:identifier="GRL_RANK_LOWEST">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="170">will be chosen last or not at all</doc>
+             line="171">will be chosen last or not at all</doc>
       </member>
       <member name="low" value="-32" c:identifier="GRL_RANK_LOW">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="171">unlikely to be chosen</doc>
+             line="172">unlikely to be chosen</doc>
       </member>
       <member name="default" value="0" c:identifier="GRL_RANK_DEFAULT">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="172">likely to be chosen</doc>
+             line="173">likely to be chosen</doc>
       </member>
       <member name="high" value="32" c:identifier="GRL_RANK_HIGH">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="173">will be chosen</doc>
+             line="174">will be chosen</doc>
       </member>
       <member name="highest" value="64" c:identifier="GRL_RANK_HIGHEST">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="174">will be chosen first</doc>
+             line="175">will be chosen first</doc>
       </member>
     </enumeration>
     <class name="Registry"
@@ -8905,20 +8917,20 @@ than GRL_RANK_HIGHEST.</doc>
            glib:type-name="GrlRegistry"
            glib:get-type="grl_registry_get_type"
            glib:type-struct="RegistryClass">
-      <source-position filename="../src/grl-registry.h" line="222"/>
+      <source-position filename="../src/grl-registry.h" line="223"/>
       <function name="get_default"
                 c:identifier="grl_registry_get_default"
                 version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1028">As the registry is designed to work as a singleton, this
+             line="1032">As the registry is designed to work as a singleton, this
 method is in charge of creating the only instance or
 returned it if it is already in memory.</doc>
-        <source-position filename="../src/grl-registry.h" line="228"/>
+        <source-position filename="../src/grl-registry.h" line="229"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1035">a new or an already created instance of the registry.
+               line="1039">a new or an already created instance of the registry.
 
 It is NOT MT-safe</doc>
           <type name="Registry" c:type="GrlRegistry*"/>
@@ -8929,19 +8941,19 @@ It is NOT MT-safe</doc>
               version="0.3.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1284">Activate all the plugins loaded.</doc>
-        <source-position filename="../src/grl-registry.h" line="249"/>
+             line="1288">Activate all the plugins loaded.</doc>
+        <source-position filename="../src/grl-registry.h" line="250"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1290">%TRUE if some plugin has been activated</doc>
+               line="1294">%TRUE if some plugin has been activated</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1286">the registry instace</doc>
+                 line="1290">the registry instace</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
         </parameters>
@@ -8952,25 +8964,25 @@ It is NOT MT-safe</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1492">Activates plugin identified by @plugin_id.</doc>
-        <source-position filename="../src/grl-registry.h" line="255"/>
+             line="1496">Activates plugin identified by @plugin_id.</doc>
+        <source-position filename="../src/grl-registry.h" line="256"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1500">%TRUE if the plugin is loaded correctly</doc>
+               line="1504">%TRUE if the plugin is loaded correctly</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1494">the registry instance</doc>
+                 line="1498">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="plugin_id" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1495">plugin identifier</doc>
+                 line="1499">plugin identifier</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -8981,25 +8993,25 @@ It is NOT MT-safe</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="2033">Add a configuration for a plugin/source.</doc>
-        <source-position filename="../src/grl-registry.h" line="311"/>
+             line="2037">Add a configuration for a plugin/source.</doc>
+        <source-position filename="../src/grl-registry.h" line="312"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="2041">%TRUE on success</doc>
+               line="2045">%TRUE on success</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="2035">the registry instance</doc>
+                 line="2039">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="config" transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="2036">a configuration set</doc>
+                 line="2040">a configuration set</doc>
             <type name="Config" c:type="GrlConfig*"/>
           </parameter>
         </parameters>
@@ -9010,25 +9022,25 @@ It is NOT MT-safe</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="2144">Load plugin configurations from a .ini-like config file.</doc>
-        <source-position filename="../src/grl-registry.h" line="315"/>
+             line="2148">Load plugin configurations from a .ini-like config file.</doc>
+        <source-position filename="../src/grl-registry.h" line="316"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="2152">%TRUE on success</doc>
+               line="2156">%TRUE on success</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="2146">the registry instance</doc>
+                 line="2150">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="config_file" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="2147">a key-value file containing the configuration</doc>
+                 line="2151">a key-value file containing the configuration</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -9039,25 +9051,25 @@ It is NOT MT-safe</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="2188">Load plugin configurations from a .ini-like resource file.</doc>
-        <source-position filename="../src/grl-registry.h" line="319"/>
+             line="2192">Load plugin configurations from a .ini-like resource file.</doc>
+        <source-position filename="../src/grl-registry.h" line="320"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="2196">%TRUE on success</doc>
+               line="2200">%TRUE on success</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="2190">the registry instance</doc>
+                 line="2194">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="resource_path" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="2191">a key-value file containing the configuration</doc>
+                 line="2195">a key-value file containing the configuration</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -9067,8 +9079,8 @@ It is NOT MT-safe</doc>
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1148">Set this path as part of default paths to load plugins.</doc>
-        <source-position filename="../src/grl-registry.h" line="230"/>
+             line="1152">Set this path as part of default paths to load plugins.</doc>
+        <source-position filename="../src/grl-registry.h" line="231"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -9076,13 +9088,13 @@ It is NOT MT-safe</doc>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1150">the registry instance</doc>
+                 line="1154">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="path" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1151">a path with plugins</doc>
+                 line="1155">a path with plugins</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -9092,12 +9104,12 @@ It is NOT MT-safe</doc>
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="2015">Returns a list with all registered keys in system.</doc>
-        <source-position filename="../src/grl-registry.h" line="309"/>
+             line="2019">Returns a list with all registered keys in system.</doc>
+        <source-position filename="../src/grl-registry.h" line="310"/>
         <return-value transfer-ownership="container">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="2021">a #GList with all the available
+               line="2025">a #GList with all the available
 #GrlKeyID&lt;!-- --&gt;s. The content of the list should not be modified or freed.
 Use g_list_free() when done using the list.</doc>
           <type name="GLib.List" c:type="GList*">
@@ -9108,7 +9120,7 @@ Use g_list_free() when done using the list.</doc>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="2017">the registry instance</doc>
+                 line="2021">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
         </parameters>
@@ -9118,15 +9130,15 @@ Use g_list_free() when done using the list.</doc>
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1675">This function will return all the available plugins in the @registry.
+             line="1679">This function will return all the available plugins in the @registry.
 
 If @only_loaded is %TRUE, the plugin list will contain only plugins that are
 loaded.</doc>
-        <source-position filename="../src/grl-registry.h" line="281"/>
+        <source-position filename="../src/grl-registry.h" line="282"/>
         <return-value transfer-ownership="container">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1685">a #GList of
+               line="1689">a #GList of
 available #GrlPlugin&lt;!-- --&gt;s. The content of the list should not be modified
 or freed. Use g_list_free() when done using the list.</doc>
           <type name="GLib.List" c:type="GList*">
@@ -9137,13 +9149,13 @@ or freed. Use g_list_free() when done using the list.</doc>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1677">the registry instance</doc>
+                 line="1681">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="only_loaded" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1678">whether the returned list shall include only loaded plugins</doc>
+                 line="1682">whether the returned list shall include only loaded plugins</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -9153,14 +9165,14 @@ or freed. Use g_list_free() when done using the list.</doc>
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1569">This function will return all the available sources in the @registry.
+             line="1573">This function will return all the available sources in the @registry.
 
 If @ranked is %TRUE, the source list will be ordered by rank.</doc>
-        <source-position filename="../src/grl-registry.h" line="271"/>
+        <source-position filename="../src/grl-registry.h" line="272"/>
         <return-value transfer-ownership="container">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1578">a #GList of
+               line="1582">a #GList of
 available #GrlSource&lt;!-- --&gt;s. The content of the list should not be
 modified or freed. Use g_list_free() when done using the list.</doc>
           <type name="GLib.List" c:type="GList*">
@@ -9171,13 +9183,13 @@ modified or freed. Use g_list_free() when done using the list.</doc>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1571">the registry instance</doc>
+                 line="1575">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="ranked" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1572">whether the returned list shall be returned ordered by rank</doc>
+                 line="1576">whether the returned list shall be returned ordered by rank</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -9187,15 +9199,15 @@ modified or freed. Use g_list_free() when done using the list.</doc>
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1607">Give an array of all the available sources in the @registry capable of
+             line="1611">Give an array of all the available sources in the @registry capable of
 perform the operations requested in @ops.
 
 If @ranked is %TRUE, the source list will be ordered by rank.</doc>
-        <source-position filename="../src/grl-registry.h" line="274"/>
+        <source-position filename="../src/grl-registry.h" line="275"/>
         <return-value transfer-ownership="container">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1618">a #GList of
+               line="1622">a #GList of
 available #GrlSource&lt;!-- --&gt;s. The content of the list should not be
 modified or freed. Use g_list_free() when done using the list.</doc>
           <type name="GLib.List" c:type="GList*">
@@ -9206,19 +9218,19 @@ modified or freed. Use g_list_free() when done using the list.</doc>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1609">the registry instance</doc>
+                 line="1613">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="ops" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1610">a bitwise mangle of the requested operations.</doc>
+                 line="1614">a bitwise mangle of the requested operations.</doc>
             <type name="SupportedOps" c:type="GrlSupportedOps"/>
           </parameter>
           <parameter name="ranked" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1611">whether the returned list shall be returned ordered by rank</doc>
+                 line="1615">whether the returned list shall be returned ordered by rank</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -9229,16 +9241,16 @@ modified or freed. Use g_list_free() when done using the list.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1437">Load all the modules available in the default directory path.
+             line="1441">Load all the modules available in the default directory path.
 
 The default directory path can be changed through the environment
 variable %GRL_PLUGIN_PATH and it can contain several paths separated
 by ":"</doc>
-        <source-position filename="../src/grl-registry.h" line="251"/>
+        <source-position filename="../src/grl-registry.h" line="252"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1449">%FALSE% is all the configured plugin paths are invalid,
+               line="1453">%FALSE% is all the configured plugin paths are invalid,
 %TRUE% otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -9246,13 +9258,13 @@ by ":"</doc>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1439">the registry instance</doc>
+                 line="1443">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="activate" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1440">%TRUE if plugins must be activated after loading</doc>
+                 line="1444">%TRUE if plugins must be activated after loading</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -9263,25 +9275,25 @@ by ":"</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1313">Loads a module from shared object file stored in @path</doc>
-        <source-position filename="../src/grl-registry.h" line="233"/>
+             line="1317">Loads a module from shared object file stored in @path</doc>
+        <source-position filename="../src/grl-registry.h" line="234"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1321">%TRUE if the module is loaded correctly</doc>
+               line="1325">%TRUE if the module is loaded correctly</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1315">the registry instance</doc>
+                 line="1319">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="library_filename" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1316">the path to the so file</doc>
+                 line="1320">the path to the so file</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -9292,26 +9304,26 @@ by ":"</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1380">Loads a set of modules from directory in @path which contains
+             line="1384">Loads a set of modules from directory in @path which contains
 a group shared object files.</doc>
-        <source-position filename="../src/grl-registry.h" line="241"/>
+        <source-position filename="../src/grl-registry.h" line="242"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1389">%TRUE if the directory is valid.</doc>
+               line="1393">%TRUE if the directory is valid.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1382">the registry instance</doc>
+                 line="1386">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="path" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1383">the path to the directory</doc>
+                 line="1387">the path to the directory</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -9323,7 +9335,7 @@ a group shared object files.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1339">Loads the grilo plugin defined by @plugin_desc. This is
+             line="1343">Loads the grilo plugin defined by @plugin_desc. This is
 used to load plugins that aren't shared libraries, and are
 built into applications.
 
@@ -9338,24 +9350,24 @@ built into applications.
     grl_registry_load_plugin_from_desc (registry, &amp;descriptor, &amp;error);
   &lt;/programlisting&gt;
 &lt;/example&gt;</doc>
-        <source-position filename="../src/grl-registry.h" line="237"/>
+        <source-position filename="../src/grl-registry.h" line="238"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1361">%TRUE if the plugin is initialised correctly</doc>
+               line="1365">%TRUE if the plugin is initialised correctly</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1341">the registry instance</doc>
+                 line="1345">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="plugin_desc" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1342">the #GrlPluginDescriptor for the plugin</doc>
+                 line="1346">the #GrlPluginDescriptor for the plugin</doc>
             <type name="PluginDescriptor" c:type="GrlPluginDescriptor*"/>
           </parameter>
         </parameters>
@@ -9365,25 +9377,25 @@ built into applications.
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1847">Look up for the metadata key with name @key_name.</doc>
-        <source-position filename="../src/grl-registry.h" line="290"/>
+             line="1851">Look up for the metadata key with name @key_name.</doc>
+        <source-position filename="../src/grl-registry.h" line="291"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1854">The metadata key, or GRL_METADATA_KEY_INVALID if not found</doc>
+               line="1858">The metadata key, or GRL_METADATA_KEY_INVALID if not found</doc>
           <type name="KeyID" c:type="GrlKeyID"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1849">the registry instance</doc>
+                 line="1853">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="key_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1850">the key name</doc>
+                 line="1854">the key name</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -9393,25 +9405,25 @@ built into applications.
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1888">Returns @key description.</doc>
-        <source-position filename="../src/grl-registry.h" line="299"/>
+             line="1892">Returns @key description.</doc>
+        <source-position filename="../src/grl-registry.h" line="300"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1895">metadata key description, or @NULL if not found</doc>
+               line="1899">metadata key description, or @NULL if not found</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1890">the registry instance</doc>
+                 line="1894">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1891">a metadata key</doc>
+                 line="1895">a metadata key</doc>
             <type name="KeyID" c:type="GrlKeyID"/>
           </parameter>
         </parameters>
@@ -9421,25 +9433,25 @@ built into applications.
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1868">Returns @key name.</doc>
-        <source-position filename="../src/grl-registry.h" line="296"/>
+             line="1872">Returns @key name.</doc>
+        <source-position filename="../src/grl-registry.h" line="297"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1875">metadata key name, or @NULL if not found</doc>
+               line="1879">metadata key name, or @NULL if not found</doc>
           <type name="utf8" c:type="const gchar*"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1870">the registry instance</doc>
+                 line="1874">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1871">a metadata key</doc>
+                 line="1875">a metadata key</doc>
             <type name="KeyID" c:type="GrlKeyID"/>
           </parameter>
         </parameters>
@@ -9449,14 +9461,14 @@ built into applications.
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1992">Look up the list of keys that have a relation with @key.
+             line="1996">Look up the list of keys that have a relation with @key.
 
 @key is included in that list.</doc>
-        <source-position filename="../src/grl-registry.h" line="293"/>
+        <source-position filename="../src/grl-registry.h" line="294"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="2001">a #GList of
+               line="2005">a #GList of
 related keys, or @NULL if key is invalid.</doc>
           <type name="GLib.List" c:type="const GList*">
             <type name="KeyID"/>
@@ -9466,13 +9478,13 @@ related keys, or @NULL if key is invalid.</doc>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1994">the registry instance</doc>
+                 line="1998">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1995">a metadata key</doc>
+                 line="1999">a metadata key</doc>
             <type name="KeyID" c:type="GrlKeyID"/>
           </parameter>
         </parameters>
@@ -9482,25 +9494,25 @@ related keys, or @NULL if key is invalid.</doc>
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1921">Returns @key expected value type.</doc>
-        <source-position filename="../src/grl-registry.h" line="302"/>
+             line="1925">Returns @key expected value type.</doc>
+        <source-position filename="../src/grl-registry.h" line="303"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1928">metadata key type, or @G_TYPE_INVALID if not found</doc>
+               line="1932">metadata key type, or @G_TYPE_INVALID if not found</doc>
           <type name="GType" c:type="GType"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1923">the registry instance</doc>
+                 line="1927">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1924">a metadata key</doc>
+                 line="1928">a metadata key</doc>
             <type name="KeyID" c:type="GrlKeyID"/>
           </parameter>
         </parameters>
@@ -9510,25 +9522,25 @@ related keys, or @NULL if key is invalid.</doc>
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1653">This function will search and retrieve a plugin given its identifier.</doc>
-        <source-position filename="../src/grl-registry.h" line="278"/>
+             line="1657">This function will search and retrieve a plugin given its identifier.</doc>
+        <source-position filename="../src/grl-registry.h" line="279"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1660">The plugin found</doc>
+               line="1664">The plugin found</doc>
           <type name="Plugin" c:type="GrlPlugin*"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1655">the registry instance</doc>
+                 line="1659">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="plugin_id" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1656">the id of a plugin</doc>
+                 line="1660">the id of a plugin</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -9538,25 +9550,25 @@ related keys, or @NULL if key is invalid.</doc>
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1542">This function will search and retrieve a source given its identifier.</doc>
-        <source-position filename="../src/grl-registry.h" line="268"/>
+             line="1546">This function will search and retrieve a source given its identifier.</doc>
+        <source-position filename="../src/grl-registry.h" line="269"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1549">The source found.</doc>
+               line="1553">The source found.</doc>
           <type name="Source" c:type="GrlSource*"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1544">the registry instance</doc>
+                 line="1548">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="source_id" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1545">the id of a source</doc>
+                 line="1549">the id of a source</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -9566,33 +9578,33 @@ related keys, or @NULL if key is invalid.</doc>
               version="0.2.0">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1954">Validates @value content complies with the key specification. That is, it has
+             line="1958">Validates @value content complies with the key specification. That is, it has
 the expected type, and value are within the range specified in key (for
 integer values).</doc>
-        <source-position filename="../src/grl-registry.h" line="305"/>
+        <source-position filename="../src/grl-registry.h" line="306"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1964">%TRUE if complies</doc>
+               line="1968">%TRUE if complies</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1956">the registry instance</doc>
+                 line="1960">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="key" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1957">a metadata key</doc>
+                 line="1961">a metadata key</doc>
             <type name="KeyID" c:type="GrlKeyID"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1958">value to be validate</doc>
+                 line="1962">value to be validate</doc>
             <type name="GObject.Value" c:type="GValue*"/>
           </parameter>
         </parameters>
@@ -9603,7 +9615,7 @@ integer values).</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1774">Registers a new metadata key, creating a relation between the new key and
+             line="1778">Registers a new metadata key, creating a relation between the new key and
 @bind_key.
 
 Two keys are related when the values of both keys are somehow related.
@@ -9614,30 +9626,30 @@ sense without the other.
 
 Relations between keys allow the framework to provide all the data that is
 somehow related when any of the related keys are requested.</doc>
-        <source-position filename="../src/grl-registry.h" line="285"/>
+        <source-position filename="../src/grl-registry.h" line="286"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1793">The #GrlKeyID registered.</doc>
+               line="1797">The #GrlKeyID registered.</doc>
           <type name="KeyID" c:type="GrlKeyID"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1776">The plugin registry</doc>
+                 line="1780">The plugin registry</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="param_spec" transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1777">The definition of the key to register</doc>
+                 line="1781">The definition of the key to register</doc>
             <type name="GObject.ParamSpec" c:type="GParamSpec*"/>
           </parameter>
           <parameter name="bind_key" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1778">The key the new key is bind to, or #GRL_METADATA_KEY_INVALID if it is not bound.</doc>
+                 line="1782">The key the new key is bind to, or #GRL_METADATA_KEY_INVALID if it is not bound.</doc>
             <type name="KeyID" c:type="GrlKeyID"/>
           </parameter>
         </parameters>
@@ -9648,31 +9660,31 @@ somehow related when any of the related keys are requested.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1054">Register a @source in the @registry with the given @plugin information</doc>
-        <source-position filename="../src/grl-registry.h" line="259"/>
+             line="1058">Register a @source in the @registry with the given @plugin information</doc>
+        <source-position filename="../src/grl-registry.h" line="260"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1063">%TRUE if success, %FALSE% otherwise.</doc>
+               line="1067">%TRUE if success, %FALSE% otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1056">the registry instance</doc>
+                 line="1060">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="plugin" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1057">the plugin which owns the source</doc>
+                 line="1061">the plugin which owns the source</doc>
             <type name="Plugin" c:type="GrlPlugin*"/>
           </parameter>
           <parameter name="source" transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1058">the source to register</doc>
+                 line="1062">the source to register</doc>
             <type name="Source" c:type="GrlSource*"/>
           </parameter>
         </parameters>
@@ -9683,26 +9695,26 @@ somehow related when any of the related keys are requested.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1717">Unload from memory a module identified by @plugin_id. This means call the
+             line="1721">Unload from memory a module identified by @plugin_id. This means call the
 module's deinit function.</doc>
-        <source-position filename="../src/grl-registry.h" line="245"/>
+        <source-position filename="../src/grl-registry.h" line="246"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1726">%TRUE% on success.</doc>
+               line="1730">%TRUE% on success.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1719">the registry instance</doc>
+                 line="1723">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="plugin_id" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1720">the identifier of the plugin</doc>
+                 line="1724">the identifier of the plugin</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -9713,25 +9725,25 @@ module's deinit function.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/grl-registry.c"
-             line="1105">Removes the @source from the @registry hash table</doc>
-        <source-position filename="../src/grl-registry.h" line="264"/>
+             line="1109">Removes the @source from the @registry hash table</doc>
+        <source-position filename="../src/grl-registry.h" line="265"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/grl-registry.c"
-               line="1113">%TRUE if success, %FALSE% otherwise.</doc>
+               line="1117">%TRUE if success, %FALSE% otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="registry" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1107">the registry instance</doc>
+                 line="1111">the registry instance</doc>
             <type name="Registry" c:type="GrlRegistry*"/>
           </instance-parameter>
           <parameter name="source" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/grl-registry.c"
-                 line="1108">the source to unregister</doc>
+                 line="1112">the source to unregister</doc>
             <type name="Source" c:type="GrlSource*"/>
           </parameter>
         </parameters>
@@ -9807,12 +9819,12 @@ module's deinit function.</doc>
             glib:is-gtype-struct-for="Registry">
       <doc xml:space="preserve"
            filename="../src/grl-registry.h"
-           line="210">Grilo Registry class. Dynamic loader of plugins.</doc>
-      <source-position filename="../src/grl-registry.h" line="222"/>
+           line="211">Grilo Registry class. Dynamic loader of plugins.</doc>
+      <source-position filename="../src/grl-registry.h" line="223"/>
       <field name="parent_class">
         <doc xml:space="preserve"
              filename="../src/grl-registry.h"
-             line="212">the parent class structure</doc>
+             line="213">the parent class structure</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
       <field name="_grl_reserved" readable="0" private="1">
@@ -9822,7 +9834,7 @@ module's deinit function.</doc>
       </field>
     </record>
     <record name="RegistryPrivate" c:type="GrlRegistryPrivate" disguised="1">
-      <source-position filename="../src/grl-registry.h" line="194"/>
+      <source-position filename="../src/grl-registry.h" line="195"/>
     </record>
     <class name="RelatedKeys"
            c:symbol-prefix="related_keys"

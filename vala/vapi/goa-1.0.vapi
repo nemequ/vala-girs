@@ -83,19 +83,26 @@ namespace Goa {
 		public ContactsSkeleton ();
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_documents_proxy_get_type ()")]
+	[Version (deprecated = true)]
 	public class DocumentsProxy : GLib.DBusProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, Goa.Documents {
 		[CCode (cname = "goa_documents_proxy_new", has_construct_function = false)]
+		[Version (deprecated = true)]
 		public async DocumentsProxy (GLib.DBusConnection connection, GLib.DBusProxyFlags flags, string? name, string object_path, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (cname = "goa_documents_proxy_new_for_bus", has_construct_function = false)]
+		[Version (deprecated = true)]
 		public async DocumentsProxy.for_bus (GLib.BusType bus_type, GLib.DBusProxyFlags flags, string name, string object_path, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (has_construct_function = false, type = "GoaDocuments*")]
+		[Version (deprecated = true)]
 		public DocumentsProxy.for_bus_sync (GLib.BusType bus_type, GLib.DBusProxyFlags flags, string name, string object_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false, type = "GoaDocuments*")]
+		[Version (deprecated = true)]
 		public DocumentsProxy.sync (GLib.DBusConnection connection, GLib.DBusProxyFlags flags, string? name, string object_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_documents_skeleton_get_type ()")]
+	[Version (deprecated = true)]
 	public class DocumentsSkeleton : GLib.DBusInterfaceSkeleton, GLib.DBusInterface, Goa.Documents {
 		[CCode (has_construct_function = false, type = "GoaDocuments*")]
+		[Version (deprecated = true)]
 		public DocumentsSkeleton ();
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_exchange_proxy_get_type ()")]
@@ -277,6 +284,7 @@ namespace Goa {
 		public void set_calendar (Goa.Calendar? interface_);
 		public void set_chat (Goa.Chat? interface_);
 		public void set_contacts (Goa.Contacts? interface_);
+		[Version (deprecated = true)]
 		public void set_documents (Goa.Documents? interface_);
 		[Version (since = "3.6.0")]
 		public void set_exchange (Goa.Exchange? interface_);
@@ -443,6 +451,7 @@ namespace Goa {
 		[NoAccessorMethod]
 		public abstract bool contacts_disabled { get; set; }
 		[NoAccessorMethod]
+		[Version (deprecated = true)]
 		public abstract bool documents_disabled { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "3.8.0")]
@@ -518,8 +527,11 @@ namespace Goa {
 		public abstract string uri { owned get; set; }
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_documents_get_type ()")]
+	[Version (deprecated = true)]
 	public interface Documents : GLib.Object {
+		[Version (deprecated = true)]
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
+		[Version (deprecated = true)]
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_exchange_get_type ()")]
@@ -664,6 +676,7 @@ namespace Goa {
 		public Goa.Calendar? get_calendar ();
 		public Goa.Chat? get_chat ();
 		public Goa.Contacts? get_contacts ();
+		[Version (deprecated = true)]
 		public Goa.Documents? get_documents ();
 		[Version (since = "3.6.0")]
 		public Goa.Exchange? get_exchange ();
@@ -700,6 +713,7 @@ namespace Goa {
 		[NoAccessorMethod]
 		public abstract Goa.Contacts contacts { owned get; set; }
 		[NoAccessorMethod]
+		[Version (deprecated = true)]
 		public abstract Goa.Documents documents { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "3.6.0")]
@@ -827,8 +841,10 @@ namespace Goa {
 	[CCode (cheader_filename = "goa/goa.h")]
 	public static uint contacts_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (deprecated = true)]
 	public static unowned GLib.DBusInterfaceInfo documents_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (deprecated = true)]
 	public static uint documents_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
 	[Version (since = "3.6.0")]

@@ -22,6 +22,7 @@ namespace Vnc {
 		public bool get_force_size ();
 		public unowned Vnc.GrabSequence get_grab_keys ();
 		public int get_height ();
+		public bool get_keep_aspect_ratio ();
 		public bool get_keyboard_grab ();
 		public bool get_lossy_encoding ();
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -35,6 +36,7 @@ namespace Vnc {
 		public bool get_shared_flag ();
 		public bool get_smoothing ();
 		public int get_width ();
+		public uint get_zoom_level ();
 		public bool is_open ();
 		public bool is_pointer_absolute ();
 		public bool open_addr (GLib.SocketAddress addr, string? hostname);
@@ -50,6 +52,7 @@ namespace Vnc {
 		public void set_depth (Vnc.DisplayDepthColor depth);
 		public void set_force_size (bool enable);
 		public void set_grab_keys (Vnc.GrabSequence seq);
+		public void set_keep_aspect_ratio (bool enable);
 		public void set_keyboard_grab (bool enable);
 		public void set_lossy_encoding (bool enable);
 		public void set_pointer_grab (bool enable);
@@ -58,6 +61,7 @@ namespace Vnc {
 		public bool set_scaling (bool enable);
 		public void set_shared_flag (bool shared);
 		public void set_smoothing (bool enable);
+		public void set_zoom_level (uint zoom);
 		public bool allow_resize { get; set construct; }
 		public Vnc.Connection connection { get; }
 		public Vnc.DisplayDepthColor depth { get; set construct; }
@@ -68,6 +72,7 @@ namespace Vnc {
 		[NoAccessorMethod]
 		public bool grab_pointer { get; set construct; }
 		public int height { get; }
+		public bool keep_aspect_ratio { get; set construct; }
 		[NoAccessorMethod]
 		public bool local_pointer { get; set construct; }
 		public bool lossy_encoding { get; set construct; }
@@ -77,6 +82,7 @@ namespace Vnc {
 		public bool shared_flag { get; set construct; }
 		public bool smoothing { get; set construct; }
 		public int width { get; }
+		public uint zoom_level { get; set construct; }
 		public virtual signal void vnc_auth_credential (GLib.ValueArray credList);
 		public signal void vnc_auth_failure (string object);
 		public signal void vnc_auth_unsupported (uint object);

@@ -801,7 +801,11 @@ namespace Gegl {
 		[CCode (cname = "Arithmetic xor")]
 		XOR,
 		[CCode (cname = "Arithmetic xor covariant")]
-		XOR_COVARIANT
+		XOR_COVARIANT,
+		[CCode (cname = "Blue Noise")]
+		BLUE_NOISE,
+		[CCode (cname = "Blue Noise Covariant")]
+		BLUE_NOISE_COVARIANT
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_MAP_EXCLUDE_", has_type_id = false)]
 	public enum MapFlags {

@@ -67,7 +67,7 @@ namespace Vnc {
 		public ColorMap (uint16 offset, uint16 size);
 		public Vnc.ColorMap copy ();
 		public void free ();
-		public bool lookup (uint16 idx, uint16 red, uint16 green, uint16 blue);
+		public bool lookup (uint16 idx, out uint16 red, out uint16 green, out uint16 blue);
 		public bool @set (uint16 idx, uint16 red, uint16 green, uint16 blue);
 	}
 	[CCode (cheader_filename = "gvnc.h", type_id = "vnc_connection_get_type ()")]
@@ -107,7 +107,7 @@ namespace Vnc {
 		public bool set_encodings ([CCode (array_length_cname = "n_encoding", array_length_pos = 0.5)] int32[] encoding);
 		public bool set_framebuffer (Vnc.Framebuffer fb);
 		public bool set_pixel_format (Vnc.PixelFormat fmt);
-		public bool set_shared (bool sharedFlag);
+		public bool set_shared (bool shared);
 		public Vnc.ConnectionResizeStatus set_size (uint width, uint height);
 		public void shutdown ();
 		[NoAccessorMethod]
@@ -119,7 +119,7 @@ namespace Vnc {
 		public virtual signal void vnc_auth_unsupported (uint authType);
 		public virtual signal void vnc_bell ();
 		public virtual signal void vnc_connected ();
-		public virtual signal void vnc_cursor_changed (Vnc.Cursor cursor);
+		public virtual signal void vnc_cursor_changed (Vnc.Cursor? cursor);
 		public virtual signal void vnc_desktop_rename (string name);
 		public virtual signal void vnc_desktop_resize (int width, int height);
 		public virtual signal void vnc_disconnected ();
@@ -127,7 +127,7 @@ namespace Vnc {
 		public virtual signal void vnc_framebuffer_update (int x, int y, int width, int height);
 		public virtual signal void vnc_initialized ();
 		public virtual signal void vnc_led_state ();
-		public virtual signal void vnc_pixel_format_changed (void* format);
+		public virtual signal void vnc_pixel_format_changed (Vnc.PixelFormat format);
 		public virtual signal void vnc_pointer_mode_changed (bool absPointer);
 		public virtual signal void vnc_power_control_failed ();
 		public virtual signal void vnc_power_control_initialized ();

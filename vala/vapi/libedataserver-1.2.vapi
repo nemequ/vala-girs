@@ -217,6 +217,11 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		protected OAuth2ServiceOutlook ();
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_oauth2_service_yahoo_get_type ()")]
+	public class OAuth2ServiceYahoo : E.OAuth2ServiceBase, E.OAuth2Service {
+		[CCode (has_construct_function = false)]
+		protected OAuth2ServiceYahoo ();
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_oauth2_services_get_type ()")]
 	[Version (since = "3.28")]
 	public class OAuth2Services : GLib.Object, E.Extensible {

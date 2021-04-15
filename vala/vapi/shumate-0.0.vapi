@@ -9,25 +9,24 @@ namespace Shumate {
 		[CCode (has_construct_function = false)]
 		public Coordinate.full (double latitude, double longitude);
 	}
-	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_error_tile_source_get_type ()")]
-	public class ErrorTileSource : Shumate.TileSource {
-		[CCode (has_construct_function = false)]
-		protected ErrorTileSource ();
-		[CCode (has_construct_function = false)]
-		public ErrorTileSource.full ();
-	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_file_cache_get_type ()")]
-	public class FileCache : Shumate.TileCache {
+	public class FileCache : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected FileCache ();
 		[CCode (has_construct_function = false)]
-		public FileCache.full (uint size_limit, string? cache_dir);
+		public FileCache.full (uint size_limit, string cache_key, string? cache_dir);
 		public unowned string get_cache_dir ();
+		public unowned string get_cache_key ();
 		public uint get_size_limit ();
+		[CCode (async_result_pos = 3.1)]
+		public async GLib.Bytes get_tile_async (Shumate.Tile tile, GLib.Cancellable? cancellable, out string? etag, out GLib.DateTime? modtime) throws GLib.Error;
+		public void mark_up_to_date (Shumate.Tile tile);
 		public void purge ();
 		public void purge_on_idle ();
 		public void set_size_limit (uint size_limit);
+		public async bool store_tile_async (Shumate.Tile tile, GLib.Bytes bytes, string? etag, GLib.Cancellable? cancellable) throws GLib.Error;
 		public string cache_dir { get; construct; }
+		public string cache_key { get; construct; }
 		public uint size_limit { get; set construct; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_layer_get_type ()")]
@@ -62,7 +61,7 @@ namespace Shumate {
 	public abstract class MapSource : GLib.InitiallyUnowned {
 		[CCode (has_construct_function = false)]
 		protected MapSource ();
-		public virtual void fill_tile (Shumate.Tile tile, GLib.Cancellable? cancellable = null);
+		public virtual async bool fill_tile_async (Shumate.Tile tile, GLib.Cancellable? cancellable) throws GLib.Error;
 		public uint get_column_count (uint zoom_level);
 		public virtual unowned string get_id ();
 		public double get_latitude (uint zoom_level, double y);
@@ -73,21 +72,11 @@ namespace Shumate {
 		public double get_meters_per_pixel (uint zoom_level, double latitude, double longitude);
 		public virtual uint get_min_zoom_level ();
 		public virtual unowned string get_name ();
-		public unowned Shumate.MapSource get_next_source ();
 		public virtual Shumate.MapProjection get_projection ();
 		public uint get_row_count (uint zoom_level);
 		public virtual uint get_tile_size ();
 		public double get_x (uint zoom_level, double longitude);
 		public double get_y (uint zoom_level, double latitude);
-		public void set_next_source (Shumate.MapSource next_source);
-		public Shumate.MapSource next_source { get; set; }
-	}
-	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_map_source_chain_get_type ()")]
-	public class MapSourceChain : Shumate.MapSource {
-		[CCode (has_construct_function = false)]
-		public MapSourceChain ();
-		public void pop ();
-		public void push (Shumate.MapSource map_source);
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_map_source_desc_get_type ()")]
 	public class MapSourceDesc : GLib.Object {
@@ -118,9 +107,6 @@ namespace Shumate {
 		[CCode (has_construct_function = false)]
 		protected MapSourceFactory ();
 		public unowned Shumate.MapSource? create (string id);
-		public unowned Shumate.MapSource create_cached_source (string id);
-		public unowned Shumate.MapSource create_error_source (uint tile_size);
-		public unowned Shumate.MapSource create_memcached_source (string id);
 		public static Shumate.MapSourceFactory dup_default ();
 		public GLib.SList<weak Shumate.MapSourceDesc> get_registered ();
 		public bool register (Shumate.MapSourceDesc desc);
@@ -176,7 +162,7 @@ namespace Shumate {
 		public signal void marker_unselected (Shumate.Marker marker);
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_memory_cache_get_type ()")]
-	public class MemoryCache : Shumate.TileCache {
+	public class MemoryCache : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected MemoryCache ();
 		public void clean ();
@@ -184,6 +170,8 @@ namespace Shumate {
 		public MemoryCache.full (uint size_limit);
 		public uint get_size_limit ();
 		public void set_size_limit (uint size_limit);
+		public void store_texture (Shumate.Tile tile, Gdk.Texture texture, string source_id);
+		public bool try_fill_tile (Shumate.Tile tile, string source_id);
 		public uint size_limit { get; set construct; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_network_tile_source_get_type ()")]
@@ -201,6 +189,8 @@ namespace Shumate {
 		public void set_proxy_uri (string proxy_uri);
 		public void set_uri_format (string uri_format);
 		public void set_user_agent (string user_agent);
+		[NoAccessorMethod]
+		public Shumate.FileCache file_cache { owned get; }
 		public int max_conns { get; set; }
 		public bool offline { get; set; }
 		public string proxy_uri { get; set; }
@@ -264,7 +254,7 @@ namespace Shumate {
 		public Tile.full (uint x, uint y, uint size, uint zoom_level);
 		public unowned string get_etag ();
 		public bool get_fade_in ();
-		public unowned GLib.DateTime get_modified_time ();
+		public GLib.DateTime get_modified_time ();
 		public uint get_size ();
 		public Shumate.State get_state ();
 		public unowned Gdk.Texture? get_texture ();
@@ -280,9 +270,7 @@ namespace Shumate {
 		public void set_x (uint x);
 		public void set_y (uint y);
 		public void set_zoom_level (uint zoom_level);
-		public string etag { get; set; }
 		public bool fade_in { get; set; }
-		public GLib.DateTime modified_time { get; set; }
 		public uint size { get; set; }
 		public Shumate.State state { get; set; }
 		public Gdk.Texture texture { get; set; }
@@ -290,20 +278,10 @@ namespace Shumate {
 		public uint y { get; set; }
 		public uint zoom_level { get; set; }
 	}
-	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_tile_cache_get_type ()")]
-	public abstract class TileCache : Shumate.MapSource {
-		[CCode (has_construct_function = false)]
-		protected TileCache ();
-		public virtual void on_tile_filled (Shumate.Tile tile);
-		public virtual void refresh_tile_time (Shumate.Tile tile);
-		public virtual void store_tile (Shumate.Tile tile, string contents, size_t size);
-	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_tile_source_get_type ()")]
 	public abstract class TileSource : Shumate.MapSource {
 		[CCode (has_construct_function = false)]
 		protected TileSource ();
-		public unowned Shumate.TileCache get_cache ();
-		public void set_cache (Shumate.TileCache cache);
 		public void set_id (string id);
 		public void set_license (string license);
 		public void set_license_uri (string license_uri);
@@ -312,7 +290,6 @@ namespace Shumate {
 		public void set_name (string name);
 		public void set_projection (Shumate.MapProjection projection);
 		public void set_tile_size (uint tile_size);
-		public Shumate.TileCache cache { get; set; }
 		[NoAccessorMethod]
 		public string id { owned get; set construct; }
 		[NoAccessorMethod]
@@ -410,6 +387,20 @@ namespace Shumate {
 		BOTH,
 		METRIC,
 		IMPERIAL
+	}
+	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_FILE_CACHE_ERROR_")]
+	public errordomain FileCacheError {
+		FAILED;
+		public static GLib.Quark quark ();
+	}
+	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_NETWORK_SOURCE_ERROR_")]
+	public errordomain NetworkSourceError {
+		FAILED,
+		BAD_RESPONSE,
+		COULD_NOT_CONNECT,
+		MALFORMED_URL,
+		OFFLINE;
+		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", cname = "SHUMATE_MAJOR_VERSION")]
 	public const int MAJOR_VERSION;

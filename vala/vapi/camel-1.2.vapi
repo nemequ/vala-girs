@@ -1140,6 +1140,10 @@ namespace Camel {
 	public class MimeFilterCRLF : Camel.MimeFilter {
 		[CCode (has_construct_function = false, type = "CamelMimeFilter*")]
 		public MimeFilterCRLF (Camel.MimeFilterCRLFDirection direction, Camel.MimeFilterCRLFMode mode);
+		[Version (since = "3.42")]
+		public bool get_ensure_crlf_end ();
+		[Version (since = "3.42")]
+		public void set_ensure_crlf_end (bool ensure_crlf_end);
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_mime_filter_canon_get_type ()")]
 	public class MimeFilterCanon : Camel.MimeFilter {
@@ -1697,6 +1701,11 @@ namespace Camel {
 	public class SaslXOAuth2Outlook : Camel.SaslXOAuth2 {
 		[CCode (has_construct_function = false)]
 		protected SaslXOAuth2Outlook ();
+	}
+	[CCode (cheader_filename = "camel/camel.h", lower_case_csuffix = "sasl_xoauth2_yahoo", type_id = "camel_sasl_xoauth2_yahoo_get_type ()")]
+	public class SaslXOAuth2Yahoo : Camel.SaslXOAuth2 {
+		[CCode (has_construct_function = false)]
+		protected SaslXOAuth2Yahoo ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_service_get_type ()")]
 	public abstract class Service : Camel.Object, GLib.Initable {

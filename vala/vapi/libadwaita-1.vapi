@@ -647,15 +647,21 @@ namespace Adw {
 		public unowned string? get_icon_name ();
 		[Version (since = "1.0")]
 		public unowned string? get_title ();
+		[Version (since = "1.0")]
+		public bool get_use_underline ();
 		public void remove (Adw.PreferencesGroup group);
 		[Version (since = "1.0")]
 		public void set_icon_name (string? icon_name);
 		[Version (since = "1.0")]
 		public void set_title (string? title);
 		[Version (since = "1.0")]
+		public void set_use_underline (bool use_underline);
+		[Version (since = "1.0")]
 		public string icon_name { get; set; }
 		[Version (since = "1.0")]
 		public string title { get; set; }
+		[Version (since = "1.0")]
+		public bool use_underline { get; set; }
 	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_preferences_row_get_type ()")]
 	public class PreferencesRow : Gtk.ListBoxRow, Gtk.Accessible, Gtk.Actionable, Gtk.Buildable, Gtk.ConstraintTarget {
