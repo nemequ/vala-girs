@@ -528,7 +528,7 @@ namespace Gtk {
 	public class SourceMark : Gtk.TextMark {
 		[CCode (has_construct_function = false)]
 		[Version (since = "2.2")]
-		public SourceMark (string name, string category);
+		public SourceMark (string? name, string category);
 		[Version (since = "2.2")]
 		public unowned string get_category ();
 		[Version (since = "2.2")]

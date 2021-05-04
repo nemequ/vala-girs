@@ -28,7 +28,10 @@ namespace Gedit {
 		public string get_mime_type ();
 		public unowned Gtk.SourceSearchContext get_search_context ();
 		public string get_short_name_for_display ();
+		public bool goto_line (int line);
+		public bool goto_line_offset (int line, int line_offset);
 		public bool is_untitled ();
+		public bool is_untouched ();
 		public void set_language (Gtk.SourceLanguage? lang);
 		public void set_search_context (Gtk.SourceSearchContext? search_context);
 		[NoAccessorMethod]
@@ -36,6 +39,11 @@ namespace Gedit {
 		[NoAccessorMethod]
 		public bool empty_search { get; }
 		public string mime_type { owned get; }
+		[NoAccessorMethod]
+		public string shortname { owned get; }
+		[NoAccessorMethod]
+		public bool use_gvfs_metadata { get; construct; }
+		public virtual signal void cursor_moved ();
 		public virtual signal void load ();
 		public virtual signal void loaded ();
 		public virtual signal void save ();
@@ -100,6 +108,18 @@ namespace Gedit {
 		public virtual signal void registered (string object_path, string method);
 		public virtual signal void unregistered (string object_path, string method);
 	}
+	[CCode (cheader_filename = "gedit/gedit-progress-info-bar.h", type_id = "gedit_progress_info_bar_get_type ()")]
+	public class ProgressInfoBar : Gtk.InfoBar, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public ProgressInfoBar (string icon_name, string markup, bool has_cancel);
+		public void pulse ();
+		public void set_fraction (double fraction);
+		public void set_icon_name (string icon_name);
+		public void set_markup (string markup);
+		public void set_text (string text);
+		[NoAccessorMethod]
+		public bool has_cancel_button { construct; }
+	}
 	[CCode (cheader_filename = "gedit/gedit-statusbar.h", type_id = "gedit_statusbar_get_type ()")]
 	public class Statusbar : Gtk.Statusbar, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
@@ -136,6 +156,13 @@ namespace Gedit {
 	public class View : Gtk.SourceView, Atk.Implementor, Gtk.Buildable, Gtk.Scrollable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public View (Gedit.Document doc);
+		public void copy_clipboard ();
+		public void cut_clipboard ();
+		public void delete_selection ();
+		public void paste_clipboard ();
+		public void scroll_to_cursor ();
+		public void select_all ();
+		public void set_font (bool default_font, string font_name);
 		public virtual signal void drop_uris ([CCode (array_length = false, array_null_terminated = true)] string[] uri_list);
 	}
 	[CCode (cheader_filename = "gedit/gedit-window.h", type_id = "gedit_window_get_type ()")]
@@ -205,7 +232,8 @@ namespace Gedit {
 		DEBUG_DOCUMENT,
 		DEBUG_COMMANDS,
 		DEBUG_APP,
-		DEBUG_UTILS
+		DEBUG_UTILS,
+		DEBUG_METADATA
 	}
 	[CCode (cheader_filename = "gedit/gedit-tab.h", cprefix = "GEDIT_TAB_", type_id = "gedit_tab_state_get_type ()")]
 	public enum TabState {
@@ -256,6 +284,8 @@ namespace Gedit {
 	public static void debug_plugin_message (string file, int line, string function, string message);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_basename_for_display (GLib.File location);
+	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	public static bool utils_decode_uri (string uri, out string scheme, out string user, out string host, out string port, out string path);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "gedit/gedit-utils.h")]
 	public static string[] utils_drop_get_uris (Gtk.SelectionData selection_data);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
@@ -269,7 +299,13 @@ namespace Gedit {
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static unowned string utils_newline_type_to_string (Gtk.SourceNewlineType newline_type);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	public static string utils_replace_home_dir_with_tilde (string uri);
+	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static void utils_set_atk_name_description (Gtk.Widget widget, string name, string description);
 	[CCode (cheader_filename = "gedit/gedit-utils.h")]
 	public static string utils_set_direct_save_filename (Gdk.DragContext context);
+	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	public static string utils_str_end_truncate (string string, uint truncate_length);
+	[CCode (cheader_filename = "gedit/gedit-utils.h")]
+	public static string utils_str_middle_truncate (string string, uint truncate_length);
 }

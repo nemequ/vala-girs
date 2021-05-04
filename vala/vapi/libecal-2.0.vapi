@@ -1104,6 +1104,9 @@ namespace ECal {
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_SIMPLE_MEMO")]
 	[Version (since = "3.38")]
 	public const string STATIC_CAPABILITY_SIMPLE_MEMO;
+	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_SIMPLE_MEMO_WITH_SUMMARY")]
+	[Version (since = "3.42")]
+	public const string STATIC_CAPABILITY_SIMPLE_MEMO_WITH_SUMMARY;
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_TASK_CAN_RECUR")]
 	[Version (since = "3.30")]
 	public const string STATIC_CAPABILITY_TASK_CAN_RECUR;

@@ -120,6 +120,8 @@ namespace Adw {
 		[Version (since = "1.0")]
 		public bool get_allow_mouse_drag ();
 		[Version (since = "1.0")]
+		public bool get_allow_scroll_wheel ();
+		[Version (since = "1.0")]
 		public uint get_animation_duration ();
 		[Version (since = "1.0")]
 		public bool get_interactive ();
@@ -150,6 +152,8 @@ namespace Adw {
 		[Version (since = "1.0")]
 		public void set_allow_mouse_drag (bool allow_mouse_drag);
 		[Version (since = "1.0")]
+		public void set_allow_scroll_wheel (bool allow_scroll_wheel);
+		[Version (since = "1.0")]
 		public void set_animation_duration (uint duration);
 		[Version (since = "1.0")]
 		public void set_interactive (bool interactive);
@@ -161,6 +165,8 @@ namespace Adw {
 		public bool allow_long_swipes { get; set; }
 		[Version (since = "1.0")]
 		public bool allow_mouse_drag { get; set; }
+		[Version (since = "1.0")]
+		public bool allow_scroll_wheel { get; set; }
 		[Version (since = "1.0")]
 		public uint animation_duration { get; set; }
 		[Version (since = "1.0")]
