@@ -21,8 +21,7 @@ namespace Shumate {
 		[CCode (async_result_pos = 3.1)]
 		public async GLib.Bytes get_tile_async (Shumate.Tile tile, GLib.Cancellable? cancellable, out string? etag, out GLib.DateTime? modtime) throws GLib.Error;
 		public void mark_up_to_date (Shumate.Tile tile);
-		public void purge ();
-		public void purge_on_idle ();
+		public async bool purge_cache_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public void set_size_limit (uint size_limit);
 		public async bool store_tile_async (Shumate.Tile tile, GLib.Bytes bytes, string? etag, GLib.Cancellable? cancellable) throws GLib.Error;
 		public string cache_dir { get; construct; }
@@ -64,19 +63,19 @@ namespace Shumate {
 		public virtual async bool fill_tile_async (Shumate.Tile tile, GLib.Cancellable? cancellable) throws GLib.Error;
 		public uint get_column_count (uint zoom_level);
 		public virtual unowned string get_id ();
-		public double get_latitude (uint zoom_level, double y);
+		public double get_latitude (double zoom_level, double y);
 		public virtual unowned string get_license ();
 		public virtual unowned string get_license_uri ();
-		public double get_longitude (uint zoom_level, double x);
+		public double get_longitude (double zoom_level, double x);
 		public virtual uint get_max_zoom_level ();
-		public double get_meters_per_pixel (uint zoom_level, double latitude, double longitude);
+		public double get_meters_per_pixel (double zoom_level, double latitude, double longitude);
 		public virtual uint get_min_zoom_level ();
 		public virtual unowned string get_name ();
 		public virtual Shumate.MapProjection get_projection ();
 		public uint get_row_count (uint zoom_level);
 		public virtual uint get_tile_size ();
-		public double get_x (uint zoom_level, double longitude);
-		public double get_y (uint zoom_level, double latitude);
+		public double get_x (double zoom_level, double longitude);
+		public double get_y (double zoom_level, double latitude);
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_map_source_desc_get_type ()")]
 	public class MapSourceDesc : GLib.Object {
@@ -122,14 +121,10 @@ namespace Shumate {
 		public unowned Gtk.Widget? get_child ();
 		public bool get_draggable ();
 		public bool get_selectable ();
-		public static unowned Gdk.RGBA? get_selection_color ();
-		public static unowned Gdk.RGBA? get_selection_text_color ();
 		public bool is_selected ();
 		public void set_child (Gtk.Widget? child);
 		public void set_draggable (bool value);
 		public void set_selectable (bool value);
-		public static void set_selection_color (Gdk.RGBA color);
-		public static void set_selection_text_color (Gdk.RGBA color);
 		public Gtk.Widget child { get; set; }
 		public bool draggable { get; set; }
 		public bool selectable { get; set; }
@@ -345,13 +340,13 @@ namespace Shumate {
 		public uint get_max_zoom_level ();
 		public uint get_min_zoom_level ();
 		public unowned Shumate.MapSource? get_reference_map_source ();
-		public uint get_zoom_level ();
+		public double get_zoom_level ();
 		public double latitude_to_widget_y (Gtk.Widget widget, double latitude);
 		public double longitude_to_widget_x (Gtk.Widget widget, double longitude);
 		public void set_max_zoom_level (uint max_zoom_level);
 		public void set_min_zoom_level (uint min_zoom_level);
 		public void set_reference_map_source (Shumate.MapSource? map_source);
-		public void set_zoom_level (uint zoom_level);
+		public void set_zoom_level (double zoom_level);
 		public double widget_x_to_longitude (Gtk.Widget widget, double x);
 		public double widget_y_to_latitude (Gtk.Widget widget, double y);
 		public void zoom_in ();
@@ -359,7 +354,7 @@ namespace Shumate {
 		public uint max_zoom_level { get; set; }
 		public uint min_zoom_level { get; set; }
 		public Shumate.MapSource reference_map_source { get; set; }
-		public uint zoom_level { get; set; }
+		public double zoom_level { get; set; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_cname = "ShumateLocationInterface", type_id = "shumate_location_get_type ()")]
 	public interface Location : GLib.Object {

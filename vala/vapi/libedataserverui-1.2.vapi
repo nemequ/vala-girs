@@ -33,6 +33,9 @@ namespace E {
 		public E.SourceRegistry registry { get; construct; }
 		[HasEmitter]
 		public virtual signal unowned Gtk.Window get_dialog_parent ();
+		[HasEmitter]
+		[Version (since = "3.42")]
+		public signal unowned Gtk.Window get_dialog_parent_full (E.Source? auth_source);
 	}
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", type_id = "e_credentials_prompter_impl_get_type ()")]
 	[Version (since = "3.16")]

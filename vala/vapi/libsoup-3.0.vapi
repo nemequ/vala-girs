@@ -157,7 +157,6 @@ namespace Soup {
 	public class ContentSniffer : GLib.Object, Soup.SessionFeature {
 		[CCode (has_construct_function = false)]
 		public ContentSniffer ();
-		public size_t get_buffer_size ();
 		public string sniff (Soup.Message msg, GLib.Bytes buffer, out GLib.HashTable<string,string>? @params);
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "soup_cookie_get_type ()")]
@@ -818,6 +817,7 @@ namespace Soup {
 		REQUESTED_RANGE_NOT_SATISFIABLE,
 		INVALID_RANGE,
 		EXPECTATION_FAILED,
+		MISDIRECTED_REQUEST,
 		UNPROCESSABLE_ENTITY,
 		LOCKED,
 		FAILED_DEPENDENCY,

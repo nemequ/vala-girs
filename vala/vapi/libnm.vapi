@@ -6985,6 +6985,12 @@ namespace NM {
 	public const string ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_SEGMENTATION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_VLAN_STAG_HW_INSERT")]
 	public const string ETHTOOL_OPTNAME_FEATURE_TX_VLAN_STAG_HW_INSERT;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_PAUSE_AUTONEG")]
+	public const string ETHTOOL_OPTNAME_PAUSE_AUTONEG;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_PAUSE_RX")]
+	public const string ETHTOOL_OPTNAME_PAUSE_RX;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_PAUSE_TX")]
+	public const string ETHTOOL_OPTNAME_PAUSE_TX;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_RX")]
 	public const string ETHTOOL_OPTNAME_RING_RX;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_RX_JUMBO")]
@@ -7347,6 +7353,9 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (since = "1.20")]
 	public static bool ethtool_optname_is_feature (string? optname);
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (since = "1.32")]
+	public static bool ethtool_optname_is_pause (string? optname);
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (since = "1.26")]
 	public static bool ethtool_optname_is_ring (string? optname);

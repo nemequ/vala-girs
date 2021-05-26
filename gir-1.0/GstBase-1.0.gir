@@ -1338,12 +1338,12 @@ buffer in the list before freeing the list after usage.</doc>
 Control is given to the subclass when all pads have data.
 
  * Base class for mixers and muxers. Subclasses should at least implement
-   the #GstAggregatorClass.aggregate() virtual method.
+   the #GstAggregatorClass::aggregate virtual method.
 
  * Installs a #GstPadChainFunction, a #GstPadEventFullFunction and a
    #GstPadQueryFunction to queue all serialized data packets per sink pad.
    Subclasses should not overwrite those, but instead implement
-   #GstAggregatorClass.sink_event() and #GstAggregatorClass.sink_query() as
+   #GstAggregatorClass::sink_event and #GstAggregatorClass::sink_query as
    needed.
 
  * When data is queued on all pads, the aggregate vmethod is called.
@@ -1561,7 +1561,7 @@ sent before pushing the buffer.</doc>
              filename="../libs/gst/base/gstaggregator.c"
              line="1279">Negotiates src pad caps with downstream elements.
 Unmarks GST_PAD_FLAG_NEED_RECONFIGURE in any case. But marks it again
-if #GstAggregatorClass.negotiate() fails.</doc>
+if #GstAggregatorClass::negotiate fails.</doc>
         <source-position filename="../libs/gst/base/gstaggregator.h"
                          line="323"/>
         <return-value transfer-ownership="none">
@@ -1963,7 +1963,7 @@ Typically only called by subclasses.</doc>
              filename="../libs/gst/base/gstaggregator.c"
              line="1279">Negotiates src pad caps with downstream elements.
 Unmarks GST_PAD_FLAG_NEED_RECONFIGURE in any case. But marks it again
-if #GstAggregatorClass.negotiate() fails.</doc>
+if #GstAggregatorClass::negotiate fails.</doc>
         <source-position filename="../libs/gst/base/gstaggregator.h"
                          line="388"/>
         <return-value transfer-ownership="none">
@@ -2125,7 +2125,7 @@ can reconfigure its global latency.</doc>
               version="1.16">
         <doc xml:space="preserve"
              filename="../libs/gst/base/gstaggregator.c"
-             line="3663">This is a simple #GstAggregatorClass.get_next_time() implementation that
+             line="3663">This is a simple #GstAggregatorClass::get_next_time implementation that
 just looks at the #GstSegment on the srcpad of the aggregator and bases
 the next time on the running time there.
 
@@ -3549,10 +3549,10 @@ a parser and share a lot of rather complex code.
 
 ## Set-up phase
 
- * #GstBaseParse calls #GstBaseParseClass.start() to inform subclass
+ * #GstBaseParse calls #GstBaseParseClass::start to inform subclass
    that data processing is about to start now.
 
- * #GstBaseParse class calls #GstBaseParseClass.set_sink_caps() to
+ * #GstBaseParse class calls #GstBaseParseClass::set_sink_caps to
    inform the subclass about incoming sinkpad caps. Subclass could
    already set the srcpad caps accordingly, but this might be delayed
    until calling gst_base_parse_finish_frame() with a non-queued frame.
@@ -3571,11 +3571,11 @@ a parser and share a lot of rather complex code.
    #GstAdapter.
 
  * A buffer of (at least) min_frame_size bytes is passed to subclass
-   with #GstBaseParseClass.handle_frame(). Subclass checks the contents
+   with #GstBaseParseClass::handle_frame. Subclass checks the contents
    and can optionally return #GST_FLOW_OK along with an amount of data
    to be skipped to find a valid frame (which will result in a
    subsequent DISCONT).  If, otherwise, the buffer does not hold a
-   complete frame, #GstBaseParseClass.handle_frame() can merely return
+   complete frame, #GstBaseParseClass::handle_frame can merely return
    and will be called again when additional data is available.  In push
    mode this amounts to an additional input buffer (thus minimal
    additional latency), in pull mode this amounts to some arbitrary
@@ -3590,7 +3590,7 @@ a parser and share a lot of rather complex code.
    data while simultaneously providing custom output data.  Note that
    baseclass performs some processing (such as tracking overall consumed
    data rate versus duration) for each finished frame, but other state
-   is only updated upon each call to #GstBaseParseClass.handle_frame()
+   is only updated upon each call to #GstBaseParseClass::handle_frame
    (such as tracking upstream input timestamp).
 
    Subclass is also responsible for setting the buffer metadata
@@ -3601,30 +3601,30 @@ a parser and share a lot of rather complex code.
    duration obtained from configuration (see below), and offset
    if meaningful (in pull mode).
 
-   Note that #GstBaseParseClass.handle_frame() might receive any small
+   Note that #GstBaseParseClass::handle_frame might receive any small
    amount of input data when leftover data is being drained (e.g. at
    EOS).
 
  * As part of finish frame processing, just prior to actually pushing
    the buffer in question, it is passed to
-   #GstBaseParseClass.pre_push_frame() which gives subclass yet one last
+   #GstBaseParseClass::pre_push_frame which gives subclass yet one last
    chance to examine buffer metadata, or to send some custom (tag)
    events, or to perform custom (segment) filtering.
 
  * During the parsing process #GstBaseParseClass will handle both srcpad
    and sinkpad events. They will be passed to subclass if
-   #GstBaseParseClass.sink_event() or #GstBaseParseClass.src_event()
+   #GstBaseParseClass::sink_event or #GstBaseParseClass::src_event
    implementations have been provided.
 
 ## Shutdown phase
 
-* #GstBaseParse class calls #GstBaseParseClass.stop() to inform the
+* #GstBaseParse class calls #GstBaseParseClass::stop to inform the
   subclass that data parsing will be stopped.
 
 Subclass is responsible for providing pad template caps for source and
 sink pads. The pads need to be named "sink" and "src". It also needs to
 set the fixed caps on srcpad, when the format is ensured (e.g.  when
-base class calls subclass' #GstBaseParseClass.set_sink_caps() function).
+base class calls subclass' #GstBaseParseClass::set_sink_caps function).
 
 This base class uses %GST_FORMAT_DEFAULT as a meaning of frames. So,
 subclass conversion routine needs to know that conversion from
@@ -3644,7 +3644,7 @@ Things that subclass need to take care of:
 * Inform base class how big data chunks should be retrieved. This is
   done with gst_base_parse_set_min_frame_size() function.
 * Examine data chunks passed to subclass with
-  #GstBaseParseClass.handle_frame() and pass proper frame(s) to
+  #GstBaseParseClass::handle_frame and pass proper frame(s) to
   gst_base_parse_finish_frame(), and setting src pad caps and timestamps
   on frame.
 * Provide conversion functions
@@ -3660,7 +3660,7 @@ Things that subclass need to take care of:
   metadata (which will be taken from upstream as much as
   possible). Internally keeping track of frame durations and respective
   sizes that have been pushed provides #GstBaseParse with an estimated
-  bitrate. A default #GstBaseParseClass.convert() (used if not
+  bitrate. A default #GstBaseParseClass::convert (used if not
   overridden) will then use these rates to perform obvious conversions.
   These rates are also used to update (estimated) duration at regular
   frame intervals.</doc>
@@ -3904,7 +3904,7 @@ to the new entry, etc.</doc>
               c:identifier="gst_base_parse_convert_default">
         <doc xml:space="preserve"
              filename="../libs/gst/base/gstbaseparse.c"
-             line="1737">Default implementation of #GstBaseParseClass.convert().</doc>
+             line="1737">Default implementation of #GstBaseParseClass::convert.</doc>
         <source-position filename="../libs/gst/base/gstbaseparse.h"
                          line="345"/>
         <return-value transfer-ownership="none">
@@ -4322,10 +4322,10 @@ be given buffers of at least @min_size bytes.</doc>
              line="4009">Set if the nature of the format or configuration does not allow (much)
 parsing, and the parser should operate in passthrough mode (which only
 applies when operating in push mode). That is, incoming buffers are
-pushed through unmodified, i.e. no #GstBaseParseClass.handle_frame()
-will be invoked, but #GstBaseParseClass.pre_push_frame() will still be
+pushed through unmodified, i.e. no #GstBaseParseClass::handle_frame
+will be invoked, but #GstBaseParseClass::pre_push_frame will still be
 invoked, so subclass can perform as much or as little is appropriate for
-passthrough semantics in #GstBaseParseClass.pre_push_frame().</doc>
+passthrough semantics in #GstBaseParseClass::pre_push_frame.</doc>
         <source-position filename="../libs/gst/base/gstbaseparse.h"
                          line="326"/>
         <return-value transfer-ownership="none">
@@ -4977,19 +4977,19 @@ my_element_class_init (GstMyElementClass *klass)
 #GstBaseSink will handle the prerolling correctly. This means that it will
 return %GST_STATE_CHANGE_ASYNC from a state change to PAUSED until the first
 buffer arrives in this element. The base class will call the
-#GstBaseSinkClass.preroll() vmethod with this preroll buffer and will then
+#GstBaseSinkClass::preroll vmethod with this preroll buffer and will then
 commit the state change to the next asynchronously pending state.
 
 When the element is set to PLAYING, #GstBaseSink will synchronise on the
-clock using the times returned from #GstBaseSinkClass.get_times(). If this
+clock using the times returned from #GstBaseSinkClass::get_times. If this
 function returns %GST_CLOCK_TIME_NONE for the start time, no synchronisation
 will be done. Synchronisation can be disabled entirely by setting the object
 #GstBaseSink:sync property to %FALSE.
 
-After synchronisation the virtual method #GstBaseSinkClass.render() will be
+After synchronisation the virtual method #GstBaseSinkClass::render will be
 called. Subclasses should minimally implement this method.
 
-Subclasses that synchronise on the clock in the #GstBaseSinkClass.render()
+Subclasses that synchronise on the clock in the #GstBaseSinkClass::render
 method are supported as well. These classes typically receive a buffer in
 the render method and can then potentially block on the clock while
 rendering. A typical example is an audiosink.
@@ -4998,7 +4998,7 @@ blocking wait.
 
 Upon receiving the EOS event in the PLAYING state, #GstBaseSink will wait
 for the clock to reach the time indicated by the stop time of the last
-#GstBaseSinkClass.get_times() call before posting an EOS message. When the
+#GstBaseSinkClass::get_times call before posting an EOS message. When the
 element receives EOS in PAUSED, preroll completes, the event is queued and an
 EOS message is posted when going to PLAYING.
 
@@ -5013,24 +5013,24 @@ clipping themselves when needed.
 If no clock has been set on the element, the query will be forwarded
 upstream.
 
-The #GstBaseSinkClass.set_caps() function will be called when the subclass
+The #GstBaseSinkClass::set_caps function will be called when the subclass
 should configure itself to process a specific media type.
 
-The #GstBaseSinkClass.start() and #GstBaseSinkClass.stop() virtual methods
+The #GstBaseSinkClass::start and #GstBaseSinkClass::stop virtual methods
 will be called when resources should be allocated. Any
-#GstBaseSinkClass.preroll(), #GstBaseSinkClass.render() and
-#GstBaseSinkClass.set_caps() function will be called between the
-#GstBaseSinkClass.start() and #GstBaseSinkClass.stop() calls.
+#GstBaseSinkClass::preroll, #GstBaseSinkClass::render and
+#GstBaseSinkClass::set_caps function will be called between the
+#GstBaseSinkClass::start and #GstBaseSinkClass::stop calls.
 
-The #GstBaseSinkClass.event() virtual method will be called when an event is
+The #GstBaseSinkClass::event virtual method will be called when an event is
 received by #GstBaseSink. Normally this method should only be overridden by
 very specific elements (such as file sinks) which need to handle the
 newsegment event specially.
 
-The #GstBaseSinkClass.unlock() method is called when the elements should
+The #GstBaseSinkClass::unlock method is called when the elements should
 unblock any blocking operations they perform in the
-#GstBaseSinkClass.render() method. This is mostly useful when the
-#GstBaseSinkClass.render() method performs a blocking write on a file
+#GstBaseSinkClass::render method. This is mostly useful when the
+#GstBaseSinkClass::render method performs a blocking write on a file
 descriptor, for example.
 
 The #GstBaseSink:max-lateness property affects how the sink deals with
@@ -5041,7 +5041,7 @@ time of the clock.
 If the frame is later than max-lateness, the sink will drop the buffer
 without calling the render method.
 This feature is disabled if sync is disabled, the
-#GstBaseSinkClass.get_times() method does not return a valid start time or
+#GstBaseSinkClass::get_times method does not return a valid start time or
 max-lateness is set to -1 (the default).
 Subclasses can use gst_base_sink_set_max_lateness() to configure the
 max-lateness value.
@@ -6125,9 +6125,9 @@ returned. Likewise, if synchronisation is disabled in the element or there
 is no clock, no synchronisation is done and %GST_CLOCK_BADTIME is returned.
 
 This function should only be called with the PREROLL_LOCK held, like when
-receiving an EOS event in the #GstBaseSinkClass.event() vmethod or when
+receiving an EOS event in the #GstBaseSinkClass::event vmethod or when
 receiving a buffer in
-the #GstBaseSinkClass.render() vmethod.
+the #GstBaseSinkClass::render vmethod.
 
 The @time argument should be the running_time of when this method should
 return and is not adjusted with any latency or offset configured in the
@@ -6168,14 +6168,14 @@ sink.</doc>
       <method name="wait_preroll" c:identifier="gst_base_sink_wait_preroll">
         <doc xml:space="preserve"
              filename="../libs/gst/base/gstbasesink.c"
-             line="2394">If the #GstBaseSinkClass.render() method performs its own synchronisation
+             line="2394">If the #GstBaseSinkClass::render method performs its own synchronisation
 against the clock it must unblock when going from PLAYING to the PAUSED state
 and call this method before continuing to render the remaining data.
 
-If the #GstBaseSinkClass.render() method can block on something else than
+If the #GstBaseSinkClass::render method can block on something else than
 the clock, it must also be ready to unblock immediately on
-the #GstBaseSinkClass.unlock() method and cause the
-#GstBaseSinkClass.render() method to immediately call this function.
+the #GstBaseSinkClass::unlock method and cause the
+#GstBaseSinkClass::render method to immediately call this function.
 In this case, the subclass must be prepared to continue rendering where it
 left off if this function returns %GST_FLOW_OK.
 
@@ -6719,25 +6719,25 @@ events. The default format for #GstBaseSrc is %GST_FORMAT_BYTES.
 conditions are met, it also supports pull mode scheduling:
 
   * The format is set to %GST_FORMAT_BYTES (default).
-  * #GstBaseSrcClass.is_seekable() returns %TRUE.
+  * #GstBaseSrcClass::is_seekable returns %TRUE.
 
 If all the conditions are met for operating in pull mode, #GstBaseSrc is
 automatically seekable in push mode as well. The following conditions must
 be met to make the element seekable in push mode when the format is not
 %GST_FORMAT_BYTES:
 
-* #GstBaseSrcClass.is_seekable() returns %TRUE.
-* #GstBaseSrcClass.query() can convert all supported seek formats to the
+* #GstBaseSrcClass::is_seekable returns %TRUE.
+* #GstBaseSrcClass::query can convert all supported seek formats to the
   internal format as set with gst_base_src_set_format().
-* #GstBaseSrcClass.do_seek() is implemented, performs the seek and returns
+* #GstBaseSrcClass::do_seek is implemented, performs the seek and returns
    %TRUE.
 
 When the element does not meet the requirements to operate in pull mode, the
-offset and length in the #GstBaseSrcClass.create() method should be ignored.
+offset and length in the #GstBaseSrcClass::create method should be ignored.
 It is recommended to subclass #GstPushSrc instead, in this situation. If the
 element can operate in pull mode but only with specific offsets and
 lengths, it is allowed to generate an error when the wrong values are passed
-to the #GstBaseSrcClass.create() function.
+to the #GstBaseSrcClass::create function.
 
 #GstBaseSrc has support for live sources. Live sources are sources that when
 paused discard data, such as audio or video capture devices. A typical live
@@ -6746,7 +6746,7 @@ this rate.
 Use gst_base_src_set_live() to activate the live source mode.
 
 A live source does not produce data in the PAUSED state. This means that the
-#GstBaseSrcClass.create() method will not be called in PAUSED but only in
+#GstBaseSrcClass::create method will not be called in PAUSED but only in
 PLAYING. To signal the pipeline that the element will not produce data, the
 return value from the READY to PAUSED state will be
 %GST_STATE_CHANGE_NO_PREROLL.
@@ -6758,12 +6758,12 @@ distributed and running.
 
 Live sources that synchronize and block on the clock (an audio source, for
 example) can use gst_base_src_wait_playing() when the
-#GstBaseSrcClass.create() function was interrupted by a state change to
+#GstBaseSrcClass::create function was interrupted by a state change to
 PAUSED.
 
-The #GstBaseSrcClass.get_times() method can be used to implement pseudo-live
-sources. It only makes sense to implement the #GstBaseSrcClass.get_times()
-function if the source is a live source. The #GstBaseSrcClass.get_times()
+The #GstBaseSrcClass::get_times method can be used to implement pseudo-live
+sources. It only makes sense to implement the #GstBaseSrcClass::get_times
+function if the source is a live source. The #GstBaseSrcClass::get_times
 function should return timestamps starting from 0, as if it were a non-live
 source. The base class will make sure that the timestamps are transformed
 into the current running_time. The base source will then wait for the
@@ -7019,10 +7019,10 @@ out. The base class will sync on the clock using these times.</doc>
              filename="../libs/gst/base/gstbasesrc.c"
              line="3459">Negotiates src pad caps with downstream elements.
 Unmarks GST_PAD_FLAG_NEED_RECONFIGURE in any case. But marks it again
-if #GstBaseSrcClass.negotiate() fails.
+if #GstBaseSrcClass::negotiate fails.
 
-Do not call this in the #GstBaseSrcClass.fill() vmethod. Call this in
-#GstBaseSrcClass.create() or in #GstBaseSrcClass.alloc(), _before_ any
+Do not call this in the #GstBaseSrcClass::fill vmethod. Call this in
+#GstBaseSrcClass::create or in #GstBaseSrcClass::alloc, _before_ any
 buffer is allocated.</doc>
         <source-position filename="../libs/gst/base/gstbasesrc.h" line="185"/>
         <return-value transfer-ownership="none">
@@ -7292,10 +7292,10 @@ by the src; unref it after usage.</doc>
              filename="../libs/gst/base/gstbasesrc.c"
              line="3459">Negotiates src pad caps with downstream elements.
 Unmarks GST_PAD_FLAG_NEED_RECONFIGURE in any case. But marks it again
-if #GstBaseSrcClass.negotiate() fails.
+if #GstBaseSrcClass::negotiate fails.
 
-Do not call this in the #GstBaseSrcClass.fill() vmethod. Call this in
-#GstBaseSrcClass.create() or in #GstBaseSrcClass.alloc(), _before_ any
+Do not call this in the #GstBaseSrcClass::fill vmethod. Call this in
+#GstBaseSrcClass::create or in #GstBaseSrcClass::alloc, _before_ any
 buffer is allocated.</doc>
         <source-position filename="../libs/gst/base/gstbasesrc.h" line="284"/>
         <return-value transfer-ownership="none">
@@ -7493,7 +7493,7 @@ when trying to read more should set this to %FALSE.
 When @src operates in %GST_FORMAT_TIME, #GstBaseSrc will send an EOS
 when a buffer outside of the currently configured segment is pushed if
 @automatic_eos is %TRUE. Since 1.16, if @automatic_eos is %FALSE an
-EOS will be pushed only when the #GstBaseSrcClass.create() implementation
+EOS will be pushed only when the #GstBaseSrcClass::create implementation
 returns %GST_FLOW_EOS.</doc>
         <source-position filename="../libs/gst/base/gstbasesrc.h" line="275"/>
         <return-value transfer-ownership="none">
@@ -7623,7 +7623,7 @@ read.</doc>
 for sending SEGMENT events and for performing seeks.
 
 If a format of GST_FORMAT_BYTES is set, the element will be able to
-operate in pull mode if the #GstBaseSrcClass.is_seekable() returns %TRUE.
+operate in pull mode if the #GstBaseSrcClass::is_seekable returns %TRUE.
 
 This function must only be called in states &lt; %GST_STATE_PAUSED.</doc>
         <source-position filename="../libs/gst/base/gstbasesrc.h" line="269"/>
@@ -7764,7 +7764,7 @@ mode.</doc>
       <method name="wait_playing" c:identifier="gst_base_src_wait_playing">
         <doc xml:space="preserve"
              filename="../libs/gst/base/gstbasesrc.c"
-             line="532">If the #GstBaseSrcClass.create() method performs its own synchronisation
+             line="532">If the #GstBaseSrcClass::create method performs its own synchronisation
 against the clock it must unblock when going from PLAYING to the PAUSED state
 and call this method before continuing to produce the remaining data.
 
@@ -8932,15 +8932,15 @@ MT safe.</doc>
 marked as needing reconfiguring. Unmarks GST_PAD_FLAG_NEED_RECONFIGURE in
 any case. But marks it again if negotiation fails.
 
-Do not call this in the #GstBaseTransformClass.transform() or
-#GstBaseTransformClass.transform_ip() vmethod. Call this in
-#GstBaseTransformClass.submit_input_buffer(),
-#GstBaseTransformClass.prepare_output_buffer() or in
-#GstBaseTransformClass.generate_output() _before_ any output buffer is
+Do not call this in the #GstBaseTransformClass::transform or
+#GstBaseTransformClass::transform_ip vmethod. Call this in
+#GstBaseTransformClass::submit_input_buffer,
+#GstBaseTransformClass::prepare_output_buffer or in
+#GstBaseTransformClass::generate_output _before_ any output buffer is
 allocated.
 
 It will be default be called when handling an ALLOCATION query or at the
-very beginning of the default #GstBaseTransformClass.submit_input_buffer()
+very beginning of the default #GstBaseTransformClass::submit_input_buffer
 implementation.</doc>
         <source-position filename="../libs/gst/base/gstbasetransform.h"
                          line="354"/>

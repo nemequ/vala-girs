@@ -8,6 +8,8 @@ namespace GSSDP {
 		public Client (string? iface) throws GLib.Error;
 		public void add_cache_entry (string ip_address, string user_agent);
 		public void append_header (string name, string value);
+		[Version (since = "1.2.4")]
+		public bool can_reach (GLib.InetSocketAddress address);
 		public void clear_headers ();
 		public bool get_active ();
 		public GLib.InetAddress get_address ();

@@ -84,8 +84,8 @@ namespace Tracker {
 		public async virtual bool update_array_async (string[] sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
 		public virtual GLib.Variant? update_blank (string sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
 		public async virtual GLib.Variant? update_blank_async (string sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
-		public virtual void update_resource (string? graph, Resource resource, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
-		public async virtual void update_resource_async (string? graph, Resource resource, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
+		public virtual bool update_resource (string? graph, Resource resource, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
+		public async virtual bool update_resource_async (string? graph, Resource resource, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
 
 		public virtual NamespaceManager? get_namespace_manager ();
 
@@ -112,6 +112,7 @@ namespace Tracker {
 		public abstract void bind_boolean (string name, bool value);
 		public abstract void bind_string (string name, string value);
 		public abstract void bind_double (string name, double value);
+		public abstract void bind_datetime (string name, GLib.DateTime value);
 		public abstract void clear_bindings ();
 
 		public abstract Cursor execute (GLib.Cancellable? cancellable) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
@@ -142,6 +143,7 @@ namespace Tracker {
 		public virtual int64 get_integer (int column);
 		public virtual double get_double (int column);
 		public virtual bool get_boolean (int column);
+		public virtual GLib.DateTime get_datetime (int column);
 		public virtual bool is_bound (int column);
 	}
 

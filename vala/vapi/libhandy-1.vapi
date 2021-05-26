@@ -822,13 +822,13 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_swipe_group_get_type ()")]
 	public class SwipeGroup : GLib.Object, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.0.12")]
+		[Version (deprecated = true, deprecated_since = "1.4", since = "0.0.12")]
 		public SwipeGroup ();
-		[Version (since = "0.0.12")]
+		[Version (deprecated = true, deprecated_since = "1.4", since = "0.0.12")]
 		public void add_swipeable (Hdy.Swipeable swipeable);
-		[Version (since = "0.0.12")]
+		[Version (deprecated = true, deprecated_since = "1.4", since = "0.0.12")]
 		public unowned GLib.SList<Hdy.Swipeable> get_swipeables ();
-		[Version (since = "0.0.12")]
+		[Version (deprecated = true, deprecated_since = "1.4", since = "0.0.12")]
 		public void remove_swipeable (Hdy.Swipeable swipeable);
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_swipe_tracker_get_type ()")]
@@ -1102,8 +1102,11 @@ namespace Hdy {
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_title_bar_get_type ()")]
 	public class TitleBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (deprecated = true, deprecated_since = "1.4")]
 		public TitleBar ();
+		[Version (deprecated = true, deprecated_since = "1.4")]
 		public bool get_selection_mode ();
+		[Version (deprecated = true, deprecated_since = "1.4")]
 		public void set_selection_mode (bool selection_mode);
 		public bool selection_mode { get; set; }
 	}

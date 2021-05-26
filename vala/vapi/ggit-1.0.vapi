@@ -865,6 +865,7 @@ namespace Ggit {
 		public Ggit.Object? revparse (string spec) throws GLib.Error;
 		public Ggit.OId? save_stash (Ggit.Signature stasher, string message, Ggit.StashFlags flags) throws GLib.Error;
 		public bool set_head (string ref_name) throws GLib.Error;
+		public bool set_head_detached (Ggit.OId oid) throws GLib.Error;
 		public bool set_remote_url (string remote, string url) throws GLib.Error;
 		public void set_submodule_fetch_recurse (string name, Ggit.SubmoduleRecurse fetch_recurse_submodules) throws GLib.Error;
 		public void set_submodule_ignore (string name, Ggit.SubmoduleIgnore ignore) throws GLib.Error;

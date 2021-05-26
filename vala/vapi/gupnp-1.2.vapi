@@ -225,6 +225,20 @@ namespace GUPnP {
 		[Version (since = "0.13.3")]
 		public void set_values (GLib.List<string> arg_names, GLib.List<GLib.Value?> arg_values);
 	}
+	[CCode (cheader_filename = "libgupnp/gupnp.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gupnp_service_action_arg_info_get_type ()")]
+	[Compact]
+	public class ServiceActionArgInfo {
+		public GUPnP.ServiceActionArgDirection direction;
+		public weak string name;
+		public weak string related_state_variable;
+		public bool retval;
+	}
+	[CCode (cheader_filename = "libgupnp/gupnp.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gupnp_service_action_info_get_type ()")]
+	[Compact]
+	public class ServiceActionInfo {
+		public weak GLib.List<GUPnP.ServiceActionArgInfo> arguments;
+		public weak string name;
+	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_service_info_get_type ()")]
 	public abstract class ServiceInfo : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -256,9 +270,9 @@ namespace GUPnP {
 		public unowned GUPnP.ServiceActionInfo? get_action (string action_name);
 		public unowned GUPnP.ServiceStateVariableInfo? get_state_variable (string variable_name);
 		public unowned GLib.List<string> list_action_names ();
-		public unowned GLib.List<GUPnP.ServiceActionInfo?> list_actions ();
+		public unowned GLib.List<GUPnP.ServiceActionInfo> list_actions ();
 		public unowned GLib.List<string> list_state_variable_names ();
-		public unowned GLib.List<GUPnP.ServiceStateVariableInfo?> list_state_variables ();
+		public unowned GLib.List<GUPnP.ServiceStateVariableInfo> list_state_variables ();
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_service_proxy_get_type ()")]
 	public class ServiceProxy : GUPnP.ServiceInfo {
@@ -273,8 +287,8 @@ namespace GUPnP {
 		public unowned GUPnP.ServiceProxyAction begin_action (string action, [CCode (delegate_target_pos = 2.5, scope = "async")] GUPnP.ServiceProxyActionCallback callback, ...);
 		[Version (since = "0.13.3")]
 		public unowned GUPnP.ServiceProxyAction begin_action_list (string action, GLib.List<string> in_names, GLib.List<GLib.Value?> in_values, [CCode (scope = "async")] GUPnP.ServiceProxyActionCallback callback);
-		public GUPnP.ServiceProxyAction call_action (GUPnP.ServiceProxyAction action, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async GUPnP.ServiceProxyAction call_action_async (GUPnP.ServiceProxyAction action, GLib.Cancellable? cancellable) throws GLib.Error;
+		public unowned GUPnP.ServiceProxyAction? call_action (GUPnP.ServiceProxyAction action, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async unowned GUPnP.ServiceProxyAction? call_action_async (GUPnP.ServiceProxyAction action, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (deprecated = true, deprecated_since = "1.1.2")]
 		public void cancel_action (GUPnP.ServiceProxyAction action);
 		public bool end_action (GUPnP.ServiceProxyAction action, ...) throws GLib.Error;
@@ -298,6 +312,19 @@ namespace GUPnP {
 		public bool get_result_list (GLib.List<string> out_names, GLib.List<GLib.Type?> out_types, out GLib.List<GLib.Value?> out_values) throws GLib.Error;
 		public GUPnP.ServiceProxyAction @ref ();
 		public void unref ();
+	}
+	[CCode (cheader_filename = "libgupnp/gupnp.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gupnp_service_state_variable_info_get_type ()")]
+	[Compact]
+	public class ServiceStateVariableInfo {
+		public weak GLib.List<string> allowed_values;
+		public GLib.Value default_value;
+		public bool is_numeric;
+		public GLib.Value maximum;
+		public GLib.Value minimum;
+		public weak string name;
+		public bool send_events;
+		public GLib.Value step;
+		public GLib.Type type;
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gupnp_time_get_type ()")]
 	[Compact]
@@ -357,30 +384,6 @@ namespace GUPnP {
 		public abstract bool can_sync ();
 		public abstract bool is_allowed (GUPnP.Device? device, GUPnP.Service? service, string path, string address, string? agent);
 		public abstract async bool is_allowed_async (GUPnP.Device? device, GUPnP.Service? service, string path, string address, string? agent, GLib.Cancellable? cancellable) throws GLib.Error;
-	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", has_type_id = false)]
-	public struct ServiceActionArgInfo {
-		public weak string name;
-		public GUPnP.ServiceActionArgDirection direction;
-		public weak string related_state_variable;
-		public bool retval;
-	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", has_type_id = false)]
-	public struct ServiceActionInfo {
-		public weak string name;
-		public weak GLib.List<GUPnP.ServiceActionArgInfo?> arguments;
-	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", has_type_id = false)]
-	public struct ServiceStateVariableInfo {
-		public weak string name;
-		public bool send_events;
-		public bool is_numeric;
-		public GLib.Type type;
-		public GLib.Value default_value;
-		public GLib.Value minimum;
-		public GLib.Value maximum;
-		public GLib.Value step;
-		public weak GLib.List<string> allowed_values;
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", cprefix = "GUPNP_SERVICE_ACTION_ARG_DIRECTION_", type_id = "gupnp_service_action_arg_direction_get_type ()")]
 	public enum ServiceActionArgDirection {
