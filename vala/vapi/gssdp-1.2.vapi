@@ -7,7 +7,7 @@ namespace GSSDP {
 		[CCode (has_construct_function = false)]
 		public Client (string? iface) throws GLib.Error;
 		public void add_cache_entry (string ip_address, string user_agent);
-		public void append_header (string name, string value);
+		public void append_header (string name, string? value);
 		[Version (since = "1.2.4")]
 		public bool can_reach (GLib.InetSocketAddress address);
 		public void clear_headers ();
@@ -33,7 +33,7 @@ namespace GSSDP {
 		[NoAccessorMethod]
 		public bool active { get; set; }
 		[NoAccessorMethod]
-		[Version (since = "1.1.1")]
+		[Version (since = "1.2.0")]
 		public GLib.SocketFamily address_family { get; construct; }
 		[NoAccessorMethod]
 		public int boot_id { get; set construct; }
@@ -50,7 +50,7 @@ namespace GSSDP {
 		public string server_id { get; set; }
 		[NoAccessorMethod]
 		public uint socket_ttl { get; construct; }
-		[Version (since = "1.1.1")]
+		[Version (since = "1.2.0")]
 		public GSSDP.UDAVersion uda_version { get; construct; }
 	}
 	[CCode (cheader_filename = "libgssdp/gssdp.h", type_id = "gssdp_resource_browser_get_type ()")]
@@ -71,6 +71,7 @@ namespace GSSDP {
 		public string target { get; set; }
 		public signal void resource_available (string usn, GLib.List<string> locations);
 		public virtual signal void resource_unavailable (string usn);
+		[Version (since = "1.2.0")]
 		public virtual signal void resource_update (string usn, uint boot_id, uint next_boot_id);
 	}
 	[CCode (cheader_filename = "libgssdp/gssdp.h", type_id = "gssdp_resource_group_get_type ()")]
@@ -87,6 +88,7 @@ namespace GSSDP {
 		public void set_available (bool available);
 		public void set_max_age (uint max_age);
 		public void set_message_delay (uint message_delay);
+		[Version (since = "1.2.0")]
 		public void update (uint new_boot_id);
 		public bool available { get; set; }
 		public GSSDP.Client client { get; construct; }

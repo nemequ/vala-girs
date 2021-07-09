@@ -155,6 +155,8 @@ namespace GExiv2 {
 		[Version (since = "0.12.2")]
 		public bool try_set_xmp_tag_struct (string tag, GExiv2.StructureType type) throws GLib.Error;
 		[Version (since = "0.12.2")]
+		public bool try_tag_supports_multiple_values (string tag) throws GLib.Error;
+		[Version (since = "0.12.2")]
 		public bool try_update_gps_info (double longitude, double latitude, double altitude) throws GLib.Error;
 		public static void unregister_all_xmp_namespaces ();
 		public static bool unregister_xmp_namespace (string name);

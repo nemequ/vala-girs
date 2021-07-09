@@ -890,7 +890,7 @@ namespace MM {
 		public uint get_max_bearers ();
 		[Version (since = "1.0")]
 		public unowned string get_model ();
-		[Version (since = "1.2")]
+		[Version (deprecated = true, deprecated_since = "1.18", since = "1.2")]
 		public static bool get_pending_network_initiated_sessions (MM.ModemOma self, [CCode (array_length_cname = "n_sessions", array_length_pos = 2.1, array_length_type = "guint")] out MM.OmaPendingNetworkInitiatedSession[] sessions);
 		[Version (since = "1.0")]
 		public unowned string get_plugin ();
@@ -939,7 +939,7 @@ namespace MM {
 		public GLib.GenericArray<MM.Sim> list_sim_slots_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.0")]
 		public bool peek_current_bands ([CCode (array_length_cname = "n_bands", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemBand[] bands);
-		[Version (since = "1.2")]
+		[Version (deprecated = true, deprecated_since = "1.18", since = "1.2")]
 		public static bool peek_pending_network_initiated_sessions (MM.ModemOma self, [CCode (array_length_cname = "n_sessions", array_length_pos = 2.1, array_length_type = "guint")] out MM.OmaPendingNetworkInitiatedSession[] sessions);
 		[Version (since = "1.0")]
 		public bool peek_ports ([CCode (array_length_cname = "n_ports", array_length_pos = 1.1, array_length_type = "guint")] out unowned MM.ModemPortInfo[] ports);
@@ -1207,6 +1207,14 @@ namespace MM {
 		public uint get_gps_refresh_rate ();
 		[Version (since = "1.0")]
 		public unowned string get_path ();
+		[Version (since = "1.18")]
+		public MM.Location3gpp get_signaled_3gpp ();
+		[Version (since = "1.18")]
+		public MM.LocationCdmaBs get_signaled_cdma_bs ();
+		[Version (since = "1.18")]
+		public MM.LocationGpsNmea get_signaled_gps_nmea ();
+		[Version (since = "1.18")]
+		public MM.LocationGpsRaw get_signaled_gps_raw ();
 		[Version (since = "1.6")]
 		public unowned string get_supl_server ();
 		[Version (since = "1.10")]
@@ -1215,6 +1223,14 @@ namespace MM {
 		public async bool inject_assistance_data ([CCode (array_length_cname = "data_size", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] data, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.10")]
 		public bool inject_assistance_data_sync ([CCode (array_length_cname = "data_size", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] data, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.18")]
+		public unowned MM.Location3gpp peek_signaled_3gpp ();
+		[Version (since = "1.18")]
+		public unowned MM.LocationCdmaBs peek_signaled_cdma_bs ();
+		[Version (since = "1.18")]
+		public unowned MM.LocationGpsNmea peek_signaled_gps_nmea ();
+		[Version (since = "1.18")]
+		public unowned MM.LocationGpsRaw peek_signaled_gps_raw ();
 		[Version (since = "1.0")]
 		public async bool set_gps_refresh_rate (uint rate, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
@@ -1275,10 +1291,14 @@ namespace MM {
 		public MM.OmaFeature get_features ();
 		[Version (since = "1.2")]
 		public unowned string get_path ();
+		[Version (since = "1.18")]
+		public bool get_pending_network_initiated_sessions ([CCode (array_length_cname = "n_sessions", array_length_pos = 1.1, array_length_type = "guint")] out MM.OmaPendingNetworkInitiatedSession[] sessions);
 		[Version (since = "1.2")]
 		public MM.OmaSessionState get_session_state ();
 		[Version (since = "1.2")]
 		public MM.OmaSessionType get_session_type ();
+		[Version (since = "1.18")]
+		public bool peek_pending_network_initiated_sessions ([CCode (array_length_cname = "n_sessions", array_length_pos = 1.1, array_length_type = "guint")] out MM.OmaPendingNetworkInitiatedSession[] sessions);
 		[Version (since = "1.2")]
 		public async bool setup (MM.OmaFeature features, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.2")]
@@ -2896,7 +2916,8 @@ namespace MM {
 		NONE,
 		FASTBOOT,
 		QMI_PDC,
-		MBIM_QDU;
+		MBIM_QDU,
+		FIREHOSE;
 		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_LOCATION_ASSISTANCE_DATA_TYPE_", type_id = "mm_modem_location_assistance_data_type_get_type ()")]

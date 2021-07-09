@@ -15,7 +15,7 @@ namespace E {
 	public class CredentialsPrompter : GLib.Object, E.Extensible {
 		[CCode (has_construct_function = false)]
 		public CredentialsPrompter (E.SourceRegistry registry);
-		public void complete_prompt_call (GLib.SimpleAsyncResult async_result, E.Source source, E.NamedParameters? credentials, GLib.Error? error);
+		public void complete_prompt_call (GLib.SimpleAsyncResult async_result, E.Source source, E.NamedParameters? credentials, GLib.Error error);
 		public bool get_auto_prompt ();
 		public bool get_auto_prompt_disabled_for (E.Source source);
 		public unowned E.SourceCredentialsProvider get_provider ();
@@ -23,7 +23,7 @@ namespace E {
 		public bool loop_prompt_sync (E.Source source, E.CredentialsPrompterPromptFlags flags, [CCode (delegate_target_pos = 3.5)] E.CredentialsPrompterLoopPromptFunc func, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void process_awaiting_credentials ();
 		public bool process_source (E.Source source);
-		public async bool prompt (E.Source source, string? error_text, E.CredentialsPrompterPromptFlags flags) throws GLib.Error;
+		public async bool prompt (E.Source source, string? error_text, E.CredentialsPrompterPromptFlags flags, out E.Source? out_source, out E.NamedParameters? out_credentials) throws GLib.Error;
 		public bool register_impl (string? authentication_method, E.CredentialsPrompterImpl prompter_impl);
 		public void set_auto_prompt (bool auto_prompt);
 		public void set_auto_prompt_disabled_for (E.Source source, bool is_disabled);
@@ -102,7 +102,7 @@ namespace E {
 		[Version (since = "3.18")]
 		public void set_multiselect (bool multiselect);
 		[Version (since = "3.18")]
-		public void show_error (GLib.Error? error);
+		public void show_error (GLib.Error error);
 	}
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", lower_case_csuffix = "webdav_discover_dialog", type_id = "e_webdav_discover_dialog_get_type ()")]
 	public class WebDAVDiscoverDialog : Gtk.Dialog, Atk.Implementor, Gtk.Buildable {

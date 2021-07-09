@@ -297,7 +297,7 @@ namespace E {
 	[Version (since = "3.12")]
 	public class BookSqlite : GLib.Object, E.Extensible {
 		[CCode (has_construct_function = false)]
-		public BookSqlite (string path, E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public BookSqlite (string path, E.Source? source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool add_contact (E.Contact contact, string extra, bool replace, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool add_contacts (GLib.SList<E.Contact> contacts, GLib.SList<string>? extra, bool replace, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static GLib.Quark error_quark ();
@@ -338,23 +338,23 @@ namespace E {
 		[Version (since = "3.10")]
 		public E.BookBackend ref_backend ();
 		[Version (since = "3.2")]
-		public void report_backend_property_changed (string prop_name, string prop_value);
+		public void report_backend_property_changed (string prop_name, string? prop_value);
 		[Version (since = "3.2")]
 		public void report_error (string message);
 		[Version (since = "3.4")]
-		public void respond_create_contacts (uint32 opid, GLib.Error error, GLib.SList<E.Contact>? contacts);
+		public void respond_create_contacts (uint32 opid, GLib.Error error, GLib.SList<E.Contact> contacts);
 		public void respond_get_contact (uint32 opid, owned GLib.Error? error, E.Contact? contact);
 		[Version (since = "3.2")]
-		public void respond_get_contact_list (uint32 opid, GLib.Error error, GLib.SList<E.Contact>? contacts);
+		public void respond_get_contact_list (uint32 opid, GLib.Error error, GLib.SList<E.Contact> contacts);
 		[Version (since = "3.2")]
-		public void respond_get_contact_list_uids (uint32 opid, GLib.Error error, GLib.SList<string>? uids);
+		public void respond_get_contact_list_uids (uint32 opid, GLib.Error error, GLib.SList<string> uids);
 		[Version (since = "3.4")]
-		public void respond_modify_contacts (uint32 opid, GLib.Error error, GLib.SList<E.Contact>? contacts);
+		public void respond_modify_contacts (uint32 opid, GLib.Error error, GLib.SList<E.Contact> contacts);
 		public void respond_open (uint32 opid, GLib.Error error);
 		[Version (since = "3.2")]
 		public void respond_refresh (uint32 opid, GLib.Error error);
 		[Version (since = "3.4")]
-		public void respond_remove_contacts (uint32 opid, GLib.Error error, GLib.SList<string>? ids);
+		public void respond_remove_contacts (uint32 opid, GLib.Error error, GLib.SList<string> ids);
 		[Version (since = "3.12")]
 		public bool set_locale (string locale, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.2")]
@@ -393,7 +393,7 @@ namespace E {
 		public bool register_gdbus_object (GLib.DBusConnection connection, string object_path) throws GLib.Error;
 		public bool set_alphabetic_index (int index, string locale, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool set_sexp (string? sexp, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public virtual int step (string? revision_guard, E.BookCursorStepFlags flags, E.BookCursorOrigin origin, int count, out GLib.SList<string> results, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public virtual int step (string? revision_guard, E.BookCursorStepFlags flags, E.BookCursorOrigin origin, int count, out GLib.SList<string>? results, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public E.BookBackend backend { get; construct; }
 		public int position { get; }
 		public int total { get; }
@@ -574,7 +574,7 @@ namespace E {
 	public delegate bool DataBookCursorSetSexpFunc (E.DataBookCursor cursor, string? sexp) throws GLib.Error;
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", has_target = false)]
 	[Version (since = "3.12")]
-	public delegate int DataBookCursorStepFunc (E.DataBookCursor cursor, string? revision_guard, E.BookCursorStepFlags flags, E.BookCursorOrigin origin, int count, out GLib.SList<string> results, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	public delegate int DataBookCursorStepFunc (E.DataBookCursor cursor, string? revision_guard, E.BookCursorStepFlags flags, E.BookCursorOrigin origin, int count, out GLib.SList<string>? results, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", instance_pos = 4.9)]
 	[Version (since = "3.12")]
 	public delegate void bSqlChangeCallback (E.bSqlChangeType change_type, string uid, string extra, string vcard);

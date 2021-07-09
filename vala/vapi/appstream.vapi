@@ -1353,7 +1353,9 @@ namespace AppStream {
 	[Version (since = "0.12.7")]
 	public static string get_license_url (string license);
 	[CCode (cheader_filename = "appstream.h")]
-	public static uint gstring_replace (GLib.StringBuilder string, string search, string replace);
+	public static uint gstring_replace (GLib.StringBuilder string, string find, string replace);
+	[CCode (cheader_filename = "appstream.h")]
+	public static uint gstring_replace2 (GLib.StringBuilder string, string find, string replace, uint limit);
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.12.10")]
 	public static bool is_spdx_license_exception_id (string exception_id);
@@ -1368,6 +1370,8 @@ namespace AppStream {
 	public static bool license_is_free_license (string license);
 	[CCode (cheader_filename = "appstream.h")]
 	public static bool license_is_metadata_license (string license);
+	[CCode (cheader_filename = "appstream.h")]
+	public static bool license_is_metadata_license_id (string license_id);
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.9.8")]
 	public static string license_to_spdx_id (string license);

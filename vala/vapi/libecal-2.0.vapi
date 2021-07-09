@@ -17,17 +17,17 @@ namespace ECal {
 		[Version (since = "3.34")]
 		public static bool check_timezones_sync (ICal.Component vcalendar, GLib.SList<ICal.Component>? icalcomps, [CCode (delegate_target_pos = 3.5)] ECal.RecurResolveTimezoneCb? tzlookup, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.8")]
-		public static async E.Client connect (E.Source source, ECal.ClientSourceType source_type, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static async E.Client? connect (E.Source source, ECal.ClientSourceType source_type, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.8")]
-		public static E.Client connect_sync (E.Source source, ECal.ClientSourceType source_type, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public static E.Client? connect_sync (E.Source source, ECal.ClientSourceType source_type, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool create_object (ICal.Component icalcomp, ECal.OperationFlags opflags, GLib.Cancellable? cancellable, out string? out_uid) throws GLib.Error;
 		public bool create_object_sync (ICal.Component icalcomp, ECal.OperationFlags opflags, out string? out_uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.6")]
-		public async bool create_objects (GLib.SList<ICal.Component> icalcomps, ECal.OperationFlags opflags, GLib.Cancellable? cancellable, out GLib.SList<string>? out_uids) throws GLib.Error;
+		public async bool create_objects (GLib.SList<ICal.Component> icalcomps, ECal.OperationFlags opflags, GLib.Cancellable? cancellable, out GLib.SList<string> out_uids) throws GLib.Error;
 		[Version (since = "3.6")]
 		public bool create_objects_sync (GLib.SList<ICal.Component> icalcomps, ECal.OperationFlags opflags, out GLib.SList<string>? out_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool discard_alarm (string uid, string rid, string auid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool discard_alarm_sync (string uid, string rid, string auid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool discard_alarm (string uid, string? rid, string auid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool discard_alarm_sync (string uid, string? rid, string auid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static GLib.Error error_create (ECal.ClientError code, string? custom_msg);
 		public static GLib.Quark error_quark ();
 		public static unowned string error_to_string (ECal.ClientError code);
@@ -35,21 +35,21 @@ namespace ECal {
 		public void generate_instances_for_object (ICal.Component icalcomp, long start, long end, GLib.Cancellable? cancellable, owned ECal.RecurInstanceCb cb);
 		public void generate_instances_for_object_sync (ICal.Component icalcomp, long start, long end, GLib.Cancellable? cancellable, ECal.RecurInstanceCb cb);
 		public void generate_instances_sync (long start, long end, GLib.Cancellable? cancellable, ECal.RecurInstanceCb cb);
-		public async bool get_attachment_uris (string uid, string rid, GLib.Cancellable? cancellable, out GLib.SList<string> out_attachment_uris) throws GLib.Error;
-		public bool get_attachment_uris_sync (string uid, string rid, out GLib.SList<string> out_attachment_uris, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public string get_component_as_string (ICal.Component icalcomp);
+		public async bool get_attachment_uris (string uid, string? rid, GLib.Cancellable? cancellable, out GLib.SList<string> out_attachment_uris) throws GLib.Error;
+		public bool get_attachment_uris_sync (string uid, string? rid, out GLib.SList<string> out_attachment_uris, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public string? get_component_as_string (ICal.Component icalcomp);
 		public async bool get_default_object (GLib.Cancellable? cancellable, out ICal.Component out_icalcomp) throws GLib.Error;
 		public bool get_default_object_sync (out ICal.Component out_icalcomp, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public unowned ICal.Timezone get_default_timezone ();
-		public async bool get_free_busy (long start, long end, GLib.SList<string> users, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool get_free_busy_sync (long start, long end, GLib.SList<string> users, GLib.SList<ECal.Component> out_freebusy, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool get_free_busy (long start, long end, GLib.SList<string> users, GLib.Cancellable? cancellable, out GLib.SList<ECal.Component> out_freebusy) throws GLib.Error;
+		public bool get_free_busy_sync (long start, long end, GLib.SList<string> users, out GLib.SList<ECal.Component> out_freebusy, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public unowned string get_local_attachment_store ();
-		public async bool get_object (string uid, string rid, GLib.Cancellable? cancellable, out ICal.Component out_icalcomp) throws GLib.Error;
+		public async bool get_object (string uid, string? rid, GLib.Cancellable? cancellable, out ICal.Component out_icalcomp) throws GLib.Error;
 		public async bool get_object_list (string sexp, GLib.Cancellable? cancellable, out GLib.SList<ICal.Component> out_icalcomps) throws GLib.Error;
 		public async bool get_object_list_as_comps (string sexp, GLib.Cancellable? cancellable, out GLib.SList<ECal.Component> out_ecalcomps) throws GLib.Error;
 		public bool get_object_list_as_comps_sync (string sexp, out GLib.SList<ECal.Component> out_ecalcomps, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_object_list_sync (string sexp, out GLib.SList<ICal.Component> out_icalcomps, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public bool get_object_sync (string uid, string rid, out ICal.Component out_icalcomp, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_object_sync (string uid, string? rid, out ICal.Component out_icalcomp, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_objects_for_uid (string uid, GLib.Cancellable? cancellable, out GLib.SList<ECal.Component> out_ecalcomps) throws GLib.Error;
 		public bool get_objects_for_uid_sync (string uid, out GLib.SList<ECal.Component> out_ecalcomps, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public ECal.ClientSourceType get_source_type ();
@@ -65,8 +65,8 @@ namespace ECal {
 		public bool modify_objects_sync (GLib.SList<ICal.Component> icalcomps, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool receive_objects (ICal.Component icalcomp, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool receive_objects_sync (ICal.Component icalcomp, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool remove_object (string uid, string rid, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool remove_object_sync (string uid, string rid, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool remove_object (string uid, string? rid, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool remove_object_sync (string uid, string? rid, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.6")]
 		public async bool remove_objects (GLib.SList<ECal.ComponentId> ids, ECal.ObjModType mod, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.6")]
@@ -80,7 +80,7 @@ namespace ECal {
 		public static unowned ICal.Timezone? tzlookup_icalcomp_cb (string tzid, ECal.ClientTzlookupICalCompData lookup_data, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public ICal.Timezone default_timezone { get; set; }
 		public ECal.ClientSourceType source_type { get; construct; }
-		public signal void free_busy_data (void* object);
+		public signal void free_busy_data (GLib.SList<ECal.Component> free_busy_ecalcomps);
 	}
 	[CCode (cheader_filename = "libecal/libecal.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", lower_case_csuffix = "client_tzlookup_icalcomp_data", type_id = "e_cal_client_tzlookup_icalcomp_data_get_type ()")]
 	[Compact]
@@ -793,6 +793,8 @@ namespace ECal {
 		public ReminderData (string source_uid, ECal.Component component, ECal.ComponentAlarmInstance instance);
 		[CCode (cname = "e_reminder_data_copy")]
 		public ECal.ReminderData copy ();
+		[CCode (cname = "e_reminder_data_free")]
+		public void free ();
 		[CCode (cname = "e_reminder_data_get_component")]
 		[Version (since = "3.34")]
 		public unowned ECal.Component get_component ();
@@ -1141,9 +1143,6 @@ namespace ECal {
 	public static unowned string recur_get_localized_nth (int nth);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	public static long recur_obtain_enddate (ICal.Recurrence ir, ICal.Property prop, ICal.Timezone zone, bool convert_end_date);
-	[CCode (cheader_filename = "libecal/libecal.h", cname = "e_reminder_data_free")]
-	[Version (since = "3.30")]
-	public static void reminder_data_free (void* rd);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.28")]
 	public static string system_timezone_get_location ();
@@ -1254,10 +1253,10 @@ namespace ECal {
 	public static string util_get_system_timezone_location ();
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.22")]
-	public static void* util_icaltime_to_tm (ICal.Time itt);
+	public static Posix.tm? util_icaltime_to_tm (ICal.Time itt);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.22")]
-	public static void* util_icaltime_to_tm_with_zone (ICal.Time itt, ICal.Timezone from_zone, ICal.Timezone to_zone);
+	public static Posix.tm? util_icaltime_to_tm_with_zone (ICal.Time itt, ICal.Timezone from_zone, ICal.Timezone to_zone);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.30")]
 	public static bool util_init_recur_task_sync (ICal.Component vtodo, ECal.Client cal_client, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -1311,5 +1310,5 @@ namespace ECal {
 	public static ICal.Component? util_split_at_instance_ex (ICal.Component icalcomp, ICal.Time rid, ICal.Time? master_dtstart, ECal.RecurResolveTimezoneCb tz_cb);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.22")]
-	public static ICal.Time util_tm_to_icaltime (void* tm, bool is_date);
+	public static ICal.Time util_tm_to_icaltime ([CCode (type = "tm*")] Posix.tm tm, bool is_date);
 }

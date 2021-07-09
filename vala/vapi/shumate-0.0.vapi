@@ -57,7 +57,7 @@ namespace Shumate {
 		public Shumate.MapSource map_source { owned get; construct; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_map_source_get_type ()")]
-	public abstract class MapSource : GLib.InitiallyUnowned {
+	public abstract class MapSource : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected MapSource ();
 		public virtual async bool fill_tile_async (Shumate.Tile tile, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -77,38 +77,16 @@ namespace Shumate {
 		public double get_x (double zoom_level, double longitude);
 		public double get_y (double zoom_level, double latitude);
 	}
-	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_map_source_desc_get_type ()")]
-	public class MapSourceDesc : GLib.Object {
+	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_map_source_registry_get_type ()")]
+	public class MapSourceRegistry : GLib.Object, GLib.ListModel {
 		[CCode (has_construct_function = false)]
-		public MapSourceDesc (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Shumate.MapProjection projection, string uri_format);
-		public virtual unowned Shumate.MapSource create_source ();
-		public unowned string get_id ();
-		public unowned string get_license ();
-		public unowned string get_license_uri ();
-		public uint get_max_zoom_level ();
-		public uint get_min_zoom_level ();
-		public unowned string get_name ();
-		public Shumate.MapProjection get_projection ();
-		public uint get_tile_size ();
-		public unowned string get_uri_format ();
-		public string id { get; construct; }
-		public string license { get; construct; }
-		public string license_uri { get; construct; }
-		public uint max_zoom_level { get; construct; }
-		public uint min_zoom_level { get; construct; }
-		public string name { get; construct; }
-		public Shumate.MapProjection projection { get; construct; }
-		public uint tile_size { get; construct; }
-		public string uri_format { get; construct; }
-	}
-	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_map_source_factory_get_type ()")]
-	public class MapSourceFactory : GLib.Object {
+		public MapSourceRegistry ();
+		public void add (owned Shumate.MapSource map_source);
+		public unowned Shumate.MapSource? get_by_id (string id);
+		public void populate_defaults ();
+		public void remove (string id);
 		[CCode (has_construct_function = false)]
-		protected MapSourceFactory ();
-		public unowned Shumate.MapSource? create (string id);
-		public static Shumate.MapSourceFactory dup_default ();
-		public GLib.SList<weak Shumate.MapSourceDesc> get_registered ();
-		public bool register (Shumate.MapSourceDesc desc);
+		public MapSourceRegistry.with_defaults ();
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_marker_get_type ()")]
 	public class Marker : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget, Shumate.Location {
@@ -202,6 +180,8 @@ namespace Shumate {
 		public bool get_fill ();
 		public Gdk.RGBA? get_fill_color ();
 		public GLib.List<weak Shumate.Location> get_nodes ();
+		public Gdk.RGBA? get_outline_color ();
+		public double get_outline_width ();
 		public bool get_stroke ();
 		public Gdk.RGBA? get_stroke_color ();
 		public double get_stroke_width ();
@@ -212,12 +192,16 @@ namespace Shumate {
 		public void set_dash (GLib.List<uint> dash_pattern);
 		public void set_fill (bool value);
 		public void set_fill_color (Gdk.RGBA? color);
+		public void set_outline_color (Gdk.RGBA? color);
+		public void set_outline_width (double value);
 		public void set_stroke (bool value);
 		public void set_stroke_color (Gdk.RGBA? color);
 		public void set_stroke_width (double value);
 		public bool closed { get; set; }
 		public bool fill { get; set; }
 		public Gdk.RGBA fill_color { owned get; set; }
+		public Gdk.RGBA outline_color { owned get; set; }
+		public double outline_width { get; set; }
 		public bool stroke { get; set; }
 		public Gdk.RGBA stroke_color { owned get; set; }
 		public double stroke_width { get; set; }
@@ -307,11 +291,9 @@ namespace Shumate {
 		[CCode (has_construct_function = false)]
 		public View ();
 		public void add_layer (Shumate.Layer layer);
-		public void add_overlay_source (Shumate.MapSource map_source);
 		public void center_on (double latitude, double longitude);
 		public bool get_animate_zoom ();
 		public uint get_go_to_duration ();
-		public GLib.List<weak Shumate.MapSource> get_overlay_sources ();
 		public Shumate.State get_state ();
 		public unowned Shumate.Viewport get_viewport ();
 		public bool get_zoom_on_double_click ();
@@ -319,7 +301,6 @@ namespace Shumate {
 		public void insert_layer_above (Shumate.Layer layer, Shumate.Layer? next_sibling);
 		public void insert_layer_behind (Shumate.Layer layer, Shumate.Layer? next_sibling);
 		public void remove_layer (Shumate.Layer layer);
-		public void remove_overlay_source (Shumate.MapSource map_source);
 		public void set_animate_zoom (bool value);
 		public void set_go_to_duration (uint duration);
 		public void set_map_source (Shumate.MapSource map_source);

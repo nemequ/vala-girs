@@ -229,7 +229,7 @@ namespace GUPnP {
 		public int get_height ();
 		public unowned string get_import_uri ();
 		public unowned string get_protection ();
-		public unowned GUPnP.ProtocolInfo get_protocol_info ();
+		public unowned GUPnP.ProtocolInfo? get_protocol_info ();
 		public Xml.Ns* get_pv_namespace ();
 		public int get_sample_freq ();
 		public long get_size ();
@@ -240,7 +240,7 @@ namespace GUPnP {
 		public unowned string get_subtitle_file_uri ();
 		public uint get_track_total ();
 		public uint get_update_count ();
-		public unowned string get_uri ();
+		public unowned string? get_uri ();
 		public int get_width ();
 		public unowned Xml.Node get_xml_node ();
 		public void set_audio_channels (int n_channels);
@@ -326,7 +326,7 @@ namespace GUPnP {
 	public class FeatureListParser : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public FeatureListParser ();
-		public GLib.List<GUPnP.Feature> parse_text (string text) throws GLib.Error;
+		public GLib.List<GUPnP.Feature>? parse_text (string text) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h", type_id = "gupnp_last_change_parser_get_type ()")]
 	public class LastChangeParser : GLib.Object {
@@ -345,7 +345,7 @@ namespace GUPnP {
 		public GLib.List<GUPnP.DIDLLiteItem> get_items ();
 		public bool get_mutable ();
 		public string get_string ();
-		public unowned string get_title ();
+		public unowned string? get_title ();
 		public void set_author (string author);
 		public void set_title (string title);
 		public string author { get; set construct; }
@@ -363,12 +363,12 @@ namespace GUPnP {
 		public GUPnP.DLNAConversion get_dlna_conversion ();
 		public GUPnP.DLNAFlags get_dlna_flags ();
 		public GUPnP.DLNAOperation get_dlna_operation ();
-		public unowned string get_dlna_profile ();
-		public unowned string get_mime_type ();
-		public unowned string get_network ();
+		public unowned string? get_dlna_profile ();
+		public unowned string? get_mime_type ();
+		public unowned string? get_network ();
 		[CCode (array_length = false, array_null_terminated = true)]
-		public unowned string[] get_play_speeds ();
-		public unowned string get_protocol ();
+		public unowned string[]? get_play_speeds ();
+		public unowned string? get_protocol ();
 		public bool is_compatible (GUPnP.ProtocolInfo info2);
 		public void set_dlna_conversion (GUPnP.DLNAConversion conversion);
 		public void set_dlna_flags (GUPnP.DLNAFlags flags);
@@ -378,10 +378,10 @@ namespace GUPnP {
 		public void set_network (string network);
 		public void set_play_speeds (string speeds);
 		public void set_protocol (string protocol);
-		public string to_string ();
-		public GUPnP.DLNAConversion dlna_conversion { get; set; }
-		public GUPnP.DLNAFlags dlna_flags { get; set; }
-		public GUPnP.DLNAOperation dlna_operation { get; set; }
+		public string? to_string ();
+		public GUPnP.DLNAConversion dlna_conversion { get; set construct; }
+		public GUPnP.DLNAFlags dlna_flags { get; set construct; }
+		public GUPnP.DLNAOperation dlna_operation { get; set construct; }
 		public string dlna_profile { get; set; }
 		public string mime_type { get; set; }
 		public string network { get; set; }

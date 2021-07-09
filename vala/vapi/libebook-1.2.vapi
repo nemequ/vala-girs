@@ -8,12 +8,12 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public BookClient (E.Source source) throws GLib.Error;
-		public async bool add_contact (E.Contact contact, uint32 opflags, GLib.Cancellable? cancellable, out string out_added_uid) throws GLib.Error;
-		public bool add_contact_sync (E.Contact contact, uint32 opflags, out string out_added_uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool add_contact (E.Contact contact, E.BookOperationFlags opflags, GLib.Cancellable? cancellable, out string out_added_uid) throws GLib.Error;
+		public bool add_contact_sync (E.Contact contact, E.BookOperationFlags opflags, out string out_added_uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.4")]
-		public async bool add_contacts (GLib.SList<E.Contact> contacts, uint32 opflags, GLib.Cancellable? cancellable, out GLib.SList<string> out_added_uids) throws GLib.Error;
+		public async bool add_contacts (GLib.SList<E.Contact> contacts, E.BookOperationFlags opflags, GLib.Cancellable? cancellable, out GLib.SList<string> out_added_uids) throws GLib.Error;
 		[Version (since = "3.4")]
-		public bool add_contacts_sync (GLib.SList<E.Contact> contacts, uint32 opflags, out GLib.SList<string> out_added_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool add_contacts_sync (GLib.SList<E.Contact> contacts, E.BookOperationFlags opflags, out GLib.SList<string> out_added_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.8")]
 		public static async E.BookClient connect (E.Source source, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.12")]
@@ -38,18 +38,18 @@ namespace E {
 		public async bool get_view (string sexp, GLib.Cancellable? cancellable, out E.BookClientView out_view) throws GLib.Error;
 		public bool get_view_sync (string sexp, out E.BookClientView out_view, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static bool is_self (E.Contact contact);
-		public async bool modify_contact (E.Contact contact, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool modify_contact_sync (E.Contact contact, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool modify_contact (E.Contact contact, E.BookOperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool modify_contact_sync (E.Contact contact, E.BookOperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.4")]
-		public async bool modify_contacts (GLib.SList<E.Contact> contacts, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool modify_contacts (GLib.SList<E.Contact> contacts, E.BookOperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.4")]
-		public bool modify_contacts_sync (GLib.SList<E.Contact> contacts, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool remove_contact (E.Contact contact, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async bool remove_contact_by_uid (string uid, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool remove_contact_by_uid_sync (string uid, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public bool remove_contact_sync (E.Contact contact, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool remove_contacts (GLib.SList<string> uids, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
-		public bool remove_contacts_sync (GLib.SList<string> uids, uint32 opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool modify_contacts_sync (GLib.SList<E.Contact> contacts, E.BookOperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool remove_contact (E.Contact contact, E.BookOperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool remove_contact_by_uid (string uid, E.BookOperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool remove_contact_by_uid_sync (string uid, E.BookOperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool remove_contact_sync (E.Contact contact, E.BookOperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool remove_contacts (GLib.SList<string> uids, E.BookOperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool remove_contacts_sync (GLib.SList<string> uids, E.BookOperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool set_self (E.Contact contact) throws GLib.Error;
 		[Version (since = "3.12")]
 		public string locale { get; }
@@ -64,7 +64,7 @@ namespace E {
 		public int get_contact_alphabetic_index (E.Contact contact);
 		public int get_position ();
 		public int get_total ();
-		public void* ref_client ();
+		public E.BookClient ref_client ();
 		public async bool set_alphabetic_index (int index, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool set_alphabetic_index_sync (int index, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool set_sexp (string sexp, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -95,14 +95,14 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		protected BookClientView ();
 		[Version (deprecated = true, deprecated_since = "3.10")]
-		public void* get_client ();
+		public unowned E.BookClient get_client ();
 		[Version (since = "3.8")]
 		public unowned GLib.DBusConnection get_connection ();
 		[Version (since = "3.8")]
 		public unowned string get_object_path ();
 		public bool is_running ();
 		[Version (since = "3.10")]
-		public void* ref_client ();
+		public E.BookClient ref_client ();
 		public void set_fields_of_interest (GLib.SList<string> fields_of_interest) throws GLib.Error;
 		[Version (since = "3.4")]
 		public void set_flags (E.BookClientViewFlags flags) throws GLib.Error;
@@ -112,9 +112,9 @@ namespace E {
 		public GLib.DBusConnection connection { get; construct; }
 		public string object_path { get; construct; }
 		public virtual signal void complete (GLib.Error error);
-		public signal void objects_added ([CCode (type = "gpointer")] GLib.List<void*> object);
-		public signal void objects_modified ([CCode (type = "gpointer")] GLib.List<void*> object);
-		public signal void objects_removed ([CCode (type = "gpointer")] GLib.List<void*> object);
+		public signal void objects_added (GLib.SList<E.Contact> objects);
+		public signal void objects_modified (GLib.SList<E.Contact> objects);
+		public signal void objects_removed (GLib.SList<string> uids);
 		public virtual signal void progress (uint percent, string message);
 	}
 	[CCode (cheader_filename = "libebook/libebook.h", type_id = "e_destination_get_type ()")]
@@ -145,9 +145,9 @@ namespace E {
 		public bool is_evolution_list ();
 		public bool is_ignored ();
 		[Version (since = "3.2")]
-		public unowned GLib.List<E.Destination> list_get_dests ();
+		public unowned GLib.List<E.Destination>? list_get_dests ();
 		[Version (since = "3.2")]
-		public unowned GLib.List<E.Destination> list_get_root_dests ();
+		public unowned GLib.List<E.Destination>? list_get_root_dests ();
 		public bool list_show_addresses ();
 		public void set_auto_recipient (bool value);
 		[Version (since = "3.2")]
@@ -194,5 +194,5 @@ namespace E {
 	public static GLib.Quark book_error_quark ();
 	[CCode (cheader_filename = "libebook/libebook.h")]
 	[Version (since = "3.30")]
-	public static bool book_utils_get_recipient_certificates_sync (E.SourceRegistry registry, GLib.SList<E.BookClient>? only_clients, uint32 flags, GLib.GenericArray<string> recipients, out GLib.SList<string> out_certificates, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	public static bool book_utils_get_recipient_certificates_sync (E.SourceRegistry registry, GLib.SList<E.BookClient>? only_clients, Camel.RecipientCertificateFlags flags, GLib.GenericArray<string> recipients, out GLib.SList<string> out_certificates, GLib.Cancellable? cancellable = null) throws GLib.Error;
 }

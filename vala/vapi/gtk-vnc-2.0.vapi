@@ -32,6 +32,7 @@ namespace Vnc {
 		public bool get_pointer_grab ();
 		public bool get_pointer_local ();
 		public bool get_read_only ();
+		public uint get_rotation ();
 		public bool get_scaling ();
 		public bool get_shared_flag ();
 		public bool get_smoothing ();
@@ -58,6 +59,7 @@ namespace Vnc {
 		public void set_pointer_grab (bool enable);
 		public void set_pointer_local (bool enable);
 		public void set_read_only (bool enable);
+		public void set_rotation (uint rotation);
 		public bool set_scaling (bool enable);
 		public void set_shared_flag (bool shared);
 		public void set_smoothing (bool enable);
@@ -78,6 +80,7 @@ namespace Vnc {
 		public bool lossy_encoding { get; set construct; }
 		public string name { get; }
 		public bool read_only { get; set construct; }
+		public uint rotation { get; set construct; }
 		public bool scaling { get; set construct; }
 		public bool shared_flag { get; set construct; }
 		public bool smoothing { get; set construct; }

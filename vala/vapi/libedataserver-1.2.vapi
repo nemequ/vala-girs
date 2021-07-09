@@ -58,9 +58,9 @@ namespace E {
 		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public virtual void unwrap_dbus_error (GLib.Error dbus_error) throws GLib.Error;
 		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
-		public static GLib.SList<GLib.Object> util_copy_object_slist (GLib.SList<GLib.Object>? copy_to, GLib.SList<GLib.Object> objects);
+		public static GLib.SList<GLib.Object> util_copy_object_slist (owned GLib.SList<GLib.Object>? copy_to, GLib.SList<GLib.Object> objects);
 		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
-		public static GLib.SList<string> util_copy_string_slist (GLib.SList<string>? copy_to, GLib.SList<string> strings);
+		public static GLib.SList<string> util_copy_string_slist (owned GLib.SList<string>? copy_to, GLib.SList<string> strings);
 		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
 		public static void util_free_object_slist (GLib.SList<GLib.Object> objects);
 		[Version (deprecated = true, deprecated_since = "3.8", since = "3.2")]
@@ -173,9 +173,9 @@ namespace E {
 		[Version (since = "3.18")]
 		public bool exists (global::string name);
 		public void free ();
-		public unowned global::string @get (global::string name);
+		public unowned global::string? @get (global::string name);
 		[Version (since = "3.18")]
-		public global::string get_name (int index);
+		public global::string? get_name (int index);
 		[Version (since = "3.16")]
 		public E.NamedParameters new_clone ();
 		public void @set (global::string name, global::string? value);
@@ -186,7 +186,7 @@ namespace E {
 		public NamedParameters.strv (global::string strv);
 		public bool test (global::string name, global::string value, bool case_sensitively);
 		[Version (since = "3.18")]
-		public global::string to_string ();
+		public global::string? to_string ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public global::string[] to_strv ();
 	}
@@ -291,7 +291,7 @@ namespace E {
 		[Version (since = "3.12")]
 		public bool delete_password_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public string dup_display_name ();
-		public string dup_parent ();
+		public string? dup_parent ();
 		[Version (since = "3.12")]
 		public string dup_secret_label ();
 		public string dup_uid ();
@@ -311,7 +311,7 @@ namespace E {
 		public virtual async bool get_oauth2_access_token (GLib.Cancellable? cancellable, out string out_access_token, out int out_expires_in) throws GLib.Error;
 		[Version (since = "3.8")]
 		public virtual bool get_oauth2_access_token_sync (GLib.Cancellable? cancellable, out string out_access_token, out int out_expires_in) throws GLib.Error;
-		public unowned string get_parent ();
+		public unowned string? get_parent ();
 		public bool get_remote_creatable ();
 		public bool get_remote_deletable ();
 		public bool get_removable ();
@@ -332,9 +332,9 @@ namespace E {
 		[Version (since = "3.16")]
 		public bool invoke_credentials_required_sync (E.SourceCredentialsReason reason, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, GLib.Error? op_error, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.12")]
-		public async bool lookup_password (GLib.Cancellable? cancellable, out string out_password) throws GLib.Error;
+		public async bool lookup_password (GLib.Cancellable? cancellable, out string? out_password) throws GLib.Error;
 		[Version (since = "3.12")]
-		public bool lookup_password_sync (GLib.Cancellable? cancellable, out string out_password) throws GLib.Error;
+		public bool lookup_password_sync (GLib.Cancellable? cancellable, out string? out_password) throws GLib.Error;
 		public async bool mail_signature_load (int io_priority, GLib.Cancellable? cancellable, out string contents, out size_t length) throws GLib.Error;
 		public bool mail_signature_load_sync (out string contents, out size_t length, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool mail_signature_replace (string contents, size_t length, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -348,7 +348,7 @@ namespace E {
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "3.12")]
 		public string[] proxy_lookup_sync (string uri, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public GLib.DBusObject ref_dbus_object ();
+		public GLib.DBusObject? ref_dbus_object ();
 		public GLib.MainContext ref_main_context ();
 		public uint refresh_add_timeout (GLib.MainContext? context, owned E.SourceRefreshFunc callback);
 		public void refresh_force_timeout ();
@@ -369,7 +369,7 @@ namespace E {
 		public async bool store_password (string password, bool permanently, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.12")]
 		public bool store_password_sync (string password, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public string to_string (size_t? length);
+		public string to_string (out size_t length);
 		[Version (since = "3.18")]
 		public async bool unset_last_credentials_required_arguments (GLib.Cancellable? cancellable) throws GLib.Error;
 		[NoWrapper]
@@ -384,7 +384,7 @@ namespace E {
 		public async bool webdav_discover_sources_full (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, [CCode (delegate_target_pos = 4.5, scope = "async")] E.WebDAVDiscoverRefSourceFunc? ref_source_func, GLib.Cancellable? cancellable, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses) throws GLib.Error;
 		[CCode (cname = "e_webdav_discover_sources_full_sync")]
 		[Version (since = "3.30")]
-		public bool webdav_discover_sources_full_sync (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, [CCode (delegate_target_pos = 4.5)] E.WebDAVDiscoverRefSourceFunc? ref_source_func, out string? out_certificate_pem, out GLib.TlsCertificateFlags? out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string>? out_calendar_user_addresses, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool webdav_discover_sources_full_sync (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, [CCode (delegate_target_pos = 4.5)] E.WebDAVDiscoverRefSourceFunc? ref_source_func, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (cname = "e_webdav_discover_sources_sync")]
 		[Version (since = "3.18")]
 		public bool webdav_discover_sources_sync (string? url_use_path, uint32 only_supports, E.NamedParameters? credentials, out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors, out GLib.SList<E.WebDAVDiscoveredSource> out_discovered_sources, out GLib.SList<string> out_calendar_user_addresses, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -438,26 +438,26 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		protected SourceAuthentication ();
 		[Version (since = "3.16")]
-		public string dup_credential_name ();
-		public string dup_host ();
-		public string dup_method ();
+		public string? dup_credential_name ();
+		public string? dup_host ();
+		public string? dup_method ();
 		[Version (since = "3.12")]
 		public string dup_proxy_uid ();
-		public string dup_user ();
+		public string? dup_user ();
 		[Version (since = "3.16")]
-		public unowned string get_credential_name ();
-		public unowned string get_host ();
+		public unowned string? get_credential_name ();
+		public unowned string? get_host ();
 		[Version (since = "3.36")]
 		public bool get_is_external ();
-		public unowned string get_method ();
+		public unowned string? get_method ();
 		public uint16 get_port ();
 		[Version (since = "3.12")]
 		public unowned string get_proxy_uid ();
 		[Version (since = "3.10")]
 		public bool get_remember_password ();
-		public unowned string get_user ();
+		public unowned string? get_user ();
 		[Version (since = "3.8")]
-		public GLib.SocketConnectable ref_connectable ();
+		public GLib.SocketConnectable? ref_connectable ();
 		public bool required ();
 		[Version (since = "3.16")]
 		public void set_credential_name (string? credential_name);
@@ -506,8 +506,8 @@ namespace E {
 	public abstract class SourceBackend : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceBackend ();
-		public string dup_backend_name ();
-		public unowned string get_backend_name ();
+		public string? dup_backend_name ();
+		public unowned string? get_backend_name ();
 		public void set_backend_name (string? backend_name);
 		public string backend_name { get; set construct; }
 	}
@@ -535,10 +535,10 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		protected SourceCollection ();
 		[Version (since = "3.26")]
-		public string dup_calendar_url ();
+		public string? dup_calendar_url ();
 		[Version (since = "3.26")]
-		public string dup_contacts_url ();
-		public string dup_identity ();
+		public string? dup_contacts_url ();
+		public string? dup_identity ();
 		[Version (since = "3.36")]
 		public bool get_allow_sources_rename ();
 		public bool get_calendar_enabled ();
@@ -547,7 +547,7 @@ namespace E {
 		public bool get_contacts_enabled ();
 		[Version (since = "3.26")]
 		public unowned string? get_contacts_url ();
-		public unowned string get_identity ();
+		public unowned string? get_identity ();
 		public bool get_mail_enabled ();
 		[Version (since = "3.36")]
 		public void set_allow_sources_rename (bool allow_sources_rename);
@@ -641,24 +641,24 @@ namespace E {
 	public class SourceGoa : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceGoa ();
-		public string dup_account_id ();
+		public string? dup_account_id ();
 		[Version (since = "3.24")]
-		public string dup_address ();
+		public string? dup_address ();
 		[Version (since = "3.8")]
-		public string dup_calendar_url ();
+		public string? dup_calendar_url ();
 		[Version (since = "3.8")]
-		public string dup_contacts_url ();
+		public string? dup_contacts_url ();
 		[Version (since = "3.24")]
-		public string dup_name ();
-		public unowned string get_account_id ();
+		public string? dup_name ();
+		public unowned string? get_account_id ();
 		[Version (since = "3.24")]
-		public unowned string get_address ();
+		public unowned string? get_address ();
 		[Version (since = "3.8")]
-		public unowned string get_calendar_url ();
+		public unowned string? get_calendar_url ();
 		[Version (since = "3.8")]
-		public unowned string get_contacts_url ();
+		public unowned string? get_contacts_url ();
 		[Version (since = "3.24")]
-		public unowned string get_name ();
+		public unowned string? get_name ();
 		public void set_account_id (string? account_id);
 		[Version (since = "3.24")]
 		public void set_address (string? address);
@@ -738,11 +738,11 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		protected SourceMailAccount ();
 		[Version (since = "3.16")]
-		public string dup_archive_folder ();
-		public string dup_identity_uid ();
+		public string? dup_archive_folder ();
+		public string? dup_identity_uid ();
 		[Version (since = "3.16")]
-		public unowned string get_archive_folder ();
-		public unowned string get_identity_uid ();
+		public unowned string? get_archive_folder ();
+		public unowned string? get_identity_uid ();
 		[Version (since = "3.32")]
 		public E.ThreeState get_mark_seen ();
 		[Version (since = "3.32")]
@@ -773,15 +773,15 @@ namespace E {
 		public string[] dup_bcc ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] dup_cc ();
-		public string dup_drafts_folder ();
+		public string? dup_drafts_folder ();
 		[Version (since = "3.32")]
-		public string dup_language ();
-		public string dup_templates_folder ();
+		public string? dup_language ();
+		public string? dup_templates_folder ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_bcc ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_cc ();
-		public unowned string get_drafts_folder ();
+		public unowned string? get_drafts_folder ();
 		[Version (since = "3.32")]
 		public unowned string? get_language ();
 		[Version (since = "3.20")]
@@ -789,7 +789,7 @@ namespace E {
 		public bool get_sign_imip ();
 		[Version (since = "3.26")]
 		public E.ThreeState get_start_bottom ();
-		public unowned string get_templates_folder ();
+		public unowned string? get_templates_folder ();
 		[Version (since = "3.26")]
 		public E.ThreeState get_top_signature ();
 		public void set_bcc ([CCode (array_length = false, array_null_terminated = true)] string[] bcc);
@@ -822,22 +822,22 @@ namespace E {
 	public class SourceMailIdentity : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceMailIdentity ();
-		public string dup_address ();
+		public string? dup_address ();
 		[Version (since = "3.24")]
-		public string dup_aliases ();
-		public string dup_name ();
-		public string dup_organization ();
-		public string dup_reply_to ();
-		public string dup_signature_uid ();
-		public unowned string get_address ();
+		public string? dup_aliases ();
+		public string? dup_name ();
+		public string? dup_organization ();
+		public string? dup_reply_to ();
+		public string? dup_signature_uid ();
+		public unowned string? get_address ();
 		[Version (since = "3.24")]
-		public unowned string get_aliases ();
+		public unowned string? get_aliases ();
 		[Version (since = "3.24")]
 		public GLib.HashTable<string,string>? get_aliases_as_hash_table ();
-		public unowned string get_name ();
-		public unowned string get_organization ();
-		public unowned string get_reply_to ();
-		public unowned string get_signature_uid ();
+		public unowned string? get_name ();
+		public unowned string? get_organization ();
+		public unowned string? get_reply_to ();
+		public unowned string? get_signature_uid ();
 		public void set_address (string? address);
 		[Version (since = "3.24")]
 		public void set_aliases (string? aliases);
@@ -869,12 +869,12 @@ namespace E {
 	public class SourceMailSubmission : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceMailSubmission ();
-		public string dup_sent_folder ();
-		public string dup_transport_uid ();
+		public string? dup_sent_folder ();
+		public string? dup_transport_uid ();
 		[Version (since = "3.8")]
 		public bool get_replies_to_origin_folder ();
-		public unowned string get_sent_folder ();
-		public unowned string get_transport_uid ();
+		public unowned string? get_sent_folder ();
+		public unowned string? get_transport_uid ();
 		[Version (since = "3.26")]
 		public bool get_use_sent_folder ();
 		[Version (since = "3.8")]
@@ -1029,7 +1029,7 @@ namespace E {
 		public static bool debug_enabled ();
 		[Version (since = "3.8")]
 		public string dup_unique_display_name (E.Source source, string? extension_name);
-		public E.Source find_extension (E.Source source, string extension_name);
+		public E.Source? find_extension (E.Source source, string extension_name);
 		public static void free_display_tree (GLib.Node display_tree);
 		[Version (since = "3.28")]
 		public unowned E.OAuth2Services get_oauth2_services ();
@@ -1045,12 +1045,12 @@ namespace E {
 		public E.Source ref_builtin_task_list ();
 		public E.Source ref_default_address_book ();
 		public E.Source ref_default_calendar ();
-		public E.Source ref_default_for_extension_name (string extension_name);
+		public E.Source? ref_default_for_extension_name (string extension_name);
 		public E.Source ref_default_mail_account ();
 		public E.Source ref_default_mail_identity ();
 		public E.Source ref_default_memo_list ();
 		public E.Source ref_default_task_list ();
-		public E.Source ref_source (string uid);
+		public E.Source? ref_source (string uid);
 		[Version (since = "3.30")]
 		public async bool refresh_backend (string source_uid, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.30")]
@@ -1110,8 +1110,8 @@ namespace E {
 	public class SourceResource : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceResource ();
-		public string dup_identity ();
-		public unowned string get_identity ();
+		public string? dup_identity ();
+		public unowned string? get_identity ();
 		public void set_identity (string? identity);
 		public string identity { get; set construct; }
 	}
@@ -1129,15 +1129,15 @@ namespace E {
 	public class SourceSMIME : E.SourceExtension {
 		[CCode (has_construct_function = false)]
 		protected SourceSMIME ();
-		public string dup_encryption_certificate ();
-		public string dup_signing_algorithm ();
-		public string dup_signing_certificate ();
+		public string? dup_encryption_certificate ();
+		public string? dup_signing_algorithm ();
+		public string? dup_signing_certificate ();
 		public bool get_encrypt_by_default ();
 		public bool get_encrypt_to_self ();
-		public unowned string get_encryption_certificate ();
+		public unowned string? get_encryption_certificate ();
 		public bool get_sign_by_default ();
-		public unowned string get_signing_algorithm ();
-		public unowned string get_signing_certificate ();
+		public unowned string? get_signing_algorithm ();
+		public unowned string? get_signing_certificate ();
 		public void set_encrypt_by_default (bool encrypt_by_default);
 		public void set_encrypt_to_self (bool encrypt_to_self);
 		public void set_encryption_certificate (string? encryption_certificate);
@@ -1215,26 +1215,26 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		protected SourceWebdav ();
 		[Version (since = "3.30")]
-		public string dup_color ();
-		public string dup_display_name ();
-		public string dup_email_address ();
-		public string dup_resource_path ();
-		public string dup_resource_query ();
+		public string? dup_color ();
+		public string? dup_display_name ();
+		public string? dup_email_address ();
+		public string? dup_resource_path ();
+		public string? dup_resource_query ();
 		public Soup.URI dup_soup_uri ();
 		[Version (since = "3.8")]
-		public string dup_ssl_trust ();
+		public string? dup_ssl_trust ();
 		public bool get_avoid_ifmatch ();
 		public bool get_calendar_auto_schedule ();
 		[Version (since = "3.30")]
-		public unowned string get_color ();
-		public unowned string get_display_name ();
-		public unowned string get_email_address ();
+		public unowned string? get_color ();
+		public unowned string? get_display_name ();
+		public unowned string? get_email_address ();
 		[Version (since = "3.40")]
 		public uint get_order ();
-		public unowned string get_resource_path ();
-		public unowned string get_resource_query ();
+		public unowned string? get_resource_path ();
+		public unowned string? get_resource_query ();
 		[Version (since = "3.8")]
-		public unowned string get_ssl_trust ();
+		public unowned string? get_ssl_trust ();
 		[Version (since = "3.32")]
 		public E.TrustPromptResponse get_ssl_trust_response ();
 		public void set_avoid_ifmatch (bool avoid_ifmatch);
@@ -2025,7 +2025,7 @@ namespace E {
 	public static unowned GLib.Binding binding_bind_property_full (GLib.Object source, string source_property, GLib.Object target, string target_property, GLib.BindingFlags flags, GLib.BindingTransformFunc? transform_to, owned GLib.BindingTransformFunc? transform_from);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.16")]
-	public static unowned GLib.Binding binding_bind_property_with_closures (GLib.Object source, string source_property, GLib.Object target, string target_property, GLib.BindingFlags flags, GLib.Closure transform_to, GLib.Closure transform_from);
+	public static unowned GLib.Binding binding_bind_property_with_closures (GLib.Object source, string source_property, GLib.Object target, string target_property, GLib.BindingFlags flags, GLib.Closure? transform_to, GLib.Closure? transform_from);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.4")]
 	public static bool binding_transform_enum_nick_to_value (GLib.Binding binding, GLib.Value source_value, GLib.Value target_value, void* not_used);
@@ -2193,10 +2193,10 @@ namespace E {
 	public static bool util_can_use_collection_as_credential_source (void* collection_source, void* child_source);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (deprecated = true, deprecated_since = "3.8", since = "3.4")]
-	public static GLib.SList<GLib.Object> util_copy_object_slist (GLib.SList<GLib.Object>? copy_to, GLib.SList<GLib.Object> objects);
+	public static GLib.SList<GLib.Object> util_copy_object_slist (owned GLib.SList<GLib.Object>? copy_to, GLib.SList<GLib.Object> objects);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (deprecated = true, deprecated_since = "3.8", since = "3.4")]
-	public static GLib.SList<string> util_copy_string_slist (GLib.SList<string>? copy_to, GLib.SList<string> strings);
+	public static GLib.SList<string> util_copy_string_slist (owned GLib.SList<string>? copy_to, GLib.SList<string> strings);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.0")]
 	public static unowned string util_ensure_gdbus_string (string str, string gdbus_str);
@@ -2234,20 +2234,20 @@ namespace E {
 	public static int util_source_compare_for_sort (void* source_a, void* source_b);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.32")]
-	public static int util_strcmp0 (string str1, string str2);
+	public static int util_strcmp0 (string? str1, string? str2);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.6")]
-	public static string util_strdup_strip (string? string);
+	public static string? util_strdup_strip (string? string);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static string util_strstrcase (string haystack, string needle);
+	public static string? util_strstrcase (string haystack, string needle);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.12")]
-	public static bool util_strv_equal (void* v1, void* v2);
+	public static bool util_strv_equal ([CCode (array_length = false, array_null_terminated = true)] string[] v1, [CCode (array_length = false, array_null_terminated = true)] string[] v2);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.4")]
 	public static GLib.SList<string> util_strv_to_slist (string strv);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static string util_unicode_get_utf8 (string text, unichar @out);
+	public static string? util_unicode_get_utf8 (string text, unichar @out);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.26")]
 	public static void util_unref_in_thread (void* object);
@@ -2262,14 +2262,14 @@ namespace E {
 	public static string util_utf8_make_valid (string str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.8")]
-	public static string util_utf8_normalize (string str);
+	public static string? util_utf8_normalize (string? str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "2.28")]
 	public static string util_utf8_remove_accents (string str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static int util_utf8_strcasecmp (string s1, string s2);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static unowned string util_utf8_strstrcase (string haystack, string needle);
+	public static unowned string? util_utf8_strstrcase (string? haystack, string? needle);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string util_utf8_strstrcasedecomp (string haystack, string needle);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]

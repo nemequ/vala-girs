@@ -57,7 +57,7 @@ namespace E {
 		public T @get<T> (E.ContactField field_id);
 		public GLib.List<E.VCardAttribute> get_attributes (E.ContactField field_id);
 		[Version (since = "3.16")]
-		public GLib.List<E.VCardAttribute> get_attributes_set (E.ContactField field_ids, int size);
+		public GLib.List<E.VCardAttribute> get_attributes_set ([CCode (array_length_cname = "size", array_length_pos = 1.1)] E.ContactField[] field_ids);
 		[CCode (simple_generics = true)]
 		public unowned T get_const<T> (E.ContactField field_id);
 		[Version (since = "3.4")]
@@ -231,6 +231,20 @@ namespace E {
 		public string im_jabber_work_2 { owned get; set; }
 		[NoAccessorMethod]
 		public string im_jabber_work_3 { owned get; set; }
+		[NoAccessorMethod]
+		public E.ContactAttrList im_matrix { owned get; set; }
+		[NoAccessorMethod]
+		public string im_matrix_home_1 { owned get; set; }
+		[NoAccessorMethod]
+		public string im_matrix_home_2 { owned get; set; }
+		[NoAccessorMethod]
+		public string im_matrix_home_3 { owned get; set; }
+		[NoAccessorMethod]
+		public string im_matrix_work_1 { owned get; set; }
+		[NoAccessorMethod]
+		public string im_matrix_work_2 { owned get; set; }
+		[NoAccessorMethod]
+		public string im_matrix_work_3 { owned get; set; }
 		[NoAccessorMethod]
 		public E.ContactAttrList im_msn { owned get; set; }
 		[NoAccessorMethod]
@@ -468,7 +482,7 @@ namespace E {
 		public E.PhoneNumber copy ();
 		public void free ();
 		public static E.PhoneNumber from_string (string phone_number, string? region_code) throws GLib.Error;
-		public int get_country_code (E.PhoneNumberCountrySource source);
+		public int get_country_code (E.PhoneNumberCountrySource? source);
 		public static int get_country_code_for_region (string? region_code) throws GLib.Error;
 		public static string get_default_region () throws GLib.Error;
 		public string get_national_number ();
@@ -783,6 +797,13 @@ namespace E {
 		IM_GOOGLE_TALK_WORK_3,
 		IM_GOOGLE_TALK,
 		IM_TWITTER,
+		IM_MATRIX_HOME_1,
+		IM_MATRIX_HOME_2,
+		IM_MATRIX_HOME_3,
+		IM_MATRIX_WORK_1,
+		IM_MATRIX_WORK_2,
+		IM_MATRIX_WORK_3,
+		IM_MATRIX,
 		FIELD_LAST,
 		FIELD_FIRST,
 		LAST_SIMPLE_STRING,
@@ -982,6 +1003,8 @@ namespace E {
 	public const string EVC_X_LIST_SHOW_ADDRESSES;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_MANAGER")]
 	public const string EVC_X_MANAGER;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_MATRIX")]
+	public const string EVC_X_MATRIX;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_MSN")]
 	public const string EVC_X_MSN;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "EVC_X_RADIO")]

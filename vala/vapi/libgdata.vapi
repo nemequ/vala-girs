@@ -2,53 +2,6 @@
 
 [CCode (cprefix = "GData", gir_namespace = "GData", gir_version = "0.0", lower_case_cprefix = "gdata_")]
 namespace GData {
-	namespace ContactsGender {
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_GENDER_FEMALE")]
-		[Version (since = "0.7.0")]
-		public const string FEMALE;
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_GENDER_MALE")]
-		[Version (since = "0.7.0")]
-		public const string MALE;
-	}
-	namespace ContactsGroupType {
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_GROUP_CONTACTS")]
-		[Version (since = "0.7.0")]
-		public const string CONTACTS;
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_GROUP_COWORKERS")]
-		[Version (since = "0.7.0")]
-		public const string COWORKERS;
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_GROUP_FAMILY")]
-		[Version (since = "0.7.0")]
-		public const string FAMILY;
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_GROUP_FRIENDS")]
-		[Version (since = "0.7.0")]
-		public const string FRIENDS;
-	}
-	namespace ContactsPriority {
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_PRIORITY_HIGH")]
-		[Version (since = "0.7.0")]
-		public const string HIGH;
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_PRIORITY_LOW")]
-		[Version (since = "0.7.0")]
-		public const string LOW;
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_PRIORITY_NORMAL")]
-		[Version (since = "0.7.0")]
-		public const string NORMAL;
-	}
-	namespace ContactsSensitivity {
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_SENSITIVITY_CONFIDENTIAL")]
-		[Version (since = "0.7.0")]
-		public const string CONFIDENTIAL;
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_SENSITIVITY_NORMAL")]
-		[Version (since = "0.7.0")]
-		public const string NORMAL;
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_SENSITIVITY_PERSONAL")]
-		[Version (since = "0.7.0")]
-		public const string PERSONAL;
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_CONTACTS_SENSITIVITY_PRIVATE")]
-		[Version (since = "0.7.0")]
-		public const string PRIVATE;
-	}
 	namespace DocumentsPresentationFormat {
 		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_DOCUMENTS_PRESENTATION_PDF")]
 		[Version (since = "0.7.0")]
@@ -59,9 +12,6 @@ namespace GData {
 		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_DOCUMENTS_PRESENTATION_PPT")]
 		[Version (since = "0.7.0")]
 		public const string PPT;
-		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_DOCUMENTS_PRESENTATION_SWF")]
-		[Version (deprecated = true, since = "0.7.0")]
-		public const string SWF;
 		[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_DOCUMENTS_PRESENTATION_TXT")]
 		[Version (since = "0.7.0")]
 		public const string TXT;
@@ -212,10 +162,6 @@ namespace GData {
 		public CalendarCalendar (string? id);
 		public unowned string get_access_level ();
 		public GData.Color get_color ();
-		[Version (deprecated = true, deprecated_since = "0.17.2")]
-		public int64 get_edited ();
-		[Version (deprecated = true, deprecated_since = "0.17.2")]
-		public uint get_times_cleaned ();
 		public unowned string get_timezone ();
 		public void set_color (GData.Color color);
 		[Version (since = "0.2.0")]
@@ -225,16 +171,12 @@ namespace GData {
 		public void set_timezone (string? _timezone);
 		public string access_level { get; }
 		public GData.Color color { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.17.2")]
-		public int64 edited { get; }
 		[NoAccessorMethod]
 		[Version (since = "0.2.0")]
 		public bool is_hidden { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "0.2.0")]
 		public bool is_selected { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.17.2")]
-		public uint times_cleaned { get; }
 		public string timezone { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_calendar_event_get_type ()")]
@@ -307,14 +249,6 @@ namespace GData {
 	public class CalendarFeed : GData.Feed {
 		[CCode (has_construct_function = false)]
 		protected CalendarFeed ();
-		[Version (deprecated = true, deprecated_since = "0.17.2", since = "0.3.0")]
-		public uint get_times_cleaned ();
-		[Version (deprecated = true, deprecated_since = "0.17.2", since = "0.3.0")]
-		public unowned string get_timezone ();
-		[Version (deprecated = true, deprecated_since = "0.17.2", since = "0.3.0")]
-		public uint times_cleaned { get; }
-		[Version (deprecated = true, deprecated_since = "0.17.2", since = "0.3.0")]
-		public string timezone { get; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_calendar_query_get_type ()")]
 	public class CalendarQuery : GData.Query {
@@ -324,13 +258,7 @@ namespace GData {
 		[Version (since = "0.9.1")]
 		public uint get_max_attendees ();
 		public unowned string get_order_by ();
-		[Version (deprecated = true, deprecated_since = "0.17.7")]
-		public int64 get_recurrence_expansion_end ();
-		[Version (deprecated = true, deprecated_since = "0.17.7")]
-		public int64 get_recurrence_expansion_start ();
 		public bool get_single_events ();
-		[Version (deprecated = true, deprecated_since = "0.17.7")]
-		public unowned string get_sort_order ();
 		public int64 get_start_max ();
 		public int64 get_start_min ();
 		[Version (since = "0.2.0")]
@@ -339,15 +267,9 @@ namespace GData {
 		[Version (since = "0.9.1")]
 		public void set_max_attendees (uint max_attendees);
 		public void set_order_by (string? order_by);
-		[Version (deprecated = true, deprecated_since = "0.17.7")]
-		public void set_recurrence_expansion_end (int64 end);
-		[Version (deprecated = true, deprecated_since = "0.17.7")]
-		public void set_recurrence_expansion_start (int64 start);
 		[Version (since = "0.9.1")]
 		public void set_show_deleted (bool show_deleted);
 		public void set_single_events (bool single_events);
-		[Version (deprecated = true, deprecated_since = "0.17.7")]
-		public void set_sort_order (string? sort_order);
 		public void set_start_max (int64 start_max);
 		public void set_start_min (int64 start_min);
 		[Version (since = "0.2.0")]
@@ -358,16 +280,10 @@ namespace GData {
 		[Version (since = "0.9.1")]
 		public uint max_attendees { get; set; }
 		public string order_by { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.17.7")]
-		public int64 recurrence_expansion_end { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.17.7")]
-		public int64 recurrence_expansion_start { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "0.9.1")]
 		public bool show_deleted { get; set; }
 		public bool single_events { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.17.7")]
-		public string sort_order { get; set; }
 		public int64 start_max { get; set; }
 		public int64 start_min { get; set; }
 		[Version (since = "0.2.0")]
@@ -384,10 +300,6 @@ namespace GData {
 		public GData.CalendarEvent insert_calendar_event (GData.CalendarCalendar calendar, GData.CalendarEvent event, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "0.17.2")]
 		public async void insert_calendar_event_async (GData.CalendarCalendar calendar, GData.CalendarEvent event, GLib.Cancellable? cancellable);
-		[Version (deprecated = true, deprecated_since = "0.17.2", since = "0.2.0")]
-		public GData.CalendarEvent insert_event (GData.CalendarEvent event, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (deprecated = true, deprecated_since = "0.17.2", since = "0.8.0")]
-		public async void insert_event_async (GData.CalendarEvent event, GLib.Cancellable? cancellable);
 		public GData.Feed query_all_calendars (GData.Query? query, GLib.Cancellable? cancellable, GData.QueryProgressCallback? progress_callback) throws GLib.Error;
 		[Version (since = "0.9.1")]
 		public async void query_all_calendars_async (GData.Query? query, GLib.Cancellable? cancellable, owned GData.QueryProgressCallback? progress_callback);
@@ -421,311 +333,11 @@ namespace GData {
 		[Version (since = "0.4.0")]
 		public string term { get; set; }
 	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_client_login_authorizer_get_type ()")]
-	[Version (since = "0.9.0")]
-	public class ClientLoginAuthorizer : GLib.Object, GData.Authorizer {
-		[CCode (has_construct_function = false)]
-		public ClientLoginAuthorizer (string client_id, GLib.Type service_type);
-		public bool authenticate (string username, string password, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool authenticate_async (string username, string password, GLib.Cancellable? cancellable) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		public ClientLoginAuthorizer.for_authorization_domains (string client_id, GLib.List<GData.AuthorizationDomain> authorization_domains);
-		public unowned string get_client_id ();
-		public unowned string get_password ();
-		[Version (since = "0.15.0")]
-		public unowned GLib.ProxyResolver? get_proxy_resolver ();
-		[Version (deprecated = true, deprecated_since = "0.15.0", since = "0.9.0")]
-		public Soup.URI get_proxy_uri ();
-		public uint get_timeout ();
-		public unowned string get_username ();
-		[Version (since = "0.15.0")]
-		public void set_proxy_resolver (GLib.ProxyResolver? proxy_resolver);
-		[Version (deprecated = true, deprecated_since = "0.15.0", since = "0.9.0")]
-		public void set_proxy_uri (Soup.URI? proxy_uri);
-		public void set_timeout (uint timeout);
-		public string client_id { get; construct; }
-		public string password { get; }
-		[Version (since = "0.15.0")]
-		public GLib.ProxyResolver proxy_resolver { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.15.0", since = "0.9.0")]
-		public Soup.URI proxy_uri { owned get; set; }
-		public uint timeout { get; set; }
-		public string username { get; }
-		public signal string captcha_challenge (string uri);
-	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_comment_get_type ()")]
 	[Version (since = "0.10.0")]
 	public abstract class Comment : GData.Entry {
 		[CCode (has_construct_function = false)]
 		protected Comment ();
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_contacts_contact_get_type ()")]
-	[Version (since = "0.2.0")]
-	public class ContactsContact : GData.Entry {
-		[CCode (has_construct_function = false)]
-		public ContactsContact (string? id);
-		[Version (since = "0.7.0")]
-		public void add_calendar (GData.GContactCalendar calendar);
-		public void add_email_address (GData.GDEmailAddress email_address);
-		[Version (since = "0.7.0")]
-		public void add_event (GData.GContactEvent event);
-		[Version (since = "0.7.0")]
-		public void add_external_id (GData.GContactExternalID external_id);
-		public void add_group (string href);
-		[Version (since = "0.7.0")]
-		public void add_hobby (string hobby);
-		public void add_im_address (GData.GDIMAddress im_address);
-		[Version (since = "0.7.0")]
-		public void add_jot (GData.GContactJot jot);
-		[Version (since = "0.7.0")]
-		public void add_language (GData.GContactLanguage language);
-		public void add_organization (GData.GDOrganization organization);
-		public void add_phone_number (GData.GDPhoneNumber phone_number);
-		public void add_postal_address (GData.GDPostalAddress postal_address);
-		[Version (since = "0.7.0")]
-		public void add_relation (GData.GContactRelation relation);
-		[Version (since = "0.7.0")]
-		public void add_website (GData.GContactWebsite website);
-		[Version (since = "0.7.0")]
-		public unowned string get_billing_information ();
-		[Version (since = "0.7.0")]
-		public bool get_birthday (out GLib.Date birthday);
-		[Version (since = "0.7.0")]
-		public unowned GLib.List<GData.GContactCalendar> get_calendars ();
-		[Version (since = "0.7.0")]
-		public unowned string get_directory_server ();
-		public int64 get_edited ();
-		public unowned GLib.List<GData.GDEmailAddress> get_email_addresses ();
-		[Version (since = "0.7.0")]
-		public unowned GLib.List<GData.GContactEvent> get_events ();
-		[Version (since = "0.4.0")]
-		public unowned GLib.HashTable<void*,void*> get_extended_properties ();
-		public unowned string get_extended_property (string name);
-		[Version (since = "0.7.0")]
-		public unowned GLib.List<GData.GContactExternalID> get_external_ids ();
-		[Version (since = "0.11.0")]
-		public unowned string get_file_as ();
-		[Version (since = "0.7.0")]
-		public unowned string get_gender ();
-		public GLib.List<weak string> get_groups ();
-		[Version (since = "0.7.0")]
-		public unowned GLib.List<string> get_hobbies ();
-		public unowned GLib.List<GData.GDIMAddress> get_im_addresses ();
-		[Version (since = "0.7.0")]
-		public unowned string get_initials ();
-		[Version (since = "0.7.0")]
-		public unowned GLib.List<GData.GContactJot> get_jots ();
-		[Version (since = "0.7.0")]
-		public unowned GLib.List<GData.GContactLanguage> get_languages ();
-		[Version (since = "0.7.0")]
-		public unowned string get_maiden_name ();
-		[Version (since = "0.7.0")]
-		public unowned string get_mileage ();
-		[Version (since = "0.5.0")]
-		public unowned GData.GDName get_name ();
-		[Version (since = "0.7.0")]
-		public unowned string get_nickname ();
-		[Version (since = "0.7.0")]
-		public unowned string get_occupation ();
-		public unowned GLib.List<GData.GDOrganization> get_organizations ();
-		public unowned GLib.List<GData.GDPhoneNumber> get_phone_numbers ();
-		[CCode (array_length_pos = 1.5, array_length_type = "gsize")]
-		[Version (since = "0.8.0")]
-		public uint8[] get_photo (GData.ContactsService service, out string content_type, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "0.8.0")]
-		public async uint8[] get_photo_async (GData.ContactsService service, GLib.Cancellable? cancellable, out string content_type) throws GLib.Error;
-		[Version (since = "0.9.0")]
-		public unowned string get_photo_etag ();
-		public unowned GLib.List<GData.GDPostalAddress> get_postal_addresses ();
-		[Version (since = "0.7.0")]
-		public unowned GData.GContactCalendar get_primary_calendar ();
-		public unowned GData.GDEmailAddress get_primary_email_address ();
-		public unowned GData.GDIMAddress get_primary_im_address ();
-		public unowned GData.GDOrganization get_primary_organization ();
-		public unowned GData.GDPhoneNumber get_primary_phone_number ();
-		public unowned GData.GDPostalAddress get_primary_postal_address ();
-		[Version (since = "0.7.0")]
-		public unowned GData.GContactWebsite get_primary_website ();
-		[Version (since = "0.7.0")]
-		public unowned string get_priority ();
-		[Version (since = "0.7.0")]
-		public unowned GLib.List<GData.GContactRelation> get_relations ();
-		[Version (since = "0.7.0")]
-		public unowned string get_sensitivity ();
-		[Version (since = "0.7.0")]
-		public unowned string get_short_name ();
-		[Version (since = "0.7.0")]
-		public unowned string get_subject ();
-		[Version (since = "0.7.0")]
-		public unowned string get_user_defined_field (string name);
-		[Version (since = "0.7.0")]
-		public unowned GLib.HashTable<void*,void*> get_user_defined_fields ();
-		[Version (since = "0.7.0")]
-		public unowned GLib.List<GData.GContactWebsite> get_websites ();
-		public bool is_deleted ();
-		public bool is_group_deleted (string href);
-		[Version (since = "0.7.0")]
-		public void remove_all_calendars ();
-		[Version (since = "0.4.0")]
-		public void remove_all_email_addresses ();
-		[Version (since = "0.7.0")]
-		public void remove_all_events ();
-		[Version (since = "0.7.0")]
-		public void remove_all_external_ids ();
-		[Version (since = "0.7.0")]
-		public void remove_all_hobbies ();
-		[Version (since = "0.4.0")]
-		public void remove_all_im_addresses ();
-		[Version (since = "0.7.0")]
-		public void remove_all_jots ();
-		[Version (since = "0.7.0")]
-		public void remove_all_languages ();
-		[Version (since = "0.4.0")]
-		public void remove_all_organizations ();
-		[Version (since = "0.4.0")]
-		public void remove_all_phone_numbers ();
-		[Version (since = "0.4.0")]
-		public void remove_all_postal_addresses ();
-		[Version (since = "0.7.0")]
-		public void remove_all_relations ();
-		[Version (since = "0.7.0")]
-		public void remove_all_websites ();
-		public void remove_group (string href);
-		[Version (since = "0.7.0")]
-		public void set_billing_information (string? billing_information);
-		[Version (since = "0.7.0")]
-		public void set_birthday (GLib.Date? birthday, bool birthday_has_year);
-		[Version (since = "0.7.0")]
-		public void set_directory_server (string? directory_server);
-		public bool set_extended_property (string name, string? value);
-		[Version (since = "0.7.0")]
-		public void set_file_as (string? file_as);
-		[Version (since = "0.7.0")]
-		public void set_gender (string? gender);
-		[Version (since = "0.7.0")]
-		public void set_initials (string? initials);
-		[Version (since = "0.7.0")]
-		public void set_maiden_name (string? maiden_name);
-		[Version (since = "0.7.0")]
-		public void set_mileage (string? mileage);
-		[Version (since = "0.7.0")]
-		public void set_name (GData.GDName name);
-		[Version (since = "0.7.0")]
-		public void set_nickname (string? nickname);
-		[Version (since = "0.7.0")]
-		public void set_occupation (string? occupation);
-		[Version (since = "0.8.0")]
-		public bool set_photo (GData.ContactsService service, uint8? data, size_t length, string? content_type, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "0.8.0")]
-		public async bool set_photo_async (GData.ContactsService service, uint8? data, size_t length, string? content_type, GLib.Cancellable? cancellable) throws GLib.Error;
-		[Version (since = "0.7.0")]
-		public void set_priority (string? priority);
-		[Version (since = "0.7.0")]
-		public void set_sensitivity (string? sensitivity);
-		[Version (since = "0.7.0")]
-		public void set_short_name (string? short_name);
-		[Version (since = "0.7.0")]
-		public void set_subject (string? subject);
-		[Version (since = "0.7.0")]
-		public void set_user_defined_field (string name, string? value);
-		[Version (since = "0.7.0")]
-		public string billing_information { get; set; }
-		[NoAccessorMethod]
-		[Version (since = "0.7.0")]
-		public GLib.Date birthday { owned get; set; }
-		[NoAccessorMethod]
-		[Version (since = "0.7.0")]
-		public bool birthday_has_year { get; set; }
-		[NoAccessorMethod]
-		public bool deleted { get; }
-		[Version (since = "0.7.0")]
-		public string directory_server { get; set; }
-		public int64 edited { get; }
-		[Version (since = "0.11.0")]
-		public string file_as { get; set; }
-		[Version (since = "0.7.0")]
-		public string gender { get; set; }
-		[Version (since = "0.7.0")]
-		public string initials { get; set; }
-		[Version (since = "0.7.0")]
-		public string maiden_name { get; set; }
-		[Version (since = "0.7.0")]
-		public string mileage { get; set; }
-		[Version (since = "0.5.0")]
-		public GData.GDName name { get; set; }
-		[Version (since = "0.7.0")]
-		public string nickname { get; set; }
-		[Version (since = "0.7.0")]
-		public string occupation { get; set; }
-		[Version (since = "0.9.0")]
-		public string photo_etag { get; }
-		[Version (since = "0.7.0")]
-		public string priority { get; set; }
-		[Version (since = "0.7.0")]
-		public string sensitivity { get; set; }
-		[Version (since = "0.7.0")]
-		public string short_name { get; set; }
-		[Version (since = "0.7.0")]
-		public string subject { get; set; }
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_contacts_group_get_type ()")]
-	[Version (since = "0.7.0")]
-	public class ContactsGroup : GData.Entry {
-		[CCode (has_construct_function = false)]
-		public ContactsGroup (string? id);
-		public int64 get_edited ();
-		public unowned GLib.HashTable<void*,void*> get_extended_properties ();
-		public unowned string get_extended_property (string name);
-		public unowned string get_system_group_id ();
-		public bool is_deleted ();
-		public bool set_extended_property (string name, string? value);
-		[NoAccessorMethod]
-		public bool deleted { get; }
-		public int64 edited { get; }
-		public string system_group_id { get; }
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_contacts_query_get_type ()")]
-	[Version (since = "0.2.0")]
-	public class ContactsQuery : GData.Query {
-		[CCode (has_construct_function = false)]
-		public ContactsQuery (string? q);
-		public unowned string get_group ();
-		public unowned string get_order_by ();
-		public unowned string get_sort_order ();
-		public void set_group (string? group);
-		public void set_order_by (string? order_by);
-		public void set_show_deleted (bool show_deleted);
-		public void set_sort_order (string? sort_order);
-		[CCode (has_construct_function = false)]
-		public ContactsQuery.with_limits (string? q, uint start_index, uint max_results);
-		public string group { get; set; }
-		public string order_by { get; set; }
-		[NoAccessorMethod]
-		public bool show_deleted { get; set; }
-		public string sort_order { get; set; }
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_contacts_service_get_type ()")]
-	[Version (since = "0.2.0")]
-	public class ContactsService : GData.Service, GData.Batchable {
-		[CCode (has_construct_function = false)]
-		[Version (since = "0.9.0")]
-		public ContactsService (GData.Authorizer? authorizer);
-		[Version (since = "0.9.0")]
-		public static unowned GData.AuthorizationDomain get_primary_authorization_domain ();
-		public GData.ContactsContact insert_contact (GData.ContactsContact contact, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "0.7.0")]
-		public async void insert_contact_async (GData.ContactsContact contact, GLib.Cancellable? cancellable);
-		[Version (since = "0.7.0")]
-		public GData.ContactsGroup insert_group (GData.ContactsGroup group, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "0.7.0")]
-		public async void insert_group_async (GData.ContactsGroup group, GLib.Cancellable? cancellable);
-		public GData.Feed query_contacts (GData.Query? query, GLib.Cancellable? cancellable, GData.QueryProgressCallback? progress_callback) throws GLib.Error;
-		[Version (since = "0.9.1")]
-		public async void query_contacts_async (GData.Query? query, GLib.Cancellable? cancellable, owned GData.QueryProgressCallback? progress_callback);
-		[Version (since = "0.7.0")]
-		public GData.Feed query_groups (GData.Query? query, GLib.Cancellable? cancellable, GData.QueryProgressCallback? progress_callback) throws GLib.Error;
-		[Version (since = "0.9.1")]
-		public async void query_groups_async (GData.Query? query, GLib.Cancellable? cancellable, owned GData.QueryProgressCallback? progress_callback);
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_documents_access_rule_get_type ()")]
 	[Version (since = "0.17.2")]
@@ -773,12 +385,8 @@ namespace GData {
 		protected DocumentsEntry ();
 		[Version (since = "0.17.11")]
 		public bool add_documents_property (GData.DocumentsProperty property);
-		[Version (deprecated = true, deprecated_since = "0.11.0", since = "0.4.0")]
-		public unowned string get_document_id ();
 		[Version (since = "0.17.11")]
 		public unowned GLib.List<GData.DocumentsProperty> get_document_properties ();
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.4.0")]
-		public int64 get_edited ();
 		[Version (since = "0.17.7")]
 		public int64 get_file_size ();
 		public unowned GData.Author get_last_modified_by ();
@@ -796,10 +404,6 @@ namespace GData {
 		[NoAccessorMethod]
 		[Version (since = "0.18.0")]
 		public bool can_edit { get; }
-		[Version (deprecated = true, deprecated_since = "0.11.0", since = "0.4.0")]
-		public string document_id { get; }
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.4.0")]
-		public int64 edited { get; }
 		[Version (since = "0.17.7")]
 		public int64 file_size { get; }
 		[NoAccessorMethod]
@@ -1091,200 +695,6 @@ namespace GData {
 		public string title { get; }
 		public uint total_results { get; }
 		public int64 updated { get; }
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_query_get_type ()")]
-	[Version (since = "0.15.1")]
-	public class FreebaseQuery : GData.Query {
-		[CCode (has_construct_function = false)]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public FreebaseQuery (string mql);
-		[CCode (has_construct_function = false)]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public FreebaseQuery.from_variant (GLib.Variant variant);
-		[NoAccessorMethod]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GLib.Variant variant { owned get; construct; }
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_result_get_type ()")]
-	[Version (since = "0.15.1")]
-	public class FreebaseResult : GData.Entry {
-		[CCode (has_construct_function = false)]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public FreebaseResult ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GLib.Variant? dup_variant ();
-		[NoAccessorMethod]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GLib.Variant variant { owned get; }
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_search_query_get_type ()")]
-	[Version (since = "0.15.1")]
-	public class FreebaseSearchQuery : GData.Query {
-		[CCode (has_construct_function = false)]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public FreebaseSearchQuery (string search_terms);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public void add_filter (string property, string value);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public void add_location (uint64 radius, double lat, double lon);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public void close_filter ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string? get_language ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public bool get_stemmed ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public void open_filter (GData.FreebaseSearchFilterType filter_type);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public void set_language (string? lang);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public void set_stemmed (bool stemmed);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public string language { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public bool stemmed { get; set; }
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_search_result_get_type ()")]
-	[Version (since = "0.15.1")]
-	public class FreebaseSearchResult : GData.FreebaseResult {
-		[CCode (has_construct_function = false)]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public FreebaseSearchResult ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned GData.FreebaseSearchResultItem? get_item (uint i);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public uint get_num_items ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public uint get_total_hits ();
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gdata_freebase_search_result_item_get_type ()")]
-	[Compact]
-	[Version (since = "0.15.1")]
-	public class FreebaseSearchResultItem {
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string get_id ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string get_language ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string get_mid ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string get_name ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string? get_notable_id ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string? get_notable_name ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public double get_score ();
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_service_get_type ()")]
-	[Version (since = "0.15.1")]
-	public class FreebaseService : GData.Service {
-		[CCode (has_construct_function = false)]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public FreebaseService (string? developer_key, GData.Authorizer? authorizer);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GLib.InputStream get_image (GData.FreebaseTopicValue value, GLib.Cancellable? cancellable, uint max_width, uint max_height) throws GLib.Error;
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public static unowned GData.AuthorizationDomain get_primary_authorization_domain ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GData.FreebaseTopicResult get_topic (GData.FreebaseTopicQuery query, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public async void get_topic_async (GData.FreebaseTopicQuery query, GLib.Cancellable? cancellable);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GData.FreebaseResult query (GData.FreebaseQuery query, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public async void query_async (GData.FreebaseQuery query, GLib.Cancellable? cancellable);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GData.FreebaseSearchResult search (GData.FreebaseSearchQuery query, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public async void search_async (GData.FreebaseSearchQuery query, GLib.Cancellable? cancellable);
-		[NoAccessorMethod]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public string developer_key { owned get; construct; }
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", ref_function = "gdata_freebase_topic_object_ref", type_id = "gdata_freebase_topic_object_get_type ()", unref_function = "gdata_freebase_topic_object_unref")]
-	[Compact]
-	[Version (since = "0.15.1")]
-	public class FreebaseTopicObject {
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string get_id ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public uint64 get_property_count (string property);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public uint64 get_property_hits (string property);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned GData.FreebaseTopicValue? get_property_value (string property, int64 item);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GLib.GenericArray<weak string> list_properties ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GData.FreebaseTopicObject @ref ();
-		[DestroysInstance]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public void unref ();
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_topic_query_get_type ()")]
-	[Version (since = "0.15.1")]
-	public class FreebaseTopicQuery : GData.Query {
-		[CCode (has_construct_function = false)]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public FreebaseTopicQuery (string id);
-		[CCode (array_length = false, array_null_terminated = true)]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string[]? get_filter ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string? get_language ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public void set_filter ([CCode (array_length = false, array_null_terminated = true)] string[]? filter);
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public void set_language (string? lang);
-		[CCode (array_length = false, array_null_terminated = true)]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public string[] filter { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public string language { get; set; }
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_freebase_topic_result_get_type ()")]
-	[Version (since = "0.15.1")]
-	public class FreebaseTopicResult : GData.FreebaseResult {
-		[CCode (has_construct_function = false)]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public FreebaseTopicResult ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GData.FreebaseTopicObject dup_object ();
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", ref_function = "gdata_freebase_topic_value_ref", type_id = "gdata_freebase_topic_value_get_type ()", unref_function = "gdata_freebase_topic_value_unref")]
-	[Compact]
-	[Version (since = "0.15.1")]
-	public class FreebaseTopicValue {
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GLib.Value copy_value ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string get_creator ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public double get_double ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public int64 get_int ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string get_language ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned GData.FreebaseTopicObject get_object ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string get_property ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string get_string ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public unowned string get_text ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public int64 get_timestamp ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GLib.Type get_value_type ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public bool is_image ();
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public GData.FreebaseTopicValue @ref ();
-		[DestroysInstance]
-		[Version (deprecated = true, deprecated_since = "0.17.7", since = "0.15.1")]
-		public void unref ();
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_gcontact_calendar_get_type ()")]
 	[Version (since = "0.7.0")]
@@ -1963,38 +1373,6 @@ namespace GData {
 		[Version (since = "0.4.0")]
 		public uint width { get; }
 	}
-	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_oauth1_authorizer_get_type ()")]
-	[Version (since = "0.9.0")]
-	public class OAuth1Authorizer : GLib.Object, GData.Authorizer {
-		[CCode (has_construct_function = false)]
-		public OAuth1Authorizer (string? application_name, GLib.Type service_type);
-		[CCode (has_construct_function = false)]
-		public OAuth1Authorizer.for_authorization_domains (string? application_name, GLib.List<GData.AuthorizationDomain> authorization_domains);
-		public unowned string? get_application_name ();
-		public unowned string? get_locale ();
-		[Version (since = "0.15.0")]
-		public unowned GLib.ProxyResolver? get_proxy_resolver ();
-		[Version (deprecated = true, deprecated_since = "0.15.0", since = "0.9.0")]
-		public Soup.URI? get_proxy_uri ();
-		public uint get_timeout ();
-		public string request_authentication_uri (out string token, out string token_secret, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async string request_authentication_uri_async (GLib.Cancellable? cancellable, out string token, out string token_secret) throws GLib.Error;
-		public bool request_authorization (string token, string token_secret, string verifier, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async bool request_authorization_async (string token, string token_secret, string verifier, GLib.Cancellable? cancellable) throws GLib.Error;
-		public void set_locale (string? locale);
-		[Version (since = "0.15.0")]
-		public void set_proxy_resolver (GLib.ProxyResolver? proxy_resolver);
-		[Version (deprecated = true, deprecated_since = "0.15.0", since = "0.9.0")]
-		public void set_proxy_uri (Soup.URI? proxy_uri);
-		public void set_timeout (uint timeout);
-		public string application_name { get; construct; }
-		public string locale { get; set; }
-		[Version (since = "0.15.0")]
-		public GLib.ProxyResolver proxy_resolver { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.15.0", since = "0.9.0")]
-		public Soup.URI proxy_uri { owned get; set; }
-		public uint timeout { get; set; }
-	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_oauth2_authorizer_get_type ()")]
 	[Version (since = "0.17.0")]
 	public class OAuth2Authorizer : GLib.Object, GData.Authorizer {
@@ -2365,8 +1743,6 @@ namespace GData {
 		public unowned string get_locale ();
 		[Version (since = "0.15.0")]
 		public unowned GLib.ProxyResolver? get_proxy_resolver ();
-		[Version (deprecated = true, deprecated_since = "0.15.0", since = "0.2.0")]
-		public unowned Soup.URI get_proxy_uri ();
 		[Version (since = "0.7.0")]
 		public uint get_timeout ();
 		[Version (since = "0.9.0")]
@@ -2391,8 +1767,6 @@ namespace GData {
 		public void set_locale (string? locale);
 		[Version (since = "0.15.0")]
 		public void set_proxy_resolver (GLib.ProxyResolver? proxy_resolver);
-		[Version (deprecated = true, deprecated_since = "0.15.0", since = "0.2.0")]
-		public void set_proxy_uri (Soup.URI? proxy_uri);
 		[Version (since = "0.7.0")]
 		public void set_timeout (uint timeout);
 		[Version (since = "0.9.0")]
@@ -2405,8 +1779,6 @@ namespace GData {
 		public string locale { get; set; }
 		[Version (since = "0.15.0")]
 		public GLib.ProxyResolver proxy_resolver { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.15.0", since = "0.2.0")]
-		public Soup.URI proxy_uri { get; set; }
 		[Version (since = "0.7.0")]
 		public uint timeout { get; set; }
 	}
@@ -2554,22 +1926,6 @@ namespace GData {
 		public void set_parent_comment_uri (string parent_comment_uri);
 		public string parent_comment_uri { get; set; }
 	}
-	[CCode (cheader_filename = "gdata/gdata.h", lower_case_csuffix = "youtube_content", type_id = "gdata_youtube_content_get_type ()")]
-	[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.4.0")]
-	public class YouTubeContent : GData.MediaContent {
-		[CCode (has_construct_function = false)]
-		protected YouTubeContent ();
-		public GData.YouTubeFormat get_format ();
-		public GData.YouTubeFormat format { get; }
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", lower_case_csuffix = "youtube_credit", type_id = "gdata_youtube_credit_get_type ()")]
-	[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.4.0")]
-	public class YouTubeCredit : GData.MediaCredit {
-		[CCode (has_construct_function = false)]
-		protected YouTubeCredit ();
-		public unowned string get_entity_type ();
-		public string entity_type { get; }
-	}
 	[CCode (cheader_filename = "gdata/gdata.h", lower_case_csuffix = "youtube_feed", type_id = "gdata_youtube_feed_get_type ()")]
 	[Version (since = "0.17.0")]
 	public class YouTubeFeed : GData.Feed {
@@ -2582,43 +1938,22 @@ namespace GData {
 		[CCode (has_construct_function = false)]
 		public YouTubeQuery (string? q);
 		public GData.YouTubeAge get_age ();
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public GData.YouTubeFormat get_format ();
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public unowned string get_language ();
 		[Version (since = "0.11.0")]
 		public unowned string get_license ();
-		public void get_location (out double latitude, out double longitude, out double radius, out bool has_location);
+		[Version (since = "1.0.0")]
+		public void get_location (out double latitude, out double longitude, out double radius);
 		public unowned string get_order_by ();
 		public unowned string get_restriction ();
 		public GData.YouTubeSafeSearch get_safe_search ();
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public GData.YouTubeSortOrder get_sort_order ();
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public GData.YouTubeUploader get_uploader ();
 		public void set_age (GData.YouTubeAge age);
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public void set_format (GData.YouTubeFormat format);
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public void set_language (string? language);
 		[Version (since = "0.11.0")]
 		public void set_license (string? license);
-		public void set_location (double latitude, double longitude, double radius, bool has_location);
+		[Version (since = "1.0.0")]
+		public void set_location (double latitude, double longitude, double radius);
 		public void set_order_by (string? order_by);
 		public void set_restriction (string? restriction);
 		public void set_safe_search (GData.YouTubeSafeSearch safe_search);
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public void set_sort_order (GData.YouTubeSortOrder sort_order);
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public void set_uploader (GData.YouTubeUploader uploader);
 		public GData.YouTubeAge age { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public GData.YouTubeFormat format { get; set; }
-		[NoAccessorMethod]
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public bool has_location { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public string language { get; set; }
 		[NoAccessorMethod]
 		public double latitude { get; set; }
 		[Version (since = "0.11.0")]
@@ -2630,10 +1965,6 @@ namespace GData {
 		public string order_by { get; set; }
 		public string restriction { get; set; }
 		public GData.YouTubeSafeSearch safe_search { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public GData.YouTubeSortOrder sort_order { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-		public GData.YouTubeUploader uploader { get; set; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", lower_case_csuffix = "youtube_service", type_id = "gdata_youtube_service_get_type ()")]
 	public class YouTubeService : GData.Service, GData.Batchable {
@@ -2695,8 +2026,6 @@ namespace GData {
 		public unowned GData.MediaCategory get_category ();
 		[Version (since = "0.8.0")]
 		public void get_coordinates (out double latitude, out double longitude);
-		[Version (deprecated = true, deprecated_since = "0.17.0")]
-		public unowned GData.YouTubeCredit get_credit ();
 		public unowned string get_description ();
 		public uint get_duration ();
 		public uint get_favorite_count ();
@@ -2712,15 +2041,11 @@ namespace GData {
 		public unowned GData.YouTubeState get_state ();
 		public unowned GLib.List<GData.MediaThumbnail> get_thumbnails ();
 		public int64 get_uploaded ();
-		[Version (deprecated = true, deprecated_since = "0.17.0")]
-		public unowned string get_video_id ();
 		[Version (since = "0.4.0")]
 		public static string get_video_id_from_uri (string video_uri);
 		public uint get_view_count ();
 		[Version (since = "0.4.0")]
 		public bool is_restricted_in_country (string country);
-		[Version (deprecated = true, deprecated_since = "0.17.0")]
-		public unowned GData.YouTubeContent look_up_content (string type);
 		[Version (since = "0.7.0")]
 		public void set_access_control (string action, GData.YouTubePermission permission);
 		[Version (since = "0.4.0")]
@@ -2729,8 +2054,6 @@ namespace GData {
 		[Version (since = "0.8.0")]
 		public void set_coordinates (double latitude, double longitude);
 		public void set_description (string? description);
-		[Version (deprecated = true, deprecated_since = "0.17.0")]
-		public void set_is_draft (bool is_draft);
 		public void set_is_private (bool is_private);
 		public void set_keywords ([CCode (array_length = false, array_null_terminated = true)] string[] keywords);
 		public void set_location (string? location);
@@ -2741,14 +2064,9 @@ namespace GData {
 		[NoAccessorMethod]
 		public double average_rating { get; }
 		public GData.MediaCategory category { get; set; }
-		[Version (deprecated = true, deprecated_since = "0.17.0")]
-		public GData.YouTubeCredit credit { get; }
 		public string description { get; set; }
 		public uint duration { get; }
 		public uint favorite_count { get; }
-		[NoAccessorMethod]
-		[Version (deprecated = true, deprecated_since = "0.17.0")]
-		public bool is_draft { get; set; }
 		[NoAccessorMethod]
 		public bool is_private { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -2771,8 +2089,6 @@ namespace GData {
 		public int64 recorded { get; set; }
 		public GData.YouTubeState state { get; }
 		public int64 uploaded { get; }
-		[Version (deprecated = true, deprecated_since = "0.17.0")]
-		public string video_id { get; }
 		public uint view_count { get; }
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", type_id = "gdata_access_handler_get_type ()")]
@@ -2836,13 +2152,6 @@ namespace GData {
 		UPDATE,
 		DELETION
 	}
-	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_FREEBASE_SEARCH_FILTER_", type_id = "gdata_freebase_search_filter_type_get_type ()")]
-	[Version (since = "0.15.1")]
-	public enum FreebaseSearchFilterType {
-		ALL,
-		ANY,
-		NOT
-	}
 	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_MEDIA_EXPRESSION_", type_id = "gdata_media_expression_get_type ()")]
 	public enum MediaExpression {
 		SAMPLE,
@@ -2885,14 +2194,6 @@ namespace GData {
 		THIS_WEEK,
 		THIS_MONTH
 	}
-	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_YOUTUBE_FORMAT_", type_id = "gdata_youtube_format_get_type ()")]
-	[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-	public enum YouTubeFormat {
-		UNKNOWN,
-		RTSP_H263_AMR,
-		HTTP_SWF,
-		RTSP_MPEG4_AAC
-	}
 	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_YOUTUBE_PERMISSION_", type_id = "gdata_youtube_permission_get_type ()")]
 	[Version (since = "0.7.0")]
 	public enum YouTubePermission {
@@ -2907,45 +2208,9 @@ namespace GData {
 		MODERATE,
 		STRICT
 	}
-	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_YOUTUBE_SORT_", type_id = "gdata_youtube_sort_order_get_type ()")]
-	[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-	public enum YouTubeSortOrder {
-		NONE,
-		ASCENDING,
-		DESCENDING
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_YOUTUBE_", type_id = "gdata_youtube_standard_feed_type_get_type ()")]
+	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_YOUTUBE_MOST_POPULAR_", type_id = "gdata_youtube_standard_feed_type_get_type ()")]
 	public enum YouTubeStandardFeedType {
-		TOP_RATED_FEED,
-		TOP_FAVORITES_FEED,
-		MOST_VIEWED_FEED,
-		MOST_POPULAR_FEED,
-		MOST_RECENT_FEED,
-		MOST_DISCUSSED_FEED,
-		MOST_LINKED_FEED,
-		MOST_RESPONDED_FEED,
-		RECENTLY_FEATURED_FEED,
-		WATCH_ON_MOBILE_FEED
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_YOUTUBE_UPLOADER_", type_id = "gdata_youtube_uploader_get_type ()")]
-	[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.3.0")]
-	public enum YouTubeUploader {
-		ALL,
-		PARTNER
-	}
-	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_CLIENT_LOGIN_AUTHORIZER_ERROR_")]
-	[Version (since = "0.9.0")]
-	public errordomain ClientLoginAuthorizerError {
-		BAD_AUTHENTICATION,
-		NOT_VERIFIED,
-		TERMS_NOT_AGREED,
-		CAPTCHA_REQUIRED,
-		ACCOUNT_DELETED,
-		ACCOUNT_DISABLED,
-		SERVICE_DISABLED,
-		ACCOUNT_MIGRATED,
-		INVALID_SECOND_FACTOR;
-		public static GLib.Quark quark ();
+		FEED
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_DOCUMENTS_SERVICE_ERROR_INVALID_CONTENT_")]
 	[Version (since = "0.4.0")]
@@ -3434,9 +2699,6 @@ namespace GData {
 	[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_YOUTUBE_ASPECT_RATIO_WIDESCREEN")]
 	[Version (since = "0.7.0")]
 	public const string YOUTUBE_ASPECT_RATIO_WIDESCREEN;
-	[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_YOUTUBE_CREDIT_ENTITY_PARTNER")]
-	[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.7.0")]
-	public const string YOUTUBE_CREDIT_ENTITY_PARTNER;
 	[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_YOUTUBE_LICENSE_CC")]
 	[Version (since = "0.11.0")]
 	public const string YOUTUBE_LICENSE_CC;
@@ -3446,9 +2708,6 @@ namespace GData {
 	[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_YOUTUBE_RATING_TYPE_MPAA")]
 	[Version (since = "0.10.0")]
 	public const string YOUTUBE_RATING_TYPE_MPAA;
-	[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_YOUTUBE_RATING_TYPE_SIMPLE")]
-	[Version (deprecated = true, deprecated_since = "0.17.0", since = "0.10.0")]
-	public const string YOUTUBE_RATING_TYPE_SIMPLE;
 	[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_YOUTUBE_RATING_TYPE_V_CHIP")]
 	[Version (since = "0.10.0")]
 	public const string YOUTUBE_RATING_TYPE_V_CHIP;

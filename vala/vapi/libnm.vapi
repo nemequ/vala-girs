@@ -124,6 +124,7 @@ namespace NM {
 		[Version (since = "1.6")]
 		public static bool is_json_object (string str) throws GLib.Error;
 		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (deprecated = true, deprecated_since = "1.32")]
 		public static bool is_uuid (string? str);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static bool is_valid_iface_name (string? name) throws GLib.Error;
@@ -586,7 +587,6 @@ namespace NM {
 		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool deactivate_connection (NM.ActiveConnection active, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool deactivate_connection_async (NM.ActiveConnection active, GLib.Cancellable? cancellable) throws GLib.Error;
-		public static GLib.Quark error_quark ();
 		public unowned NM.ActiveConnection get_activating_connection ();
 		public unowned GLib.GenericArray<NM.ActiveConnection> get_active_connections ();
 		[Version (since = "1.2")]
@@ -928,12 +928,6 @@ namespace NM {
 		public const string VXLAN_TOS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_TTL")]
 		public const string VXLAN_TTL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIREGUARD_FWMARK")]
-		public const string WIREGUARD_FWMARK;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIREGUARD_LISTEN_PORT")]
-		public const string WIREGUARD_LISTEN_PORT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIREGUARD_PUBLIC_KEY")]
-		public const string WIREGUARD_PUBLIC_KEY;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WPAN_HW_ADDRESS")]
 		public const string WPAN_HW_ADDRESS;
 		[CCode (has_construct_function = false)]
@@ -1662,6 +1656,12 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_wireguard", type_id = "nm_device_wireguard_get_type ()")]
 	public class DeviceWireGuard : NM.Device {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIREGUARD_FWMARK")]
+		public const string FWMARK;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIREGUARD_LISTEN_PORT")]
+		public const string LISTEN_PORT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIREGUARD_PUBLIC_KEY")]
+		public const string PUBLIC_KEY;
 		[CCode (has_construct_function = false)]
 		protected DeviceWireGuard ();
 		[Version (since = "1.14")]
@@ -1720,6 +1720,7 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		public IPAddress.binary (int family, void* addr, uint prefix) throws GLib.Error;
 		public int cmp_full (NM.IPAddress b, NM.IPAddressCmpFlags cmp_flags);
+		[Version (since = "1.32")]
 		public NM.IPAddress dup ();
 		public bool equal (NM.IPAddress other);
 		public unowned string get_address ();
@@ -1789,6 +1790,7 @@ namespace NM {
 		public static bool attribute_validate (string name, GLib.Variant value, int family, out bool known) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public IPRoute.binary (int family, void* dest, uint prefix, void* next_hop, int64 metric) throws GLib.Error;
+		[Version (since = "1.32")]
 		public NM.IPRoute dup ();
 		public bool equal (NM.IPRoute other);
 		[Version (since = "1.10")]
@@ -1863,7 +1865,7 @@ namespace NM {
 		public uint8 get_to_len ();
 		[Version (since = "1.18")]
 		public uint8 get_tos ();
-		[Version (since = "1.32")]
+		[Version (since = "1.34")]
 		public bool get_uid_range (out uint32 out_range_start, out uint32 out_range_end);
 		[Version (since = "1.18")]
 		public bool is_sealed ();
@@ -1901,7 +1903,7 @@ namespace NM {
 		public void set_to (string? to, uint8 len);
 		[Version (since = "1.18")]
 		public void set_tos (uint8 tos);
-		[Version (since = "1.32")]
+		[Version (since = "1.34")]
 		public void set_uid_range (uint32 uid_range_start, uint32 uid_range_end);
 		[Version (since = "1.18")]
 		public string to_string (NM.IPRoutingRuleAsStringFlags to_string_flags, GLib.HashTable<void*,void*>? extra_args) throws GLib.Error;
@@ -1942,6 +1944,8 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_object_get_type ()")]
 	public abstract class Object : GLib.Object {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_OBJECT_CLIENT")]
+		public const string CLIENT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_OBJECT_PATH")]
 		public const string PATH;
 		[CCode (has_construct_function = false)]
@@ -1949,6 +1953,8 @@ namespace NM {
 		[Version (since = "1.24")]
 		public unowned NM.Client get_client ();
 		public unowned string get_path ();
+		[Version (since = "1.34")]
+		public NM.Client client { get; }
 		public string path { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_remote_connection_get_type ()")]
@@ -2043,8 +2049,6 @@ namespace NM {
 		public const int SECRET;
 		[CCode (has_construct_function = false)]
 		protected Setting ();
-		[NoWrapper]
-		public virtual bool aggregate (int type_i, void* arg);
 		public bool compare (NM.Setting b, NM.SettingCompareFlags flags);
 		public bool diff (NM.Setting b, NM.SettingCompareFlags flags, bool invert_results, ref GLib.HashTable<string,uint32> results);
 		public NM.Setting duplicate ();
@@ -2052,8 +2056,6 @@ namespace NM {
 		public unowned GLib.VariantType get_dbus_property_type (string property_name);
 		public unowned string get_name ();
 		public bool get_secret_flags (string secret_name, NM.SettingSecretFlags out_flags) throws GLib.Error;
-		[NoWrapper]
-		public virtual bool init_from_dbus (GLib.HashTable<void*,void*> keys, GLib.Variant setting_dict, GLib.Variant connection_dict, uint parse_flags) throws GLib.Error;
 		public static GLib.Type lookup_type (string name);
 		[Version (since = "1.26")]
 		public void option_clear_by_name (NM.UtilsPredicateStr? predicate);
@@ -2074,11 +2076,9 @@ namespace NM {
 		public void option_set_uint32 (string opt_name, uint32 value);
 		public bool set_secret_flags (string secret_name, NM.SettingSecretFlags flags) throws GLib.Error;
 		public string to_string ();
-		[NoWrapper]
-		public virtual int update_one_secret (string key, GLib.Variant value) throws GLib.Error;
 		public bool verify (NM.Connection? connection) throws GLib.Error;
 		[Version (since = "1.2")]
-		public virtual bool verify_secrets (NM.Connection? connection) throws GLib.Error;
+		public bool verify_secrets (NM.Connection? connection) throws GLib.Error;
 		public string name { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_6lowpan", type_id = "nm_setting_6lowpan_get_type ()")]
@@ -2539,6 +2539,8 @@ namespace NM {
 		public const string OPTION_NUM_UNSOL_NA;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_PACKETS_PER_SLAVE")]
 		public const string OPTION_PACKETS_PER_SLAVE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_PEER_NOTIF_DELAY")]
+		public const string OPTION_PEER_NOTIF_DELAY;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_PRIMARY")]
 		public const string OPTION_PRIMARY;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_PRIMARY_RESELECT")]
@@ -3337,6 +3339,8 @@ namespace NM {
 		public const string METHOD;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_NEVER_DEFAULT")]
 		public const string NEVER_DEFAULT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_REQUIRED_TIMEOUT")]
+		public const string REQUIRED_TIMEOUT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTES")]
 		public const string ROUTES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTE_METRIC")]
@@ -3401,6 +3405,8 @@ namespace NM {
 		public uint get_num_routes ();
 		[Version (since = "1.18")]
 		public uint get_num_routing_rules ();
+		[Version (since = "1.34")]
+		public int get_required_timeout ();
 		public unowned NM.IPRoute get_route (int idx);
 		public int64 get_route_metric ();
 		[Version (since = "1.10")]
@@ -3470,6 +3476,9 @@ namespace NM {
 		public string method { owned get; set; }
 		[NoAccessorMethod]
 		public bool never_default { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.34")]
+		public int required_timeout { get; set; }
 		[NoAccessorMethod]
 		public int64 route_metric { get; set; }
 		[NoAccessorMethod]
@@ -4742,6 +4751,26 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_wireguard", type_id = "nm_setting_wireguard_get_type ()")]
 	[Version (since = "1.16")]
 	public class SettingWireGuard : NM.Setting {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_FWMARK")]
+		public const string FWMARK;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_IP4_AUTO_DEFAULT_ROUTE")]
+		public const string IP4_AUTO_DEFAULT_ROUTE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_IP6_AUTO_DEFAULT_ROUTE")]
+		public const string IP6_AUTO_DEFAULT_ROUTE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_LISTEN_PORT")]
+		public const string LISTEN_PORT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_MTU")]
+		public const string MTU;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PEERS")]
+		public const string PEERS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PEER_ROUTES")]
+		public const string PEER_ROUTES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PRIVATE_KEY")]
+		public const string PRIVATE_KEY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PRIVATE_KEY_FLAGS")]
+		public const string PRIVATE_KEY_FLAGS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingWireGuard ();
 		public void append_peer (NM.WireGuardPeer peer);
@@ -5844,13 +5873,7 @@ namespace NM {
 		DISCONNECT_NEW_DEVICES,
 		ALLOW_OVERLAPPING
 	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_ERROR_", has_type_id = false)]
-	public enum ClientError {
-		FAILED,
-		MANAGER_NOT_RUNNING,
-		OBJECT_CREATION_FAILED
-	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_INSTANCE_FLAGS_", has_type_id = false)]
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_INSTANCE_FLAGS_", type_id = "nm_client_instance_flags_get_type ()")]
 	[Flags]
 	[Version (since = "1.24")]
 	public enum ClientInstanceFlags {
@@ -6561,6 +6584,14 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Quark quark ();
 	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_ERROR_")]
+	public errordomain ClientError {
+		FAILED,
+		MANAGER_NOT_RUNNING,
+		OBJECT_CREATION_FAILED;
+		[CCode (cheader_filename = "NetworkManager.h")]
+		public static GLib.Quark quark ();
+	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CONNECTION_ERROR_")]
 	public errordomain ConnectionError {
 		FAILED,
@@ -6747,6 +6778,8 @@ namespace NM {
 	public const string CHECKPOINT_ROLLBACK_TIMEOUT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CONNECTION_CHANGED")]
 	public const string CONNECTION_CHANGED;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CONNECTION_NORMALIZE_PARAM_IP4_CONFIG_METHOD")]
+	public const string CONNECTION_NORMALIZE_PARAM_IP4_CONFIG_METHOD;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CONNECTION_NORMALIZE_PARAM_IP6_CONFIG_METHOD")]
 	public const string CONNECTION_NORMALIZE_PARAM_IP6_CONFIG_METHOD;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CONNECTION_SECRETS_CLEARED")]
@@ -7257,26 +7290,6 @@ namespace NM {
 	public const string SETTING_VRF_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VRF_TABLE")]
 	public const string SETTING_VRF_TABLE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_FWMARK")]
-	public const string SETTING_WIREGUARD_FWMARK;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_IP4_AUTO_DEFAULT_ROUTE")]
-	public const string SETTING_WIREGUARD_IP4_AUTO_DEFAULT_ROUTE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_IP6_AUTO_DEFAULT_ROUTE")]
-	public const string SETTING_WIREGUARD_IP6_AUTO_DEFAULT_ROUTE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_LISTEN_PORT")]
-	public const string SETTING_WIREGUARD_LISTEN_PORT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_MTU")]
-	public const string SETTING_WIREGUARD_MTU;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PEERS")]
-	public const string SETTING_WIREGUARD_PEERS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PEER_ROUTES")]
-	public const string SETTING_WIREGUARD_PEER_ROUTES;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PRIVATE_KEY")]
-	public const string SETTING_WIREGUARD_PRIVATE_KEY;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PRIVATE_KEY_FLAGS")]
-	public const string SETTING_WIREGUARD_PRIVATE_KEY_FLAGS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_SETTING_NAME")]
-	public const string SETTING_WIREGUARD_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_CHANNEL")]
 	public const string SETTING_WPAN_CHANNEL;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_CHANNEL_DEFAULT")]
