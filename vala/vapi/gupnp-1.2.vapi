@@ -47,6 +47,23 @@ namespace GUPnP {
 		public Soup.Session session { get; }
 		public uint subscription_timeout { get; construct; }
 	}
+	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_context_filter_get_type ()")]
+	[Version (since = "1.4.0")]
+	public class ContextFilter : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected ContextFilter ();
+		public bool add_entry (string entry);
+		public void add_entryv ([CCode (array_length = false, array_null_terminated = true)] string[] entries);
+		public bool check_context (GUPnP.Context context);
+		public void clear ();
+		public bool get_enabled ();
+		public unowned GLib.List<string>? get_entries ();
+		public bool is_empty ();
+		public bool remove_entry (string entry);
+		public void set_enabled (bool enable);
+		public bool enabled { get; set construct; }
+		public GLib.List<string> entries { get; construct; }
+	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_context_manager_get_type ()")]
 	public abstract class ContextManager : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -55,12 +72,14 @@ namespace GUPnP {
 		public static GUPnP.ContextManager create (uint port);
 		[Version (since = "1.2.0")]
 		public static GUPnP.ContextManager create_full (GSSDP.UDAVersion uda_version, GLib.SocketFamily family, uint port);
+		public unowned GUPnP.ContextFilter get_context_filter ();
 		[Version (since = "0.20.0")]
 		public uint get_port ();
 		[Version (since = "1.2.0")]
 		public GLib.SocketFamily get_socket_family ();
 		[Version (since = "1.2.0")]
 		public GSSDP.UDAVersion get_uda_version ();
+		[Version (deprecated = true, deprecated_since = "1.4.0")]
 		public unowned GUPnP.WhiteList get_white_list ();
 		[Version (since = "0.14.0")]
 		public void manage_control_point (GUPnP.ControlPoint control_point);
@@ -68,13 +87,13 @@ namespace GUPnP {
 		public void manage_root_device (GUPnP.RootDevice root_device);
 		[Version (since = "0.20.3")]
 		public void rescan_control_points ();
+		public GUPnP.ContextFilter context_filter { get; }
 		[NoAccessorMethod]
 		[Version (since = "1.2.0")]
 		public GLib.SocketFamily family { get; construct; }
 		public uint port { get; construct; }
 		[Version (since = "1.2.0")]
 		public GSSDP.UDAVersion uda_version { get; construct; }
-		public GUPnP.WhiteList white_list { get; }
 		public signal void context_available (GUPnP.Context context);
 		public signal void context_unavailable (GUPnP.Context context);
 	}
@@ -351,37 +370,35 @@ namespace GUPnP {
 	[Compact]
 	public class UUID {
 	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_white_list_get_type ()")]
-	public class WhiteList : GLib.Object {
+	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_context_filter_get_type ()")]
+	public class WhiteList : GUPnP.ContextFilter {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.20.5")]
-		public WhiteList ();
-		[Version (since = "0.20.5")]
+		protected WhiteList ();
+		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
 		public bool add_entry (string entry);
-		[Version (since = "0.20.8")]
+		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.8")]
 		public void add_entryv ([CCode (array_length = false, array_null_terminated = true)] string[] entries);
-		[Version (since = "0.20.5")]
+		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
 		public bool check_context (GUPnP.Context context);
-		[Version (since = "0.20.5")]
+		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
 		public void clear ();
-		[Version (since = "0.20.5")]
+		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
 		public bool get_enabled ();
-		[Version (since = "0.20.5")]
+		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
 		public unowned GLib.List<string>? get_entries ();
-		[Version (since = "0.20.5")]
+		[Version (deprecated = true, deprecated_since = "1.4.0")]
 		public bool is_empty ();
-		[Version (since = "0.20.5")]
+		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
+		public static GUPnP.WhiteList @new ();
+		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
 		public bool remove_entry (string entry);
-		[Version (since = "0.20.5")]
+		[Version (deprecated = true, deprecated_since = "1.4.0")]
 		public void set_enabled (bool enable);
-		[Version (since = "0.20.5")]
-		public bool enabled { get; set construct; }
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_xml_doc_get_type ()")]
 	public class XMLDoc : GLib.Object {
 		[CCode (has_construct_function = false)]
-		[Version (since = "0.14.0")]
-		public XMLDoc (owned Xml.Doc xml_doc);
+		public XMLDoc (Xml.Doc xml_doc);
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.14.0")]
 		public XMLDoc.from_path (string path) throws GLib.Error;
@@ -449,5 +466,20 @@ namespace GUPnP {
 	[CCode (cheader_filename = "libgupnp/gupnp.h", instance_pos = 3.9)]
 	public delegate void ServiceProxyNotifyCallback (GUPnP.ServiceProxy proxy, string variable, GLib.Value value);
 	[CCode (cheader_filename = "libgupnp/gupnp.h")]
+	[Version (replacement = "ControlError.quark")]
+	public static GLib.Quark control_error_quark ();
+	[CCode (cheader_filename = "libgupnp/gupnp.h")]
+	[Version (replacement = "EventingError.quark")]
+	public static GLib.Quark eventing_error_quark ();
+	[CCode (cheader_filename = "libgupnp/gupnp.h")]
 	public static string get_uuid ();
+	[CCode (cheader_filename = "libgupnp/gupnp.h")]
+	[Version (replacement = "RootdeviceError.quark")]
+	public static GLib.Quark rootdevice_error_quark ();
+	[CCode (cheader_filename = "libgupnp/gupnp.h")]
+	[Version (replacement = "ServerError.quark")]
+	public static GLib.Quark server_error_quark ();
+	[CCode (cheader_filename = "libgupnp/gupnp.h")]
+	[Version (replacement = "XMLError.quark")]
+	public static GLib.Quark xml_error_quark ();
 }

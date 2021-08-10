@@ -423,7 +423,6 @@ namespace NM {
 		public BridgeVlan (uint16 vid_start, uint16 vid_end);
 		[Version (since = "1.18")]
 		public int cmp (NM.BridgeVlan b);
-		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.18")]
 		public static NM.BridgeVlan from_str (string str) throws GLib.Error;
 		[Version (since = "1.18")]
@@ -1785,7 +1784,6 @@ namespace NM {
 	public class IPRoute {
 		[CCode (has_construct_function = false)]
 		public IPRoute (int family, string dest, uint prefix, string? next_hop, int64 metric) throws GLib.Error;
-		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.8")]
 		public static bool attribute_validate (string name, GLib.Variant value, int family, out bool known) throws GLib.Error;
 		[CCode (has_construct_function = false)]
@@ -1803,7 +1801,6 @@ namespace NM {
 		public int64 get_metric ();
 		public unowned string get_next_hop ();
 		public uint get_prefix ();
-		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.8")]
 		public static unowned NM.VariantAttributeSpec get_variant_attribute_spec ();
 		public void @ref ();
@@ -1822,7 +1819,6 @@ namespace NM {
 		public IPRoutingRule (int addr_family);
 		[Version (since = "1.18")]
 		public int cmp (NM.IPRoutingRule? other);
-		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.18")]
 		public static NM.IPRoutingRule from_string (string str, NM.IPRoutingRuleAsStringFlags to_string_flags, GLib.HashTable<void*,void*>? extra_args) throws GLib.Error;
 		[Version (since = "1.18")]
@@ -5212,7 +5208,6 @@ namespace NM {
 		public SriovVF (uint index);
 		[Version (since = "1.14")]
 		public bool add_vlan (uint vlan_id);
-		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.14")]
 		public static bool attribute_validate (string name, GLib.Variant value, out bool known) throws GLib.Error;
 		[Version (since = "1.14")]
@@ -5660,6 +5655,7 @@ namespace NM {
 		public bool diff (NM.Connection b, NM.SettingCompareFlags flags, GLib.HashTable<string,GLib.HashTable<void*,void*>> out_settings);
 		public void dump ();
 		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (replacement = "ConnectionError.quark")]
 		public static GLib.Quark error_quark ();
 		public void for_each_setting_value (NM.SettingValueIterFn func);
 		public unowned string get_connection_type ();
@@ -6581,7 +6577,6 @@ namespace NM {
 		NOSECRETS,
 		[CCode (cname = "NM_AGENT_MANAGER_ERROR_USER_CANCELED")]
 		USERCANCELED;
-		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_ERROR_")]
@@ -6589,7 +6584,6 @@ namespace NM {
 		FAILED,
 		MANAGER_NOT_RUNNING,
 		OBJECT_CREATION_FAILED;
-		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CONNECTION_ERROR_")]
@@ -6608,7 +6602,8 @@ namespace NM {
 		[CCode (cname = "NM_CONNECTION_ERROR_MISSING_PROPERTY")]
 		MISSINGPROPERTY,
 		[CCode (cname = "NM_CONNECTION_ERROR_INVALID_PROPERTY")]
-		INVALIDPROPERTY
+		INVALIDPROPERTY;
+		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CRYPTO_ERROR_")]
 	public errordomain CryptoError {
@@ -6618,7 +6613,6 @@ namespace NM {
 		UNKNOWN_CIPHER,
 		DECRYPTION_FAILED,
 		ENCRYPTION_FAILED;
-		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_ERROR_")]
@@ -6644,7 +6638,6 @@ namespace NM {
 		MISSINGDEPENDENCIES,
 		[CCode (cname = "NM_DEVICE_ERROR_INVALID_ARGUMENT")]
 		INVALIDARGUMENT;
-		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_MANAGER_ERROR_")]
@@ -6676,7 +6669,6 @@ namespace NM {
 		INVALIDARGUMENTS,
 		[CCode (cname = "NM_MANAGER_ERROR_MISSING_PLUGIN")]
 		MISSINGPLUGIN;
-		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SECRET_AGENT_ERROR_")]
@@ -6692,7 +6684,6 @@ namespace NM {
 		AGENTCANCELED,
 		[CCode (cname = "NM_SECRET_AGENT_ERROR_NO_SECRETS")]
 		NOSECRETS;
-		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTINGS_ERROR_")]
@@ -6712,7 +6703,6 @@ namespace NM {
 		INVALIDHOSTNAME,
 		[CCode (cname = "NM_SETTINGS_ERROR_INVALID_ARGUMENTS")]
 		INVALIDARGUMENTS;
-		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_VPN_PLUGIN_ERROR_")]
@@ -6736,7 +6726,6 @@ namespace NM {
 		INVALIDCONNECTION,
 		[CCode (cname = "NM_VPN_PLUGIN_ERROR_INTERACTIVE_NOT_SUPPORTED")]
 		INTERACTIVENOTSUPPORTED;
-		[CCode (cheader_filename = "NetworkManager.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", instance_pos = 4.9)]
@@ -7361,6 +7350,21 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_SYMMETRIC_KEY_LEN")]
 	public const int WIREGUARD_SYMMETRIC_KEY_LEN;
 	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "AgentManagerError.quark")]
+	public static GLib.Quark agent_manager_error_quark ();
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "BridgeVlan.from_str", since = "1.18")]
+	public static NM.BridgeVlan bridge_vlan_from_str (string str) throws GLib.Error;
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "ClientError.quark")]
+	public static GLib.Quark client_error_quark ();
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "CryptoError.quark")]
+	public static GLib.Quark crypto_error_quark ();
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "DeviceError.quark")]
+	public static GLib.Quark device_error_quark ();
+	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (since = "1.26")]
 	public static bool ethtool_optname_is_coalesce (string? optname);
 	[CCode (cheader_filename = "NetworkManager.h")]
@@ -7373,15 +7377,39 @@ namespace NM {
 	[Version (since = "1.26")]
 	public static bool ethtool_optname_is_ring (string? optname);
 	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "IPRoute.attribute_validate", since = "1.8")]
+	public static bool ip_route_attribute_validate (string name, GLib.Variant value, int family, out bool known) throws GLib.Error;
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "IPRoute.get_variant_attribute_spec", since = "1.8")]
+	public static unowned NM.VariantAttributeSpec ip_route_get_variant_attribute_spec ();
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "IPRoutingRule.from_string", since = "1.18")]
+	public static NM.IPRoutingRule ip_routing_rule_from_string (string str, NM.IPRoutingRuleAsStringFlags to_string_flags, GLib.HashTable<void*,void*>? extra_args) throws GLib.Error;
+	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (since = "1.30")]
 	public static NM.Connection keyfile_read (GLib.KeyFile keyfile, string base_dir, NM.KeyfileHandlerFlags handler_flags, NM.KeyfileReadHandler? handler) throws GLib.Error;
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (since = "1.30")]
 	public static GLib.KeyFile keyfile_write (NM.Connection connection, NM.KeyfileHandlerFlags handler_flags, NM.KeyfileWriteHandler? handler) throws GLib.Error;
 	[CCode (cheader_filename = "NetworkManager.h")]
-	[Version (since = "1.4")]
+	[Version (replacement = "ManagerError.quark")]
+	public static GLib.Quark manager_error_quark ();
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "SecretAgentError.quark")]
+	public static GLib.Quark secret_agent_error_quark ();
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "SettingsError.quark")]
+	public static GLib.Quark settings_error_quark ();
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "SriovVF.attribute_validate", since = "1.14")]
+	public static bool sriov_vf_attribute_validate (string name, GLib.Variant value, out bool known) throws GLib.Error;
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "VpnEditorPlugin.load", since = "1.4")]
 	public static NM.VpnEditorPlugin vpn_editor_plugin_load (string plugin_name, string check_service) throws GLib.Error;
 	[CCode (cheader_filename = "NetworkManager.h")]
-	[Version (since = "1.2")]
+	[Version (replacement = "VpnEditorPlugin.load_from_file", since = "1.2")]
 	public static NM.VpnEditorPlugin vpn_editor_plugin_load_from_file (string plugin_name, string check_service, int check_owner, NM.UtilsCheckFilePredicate check_file) throws GLib.Error;
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "VpnPluginError.quark")]
+	public static GLib.Quark vpn_plugin_error_quark ();
 }

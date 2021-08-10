@@ -1971,6 +1971,7 @@ namespace GData {
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.9.0")]
 		public YouTubeService (string developer_key, GData.Authorizer? authorizer);
+		[Version (replacement = "YouTubeServiceError.quark")]
 		public static GLib.Quark error_quark ();
 		[Version (since = "0.8.0")]
 		public GData.YouTubeVideo finish_video_upload (GData.UploadStream upload_stream) throws GLib.Error;
@@ -2245,7 +2246,9 @@ namespace GData {
 	public errordomain YouTubeServiceError {
 		API_QUOTA_EXCEEDED,
 		ENTRY_QUOTA_EXCEEDED,
-		CHANNEL_REQUIRED
+		CHANNEL_REQUIRED;
+		[CCode (cname = "gdata_youtube_service_error_quark")]
+		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "gdata/gdata.h", instance_pos = 4.9)]
 	[Version (since = "0.7.0")]
@@ -2711,4 +2714,16 @@ namespace GData {
 	[CCode (cheader_filename = "gdata/gdata.h", cname = "GDATA_YOUTUBE_RATING_TYPE_V_CHIP")]
 	[Version (since = "0.10.0")]
 	public const string YOUTUBE_RATING_TYPE_V_CHIP;
+	[CCode (cheader_filename = "gdata/gdata.h")]
+	[Version (replacement = "Color.from_hexadecimal")]
+	public static bool color_from_hexadecimal (string hexadecimal, out GData.Color color);
+	[CCode (cheader_filename = "gdata/gdata.h")]
+	[Version (replacement = "DocumentsServiceError.quark")]
+	public static GLib.Quark documents_service_error_quark ();
+	[CCode (cheader_filename = "gdata/gdata.h")]
+	[Version (replacement = "ParserError.quark")]
+	public static GLib.Quark parser_error_quark ();
+	[CCode (cheader_filename = "gdata/gdata.h")]
+	[Version (replacement = "ServiceError.quark")]
+	public static GLib.Quark service_error_quark ();
 }

@@ -1413,4 +1413,10 @@ namespace Grl {
 	[CCode (cheader_filename = "grilo.h")]
 	[Version (since = "0.1.6")]
 	public static void paging_translate (uint skip, uint count, uint max_page_size, uint page_size, uint page_number, uint internal_offset);
+	[CCode (cheader_filename = "grilo.h")]
+	[Version (replacement = "RangeValue.hashtable_insert")]
+	public static void range_value_hashtable_insert (GLib.HashTable<void*,void*> hash_table, void* key, GLib.Value min, GLib.Value max);
+	[CCode (cheader_filename = "grilo.h")]
+	[Version (replacement = "RangeValue.hashtable_new")]
+	public static GLib.HashTable<void*,Grl.RangeValue> range_value_hashtable_new ();
 }

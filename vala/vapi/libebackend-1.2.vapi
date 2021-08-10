@@ -545,6 +545,12 @@ namespace E {
 	[Version (since = "3.8")]
 	public const string USER_PROMPTER_SERVER_OBJECT_PATH;
 	[CCode (cheader_filename = "libebackend/libebackend.h")]
+	[Version (replacement = "CacheColumnInfo.free", since = "3.26")]
+	public static void cache_column_info_free (void* info);
+	[CCode (cheader_filename = "libebackend/libebackend.h")]
+	[Version (replacement = "CacheOfflineChange.free", since = "3.26")]
+	public static void cache_offline_change_free (void* change);
+	[CCode (cheader_filename = "libebackend/libebackend.h")]
 	[Version (since = "3.2")]
 	public static void sqlite3_vfs_init ();
 }

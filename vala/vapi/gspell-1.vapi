@@ -147,4 +147,16 @@ namespace Gspell {
 		NO_LANGUAGE_SET;
 		public static GLib.Quark quark ();
 	}
+	[CCode (cheader_filename = "gspell/gspell.h")]
+	[Version (replacement = "CheckerError.quark")]
+	public static GLib.Quark checker_error_quark ();
+	[CCode (cheader_filename = "gspell/gspell.h")]
+	[Version (replacement = "Language.get_available")]
+	public static unowned GLib.List<Gspell.Language> language_get_available ();
+	[CCode (cheader_filename = "gspell/gspell.h")]
+	[Version (replacement = "Language.get_default")]
+	public static unowned Gspell.Language? language_get_default ();
+	[CCode (cheader_filename = "gspell/gspell.h")]
+	[Version (replacement = "Language.lookup")]
+	public static unowned Gspell.Language? language_lookup (string language_code);
 }

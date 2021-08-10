@@ -15,7 +15,7 @@ namespace Retro {
 		public void boot () throws GLib.Error;
 		public uint get_api_version ();
 		public bool get_can_access_state ();
-		public unowned string get_content_directory ();
+		public unowned string get_core_assets_directory ();
 		public unowned string get_filename ();
 		public double get_frames_per_second ();
 		public bool get_game_loaded ();
@@ -39,8 +39,8 @@ namespace Retro {
 		public void run ();
 		public void save_memory (Retro.MemoryType memory_type, string filename) throws GLib.Error;
 		public void save_state (string filename) throws GLib.Error;
-		public void set_content_directory (string content_directory);
 		public void set_controller (uint port, Retro.Controller? controller);
+		public void set_core_assets_directory (string core_assets_directory);
 		public void set_current_media (uint media_index) throws GLib.Error;
 		public void set_default_controller (Retro.ControllerType controller_type, Retro.Controller? controller);
 		public void set_keyboard (Gtk.Widget? widget);
@@ -52,7 +52,7 @@ namespace Retro {
 		public void set_user_name (string user_name);
 		public void stop ();
 		public uint api_version { get; }
-		public string content_directory { get; set; }
+		public string core_assets_directory { get; set; }
 		public string filename { get; construct; }
 		public double frames_per_second { get; }
 		public bool game_loaded { get; }
@@ -288,11 +288,26 @@ namespace Retro {
 		public static Retro.VideoFilter from_string (string filter);
 	}
 	[CCode (cheader_filename = "retro-gtk.h")]
+	[Version (replacement = "ControllerType.get_id_count")]
+	public static int controller_type_get_id_count (Retro.ControllerType type);
+	[CCode (cheader_filename = "retro-gtk.h")]
+	[Version (replacement = "ControllerType.get_index_count")]
+	public static int controller_type_get_index_count (Retro.ControllerType type);
+	[CCode (cheader_filename = "retro-gtk.h")]
 	public static void g_log (Retro.Core sender, string? log_domain, GLib.LogLevelFlags log_level, string message);
 	[CCode (cheader_filename = "retro-gtk.h")]
 	public static GLib.Resource gtk_get_resource ();
 	[CCode (cheader_filename = "retro-gtk.h")]
+	[Version (replacement = "JoypadId.from_button_code")]
+	public static Retro.JoypadId joypad_id_from_button_code (uint16 button_code);
+	[CCode (cheader_filename = "retro-gtk.h")]
+	[Version (replacement = "JoypadId.to_button_code")]
+	public static uint16 joypad_id_to_button_code (Retro.JoypadId joypad_id);
+	[CCode (cheader_filename = "retro-gtk.h")]
 	public static float pixbuf_get_aspect_ratio (Gdk.Pixbuf pixbuf);
 	[CCode (cheader_filename = "retro-gtk.h")]
 	public static void pixbuf_set_aspect_ratio (Gdk.Pixbuf pixbuf, float aspect_ratio);
+	[CCode (cheader_filename = "retro-gtk.h")]
+	[Version (replacement = "VideoFilter.from_string")]
+	public static Retro.VideoFilter video_filter_from_string (string filter);
 }

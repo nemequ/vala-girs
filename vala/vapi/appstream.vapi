@@ -921,7 +921,7 @@ namespace AppStream {
 		IARC;
 		public string? format_age (uint age);
 		public static AppStream.ContentRatingSystem from_locale (string locale);
-		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
+		[CCode (array_length_pos = 0.2, array_length_type = "gsize")]
 		public uint[] get_csm_ages ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_formatted_ages ();
@@ -1344,6 +1344,93 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h", cname = "AS_MINOR_VERSION")]
 	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "AgreementKind.from_string", since = "0.12.1")]
+	public static AppStream.AgreementKind agreement_kind_from_string (string value);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "AgreementKind.to_string", since = "0.12.1")]
+	public static unowned string agreement_kind_to_string (AppStream.AgreementKind value);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ArtifactKind.from_string")]
+	public static AppStream.ArtifactKind artifact_kind_from_string (string kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ArtifactKind.to_string")]
+	public static unowned string artifact_kind_to_string (AppStream.ArtifactKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "BundleKind.from_string")]
+	public static AppStream.BundleKind bundle_kind_from_string (string bundle_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "BundleKind.to_string", since = "0.8.0")]
+	public static unowned string bundle_kind_to_string (AppStream.BundleKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ChecksumKind.from_string")]
+	public static AppStream.ChecksumKind checksum_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ChecksumKind.to_string")]
+	public static unowned string checksum_kind_to_string (AppStream.ChecksumKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ComponentKind.from_string")]
+	public static AppStream.ComponentKind component_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ComponentKind.to_string")]
+	public static unowned string component_kind_to_string (AppStream.ComponentKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ComponentScope.from_string")]
+	public static AppStream.ComponentScope component_scope_from_string (string scope_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ComponentScope.to_string")]
+	public static unowned string component_scope_to_string (AppStream.ComponentScope scope);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ContentRatingSystem.format_age", since = "0.12.12")]
+	public static string? content_rating_system_format_age (AppStream.ContentRatingSystem system, uint age);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ContentRatingSystem.from_locale", since = "0.12.12")]
+	public static AppStream.ContentRatingSystem content_rating_system_from_locale (string locale);
+	[CCode (array_length_pos = 1.1, array_length_type = "gsize", cheader_filename = "appstream.h")]
+	[Version (replacement = "ContentRatingSystem.get_csm_ages", since = "0.12.12")]
+	public static uint[] content_rating_system_get_csm_ages (AppStream.ContentRatingSystem system);
+	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "appstream.h")]
+	[Version (replacement = "ContentRatingSystem.get_formatted_ages", since = "0.12.12")]
+	public static string[] content_rating_system_get_formatted_ages (AppStream.ContentRatingSystem system);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ContentRatingSystem.to_string", since = "0.12.12")]
+	public static unowned string? content_rating_system_to_string (AppStream.ContentRatingSystem system);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ContentRatingValue.from_string", since = "0.11.0")]
+	public static AppStream.ContentRatingValue content_rating_value_from_string (string value);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ContentRatingValue.to_string", since = "0.11.0")]
+	public static unowned string content_rating_value_to_string (AppStream.ContentRatingValue value);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ControlKind.from_string", since = "0.12.11")]
+	public static AppStream.ControlKind control_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ControlKind.to_string", since = "0.12.11")]
+	public static unowned string control_kind_to_string (AppStream.ControlKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "DisplayLengthKind.from_string", since = "0.12.12")]
+	public static AppStream.DisplayLengthKind display_length_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "DisplayLengthKind.to_string", since = "0.12.12")]
+	public static unowned string display_length_kind_to_string (AppStream.DisplayLengthKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "DisplaySideKind.from_string", since = "0.12.12")]
+	public static AppStream.DisplaySideKind display_side_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "DisplaySideKind.to_string", since = "0.12.12")]
+	public static unowned string display_side_kind_to_string (AppStream.DisplaySideKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "FormatKind.from_string", since = "0.10")]
+	public static AppStream.FormatKind format_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "FormatKind.to_string", since = "0.10")]
+	public static unowned string format_kind_to_string (AppStream.FormatKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "FormatVersion.from_string", since = "0.10")]
+	public static AppStream.FormatVersion format_version_from_string (string version_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "FormatVersion.to_string", since = "0.10")]
+	public static unowned string format_version_to_string (AppStream.FormatVersion version);
+	[CCode (cheader_filename = "appstream.h")]
 	public static unowned string get_appstream_version ();
 	[CCode (cheader_filename = "appstream.h")]
 	public static string get_current_distro_component_id ();
@@ -1357,6 +1444,18 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h")]
 	public static uint gstring_replace2 (GLib.StringBuilder string, string find, string replace, uint limit);
 	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "IconKind.from_string")]
+	public static AppStream.IconKind icon_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "IconKind.to_string")]
+	public static unowned string icon_kind_to_string (AppStream.IconKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ImageKind.from_string")]
+	public static AppStream.ImageKind image_kind_from_string (string kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ImageKind.to_string")]
+	public static unowned string image_kind_to_string (AppStream.ImageKind kind);
+	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.12.10")]
 	public static bool is_spdx_license_exception_id (string exception_id);
 	[CCode (cheader_filename = "appstream.h")]
@@ -1365,6 +1464,24 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.9.8")]
 	public static bool is_spdx_license_id (string license_id);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "IssueKind.from_string")]
+	public static AppStream.IssueKind issue_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "IssueKind.to_string")]
+	public static unowned string issue_kind_to_string (AppStream.IssueKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "IssueSeverity.from_string")]
+	public static AppStream.IssueSeverity issue_severity_from_string (string str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "IssueSeverity.to_string")]
+	public static unowned string issue_severity_to_string (AppStream.IssueSeverity severity);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "LaunchableKind.from_string", since = "0.11.0")]
+	public static AppStream.LaunchableKind launchable_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "LaunchableKind.to_string", since = "0.11.0")]
+	public static unowned string launchable_kind_to_string (AppStream.LaunchableKind kind);
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.12.10")]
 	public static bool license_is_free_license (string license);
@@ -1381,11 +1498,101 @@ namespace AppStream {
 	[Version (since = "0.14.0")]
 	public static string[] markup_strsplit_words (string text, uint line_len);
 	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "MergeKind.from_string")]
+	public static AppStream.MergeKind merge_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "MergeKind.to_string")]
+	public static unowned string merge_kind_to_string (AppStream.MergeKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "MetadataError.quark")]
+	public static GLib.Quark metadata_error_quark ();
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "PoolError.quark")]
+	public static GLib.Quark pool_error_quark ();
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ProvidedKind.from_string")]
+	public static AppStream.ProvidedKind provided_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ProvidedKind.to_l10n_string")]
+	public static unowned string provided_kind_to_l10n_string (AppStream.ProvidedKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ProvidedKind.to_string")]
+	public static unowned string provided_kind_to_string (AppStream.ProvidedKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "RelationCompare.from_string", since = "0.12.0")]
+	public static AppStream.RelationCompare relation_compare_from_string (string compare_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "RelationCompare.to_string", since = "0.12.0")]
+	public static unowned string relation_compare_to_string (AppStream.RelationCompare compare);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "RelationCompare.to_symbols_string", since = "0.12.0")]
+	public static unowned string relation_compare_to_symbols_string (AppStream.RelationCompare compare);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "RelationItemKind.from_string", since = "0.12.0")]
+	public static AppStream.RelationItemKind relation_item_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "RelationItemKind.to_string", since = "0.12.0")]
+	public static unowned string relation_item_kind_to_string (AppStream.RelationItemKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "RelationKind.from_string", since = "0.12.0")]
+	public static AppStream.RelationKind relation_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "RelationKind.to_string", since = "0.12.0")]
+	public static unowned string relation_kind_to_string (AppStream.RelationKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ReleaseKind.from_string", since = "0.12.0")]
+	public static AppStream.ReleaseKind release_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ReleaseKind.to_string", since = "0.12.0")]
+	public static unowned string release_kind_to_string (AppStream.ReleaseKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ReleaseUrlKind.from_string", since = "0.12.5")]
+	public static AppStream.ReleaseUrlKind release_url_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ReleaseUrlKind.to_string", since = "0.12.5")]
+	public static unowned string release_url_kind_to_string (AppStream.ReleaseUrlKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ScreenshotKind.from_string")]
+	public static AppStream.ScreenshotKind screenshot_kind_from_string (string kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ScreenshotKind.to_string")]
+	public static unowned string screenshot_kind_to_string (AppStream.ScreenshotKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "SizeKind.from_string")]
+	public static AppStream.SizeKind size_kind_from_string (string size_kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "SizeKind.to_string")]
+	public static unowned string size_kind_to_string (AppStream.SizeKind size_kind);
+	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.9.8")]
 	public static string? spdx_license_detokenize (string license_tokens);
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "appstream.h")]
 	[Version (since = "0.9.8")]
 	public static string[]? spdx_license_tokenize (string license);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "SuggestedKind.from_string")]
+	public static AppStream.SuggestedKind suggested_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "SuggestedKind.to_string")]
+	public static unowned string suggested_kind_to_string (AppStream.SuggestedKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "TranslationKind.from_string")]
+	public static AppStream.TranslationKind translation_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "TranslationKind.to_string")]
+	public static unowned string translation_kind_to_string (AppStream.TranslationKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "UrgencyKind.from_string", since = "0.6.5")]
+	public static AppStream.UrgencyKind urgency_kind_from_string (string urgency_kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "UrgencyKind.to_string", since = "0.6.5")]
+	public static unowned string urgency_kind_to_string (AppStream.UrgencyKind urgency_kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "UrlKind.from_string")]
+	public static AppStream.UrlKind url_kind_from_string (string url_kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "UrlKind.to_string")]
+	public static unowned string url_kind_to_string (AppStream.UrlKind url_kind);
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.14.0")]
 	public static string utils_build_data_id (AppStream.ComponentScope scope, AppStream.BundleKind bundle_kind, string origin, string cid, string branch);
@@ -1405,6 +1612,9 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.14.0")]
 	public static bool utils_data_id_valid (string data_id);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "UtilsError.quark", since = "0.14.0")]
+	public static GLib.Quark utils_error_quark ();
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.14.0")]
 	public static bool utils_install_metadata_file (AppStream.MetadataLocation location, string filename, string origin, string destdir) throws GLib.Error;
@@ -1431,4 +1641,16 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.14.0")]
 	public static unowned string version_string ();
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "VideoCodecKind.from_string")]
+	public static AppStream.VideoCodecKind video_codec_kind_from_string (string str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "VideoCodecKind.to_string")]
+	public static unowned string video_codec_kind_to_string (AppStream.VideoCodecKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "VideoContainerKind.from_string")]
+	public static AppStream.VideoContainerKind video_container_kind_from_string (string str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "VideoContainerKind.to_string")]
+	public static unowned string video_container_kind_to_string (AppStream.VideoContainerKind kind);
 }

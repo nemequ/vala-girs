@@ -992,7 +992,9 @@ namespace MM {
 		public string dup_operator_name ();
 		[Version (since = "1.0")]
 		public string dup_path ();
+		[Version (replacement = "Modem3gppEpsUeModeOperation.get_string")]
 		public static unowned string eps_ue_mode_operation_get_string (MM.Modem3gppEpsUeModeOperation val);
+		[Version (replacement = "Modem3gppFacility.build_string_from_mask")]
 		public static string facility_build_string_from_mask (MM.Modem3gppFacility mask);
 		[Version (since = "1.0")]
 		public MM.Modem3gppFacility get_enabled_facility_locks ();
@@ -1024,6 +1026,7 @@ namespace MM {
 		public async bool register (string network_id, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
 		public bool register_sync (string network_id, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (replacement = "Modem3gppRegistrationState.get_string")]
 		public static unowned string registration_state_get_string (MM.Modem3gppRegistrationState val);
 		[Version (since = "1.0")]
 		public async GLib.List<MM.Modem3gppNetwork> scan (GLib.Cancellable? cancellable) throws GLib.Error;
@@ -1037,11 +1040,13 @@ namespace MM {
 		public async bool set_initial_eps_bearer_settings (MM.BearerProperties config, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.10")]
 		public bool set_initial_eps_bearer_settings_sync (MM.BearerProperties config, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (replacement = "Modem3gppSubscriptionState.get_string")]
 		public static unowned string subscription_state_get_string (MM.Modem3gppSubscriptionState val);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", lower_case_csuffix = "modem_3gpp_network", type_id = "mm_modem_3gpp_network_get_type ()")]
 	[Compact]
 	public class Modem3gppNetwork {
+		[Version (replacement = "Modem3gppNetworkAvailability.get_string")]
 		public static unowned string availability_get_string (MM.Modem3gppNetworkAvailability val);
 		[Version (since = "1.0")]
 		public void free ();
@@ -1107,6 +1112,7 @@ namespace MM {
 		public async string respond (string response, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
 		public string respond_sync (string response, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (replacement = "Modem3gppUssdSessionState.get_string")]
 		public static unowned string session_state_get_string (MM.Modem3gppUssdSessionState val);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_modem_cdma_get_type ()")]
@@ -2661,7 +2667,9 @@ namespace MM {
 		PS_1,
 		PS_2,
 		CSPS_1,
-		CSPS_2
+		CSPS_2;
+		[CCode (cname = "mm_modem_3gpp_eps_ue_mode_operation_get_string")]
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_FACILITY_", type_id = "mm_modem_3gpp_facility_get_type ()")]
 	[Flags]
@@ -2674,14 +2682,18 @@ namespace MM {
 		NET_PERS,
 		NET_SUB_PERS,
 		PROVIDER_PERS,
-		CORP_PERS
+		CORP_PERS;
+		[CCode (cname = "mm_modem_3gpp_facility_build_string_from_mask")]
+		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_NETWORK_AVAILABILITY_", type_id = "mm_modem_3gpp_network_availability_get_type ()")]
 	public enum Modem3gppNetworkAvailability {
 		UNKNOWN,
 		AVAILABLE,
 		CURRENT,
-		FORBIDDEN
+		FORBIDDEN;
+		[CCode (cname = "mm_modem_3gpp_network_availability_get_string")]
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_REGISTRATION_STATE_", type_id = "mm_modem_3gpp_registration_state_get_type ()")]
 	public enum Modem3gppRegistrationState {
@@ -2696,21 +2708,27 @@ namespace MM {
 		EMERGENCY_ONLY,
 		HOME_CSFB_NOT_PREFERRED,
 		ROAMING_CSFB_NOT_PREFERRED,
-		ATTACHED_RLOS
+		ATTACHED_RLOS;
+		[CCode (cname = "mm_modem_3gpp_registration_state_get_string")]
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_SUBSCRIPTION_STATE_", type_id = "mm_modem_3gpp_subscription_state_get_type ()")]
 	public enum Modem3gppSubscriptionState {
 		UNKNOWN,
 		UNPROVISIONED,
 		PROVISIONED,
-		OUT_OF_DATA
+		OUT_OF_DATA;
+		[CCode (cname = "mm_modem_3gpp_subscription_state_get_string")]
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_USSD_SESSION_STATE_", type_id = "mm_modem_3gpp_ussd_session_state_get_type ()")]
 	public enum Modem3gppUssdSessionState {
 		UNKNOWN,
 		IDLE,
 		ACTIVE,
-		USER_RESPONSE
+		USER_RESPONSE;
+		[CCode (cname = "mm_modem_3gpp_ussd_session_state_get_string")]
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_ACCESS_TECHNOLOGY_", type_id = "mm_modem_access_technology_get_type ()")]
 	[Flags]
@@ -3803,8 +3821,6 @@ namespace MM {
 	public const string DBUS_INTERFACE_MODEM_MODEMCDMA;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_MODEM_OMA")]
 	public const string DBUS_INTERFACE_MODEM_OMA;
-	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_MODEM_SAR")]
-	public const string DBUS_INTERFACE_MODEM_SAR;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_MODEM_SIGNAL")]
 	public const string DBUS_INTERFACE_MODEM_SIGNAL;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_MODEM_TIME")]
@@ -4072,14 +4088,6 @@ namespace MM {
 	public const string MODEM_PROPERTY_UNLOCKREQUIRED;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_PROPERTY_UNLOCKRETRIES")]
 	public const string MODEM_PROPERTY_UNLOCKRETRIES;
-	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SAR_METHOD_ENABLE")]
-	public const string MODEM_SAR_METHOD_ENABLE;
-	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SAR_METHOD_SETPOWERLEVEL")]
-	public const string MODEM_SAR_METHOD_SETPOWERLEVEL;
-	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SAR_PROPERTY_POWERLEVEL")]
-	public const string MODEM_SAR_PROPERTY_POWERLEVEL;
-	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SAR_PROPERTY_STATE")]
-	public const string MODEM_SAR_PROPERTY_STATE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SIGNAL_METHOD_SETUP")]
 	public const string MODEM_SIGNAL_METHOD_SETUP;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SIGNAL_PROPERTY_CDMA")]
@@ -4220,75 +4228,243 @@ namespace MM {
 	[Version (since = "1.0")]
 	public const int UNLOCK_RETRIES_UNKNOWN;
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "BearerAllowedAuth.build_string_from_mask")]
+	public static string bearer_allowed_auth_build_string_from_mask (MM.BearerAllowedAuth mask);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "BearerApnType.build_string_from_mask")]
+	public static string bearer_apn_type_build_string_from_mask (MM.BearerApnType mask);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "BearerIpFamily.build_string_from_mask")]
+	public static string bearer_ip_family_build_string_from_mask (MM.BearerIpFamily mask);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "BearerIpMethod.get_string")]
+	public static unowned string bearer_ip_method_get_string (MM.BearerIpMethod val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "BearerMultiplexSupport.get_string")]
+	public static unowned string bearer_multiplex_support_get_string (MM.BearerMultiplexSupport val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "BearerType.get_string")]
+	public static unowned string bearer_type_get_string (MM.BearerType val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "CallDirection.get_string")]
+	public static unowned string call_direction_get_string (MM.CallDirection val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "CallState.get_string")]
+	public static unowned string call_state_get_string (MM.CallState val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "CallStateReason.get_string")]
+	public static unowned string call_state_reason_get_string (MM.CallStateReason val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "CdmaActivationError.quark")]
+	public static GLib.Quark cdma_activation_error_quark ();
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ConnectionError.quark")]
+	public static GLib.Quark connection_error_quark ();
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "CoreError.quark")]
+	public static GLib.Quark core_error_quark ();
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "FirmwareImageType.get_string")]
+	public static unowned string firmware_image_type_get_string (MM.FirmwareImageType val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusBearer.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_bearer_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusBearer.override_properties")]
 	public static uint gdbus_bearer_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModem3gpp.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem3gpp_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModem3gpp.override_properties")]
 	public static uint gdbus_modem3gpp_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModem3gppProfileManager.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem3gpp_profile_manager_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModem3gppProfileManager.override_properties")]
 	public static uint gdbus_modem3gpp_profile_manager_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModem3gppUssd.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem3gpp_ussd_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModem3gppUssd.override_properties")]
 	public static uint gdbus_modem3gpp_ussd_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemCdma.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem_cdma_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemCdma.override_properties")]
 	public static uint gdbus_modem_cdma_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemFirmware.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem_firmware_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemFirmware.override_properties")]
 	public static uint gdbus_modem_firmware_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModem.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemLocation.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem_location_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemLocation.override_properties")]
 	public static uint gdbus_modem_location_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemMessaging.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem_messaging_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemMessaging.override_properties")]
 	public static uint gdbus_modem_messaging_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemOma.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem_oma_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemOma.override_properties")]
 	public static uint gdbus_modem_oma_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModem.override_properties")]
 	public static uint gdbus_modem_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemSar.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem_sar_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemSar.override_properties")]
 	public static uint gdbus_modem_sar_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemSignal.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem_signal_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemSignal.override_properties")]
 	public static uint gdbus_modem_signal_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemSimple.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem_simple_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemSimple.override_properties")]
 	public static uint gdbus_modem_simple_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemTime.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem_time_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemTime.override_properties")]
 	public static uint gdbus_modem_time_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemVoice.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_modem_voice_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusModemVoice.override_properties")]
 	public static uint gdbus_modem_voice_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusOrgFreedesktopModemManager1.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_org_freedesktop_modem_manager1_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusOrgFreedesktopModemManager1.override_properties")]
 	public static uint gdbus_org_freedesktop_modem_manager1_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusSim.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_sim_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusSim.override_properties")]
 	public static uint gdbus_sim_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusSms.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo gdbus_sms_interface_info ();
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "GdbusSms.override_properties")]
 	public static uint gdbus_sms_override_properties (GLib.ObjectClass klass, uint property_id_begin);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "MessageError.quark")]
+	public static GLib.Quark message_error_quark ();
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "MobileEquipmentError.quark")]
+	public static GLib.Quark mobile_equipment_error_quark ();
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemAccessTechnology.build_string_from_mask")]
+	public static string modem_access_technology_build_string_from_mask (MM.ModemAccessTechnology mask);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemBand.get_string")]
+	public static unowned string modem_band_get_string (MM.ModemBand val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemCapability.build_string_from_mask")]
+	public static string modem_capability_build_string_from_mask (MM.ModemCapability mask);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemCdmaActivationState.get_string")]
+	public static unowned string modem_cdma_activation_state_get_string (MM.ModemCdmaActivationState val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemCdmaRegistrationState.get_string")]
+	public static unowned string modem_cdma_registration_state_get_string (MM.ModemCdmaRegistrationState val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemCdmaRmProtocol.get_string")]
+	public static unowned string modem_cdma_rm_protocol_get_string (MM.ModemCdmaRmProtocol val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemContactsStorage.get_string")]
+	public static unowned string modem_contacts_storage_get_string (MM.ModemContactsStorage val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemFirmwareUpdateMethod.build_string_from_mask")]
+	public static string modem_firmware_update_method_build_string_from_mask (MM.ModemFirmwareUpdateMethod mask);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemLocationAssistanceDataType.build_string_from_mask")]
+	public static string modem_location_assistance_data_type_build_string_from_mask (MM.ModemLocationAssistanceDataType mask);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemLocationSource.build_string_from_mask")]
+	public static string modem_location_source_build_string_from_mask (MM.ModemLocationSource mask);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemLock.get_string")]
+	public static unowned string modem_lock_get_string (MM.ModemLock val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemMode.build_string_from_mask")]
+	public static string modem_mode_build_string_from_mask (MM.ModemMode mask);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemPortType.get_string")]
+	public static unowned string modem_port_type_get_string (MM.ModemPortType val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemPowerState.get_string")]
+	public static unowned string modem_power_state_get_string (MM.ModemPowerState val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemStateChangeReason.get_string")]
+	public static unowned string modem_state_change_reason_get_string (MM.ModemStateChangeReason val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemStateFailedReason.get_string")]
+	public static unowned string modem_state_failed_reason_get_string (MM.ModemStateFailedReason val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ModemState.get_string")]
+	public static unowned string modem_state_get_string (MM.ModemState val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "OmaFeature.build_string_from_mask")]
+	public static string oma_feature_build_string_from_mask (MM.OmaFeature mask);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "OmaSessionStateFailedReason.get_string")]
+	public static unowned string oma_session_state_failed_reason_get_string (MM.OmaSessionStateFailedReason val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "OmaSessionState.get_string")]
+	public static unowned string oma_session_state_get_string (MM.OmaSessionState val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "OmaSessionType.get_string")]
+	public static unowned string oma_session_type_get_string (MM.OmaSessionType val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "SerialError.quark")]
+	public static GLib.Quark serial_error_quark ();
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "SmsCdmaServiceCategory.get_string")]
+	public static unowned string sms_cdma_service_category_get_string (MM.SmsCdmaServiceCategory val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "SmsCdmaTeleserviceId.get_string")]
+	public static unowned string sms_cdma_teleservice_id_get_string (MM.SmsCdmaTeleserviceId val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "SmsDeliveryState.get_string")]
+	public static unowned string sms_delivery_state_get_string (MM.SmsDeliveryState val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "SmsPduType.get_string")]
+	public static unowned string sms_pdu_type_get_string (MM.SmsPduType val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "SmsState.get_string")]
+	public static unowned string sms_state_get_string (MM.SmsState val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "SmsStorage.get_string")]
+	public static unowned string sms_storage_get_string (MM.SmsStorage val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "SmsValidityType.get_string")]
+	public static unowned string sms_validity_type_get_string (MM.SmsValidityType val);
 }

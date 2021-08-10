@@ -474,4 +474,13 @@ namespace E {
 	public const int INTERVALTREE_DEBUG;
 	[CCode (cheader_filename = "libedata-cal/libedata-cal.h", cname = "LIBICAL_GLIB_UNSTABLE_API")]
 	public const int LIBICAL_GLIB_UNSTABLE_API;
+	[CCode (cheader_filename = "libedata-cal/libedata-cal.h")]
+	[Version (replacement = "CalCacheOfflineChange.free", since = "3.26")]
+	public static void cal_cache_offline_change_free (void* change);
+	[CCode (cheader_filename = "libedata-cal/libedata-cal.h")]
+	[Version (replacement = "CalCacheSearchData.free", since = "3.26")]
+	public static void cal_cache_search_data_free (void* ptr);
+	[CCode (cheader_filename = "libedata-cal/libedata-cal.h")]
+	[Version (replacement = "CalMetaBackendInfo.free", since = "3.26")]
+	public static void cal_meta_backend_info_free (void* ptr);
 }

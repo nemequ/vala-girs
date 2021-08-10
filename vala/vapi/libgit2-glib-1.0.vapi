@@ -1458,6 +1458,9 @@ namespace Ggit {
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", instance_pos = 2.9)]
 	public delegate int TreeWalkCallback (string root, Ggit.TreeEntry entry);
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
+	[Version (replacement = "Error.quark")]
+	public static GLib.Quark error_quark ();
+	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	public static Ggit.FeatureFlags get_features ();
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	public static void init ();

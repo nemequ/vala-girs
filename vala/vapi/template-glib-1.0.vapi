@@ -12,7 +12,6 @@ namespace Template {
 		public Expr.flow (global::Template.ExprType type, global::Template.Expr condition, global::Template.Expr primary, global::Template.Expr secondary);
 		[CCode (has_construct_function = false)]
 		public Expr.fn_call (global::Template.ExprBuiltin builtin, global::Template.Expr param);
-		[CCode (cheader_filename = "tmpl-glib.h")]
 		public static global::Template.Expr from_string (global::string str) throws GLib.Error;
 		public global::Template.Expr new_getattr (global::string attr);
 		public global::Template.Expr new_gi_call (global::string name, global::Template.Expr @params);
@@ -167,7 +166,6 @@ namespace Template {
 		NOT_IMPLEMENTED,
 		NOT_A_VALUE,
 		NOT_A_FUNCTION;
-		[CCode (cheader_filename = "tmpl-glib.h")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "tmpl-glib.h", instance_pos = 3.9)]
@@ -184,4 +182,10 @@ namespace Template {
 	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "tmpl-glib.h", cname = "TMPL_VERSION_S")]
 	public const string VERSION_S;
+	[CCode (cheader_filename = "tmpl-glib.h")]
+	[Version (replacement = "Error.quark")]
+	public static GLib.Quark error_quark ();
+	[CCode (cheader_filename = "tmpl-glib.h")]
+	[Version (replacement = "Expr.from_string")]
+	public static global::Template.Expr expr_from_string (string str) throws GLib.Error;
 }

@@ -480,6 +480,7 @@ namespace E {
 		public static E.PhoneNumberMatch compare_strings (string first_number, string second_number) throws GLib.Error;
 		public static E.PhoneNumberMatch compare_strings_with_region (string first_number, string second_number, string? region_code) throws GLib.Error;
 		public E.PhoneNumber copy ();
+		public static GLib.Quark error_quark ();
 		public void free ();
 		public static E.PhoneNumber from_string (string phone_number, string? region_code) throws GLib.Error;
 		public int get_country_code (E.PhoneNumberCountrySource? source);
@@ -869,6 +870,7 @@ namespace E {
 		TOO_SHORT_AFTER_IDD,
 		TOO_SHORT,
 		TOO_LONG;
+		[Version (replacement = "PhoneNumber.error_quark")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "E_BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS")]
@@ -1040,9 +1042,69 @@ namespace E {
 	[Version (since = "3.4")]
 	public const string VCARD_21_VALID_PROPERTIES;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "AddressWestern.parse")]
+	public static E.AddressWestern address_western_parse (string in_address);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "BookQuery.and")]
+	public static E.BookQuery book_query_and (int nqs, E.BookQuery qs, bool unref);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "BookQuery.any_field_contains")]
+	public static E.BookQuery book_query_any_field_contains (string value);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "BookQuery.field_exists")]
+	public static E.BookQuery book_query_field_exists (E.ContactField field);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "BookQuery.field_test")]
+	public static E.BookQuery book_query_field_test (E.ContactField field, E.BookQueryTest test, string value);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "BookQuery.from_string")]
+	public static E.BookQuery book_query_from_string (string query_string);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "BookQuery.or")]
+	public static E.BookQuery book_query_or (int nqs, E.BookQuery qs, bool unref);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "BookQuery.vcard_field_exists")]
+	public static E.BookQuery book_query_vcard_field_exists (string field);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "BookQuery.vcard_field_test", since = "2.22")]
+	public static E.BookQuery book_query_vcard_field_test (string field, E.BookQueryTest test, string value);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
 	[Version (since = "3.34")]
 	public static uint32 book_util_conflict_resolution_to_operation_flags (E.ConflictResolution conflict_resolution);
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
 	[Version (since = "3.34")]
 	public static E.ConflictResolution book_util_operation_flags_to_conflict_resolution (uint32 flags);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "ContactAttrList.copy", since = "3.8")]
+	public static GLib.List<string> contact_attr_list_copy (GLib.List<string> list);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "ContactAttrList.free", since = "3.8")]
+	public static void contact_attr_list_free (GLib.List<string> list);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "ContactDate.from_string")]
+	public static E.ContactDate contact_date_from_string (string str);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "ContactName.from_string")]
+	public static E.ContactName contact_name_from_string (string name_str);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "NameWestern.parse")]
+	public static E.NameWestern name_western_parse (string full_name);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "PhoneNumber.compare_strings", since = "3.8")]
+	public static E.PhoneNumberMatch phone_number_compare_strings (string first_number, string second_number) throws GLib.Error;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "PhoneNumber.compare_strings_with_region", since = "3.8")]
+	public static E.PhoneNumberMatch phone_number_compare_strings_with_region (string first_number, string second_number, string? region_code) throws GLib.Error;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "PhoneNumber.from_string", since = "3.8")]
+	public static E.PhoneNumber phone_number_from_string (string phone_number, string? region_code) throws GLib.Error;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "PhoneNumber.get_country_code_for_region", since = "3.8")]
+	public static int phone_number_get_country_code_for_region (string? region_code) throws GLib.Error;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "PhoneNumber.get_default_region", since = "3.8")]
+	public static string phone_number_get_default_region () throws GLib.Error;
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "PhoneNumber.is_supported", since = "3.8")]
+	public static bool phone_number_is_supported ();
 }

@@ -1516,6 +1516,15 @@ namespace Cd {
 	[Version (since = "0.1.27")]
 	public static void color_rgb8_to_rgb (Cd.ColorRGB8 src, Cd.ColorRGB dest);
 	[CCode (cheader_filename = "colord.h")]
+	[Version (replacement = "ColorRGB.array_interpolate", since = "0.1.31")]
+	public static GLib.GenericArray<Cd.ColorRGB> color_rgb_array_interpolate (GLib.GenericArray<Cd.ColorRGB> array, uint new_length);
+	[CCode (cheader_filename = "colord.h")]
+	[Version (replacement = "ColorRGB.array_is_monotonic", since = "0.1.31")]
+	public static bool color_rgb_array_is_monotonic (GLib.GenericArray<Cd.ColorRGB> array);
+	[CCode (cheader_filename = "colord.h")]
+	[Version (replacement = "ColorRGB.array_new", since = "0.1.31")]
+	public static GLib.GenericArray<Cd.ColorRGB> color_rgb_array_new ();
+	[CCode (cheader_filename = "colord.h")]
 	public static void mat33_clear (Cd.Mat3x3 src);
 	[CCode (cheader_filename = "colord.h")]
 	public static void mat33_copy (Cd.Mat3x3 src, Cd.Mat3x3 dest);

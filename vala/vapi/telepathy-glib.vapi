@@ -2090,6 +2090,8 @@ namespace TelepathyGLib {
 	[Version (since = "0.7.3")]
 	public struct DBusPropertiesMixinClass {
 		public TelepathyGLib.DBusPropertiesMixinIfaceImpl interfaces;
+		[CCode (cname = "tp_dbus_properties_mixin_class_init")]
+		public static void init (GLib.ObjectClass cls, size_t offset);
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", has_type_id = false)]
 	[Version (since = "0.7.3")]
@@ -4085,7 +4087,7 @@ namespace TelepathyGLib {
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark dbus_errors_quark ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
-	[Version (since = "0.7.3")]
+	[Version (replacement = "DBusPropertiesMixinClass.init", since = "0.7.3")]
 	public static void dbus_properties_mixin_class_init (GLib.ObjectClass cls, size_t offset);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	[Version (since = "0.21.2")]
@@ -4320,6 +4322,9 @@ namespace TelepathyGLib {
 	public static GLib.Quark iface_quark_protocol_interface_avatars ();
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	public static GLib.Quark iface_quark_protocol_interface_presence ();
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
+	[Version (replacement = "Intset.from_array")]
+	public static TelepathyGLib.Intset intset_from_array (GLib.Array<uint> array);
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h")]
 	[Version (deprecated = true, since = "0.7.1")]
 	public static void list_connection_managers (TelepathyGLib.DBusDaemon bus_daemon, [CCode (delegate_target_pos = 2.33333, destroy_notify_pos = 2.66667)] owned TelepathyGLib.ConnectionManagerListCb callback, GLib.Object? weak_object);

@@ -553,7 +553,7 @@ namespace GMime {
 		public unowned string get_id ();
 		public int get_number ();
 		public int get_total ();
-		public static GMime.Message reconstruct_message (GMime.MessagePartial partials, size_t num);
+		public GMime.Message reconstruct_message (size_t num);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_multipart_get_type ()")]
 	public class Multipart : GMime.Object {
@@ -1351,7 +1351,64 @@ namespace GMime {
 	[CCode (cheader_filename = "gmime/gmime.h", cname = "GMIME_YENCODE_STATE_INIT")]
 	public const int YENCODE_STATE_INIT;
 	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Charset.best")]
+	public static unowned string? charset_best (string inbuf, size_t inlen);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Charset.canon_name")]
+	public static unowned string charset_canon_name (string charset);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Charset.iconv_name")]
+	public static unowned string charset_iconv_name (string charset);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Charset.iso_to_windows")]
+	public static unowned string charset_iso_to_windows (string isocharset);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Charset.language")]
+	public static unowned string? charset_language (string charset);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Charset.locale_name")]
+	public static unowned string charset_locale_name ();
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Charset.map_init")]
+	public static void charset_map_init ();
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Charset.map_shutdown")]
+	public static void charset_map_shutdown ();
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Charset.name")]
+	public static unowned string charset_name (string charset);
+	[CCode (cheader_filename = "gmime/gmime.h")]
 	public static bool check_version (uint major, uint minor, uint micro);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Encoding.base64_decode_step")]
+	public static size_t encoding_base64_decode_step (uint8 inbuf, size_t inlen, uint8 outbuf, int state, uint32 save);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Encoding.base64_encode_close")]
+	public static size_t encoding_base64_encode_close (uint8 inbuf, size_t inlen, uint8 outbuf, int state, uint32 save);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Encoding.base64_encode_step")]
+	public static size_t encoding_base64_encode_step (uint8 inbuf, size_t inlen, uint8 outbuf, int state, uint32 save);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Encoding.quoted_decode_step")]
+	public static size_t encoding_quoted_decode_step (uint8 inbuf, size_t inlen, uint8 outbuf, int state, uint32 save);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Encoding.quoted_encode_close")]
+	public static size_t encoding_quoted_encode_close (uint8 inbuf, size_t inlen, uint8 outbuf, int state, uint32 save);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Encoding.quoted_encode_step")]
+	public static size_t encoding_quoted_encode_step (uint8 inbuf, size_t inlen, uint8 outbuf, int state, uint32 save);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Encoding.uudecode_step")]
+	public static size_t encoding_uudecode_step (uint8 inbuf, size_t inlen, uint8 outbuf, int state, uint32 save);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Encoding.uuencode_close")]
+	public static size_t encoding_uuencode_close (uint8 inbuf, size_t inlen, uint8 outbuf, uint8 uubuf, int state, uint32 save);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "Encoding.uuencode_step")]
+	public static size_t encoding_uuencode_step (uint8 inbuf, size_t inlen, uint8 outbuf, uint8 uubuf, int state, uint32 save);
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "FormatOptions.get_default")]
+	public static GMime.FormatOptions format_options_get_default ();
 	[CCode (cheader_filename = "gmime/gmime.h")]
 	public static string iconv_locale_to_utf8 (string str);
 	[CCode (cheader_filename = "gmime/gmime.h")]
@@ -1366,6 +1423,12 @@ namespace GMime {
 	public static unowned string locale_charset ();
 	[CCode (cheader_filename = "gmime/gmime.h")]
 	public static unowned string? locale_language ();
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "ParserOptions.get_default")]
+	public static GMime.ParserOptions parser_options_get_default ();
+	[CCode (cheader_filename = "gmime/gmime.h")]
+	[Version (replacement = "References.parse")]
+	public static GMime.References references_parse (GMime.ParserOptions? options, string text);
 	[CCode (cheader_filename = "gmime/gmime.h")]
 	public static void shutdown ();
 	[CCode (cheader_filename = "gmime/gmime.h")]

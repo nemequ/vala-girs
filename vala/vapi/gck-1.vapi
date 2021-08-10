@@ -418,6 +418,12 @@ namespace Gck {
 	[CCode (cheader_filename = "gck/gck.h", cname = "GCK_VENDOR_CODE")]
 	public const int VENDOR_CODE;
 	[CCode (cheader_filename = "gck/gck.h")]
+	[Version (replacement = "Builder.unref")]
+	public static void builder_unref (void* builder);
+	[CCode (cheader_filename = "gck/gck.h")]
+	[Version (replacement = "Error.get_quark")]
+	public static GLib.Quark error_get_quark ();
+	[CCode (cheader_filename = "gck/gck.h")]
 	public static GLib.Type list_get_boxed_type ();
 	[CCode (cheader_filename = "gck/gck.h")]
 	public static bool mechanisms_check (GLib.Array<ulong> mechanisms, ...);
@@ -447,6 +453,9 @@ namespace Gck {
 	public static Gck.Enumerator slots_enumerate_objects (GLib.List<Gck.Slot> slots, Gck.Attributes match, Gck.SessionOptions options);
 	[CCode (cheader_filename = "gck/gck.h")]
 	public static string uri_build (Gck.UriData uri_data, Gck.UriFlags flags);
+	[CCode (cheader_filename = "gck/gck.h")]
+	[Version (replacement = "UriError.get_quark")]
+	public static GLib.Quark uri_error_get_quark ();
 	[CCode (cheader_filename = "gck/gck.h")]
 	public static Gck.UriData uri_parse (string string, Gck.UriFlags flags) throws GLib.Error;
 	[CCode (cheader_filename = "gck/gck.h")]

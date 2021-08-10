@@ -461,4 +461,10 @@ namespace Vte {
 	public static uint get_minor_version ();
 	[CCode (cheader_filename = "vte/vte.h")]
 	public static string get_user_shell ();
+	[CCode (cheader_filename = "vte/vte.h")]
+	[Version (replacement = "PtyError.quark")]
+	public static GLib.Quark pty_error_quark ();
+	[CCode (cheader_filename = "vte/vte.h")]
+	[Version (replacement = "RegexError.quark")]
+	public static GLib.Quark regex_error_quark ();
 }

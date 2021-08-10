@@ -139,4 +139,7 @@ namespace Act {
 		NOT_SUPPORTED;
 		public static GLib.Quark quark ();
 	}
+	[CCode (cheader_filename = "act/act.h")]
+	[Version (replacement = "UserManagerError.quark")]
+	public static GLib.Quark user_manager_error_quark ();
 }

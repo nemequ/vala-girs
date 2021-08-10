@@ -1685,6 +1685,7 @@ namespace Gda {
 		public Gda.SqlSelectJoin copy ();
 		public void free ();
 		public string serialize ();
+		public static unowned string type_to_string (Gda.SqlSelectJoinType type);
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gda_sql_select_order_get_type ()")]
 	[Compact]
@@ -1757,6 +1758,7 @@ namespace Gda {
 		public void trans_set_isol_level (Gda.TransactionIsolation level);
 		public void trans_take_mode (owned GLib.Value value);
 		public void trans_take_name (owned GLib.Value value);
+		public static unowned string type_to_string (Gda.SqlStatementType type);
 		public void unknown_take_expressions (GLib.SList<Gda.SqlExpr> expressions);
 		public void update_take_condition (Gda.SqlExpr cond);
 		public void update_take_on_conflict (GLib.Value value);
@@ -2070,6 +2072,7 @@ namespace Gda {
 		public bool cancel_job (uint job_id) throws GLib.Error;
 		[Version (since = "6.0")]
 		public bool do_job (GLib.MainContext? context, int timeout_ms, void* out_result, uint? out_job_id, [CCode (delegate_target_pos = 5.5, destroy_notify_pos = 6.1)] owned Gda.WorkerFunc func, GLib.DestroyNotify? data_destroy_func) throws GLib.Error;
+		public static GLib.Quark error_quark ();
 		[Version (since = "6.0")]
 		public bool fetch_job_result (uint job_id, void* out_result) throws GLib.Error;
 		[Version (since = "6.0")]
@@ -2879,7 +2882,7 @@ namespace Gda {
 		DROP_USER,
 		LAST;
 		[CCode (cname = "gda_server_operation_op_type_to_string")]
-		public static unowned string to_string (Gda.ServerOperationType type);
+		public unowned string to_string ();
 		[CCode (cname = "gda_server_operation_string_to_op_type")]
 		[Version (since = "4.2")]
 		public static Gda.ServerOperationType from_string (string str);
@@ -3065,6 +3068,7 @@ namespace Gda {
 		LEFT,
 		RIGHT,
 		FULL;
+		[Version (replacement = "SqlSelectJoin.type_to_string")]
 		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_SQL_STATEMENT_COMPOUND_", has_type_id = false)]
@@ -3091,6 +3095,7 @@ namespace Gda {
 		DELETE_SAVEPOINT,
 		UNKNOWN,
 		NONE;
+		[Version (replacement = "SqlStatement.type_to_string")]
 		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_STATEMENT_", has_type_id = false)]
@@ -3203,6 +3208,7 @@ namespace Gda {
 		TRUNCATED_ERROR,
 		INVALID,
 		OTHER_ERROR;
+		[Version (replacement = "DataModel.error_quark")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DDL_MODIFIABLE_")]
@@ -3210,12 +3216,14 @@ namespace Gda {
 		NOT_IMPLEMENTED,
 		CONNECTION_NOT_OPENED,
 		MISSED_DATA;
+		[Version (replacement = "DdlModifiable.error_quark")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_PROVIDER_META_")]
 	public errordomain ProviderMetaError {
 		NO_CONNECTION_ERROR,
 		QUERY_ERROR;
+		[Version (replacement = "ProviderMeta.error_quark")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_SQL_")]
@@ -3235,6 +3243,7 @@ namespace Gda {
 		JOB_PROCESSED_ERROR,
 		JOB_CANCELLED_ERROR,
 		THREAD_KILLED;
+		[Version (replacement = "Worker.error_quark")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libgda/libgda.h", has_target = false)]
@@ -3287,10 +3296,16 @@ namespace Gda {
 	[Version (since = "4.0.3")]
 	public static Gda.SqlExpr? compute_unique_table_row_condition_with_cnc (Gda.Connection? cnc, Gda.SqlStatementSelect stsel, Gda.MetaTable mtable, bool require_pk) throws GLib.Error;
 	[CCode (cheader_filename = "libgda/libgda.h")]
-	[Version (since = "4.2.3")]
+	[Version (replacement = "DataHandler.get_default", since = "4.2.3")]
 	public static Gda.DataHandler data_handler_get_default (GLib.Type for_type);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static GLib.DateTime date_time_copy (GLib.DateTime ts);
+	[CCode (cheader_filename = "libgda/libgda.h")]
+	[Version (replacement = "Default.escape_string")]
+	public static string? default_escape_string (string string);
+	[CCode (cheader_filename = "libgda/libgda.h")]
+	[Version (replacement = "Default.unescape_string")]
+	public static string? default_unescape_string (string string);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static void dsn_split (string string, string out_dsn, string out_username, string out_password);
 	[CCode (cheader_filename = "libgda/libgda.h")]
@@ -3344,11 +3359,23 @@ namespace Gda {
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "libgda/libgda.h")]
 	public static string[]? sql_identifier_split (string id);
 	[CCode (cheader_filename = "libgda/libgda.h")]
+	[Version (replacement = "SqlOperation.operator_from_string")]
+	public static Gda.SqlOperatorType sql_operation_operator_from_string (string op);
+	[CCode (cheader_filename = "libgda/libgda.h")]
+	[Version (replacement = "SqlOperation.operator_to_string")]
+	public static unowned string sql_operation_operator_to_string (Gda.SqlOperatorType op);
+	[CCode (cheader_filename = "libgda/libgda.h")]
+	[Version (replacement = "SqlStatement.string_to_type")]
+	public static Gda.SqlStatementType sql_statement_string_to_type (string type);
+	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static string sql_value_stringify (GLib.Value value);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static Gda.Binary string_to_binary (string? str);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static Gda.Blob string_to_blob (string str);
+	[CCode (cheader_filename = "libgda/libgda.h")]
+	[Version (replacement = "Text.to_alphanum")]
+	public static string text_to_alphanum (string text);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	[Version (since = "4.2.6")]
 	public static bool utility_check_data_model_v (Gda.DataModel model, [CCode (array_length_cname = "nbcols", array_length_pos = 1.5)] GLib.Type[] types);
@@ -3440,4 +3467,7 @@ namespace Gda {
 	public static void value_take_blob (GLib.Value value, owned Gda.Blob blob);
 	[CCode (cheader_filename = "libgda/libgda.h")]
 	public static string value_to_xml_string (GLib.Value value);
+	[CCode (cheader_filename = "libgda/libgda.h")]
+	[Version (replacement = "Worker.new_unique")]
+	public static Gda.Worker worker_new_unique (Gda.Worker location, bool allow_destroy);
 }

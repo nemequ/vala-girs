@@ -306,8 +306,11 @@ namespace Secret {
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static GLib.HashTable<string,string> attributes_buildv (Secret.Schema schema, va_list va);
 	[CCode (cheader_filename = "libsecret/secret.h")]
-	[Version (since = "0.19.0")]
+	[Version (replacement = "Backend.get", since = "0.19.0")]
 	public static async Secret.Backend backend_get (Secret.BackendFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+	[CCode (cheader_filename = "libsecret/secret.h")]
+	[Version (replacement = "Error.get_quark")]
+	public static GLib.Quark error_get_quark ();
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	[Version (since = "0.18.6")]
 	public static unowned Secret.Schema get_schema (Secret.SchemaType type);

@@ -593,6 +593,12 @@ namespace E {
 	public const string EDS_SUBPROCESS_BOOK_PATH;
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", cname = "XIMIAN_VCARD")]
 	public const string XIMIAN_VCARD;
+	[CCode (cheader_filename = "libedata-book/libedata-book.h")]
+	[Version (replacement = "BookCacheSearchData.free", since = "3.26")]
+	public static void book_cache_search_data_free (void* data);
+	[CCode (cheader_filename = "libedata-book/libedata-book.h")]
+	[Version (replacement = "BookMetaBackendInfo.free", since = "3.26")]
+	public static void book_meta_backend_info_free (void* ptr);
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", cname = "ebsql_get_contact_extra_unlocked")]
 	[Version (since = "3.16")]
 	public static bool ebsql_get_contact_extra_unlocked (E.BookSqlite ebsql, string uid, out string ret_extra) throws GLib.Error;

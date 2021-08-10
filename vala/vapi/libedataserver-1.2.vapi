@@ -99,6 +99,7 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		public Collator (string locale) throws GLib.Error;
 		public bool collate (string? str_a, string? str_b, out int result) throws GLib.Error;
+		public static GLib.Quark error_quark ();
 		public string generate_key (string str) throws GLib.Error;
 		public string generate_key_for_index (int index);
 		public int get_index (string str);
@@ -1441,21 +1442,21 @@ namespace E {
 	[Compact]
 	public class XmlHash {
 		[CCode (cname = "e_xmlhash_add")]
-		public static void xmlhash_add (E.XmlHash hash, string key, string data);
+		public void xmlhash_add (string key, string data);
 		[CCode (cname = "e_xmlhash_compare")]
-		public static E.XmlHashStatus xmlhash_compare (E.XmlHash hash, string key, string compare_data);
+		public E.XmlHashStatus xmlhash_compare (string key, string compare_data);
 		[CCode (cname = "e_xmlhash_destroy")]
-		public static void xmlhash_destroy (E.XmlHash hash);
+		public void xmlhash_destroy ();
 		[CCode (cname = "e_xmlhash_foreach_key")]
-		public static void xmlhash_foreach_key (E.XmlHash hash, [CCode (scope = "async")] E.XmlHashFunc func);
+		public void xmlhash_foreach_key ([CCode (scope = "async")] E.XmlHashFunc func);
 		[CCode (cname = "e_xmlhash_foreach_key_remove")]
-		public static void xmlhash_foreach_key_remove (E.XmlHash hash, [CCode (scope = "async")] E.XmlHashRemoveFunc func);
+		public void xmlhash_foreach_key_remove ([CCode (scope = "async")] E.XmlHashRemoveFunc func);
 		[CCode (cname = "e_xmlhash_new")]
 		public static E.XmlHash xmlhash_new (string filename);
 		[CCode (cname = "e_xmlhash_remove")]
-		public static void xmlhash_remove (E.XmlHash hash, string key);
+		public void xmlhash_remove (string key);
 		[CCode (cname = "e_xmlhash_write")]
-		public static void xmlhash_write (E.XmlHash hash);
+		public void xmlhash_write ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_cname = "EExtensibleInterface", type_id = "e_extensible_get_type ()")]
 	public interface Extensible : GLib.Object {
@@ -1784,6 +1785,7 @@ namespace E {
 		OPEN,
 		CONVERSION,
 		INVALID_LOCALE;
+		[Version (replacement = "Collator.error_quark")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_target = false)]
@@ -2130,10 +2132,10 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static long mktime_utc ([CCode (type = "tm*")] Posix.tm tm);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Version (since = "3.28")]
+	[Version (replacement = "OAuth2Service.util_set_to_form", since = "3.28")]
 	public static void oauth2_service_util_set_to_form (GLib.HashTable<string,string> form, string name, string? value);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	[Version (since = "3.28")]
+	[Version (replacement = "OAuth2Service.util_take_to_form", since = "3.28")]
 	public static void oauth2_service_util_take_to_form (GLib.HashTable<string,string> form, string name, owned string? value);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.8")]
@@ -2273,8 +2275,20 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string util_utf8_strstrcasedecomp (string haystack, string needle);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (replacement = "WebDAVAccessControlEntry.free", since = "3.26")]
+	public static void webdav_access_control_entry_free (void* ptr);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.18")]
 	public static void webdav_discover_free_discovered_sources (GLib.SList<E.WebDAVDiscoveredSource> discovered_sources);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (replacement = "WebDAVPrivilege.free", since = "3.26")]
+	public static void webdav_privilege_free (void* ptr);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (replacement = "WebDAVPropertyChange.free", since = "3.26")]
+	public static void webdav_property_change_free (void* ptr);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (replacement = "WebDAVResource.free", since = "3.26")]
+	public static void webdav_resource_free (void* ptr);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static void xml_destroy_hash (GLib.HashTable<string,string> hash);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]

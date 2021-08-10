@@ -112,4 +112,7 @@ namespace GSSDP {
 	}
 	[CCode (cheader_filename = "libgssdp/gssdp.h", cname = "GSSDP_ALL_RESOURCES")]
 	public const string ALL_RESOURCES;
+	[CCode (cheader_filename = "libgssdp/gssdp.h")]
+	[Version (replacement = "Error.quark")]
+	public static GLib.Quark error_quark ();
 }

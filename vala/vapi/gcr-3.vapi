@@ -455,6 +455,7 @@ namespace Gcr {
 	[CCode (cheader_filename = "gcr/gcr-base.h", cname = "GCR_UNLOCK_OPTION_TIMEOUT")]
 	public const string UNLOCK_OPTION_TIMEOUT;
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	[Version (replacement = "Certificate.compare")]
 	public static int certificate_compare (Gcr.Comparable? first, Gcr.Comparable? other);
 	[CCode (array_length_pos = 2.1, array_length_type = "gsize", cheader_filename = "gcr/gcr-base.h")]
 	public static uint8[]? fingerprint_from_attributes (Gck.Attributes attrs, GLib.ChecksumType checksum_type);
@@ -463,12 +464,16 @@ namespace Gcr {
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
 	public static GLib.Icon icon_for_token (Gck.TokenInfo token_info);
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	[Version (replacement = "Importer.create_for_parsed")]
 	public static GLib.List<Gcr.Importer> importer_create_for_parsed (Gcr.Parsed parsed);
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	[Version (replacement = "Importer.queue_and_filter_for_parsed")]
 	public static GLib.List<Gcr.Importer> importer_queue_and_filter_for_parsed (GLib.List<Gcr.Importer> importers, Gcr.Parsed parsed);
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	[Version (replacement = "Importer.register")]
 	public static void importer_register (GLib.Type importer_type, Gck.Attributes attrs);
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	[Version (replacement = "Importer.register_well_known")]
 	public static void importer_register_well_known ();
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
 	public static void mock_prompter_disconnect ();
@@ -490,6 +495,9 @@ namespace Gcr {
 	public static unowned string mock_prompter_start ();
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
 	public static void mock_prompter_stop ();
+	[CCode (cheader_filename = "gcr/gcr-base.h")]
+	[Version (replacement = "Parsed.unref")]
+	public static void parsed_unref (void* parsed);
 	[CCode (cheader_filename = "gcr/gcr-base.h")]
 	public static void pkcs11_add_module (Gck.Module module);
 	[CCode (cheader_filename = "gcr/gcr-base.h")]

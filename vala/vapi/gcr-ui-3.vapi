@@ -185,13 +185,18 @@ namespace Gcr {
 		TREE
 	}
 	[CCode (cheader_filename = "ui/gcr-ui.h")]
+	[Version (replacement = "Renderer.create")]
 	public static Gcr.Renderer? renderer_create (string? label, Gck.Attributes attrs);
 	[CCode (cheader_filename = "ui/gcr-ui.h")]
+	[Version (replacement = "Renderer.register")]
 	public static void renderer_register (GLib.Type renderer_type, Gck.Attributes attrs);
 	[CCode (cheader_filename = "ui/gcr-ui.h")]
+	[Version (replacement = "Renderer.register_well_known")]
 	public static void renderer_register_well_known ();
 	[CCode (cheader_filename = "ui/gcr-ui.h")]
+	[Version (replacement = "Viewer.new")]
 	public static Gcr.Viewer viewer_new ();
 	[CCode (cheader_filename = "ui/gcr-ui.h")]
+	[Version (replacement = "Viewer.new_scrolled")]
 	public static unowned Gcr.Viewer viewer_new_scrolled ();
 }

@@ -199,6 +199,8 @@ namespace GUsb {
 	[Compact]
 	public class Source {
 		[Version (since = "0.1.0")]
+		public static GLib.Quark error_quark ();
+		[Version (since = "0.1.0")]
 		public void set_callback (owned GLib.SourceFunc func);
 	}
 	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_CONTEXT_ERROR_", has_type_id = false)]
@@ -284,7 +286,7 @@ namespace GUsb {
 	public errordomain SourceError {
 		[CCode (cname = "G_USB_SOURCE_ERROR_INTERNAL")]
 		SOURCE_ERROR_INTERNAL;
-		[Version (since = "0.1.0")]
+		[Version (replacement = "Source.error_quark", since = "0.1.0")]
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "gusb.h", cname = "G_USB_MAJOR_VERSION")]

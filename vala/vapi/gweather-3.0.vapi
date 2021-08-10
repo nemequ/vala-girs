@@ -321,4 +321,37 @@ namespace GWeather {
 	public const int LOCATION_ENTRY_H;
 	[CCode (cheader_filename = "libgweather/gweather.h", cname = "GWEATHER_TIMEZONE_MENU_H")]
 	public const int TIMEZONE_MENU_H;
+	[CCode (cheader_filename = "libgweather/gweather.h")]
+	[Version (replacement = "Location.detect_nearest_city_finish")]
+	public static GWeather.Location location_detect_nearest_city_finish (GLib.AsyncResult result) throws GLib.Error;
+	[CCode (cheader_filename = "libgweather/gweather.h")]
+	[Version (replacement = "Location.get_world")]
+	public static GWeather.Location? location_get_world ();
+	[CCode (cheader_filename = "libgweather/gweather.h")]
+	[Version (replacement = "LocationLevel.to_string")]
+	public static unowned string location_level_to_string (GWeather.LocationLevel level);
+	[CCode (cheader_filename = "libgweather/gweather.h")]
+	[Version (replacement = "Sky.to_string")]
+	public static unowned string sky_to_string (GWeather.Sky sky);
+	[CCode (cheader_filename = "libgweather/gweather.h")]
+	[Version (replacement = "Sky.to_string_full")]
+	public static unowned string sky_to_string_full (GWeather.Sky sky, GWeather.FormatOptions options);
+	[CCode (cheader_filename = "libgweather/gweather.h")]
+	[Version (replacement = "SpeedUnit.to_string")]
+	public static unowned string speed_unit_to_string (GWeather.SpeedUnit unit);
+	[CCode (cheader_filename = "libgweather/gweather.h")]
+	[Version (replacement = "TemperatureUnit.to_real")]
+	public static GWeather.TemperatureUnit temperature_unit_to_real (GWeather.TemperatureUnit unit);
+	[CCode (cheader_filename = "libgweather/gweather.h")]
+	[Version (replacement = "Timezone.get_by_tzid", since = "3.12")]
+	public static GWeather.Timezone timezone_get_by_tzid (string tzid);
+	[CCode (cheader_filename = "libgweather/gweather.h")]
+	[Version (replacement = "Timezone.get_utc")]
+	public static GWeather.Timezone timezone_get_utc ();
+	[CCode (cheader_filename = "libgweather/gweather.h")]
+	[Version (replacement = "WindDirection.to_string")]
+	public static unowned string wind_direction_to_string (GWeather.WindDirection wind);
+	[CCode (cheader_filename = "libgweather/gweather.h")]
+	[Version (replacement = "WindDirection.to_string_full")]
+	public static unowned string wind_direction_to_string_full (GWeather.WindDirection wind, GWeather.FormatOptions options);
 }

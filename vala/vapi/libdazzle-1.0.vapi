@@ -150,7 +150,6 @@ namespace Dazzle {
 		[CCode (has_construct_function = false)]
 		public CounterArena.for_pid (GLib.Pid pid);
 		public void @foreach (Dazzle.CounterForeachFunc func);
-		[CCode (cheader_filename = "dazzle.h")]
 		public static Dazzle.CounterArena get_default ();
 		public Dazzle.CounterArena @ref ();
 		public void register (Dazzle.Counter counter);
@@ -1053,7 +1052,6 @@ namespace Dazzle {
 	public class ShortcutChord {
 		public bool append_event (Gdk.EventKey event);
 		public Dazzle.ShortcutChord copy ();
-		[CCode (cheader_filename = "dazzle.h")]
 		public static bool equal (void* data1, void* data2);
 		public void free ();
 		[CCode (has_construct_function = false)]
@@ -1064,7 +1062,6 @@ namespace Dazzle {
 		public uint get_length ();
 		public void get_nth_key (uint nth, uint keyval, Gdk.ModifierType modifier);
 		public bool has_modifier ();
-		[CCode (cheader_filename = "dazzle.h")]
 		public static uint hash (void* data);
 		public Dazzle.ShortcutMatch match (Dazzle.ShortcutChord other);
 		public string to_string ();
@@ -2029,6 +2026,9 @@ namespace Dazzle {
 	[CCode (cheader_filename = "dazzle.h")]
 	[Version (since = "3.28")]
 	public static unowned GLib.Cancellable? cancellable_chain (GLib.Cancellable? self = null, GLib.Cancellable? other = null);
+	[CCode (cheader_filename = "dazzle.h")]
+	[Version (replacement = "CounterArena.get_default")]
+	public static Dazzle.CounterArena counter_arena_get_default ();
 	[CCode (array_length = false, array_null_terminated = true, cheader_filename = "dazzle.h")]
 	[Version (deprecated = true)]
 	public static string[] dnd_get_uri_list (Gtk.SelectionData selection_data);
@@ -2084,4 +2084,10 @@ namespace Dazzle {
 	public static string pango_font_description_to_css (Pango.FontDescription font_desc);
 	[CCode (cheader_filename = "dazzle.h")]
 	public static void rgba_shade (Gdk.RGBA rgba, out Gdk.RGBA dst, double k);
+	[CCode (cheader_filename = "dazzle.h")]
+	[Version (replacement = "ShortcutChord.equal")]
+	public static bool shortcut_chord_equal (void* data1, void* data2);
+	[CCode (cheader_filename = "dazzle.h")]
+	[Version (replacement = "ShortcutChord.hash")]
+	public static uint shortcut_chord_hash (void* data);
 }

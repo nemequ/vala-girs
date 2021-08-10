@@ -822,110 +822,129 @@ namespace Goa {
 	[CCode (cheader_filename = "goa/goa.h", cname = "GOA_ERROR_NUM_ENTRIES")]
 	public const int ERROR_NUM_ENTRIES;
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Account.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo account_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Account.override_properties")]
 	public static uint account_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Calendar.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo calendar_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Calendar.override_properties")]
 	public static uint calendar_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Chat.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo chat_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Chat.override_properties")]
 	public static uint chat_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
 	[Version (since = "3.8")]
 	public static unowned string check_version (uint required_major, uint required_minor, uint required_micro);
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Contacts.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo contacts_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Contacts.override_properties")]
 	public static uint contacts_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (deprecated = true)]
+	[Version (deprecated = true, replacement = "Documents.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo documents_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (deprecated = true)]
+	[Version (deprecated = true, replacement = "Documents.override_properties")]
 	public static uint documents_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.6.0")]
+	[Version (replacement = "Error.quark")]
+	public static GLib.Quark error_quark ();
+	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Exchange.interface_info", since = "3.6.0")]
 	public static unowned GLib.DBusInterfaceInfo exchange_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.6.0")]
+	[Version (replacement = "Exchange.override_properties", since = "3.6.0")]
 	public static uint exchange_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.8.0")]
+	[Version (replacement = "Files.interface_info", since = "3.8.0")]
 	public static unowned GLib.DBusInterfaceInfo files_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.8.0")]
+	[Version (replacement = "Files.override_properties", since = "3.8.0")]
 	public static uint files_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Mail.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo mail_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Mail.override_properties")]
 	public static uint mail_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Manager.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo manager_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "Manager.override_properties")]
 	public static uint manager_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.14.0")]
+	[Version (replacement = "Maps.interface_info", since = "3.14.0")]
 	public static unowned GLib.DBusInterfaceInfo maps_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.14.0")]
+	[Version (replacement = "Maps.override_properties", since = "3.14.0")]
 	public static uint maps_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.14")]
+	[Version (replacement = "MediaServer.interface_info", since = "3.14")]
 	public static unowned GLib.DBusInterfaceInfo media_server_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.14")]
+	[Version (replacement = "MediaServer.override_properties", since = "3.14")]
 	public static uint media_server_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.18.0")]
+	[Version (replacement = "Music.interface_info", since = "3.18.0")]
 	public static unowned GLib.DBusInterfaceInfo music_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.18.0")]
+	[Version (replacement = "Music.override_properties", since = "3.18.0")]
 	public static uint music_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "OAuth2Based.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo oauth2_based_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "OAuth2Based.override_properties")]
 	public static uint oauth2_based_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "OAuthBased.interface_info")]
 	public static unowned GLib.DBusInterfaceInfo oauth_based_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
+	[Version (replacement = "OAuthBased.override_properties")]
 	public static uint oauth_based_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.6.0")]
+	[Version (replacement = "PasswordBased.interface_info", since = "3.6.0")]
 	public static unowned GLib.DBusInterfaceInfo password_based_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.6.0")]
+	[Version (replacement = "PasswordBased.override_properties", since = "3.6.0")]
 	public static uint password_based_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.8.0")]
+	[Version (replacement = "Photos.interface_info", since = "3.8.0")]
 	public static unowned GLib.DBusInterfaceInfo photos_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.8.0")]
+	[Version (replacement = "Photos.override_properties", since = "3.8.0")]
 	public static uint photos_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.12.0")]
+	[Version (replacement = "Printers.interface_info", since = "3.12.0")]
 	public static unowned GLib.DBusInterfaceInfo printers_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.12.0")]
+	[Version (replacement = "Printers.override_properties", since = "3.12.0")]
 	public static uint printers_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (deprecated = true, since = "3.12.0")]
+	[Version (deprecated = true, replacement = "ReadLater.interface_info", since = "3.12.0")]
 	public static unowned GLib.DBusInterfaceInfo read_later_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (deprecated = true, since = "3.12.0")]
+	[Version (deprecated = true, replacement = "ReadLater.override_properties", since = "3.12.0")]
 	public static uint read_later_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.6.0")]
+	[Version (replacement = "Ticketing.interface_info", since = "3.6.0")]
 	public static unowned GLib.DBusInterfaceInfo ticketing_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (since = "3.6.0")]
+	[Version (replacement = "Ticketing.override_properties", since = "3.6.0")]
 	public static uint ticketing_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (deprecated = true, since = "3.26.0")]
+	[Version (deprecated = true, replacement = "Todo.interface_info", since = "3.26.0")]
 	public static unowned GLib.DBusInterfaceInfo todo_interface_info ();
 	[CCode (cheader_filename = "goa/goa.h")]
-	[Version (deprecated = true, since = "3.26.0")]
+	[Version (deprecated = true, replacement = "Todo.override_properties", since = "3.26.0")]
 	public static uint todo_override_properties (GLib.ObjectClass klass, uint property_id_begin);
 }

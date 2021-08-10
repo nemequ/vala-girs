@@ -206,26 +206,36 @@ namespace Gtk {
 		[Version (since = "3.14")]
 		public Gtk.SourceEncoding copy ();
 		[CCode (cname = "gtk_source_encoding_get_all")]
-		[Version (since = "3.14")]
+		[Version (replacement = "Encoding.get_all", since = "3.14")]
 		public static GLib.SList<weak Gtk.SourceEncoding> et_all ();
 		[CCode (cname = "gtk_source_encoding_get_current")]
-		[Version (since = "3.14")]
+		[Version (replacement = "Encoding.get_current", since = "3.14")]
 		public static unowned Gtk.SourceEncoding et_current ();
 		[CCode (cname = "gtk_source_encoding_get_default_candidates")]
-		[Version (since = "3.18")]
+		[Version (replacement = "Encoding.get_default_candidates", since = "3.18")]
 		public static GLib.SList<weak Gtk.SourceEncoding> et_default_candidates ();
 		[CCode (cname = "gtk_source_encoding_get_from_charset")]
-		[Version (since = "3.14")]
+		[Version (replacement = "Encoding.get_from_charset", since = "3.14")]
 		public static unowned Gtk.SourceEncoding? et_from_charset (string charset);
 		[CCode (cname = "gtk_source_encoding_get_utf8")]
-		[Version (since = "3.14")]
+		[Version (replacement = "Encoding.get_utf8", since = "3.14")]
 		public static unowned Gtk.SourceEncoding et_utf8 ();
 		[Version (since = "3.14")]
 		public void free ();
 		[Version (since = "3.14")]
+		public static GLib.SList<weak Gtk.SourceEncoding> get_all ();
+		[Version (since = "3.14")]
 		public unowned string get_charset ();
 		[Version (since = "3.14")]
+		public static unowned Gtk.SourceEncoding get_current ();
+		[Version (since = "3.18")]
+		public static GLib.SList<weak Gtk.SourceEncoding> get_default_candidates ();
+		[Version (since = "3.14")]
+		public static unowned Gtk.SourceEncoding? get_from_charset (string charset);
+		[Version (since = "3.14")]
 		public unowned string get_name ();
+		[Version (since = "3.14")]
+		public static unowned Gtk.SourceEncoding get_utf8 ();
 		[Version (since = "3.14")]
 		public string to_string ();
 	}
@@ -660,6 +670,8 @@ namespace Gtk {
 		public double get_top_margin (Gtk.Unit unit);
 		[Version (since = "2.2")]
 		public Gtk.WrapMode get_wrap_mode ();
+		[Version (since = "5.2")]
+		public void ignore_tag (Gtk.TextTag tag);
 		[Version (since = "2.2")]
 		public bool paginate (Gtk.PrintContext context);
 		[Version (since = "2.2")]
@@ -1384,7 +1396,9 @@ namespace Gtk {
 		TOO_BIG,
 		ENCODING_AUTO_DETECTION_FAILED,
 		CONVERSION_FALLBACK;
+		public static GLib.Quark quark ();
 		[CCode (cname = "gtk_source_file_loader_error_quark")]
+		[Version (replacement = "FileLoaderError.quark")]
 		public static GLib.Quark uark ();
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_FILE_SAVER_ERROR_")]
@@ -1393,7 +1407,9 @@ namespace Gtk {
 	public errordomain SourceFileSaverError {
 		INVALID_CHARS,
 		EXTERNALLY_MODIFIED;
+		public static GLib.Quark quark ();
 		[CCode (cname = "gtk_source_file_saver_error_quark")]
+		[Version (replacement = "FileSaverError.quark")]
 		public static GLib.Quark uark ();
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", cname = "gtk_source_finalize")]

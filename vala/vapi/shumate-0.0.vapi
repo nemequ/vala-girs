@@ -416,4 +416,10 @@ namespace Shumate {
 	public const int VERSION_HEX;
 	[CCode (cheader_filename = "shumate/shumate.h", cname = "SHUMATE_VERSION_S")]
 	public const string VERSION_S;
+	[CCode (cheader_filename = "shumate/shumate.h")]
+	[Version (replacement = "FileCacheError.quark")]
+	public static GLib.Quark file_cache_error_quark ();
+	[CCode (cheader_filename = "shumate/shumate.h")]
+	[Version (replacement = "NetworkSourceError.quark")]
+	public static GLib.Quark network_source_error_quark ();
 }
