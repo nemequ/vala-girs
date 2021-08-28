@@ -227,6 +227,11 @@ namespace Jsonrpc {
 		[CCode (array_length = false)]
 		public weak char bytes[8];
 	}
+	[CCode (cheader_filename = "jsonrpc-glib.h", has_type_id = false)]
+	public struct MessagePutVariant {
+		public Jsonrpc.MessageMagic magic;
+		public weak GLib.Variant val;
+	}
 	[CCode (cheader_filename = "jsonrpc-glib.h", cprefix = "JSONRPC_CLIENT_ERROR_", has_type_id = false)]
 	public enum ClientError {
 		PARSE_ERROR,

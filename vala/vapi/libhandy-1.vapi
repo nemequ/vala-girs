@@ -668,14 +668,20 @@ namespace Hdy {
 		public unowned string get_description ();
 		[Version (since = "0.0.10")]
 		public unowned string get_title ();
+		[Version (since = "1.4")]
+		public bool get_use_markup ();
 		[Version (since = "0.0.10")]
 		public void set_description (string description);
 		[Version (since = "0.0.10")]
 		public void set_title (string title);
+		[Version (since = "1.4")]
+		public void set_use_markup (bool use_markup);
 		[Version (since = "0.0.10")]
 		public string description { get; set; }
 		[Version (since = "0.0.10")]
 		public string title { get; set; }
+		[Version (since = "1.4")]
+		public bool use_markup { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_preferences_page_get_type ()")]
 	public class PreferencesPage : Gtk.Bin, Atk.Implementor, Gtk.Buildable {

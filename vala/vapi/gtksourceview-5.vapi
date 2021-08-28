@@ -1412,10 +1412,22 @@ namespace Gtk {
 		[Version (replacement = "FileSaverError.quark")]
 		public static GLib.Quark uark ();
 	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", instance_pos = 1.9)]
+	[Version (since = "5.2")]
+	public delegate bool SourceSchedulerCallback (int64 deadline);
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", cname = "gtk_source_finalize")]
 	[Version (since = "4.0")]
 	public static void Sourcefinalize ();
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", cname = "gtk_source_init")]
 	[Version (since = "4.0")]
 	public static void Sourceinit ();
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cname = "gtk_source_scheduler_add")]
+	[Version (since = "5.2")]
+	public static size_t Sourcescheduler_add ([CCode (scope = "async")] Gtk.SourceSchedulerCallback callback);
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cname = "gtk_source_scheduler_add_full")]
+	[Version (since = "5.2")]
+	public static size_t Sourcescheduler_add_full (owned Gtk.SourceSchedulerCallback callback);
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cname = "gtk_source_scheduler_remove")]
+	[Version (since = "5.2")]
+	public static void Sourcescheduler_remove (size_t handler_id);
 }

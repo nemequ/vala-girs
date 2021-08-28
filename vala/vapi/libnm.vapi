@@ -2551,6 +2551,10 @@ namespace NM {
 		public const string OPTION_USE_CARRIER;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_XMIT_HASH_POLICY")]
 		public const string OPTION_XMIT_HASH_POLICY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_PORT_QUEUE_ID")]
+		public const string PORT_QUEUE_ID;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_PORT_SETTING_NAME")]
+		public const string PORT_SETTING_NAME;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
@@ -2568,6 +2572,17 @@ namespace NM {
 		public static bool validate_option (string name, string value);
 		[NoAccessorMethod]
 		public GLib.HashTable<string,string> options { owned get; set; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_bond_port_get_type ()")]
+	public class SettingBondPort : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		[Version (since = "1.34")]
+		public SettingBondPort ();
+		[Version (since = "1.34")]
+		public uint32 get_queue_id ();
+		[NoAccessorMethod]
+		[Version (since = "1.34")]
+		public uint queue_id { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_bridge_get_type ()")]
 	public class SettingBridge : NM.Setting {

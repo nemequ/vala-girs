@@ -287,8 +287,8 @@ namespace Soup {
 		[CCode (has_construct_function = false)]
 		public Message (string method, string uri_string);
 		public void add_flags (Soup.MessageFlags flags);
-		public uint add_header_handler (string @signal, string header, GLib.Callback callback);
-		public uint add_status_code_handler (string @signal, uint status_code, GLib.Callback callback);
+		public uint add_header_handler (string @signal, string header, GLib.Callback callback, void* user_data);
+		public uint add_status_code_handler (string @signal, uint status_code, GLib.Callback callback, void* user_data);
 		public void disable_feature (GLib.Type feature_type);
 		[CCode (has_construct_function = false)]
 		public Message.from_encoded_form (string method, string uri_string, owned string encoded_form);
@@ -311,8 +311,10 @@ namespace Soup {
 		public unowned Soup.MessageHeaders get_response_headers ();
 		public unowned GLib.Uri get_site_for_cookies ();
 		public Soup.Status get_status ();
+		public unowned string get_tls_ciphersuite_name ();
 		public unowned GLib.TlsCertificate? get_tls_peer_certificate ();
 		public GLib.TlsCertificateFlags get_tls_peer_certificate_errors ();
+		public GLib.TlsProtocolVersion get_tls_protocol_version ();
 		public unowned GLib.Uri get_uri ();
 		public bool is_feature_disabled (GLib.Type feature_type);
 		public bool is_keepalive ();
@@ -324,27 +326,32 @@ namespace Soup {
 		public void set_flags (Soup.MessageFlags flags);
 		public void set_is_options_ping (bool is_options_ping);
 		public void set_is_top_level_navigation (bool is_top_level_navigation);
+		public void set_method (string method);
 		public void set_priority (Soup.MessagePriority priority);
 		public void set_request_body (string? content_type, GLib.InputStream? stream, ssize_t content_length);
 		public void set_request_body_from_bytes (string? content_type, GLib.Bytes? bytes);
 		public void set_site_for_cookies (GLib.Uri? site_for_cookies);
+		public void set_tls_client_certificate (GLib.TlsCertificate? certificate);
 		public void set_uri (GLib.Uri uri);
+		public void tls_client_certificate_password_request_complete ();
 		public GLib.Uri first_party { get; set; }
 		public Soup.MessageFlags flags { get; set; }
-		[NoAccessorMethod]
-		public Soup.HTTPVersion http_version { get; set; }
+		public Soup.HTTPVersion http_version { get; }
 		public bool is_options_ping { get; set; }
 		public bool is_top_level_navigation { get; set; }
-		[NoAccessorMethod]
-		public string method { owned get; set; }
+		public string method { get; set; }
 		public Soup.MessagePriority priority { get; set; }
 		public string reason_phrase { get; }
 		public GLib.SocketAddress remote_address { get; }
+		public Soup.MessageHeaders request_headers { get; }
+		public Soup.MessageHeaders response_headers { get; }
 		public GLib.Uri site_for_cookies { get; set; }
 		[NoAccessorMethod]
 		public uint status_code { get; }
+		public string tls_ciphersuite_name { get; }
 		public GLib.TlsCertificate tls_peer_certificate { get; }
 		public GLib.TlsCertificateFlags tls_peer_certificate_errors { get; }
+		public GLib.TlsProtocolVersion tls_protocol_version { get; }
 		public GLib.Uri uri { get; set; }
 		public signal bool accept_certificate (GLib.TlsCertificate tls_peer_certificate, GLib.TlsCertificateFlags tls_peer_errors);
 		public signal bool authenticate (Soup.Auth auth, bool retrying);
@@ -355,6 +362,8 @@ namespace Soup {
 		public signal void got_informational ();
 		public signal void hsts_enforced ();
 		public signal void network_event (GLib.SocketClientEvent event, GLib.IOStream connection);
+		public signal bool request_certificate (GLib.TlsClientConnection tls_connection);
+		public signal bool request_certificate_password (GLib.TlsPassword tls_password);
 		public signal void restarted ();
 		public signal void starting ();
 		public signal void wrote_body ();
@@ -365,7 +374,7 @@ namespace Soup {
 	[Compact]
 	public class MessageBody {
 		[CCode (array_length_cname = "length", array_length_type = "gint64")]
-		public uint8[] data;
+		public weak uint8[] data;
 		public int64 length;
 		[CCode (has_construct_function = false)]
 		public MessageBody ();
@@ -485,6 +494,9 @@ namespace Soup {
 		public void add_websocket_handler (string? path, string? origin, [CCode (array_length = false, array_null_terminated = true)] string[]? protocols, owned Soup.ServerWebsocketCallback callback);
 		public void disconnect ();
 		public GLib.SList<weak GLib.Socket> get_listeners ();
+		public GLib.TlsAuthenticationMode get_tls_auth_mode ();
+		public unowned GLib.TlsCertificate? get_tls_certificate ();
+		public unowned GLib.TlsDatabase? get_tls_database ();
 		public GLib.SList<GLib.Uri> get_uris ();
 		public bool is_https ();
 		public bool listen (GLib.SocketAddress address, Soup.ServerListenOptions options) throws GLib.Error;
@@ -495,14 +507,17 @@ namespace Soup {
 		public void remove_auth_domain (Soup.AuthDomain auth_domain);
 		public void remove_handler (string path);
 		public void remove_websocket_extension (GLib.Type extension_type);
-		public bool set_ssl_cert_file (string ssl_cert_file, string ssl_key_file) throws GLib.Error;
+		public void set_tls_auth_mode (GLib.TlsAuthenticationMode mode);
+		public void set_tls_certificate (GLib.TlsCertificate certificate);
+		public void set_tls_database (GLib.TlsDatabase tls_database);
 		public void unpause_message (Soup.ServerMessage msg);
 		[NoAccessorMethod]
 		public bool raw_paths { get; construct; }
 		[NoAccessorMethod]
 		public string server_header { owned get; set construct; }
-		[NoAccessorMethod]
-		public GLib.TlsCertificate tls_certificate { owned get; construct; }
+		public GLib.TlsAuthenticationMode tls_auth_mode { get; set construct; }
+		public GLib.TlsCertificate tls_certificate { get; set construct; }
+		public GLib.TlsDatabase tls_database { get; set construct; }
 		public virtual signal void request_aborted (Soup.ServerMessage msg);
 		public virtual signal void request_finished (Soup.ServerMessage msg);
 		public virtual signal void request_read (Soup.ServerMessage msg);
@@ -531,6 +546,7 @@ namespace Soup {
 		public void set_response (string? content_type, Soup.MemoryUse resp_use, [CCode (array_length_cname = "resp_length", array_length_pos = 3.1, array_length_type = "gsize")] uint8[]? resp_body);
 		public void set_status (uint status_code, string? reason_phrase);
 		public GLib.IOStream steal_connection ();
+		public signal bool accept_certificate (GLib.TlsCertificate tls_peer_certificate, GLib.TlsCertificateFlags tls_peer_errors);
 		public signal void disconnected ();
 		public signal void finished ();
 		public signal void got_body ();
@@ -554,7 +570,6 @@ namespace Soup {
 		public unowned Soup.Message? get_async_result_message (GLib.AsyncResult result);
 		public unowned Soup.SessionFeature? get_feature (GLib.Type feature_type);
 		public unowned Soup.SessionFeature? get_feature_for_message (GLib.Type feature_type, Soup.Message msg);
-		public GLib.SList<Soup.SessionFeature> get_features (GLib.Type feature_type);
 		public uint get_idle_timeout ();
 		public unowned GLib.InetSocketAddress? get_local_address ();
 		public uint get_max_conns ();
@@ -572,7 +587,7 @@ namespace Soup {
 		public GLib.InputStream send (Soup.Message msg, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public GLib.Bytes send_and_read (Soup.Message msg, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async GLib.Bytes send_and_read_async (Soup.Message msg, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async GLib.InputStream send_async (Soup.Message msg, int io_priority, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async GLib.InputStream send_async (Soup.Message msg, int io_priority, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void set_accept_language (string accept_language);
 		public void set_accept_language_auto (bool accept_language_auto);
 		public void set_idle_timeout (uint timeout);
@@ -596,8 +611,8 @@ namespace Soup {
 		public GLib.TlsDatabase tls_database { get; set; }
 		public GLib.TlsInteraction tls_interaction { get; set; }
 		public string user_agent { get; set; }
-		public signal void request_queued (Soup.Message msg);
-		public signal void request_unqueued (Soup.Message msg);
+		public virtual signal void request_queued (Soup.Message msg);
+		public virtual signal void request_unqueued (Soup.Message msg);
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", has_type_id = false)]
 	[Compact]
@@ -664,7 +679,7 @@ namespace Soup {
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", has_type_id = false)]
 	public struct MessageHeadersIter {
-		public static void init (out Soup.MessageHeadersIter iter, Soup.MessageHeaders hdrs);
+		public void init (Soup.MessageHeaders hdrs);
 		public static bool next (ref Soup.MessageHeadersIter iter, out unowned string name, out unowned string value);
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", has_type_id = false)]
@@ -883,7 +898,8 @@ namespace Soup {
 		TOO_MANY_REDIRECTS,
 		TOO_MANY_RESTARTS,
 		REDIRECT_NO_LOCATION,
-		REDIRECT_BAD_URI;
+		REDIRECT_BAD_URI,
+		MESSAGE_ALREADY_IN_QUEUE;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", cprefix = "SOUP_TLD_ERROR_")]
@@ -948,6 +964,9 @@ namespace Soup {
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static bool check_version (uint major, uint minor, uint micro);
 	[CCode (cheader_filename = "libsoup/soup.h")]
+	[Version (replacement = "Cookie.parse")]
+	public static Soup.Cookie? cookie_parse (string header, GLib.Uri? origin);
+	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static GLib.SList<Soup.Cookie> cookies_from_request (Soup.Message msg);
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static GLib.SList<Soup.Cookie> cookies_from_response (Soup.Message msg);
@@ -996,7 +1015,19 @@ namespace Soup {
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static bool headers_parse_status_line (string status_line, out Soup.HTTPVersion ver, out uint status_code, out string reason_phrase);
 	[CCode (cheader_filename = "libsoup/soup.h")]
+	[Version (replacement = "MessageHeadersIter.init")]
+	public static void message_headers_iter_init (out Soup.MessageHeadersIter iter, Soup.MessageHeaders hdrs);
+	[CCode (cheader_filename = "libsoup/soup.h")]
+	[Version (replacement = "SessionError.quark")]
+	public static GLib.Quark session_error_quark ();
+	[CCode (cheader_filename = "libsoup/soup.h")]
+	[Version (replacement = "Status.get_phrase")]
+	public static unowned string status_get_phrase (uint status_code);
+	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static bool tld_domain_is_public_suffix (string domain);
+	[CCode (cheader_filename = "libsoup/soup.h")]
+	[Version (replacement = "TLDError.quark")]
+	public static GLib.Quark tld_error_quark ();
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static unowned string tld_get_base_domain (string hostname) throws GLib.Error;
 	[CCode (cheader_filename = "libsoup/soup.h")]
@@ -1007,6 +1038,9 @@ namespace Soup {
 	public static void websocket_client_prepare_handshake (Soup.Message msg, string? origin, [CCode (array_length = false, array_null_terminated = true)] string[]? protocols, GLib.GenericArray<GLib.TypeClass>? supported_extensions);
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static bool websocket_client_verify_handshake (Soup.Message msg, GLib.GenericArray<GLib.TypeClass>? supported_extensions, out GLib.List<Soup.WebsocketExtension> accepted_extensions) throws GLib.Error;
+	[CCode (cheader_filename = "libsoup/soup.h")]
+	[Version (replacement = "WebsocketError.quark")]
+	public static GLib.Quark websocket_error_quark ();
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static bool websocket_server_check_handshake (Soup.ServerMessage msg, string? origin, [CCode (array_length = false, array_null_terminated = true)] string[]? protocols, GLib.GenericArray<GLib.TypeClass>? supported_extensions) throws GLib.Error;
 	[CCode (cheader_filename = "libsoup/soup.h")]

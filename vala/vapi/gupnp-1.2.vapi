@@ -57,12 +57,12 @@ namespace GUPnP {
 		public bool check_context (GUPnP.Context context);
 		public void clear ();
 		public bool get_enabled ();
-		public unowned GLib.List<string>? get_entries ();
+		public GLib.List<weak string>? get_entries ();
 		public bool is_empty ();
 		public bool remove_entry (string entry);
 		public void set_enabled (bool enable);
 		public bool enabled { get; set construct; }
-		public GLib.List<string> entries { get; construct; }
+		public GLib.List<string> entries { owned get; construct; }
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_context_manager_get_type ()")]
 	public abstract class ContextManager : GLib.Object {

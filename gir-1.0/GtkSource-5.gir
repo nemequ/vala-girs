@@ -11903,6 +11903,45 @@ Initialize the iter with gtk_source_region_get_start_region_iter().</doc>
         </parameters>
       </method>
     </record>
+    <callback name="SchedulerCallback"
+              c:type="GtkSourceSchedulerCallback"
+              version="5.2">
+      <doc xml:space="preserve"
+           filename="../gtksourceview/gtksourcescheduler.h"
+           line="34">This function is called incrementally to process additional background work.
+A deadline is provided which can be checked using g_get_monotonic_time() so
+that additional work can be processed each frame.
+
+This is useful for situations where you are incrementally performing
+background work such as spell checking or semantic syntax highlighting.</doc>
+      <source-position filename="../gtksourceview/gtksourcescheduler.h"
+                       line="51"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve"
+             filename="../gtksourceview/gtksourcescheduler.h"
+             line="46">%TRUE if there is more work to process, otherwise %FALSE and the
+  handler is unregistered.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="deadline" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gtksourceview/gtksourcescheduler.h"
+               line="36">the time the callback should complete by</doc>
+          <type name="gint64" c:type="gint64"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="1">
+          <doc xml:space="preserve"
+               filename="../gtksourceview/gtksourcescheduler.h"
+               line="37">closure data provided when registering callback</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
     <class name="SearchContext"
            c:symbol-prefix="search_context"
            c:type="GtkSourceSearchContext"
@@ -18455,6 +18494,106 @@ while (!gtk_source_region_iter_is_end (&amp;region_iter))
 }
 ]|</doc>
     </docsection>
+    <function name="scheduler_add"
+              c:identifier="gtk_source_scheduler_add"
+              version="5.2">
+      <doc xml:space="preserve"
+           filename="../gtksourceview/gtksourcescheduler.c"
+           line="230">Simplified version of gtk_source_scheduler_add_full().</doc>
+      <source-position filename="../gtksourceview/gtksourcescheduler.h"
+                       line="55"/>
+      <return-value transfer-ownership="none">
+        <type name="gsize" c:type="gsize"/>
+      </return-value>
+      <parameters>
+        <parameter name="callback"
+                   transfer-ownership="none"
+                   scope="async"
+                   closure="1">
+          <doc xml:space="preserve"
+               filename="../gtksourceview/gtksourcescheduler.c"
+               line="232">the callback to execute</doc>
+          <type name="SchedulerCallback" c:type="GtkSourceSchedulerCallback"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve"
+               filename="../gtksourceview/gtksourcescheduler.c"
+               line="233">user data for @callback</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="scheduler_add_full"
+              c:identifier="gtk_source_scheduler_add_full"
+              version="5.2">
+      <doc xml:space="preserve"
+           filename="../gtksourceview/gtksourcescheduler.c"
+           line="246">Adds a new callback that will be executed as time permits on the main thread.
+
+This is useful when you need to do a lot of background work but want to do
+it incrementally.
+
+@callback will be provided a deadline that it should complete it's work by
+(or near) and can be checked using g_get_monotonic_time() for comparison.
+
+Use gtk_source_scheduler_remove() to remove the handler.</doc>
+      <source-position filename="../gtksourceview/gtksourcescheduler.h"
+                       line="58"/>
+      <return-value transfer-ownership="none">
+        <type name="gsize" c:type="gsize"/>
+      </return-value>
+      <parameters>
+        <parameter name="callback"
+                   transfer-ownership="none"
+                   scope="notified"
+                   closure="1"
+                   destroy="2">
+          <doc xml:space="preserve"
+               filename="../gtksourceview/gtksourcescheduler.c"
+               line="248">the callback to execute</doc>
+          <type name="SchedulerCallback" c:type="GtkSourceSchedulerCallback"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1">
+          <doc xml:space="preserve"
+               filename="../gtksourceview/gtksourcescheduler.c"
+               line="249">user data for @callback</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+        <parameter name="notify" transfer-ownership="none" scope="async">
+          <doc xml:space="preserve"
+               filename="../gtksourceview/gtksourcescheduler.c"
+               line="250">closure notify for @user_data</doc>
+          <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
+        </parameter>
+      </parameters>
+    </function>
+    <function name="scheduler_remove"
+              c:identifier="gtk_source_scheduler_remove"
+              version="5.2">
+      <doc xml:space="preserve"
+           filename="../gtksourceview/gtksourcescheduler.c"
+           line="285">Removes a scheduler callback previously registered with
+gtk_source_scheduler_add() or gtk_source_scheduler_add_full().</doc>
+      <source-position filename="../gtksourceview/gtksourcescheduler.h"
+                       line="62"/>
+      <return-value transfer-ownership="none">
+        <type name="none" c:type="void"/>
+      </return-value>
+      <parameters>
+        <parameter name="handler_id" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../gtksourceview/gtksourcescheduler.c"
+               line="287">the handler id</doc>
+          <type name="gsize" c:type="gsize"/>
+        </parameter>
+      </parameters>
+    </function>
     <docsection name="searchcontext">
       <doc xml:space="preserve"
            filename="../gtksourceview/gtksourcesearchcontext.c"
