@@ -705,6 +705,19 @@ namespace Camel {
 		public Camel.FolderThread @ref ();
 		public void unref ();
 	}
+	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
+	[Compact]
+	public class FolderThreadNode {
+		public weak Camel.FolderThreadNode? child;
+		public weak Camel.MessageInfo? message;
+		public weak Camel.FolderThreadNode? next;
+		public uint32 order;
+		public weak Camel.FolderThreadNode? parent;
+		public uint32 re;
+		public weak string root_subject;
+		[CCode (cname = "camel_folder_threaded_messages_dump")]
+		public int dump ();
+	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_gpg_context_get_type ()")]
 	public class GpgContext : Camel.CipherContext {
 		[CCode (has_construct_function = false, type = "CamelCipherContext*")]
@@ -2481,18 +2494,6 @@ namespace Camel {
 		public uint32 visible_count;
 		public uint32 jnd_count;
 		public weak string bdata;
-	}
-	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
-	public struct FolderThreadNode {
-		public weak Camel.FolderThreadNode? next;
-		public weak Camel.FolderThreadNode? parent;
-		public weak Camel.FolderThreadNode? child;
-		public weak Camel.MessageInfo? message;
-		public weak string root_subject;
-		public uint32 order;
-		public uint32 re;
-		[CCode (cname = "camel_folder_threaded_messages_dump")]
-		public int dump ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	public struct KeyBlock {

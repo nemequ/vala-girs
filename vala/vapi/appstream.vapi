@@ -148,6 +148,8 @@ namespace AppStream {
 		public void add_translation (AppStream.Translation tr);
 		[Version (since = "0.6.2")]
 		public void add_url (AppStream.UrlKind url_kind, string url);
+		[Version (since = "0.14.5")]
+		public void clear_languages ();
 		public unowned string get_active_locale ();
 		[Version (since = "0.9.2")]
 		public unowned GLib.GenericArray<AppStream.Component> get_addons ();
@@ -267,6 +269,8 @@ namespace AppStream {
 		[Version (since = "0.12.10")]
 		public void set_name_variant_suffix (string value, string? locale);
 		public void set_origin (string origin);
+		[Version (since = "0.14.5")]
+		public void set_pkgname (string pkgname);
 		public void set_pkgnames ([CCode (array_length = false, array_null_terminated = true)] string[] packages);
 		[Version (since = "0.6.1")]
 		public void set_priority (int priority);
@@ -1007,24 +1011,16 @@ namespace AppStream {
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_FORMAT_VERSION_", type_id = "as_format_version_get_type ()")]
 	public enum FormatVersion {
-		[CCode (cname = "AS_FORMAT_VERSION_V0_6")]
-		@6,
-		[CCode (cname = "AS_FORMAT_VERSION_V0_7")]
-		@7,
-		[CCode (cname = "AS_FORMAT_VERSION_V0_8")]
-		@8,
-		[CCode (cname = "AS_FORMAT_VERSION_V0_9")]
-		@9,
-		[CCode (cname = "AS_FORMAT_VERSION_V0_10")]
-		@10,
-		[CCode (cname = "AS_FORMAT_VERSION_V0_11")]
-		@11,
-		[CCode (cname = "AS_FORMAT_VERSION_V0_12")]
-		@12,
-		[CCode (cname = "AS_FORMAT_VERSION_V0_13")]
-		@13,
-		[CCode (cname = "AS_FORMAT_VERSION_V0_14")]
-		@14;
+		V0_6,
+		V0_7,
+		V0_8,
+		V0_9,
+		V0_10,
+		V0_11,
+		V0_12,
+		V0_13,
+		V0_14,
+		UNKNOWN;
 		[Version (since = "0.10")]
 		public static AppStream.FormatVersion from_string (string version_str);
 		[Version (since = "0.10")]

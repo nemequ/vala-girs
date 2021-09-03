@@ -2048,10 +2048,10 @@ namespace Soup {
 	[Version (replacement = "RequesterError.quark")]
 	public static GLib.Quark requester_error_quark ();
 	[CCode (cheader_filename = "libsoup/soup.h")]
-	[Version (deprecated_since = "vala-0.22", replacement = "Status.get_phrase")]
+	[Version (replacement = "Status.get_phrase")]
 	public static unowned string status_get_phrase (uint status_code);
 	[CCode (cheader_filename = "libsoup/soup.h")]
-	[Version (deprecated_since = "vala-0.22", replacement = "Status.proxify")]
+	[Version (replacement = "Status.proxify", since = "2.26")]
 	public static uint status_proxify (uint status_code);
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static bool str_case_equal (void* v1, void* v2);
