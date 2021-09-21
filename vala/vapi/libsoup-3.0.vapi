@@ -45,12 +45,12 @@ namespace Soup {
 		public string scheme_name { get; }
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_auth_basic_get_type ()")]
-	public class AuthBasic : Soup.Auth {
+	public sealed class AuthBasic : Soup.Auth {
 		[CCode (has_construct_function = false)]
 		protected AuthBasic ();
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_auth_digest_get_type ()")]
-	public class AuthDigest : Soup.Auth {
+	public sealed class AuthDigest : Soup.Auth {
 		[CCode (has_construct_function = false)]
 		protected AuthDigest ();
 	}
@@ -84,7 +84,7 @@ namespace Soup {
 		public string realm { get; construct; }
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_auth_domain_basic_get_type ()")]
-	public class AuthDomainBasic : Soup.AuthDomain {
+	public sealed class AuthDomainBasic : Soup.AuthDomain {
 		[CCode (has_construct_function = false, type = "SoupAuthDomain*")]
 		public AuthDomainBasic (string optname1, ...);
 		public void set_auth_callback (owned Soup.AuthDomainBasicAuthCallback callback);
@@ -94,7 +94,7 @@ namespace Soup {
 		public void* auth_data { get; set; }
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_auth_domain_digest_get_type ()")]
-	public class AuthDomainDigest : Soup.AuthDomain {
+	public sealed class AuthDomainDigest : Soup.AuthDomain {
 		[CCode (has_construct_function = false, type = "SoupAuthDomain*")]
 		public AuthDomainDigest (string optname1, ...);
 		public static string encode_password (string username, string realm, string password);
@@ -105,7 +105,7 @@ namespace Soup {
 		public void* auth_data { get; set; }
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_auth_manager_get_type ()")]
-	public class AuthManager : GLib.Object, Soup.SessionFeature {
+	public sealed class AuthManager : GLib.Object, Soup.SessionFeature {
 		[CCode (has_construct_function = false)]
 		protected AuthManager ();
 		public void clear_cached_credentials ();
@@ -113,12 +113,12 @@ namespace Soup {
 		public signal void authenticate (Soup.Message msg, Soup.Auth auth, bool retrying);
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_auth_ntlm_get_type ()")]
-	public class AuthNTLM : Soup.Auth {
+	public sealed class AuthNTLM : Soup.Auth {
 		[CCode (has_construct_function = false)]
 		protected AuthNTLM ();
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_auth_negotiate_get_type ()")]
-	public class AuthNegotiate : Soup.Auth {
+	public sealed class AuthNegotiate : Soup.Auth {
 		[CCode (has_construct_function = false)]
 		protected AuthNegotiate ();
 		public static bool supported ();
@@ -149,12 +149,12 @@ namespace Soup {
 	public class Connection {
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_content_decoder_get_type ()")]
-	public class ContentDecoder : GLib.Object, Soup.SessionFeature {
+	public sealed class ContentDecoder : GLib.Object, Soup.SessionFeature {
 		[CCode (has_construct_function = false)]
 		protected ContentDecoder ();
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_content_sniffer_get_type ()")]
-	public class ContentSniffer : GLib.Object, Soup.SessionFeature {
+	public sealed class ContentSniffer : GLib.Object, Soup.SessionFeature {
 		[CCode (has_construct_function = false)]
 		public ContentSniffer ();
 		public string sniff (Soup.Message msg, GLib.Bytes buffer, out GLib.HashTable<string,string>? @params);
@@ -215,14 +215,14 @@ namespace Soup {
 		public virtual signal void changed (Soup.Cookie old_cookie, Soup.Cookie new_cookie);
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_cookie_jar_db_get_type ()")]
-	public class CookieJarDB : Soup.CookieJar, Soup.SessionFeature {
+	public sealed class CookieJarDB : Soup.CookieJar, Soup.SessionFeature {
 		[CCode (has_construct_function = false, type = "SoupCookieJar*")]
 		public CookieJarDB (string filename, bool read_only);
 		[NoAccessorMethod]
 		public string filename { owned get; construct; }
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_cookie_jar_text_get_type ()")]
-	public class CookieJarText : Soup.CookieJar, Soup.SessionFeature {
+	public sealed class CookieJarText : Soup.CookieJar, Soup.SessionFeature {
 		[CCode (has_construct_function = false, type = "SoupCookieJar*")]
 		public CookieJarText (string filename, bool read_only);
 		[NoAccessorMethod]
@@ -241,7 +241,7 @@ namespace Soup {
 		public virtual signal void changed (Soup.HSTSPolicy old_policy, Soup.HSTSPolicy new_policy);
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_hsts_enforcer_db_get_type ()")]
-	public class HSTSEnforcerDB : Soup.HSTSEnforcer, Soup.SessionFeature {
+	public sealed class HSTSEnforcerDB : Soup.HSTSEnforcer, Soup.SessionFeature {
 		[CCode (has_construct_function = false, type = "SoupHSTSEnforcer*")]
 		public HSTSEnforcerDB (string filename);
 		[NoAccessorMethod]
@@ -270,7 +270,7 @@ namespace Soup {
 		public HSTSPolicy.session_policy (string domain, bool include_subdomains);
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_logger_get_type ()")]
-	public class Logger : GLib.Object, Soup.SessionFeature {
+	public sealed class Logger : GLib.Object, Soup.SessionFeature {
 		[CCode (has_construct_function = false)]
 		public Logger (Soup.LoggerLogLevel level);
 		public int get_max_body_size ();
@@ -283,7 +283,7 @@ namespace Soup {
 		public int max_body_size { get; set; }
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_message_get_type ()")]
-	public class Message : GLib.Object {
+	public sealed class Message : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Message (string method, string uri_string);
 		public void add_flags (Soup.MessageFlags flags);
@@ -473,7 +473,7 @@ namespace Soup {
 		public void to_message (Soup.MessageHeaders dest_headers, out GLib.Bytes dest_body);
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_multipart_input_stream_get_type ()")]
-	public class MultipartInputStream : GLib.FilterInputStream, GLib.PollableInputStream {
+	public sealed class MultipartInputStream : GLib.FilterInputStream, GLib.PollableInputStream {
 		[CCode (has_construct_function = false)]
 		public MultipartInputStream (Soup.Message msg, GLib.InputStream base_stream);
 		public unowned Soup.MessageHeaders? get_headers ();
@@ -524,7 +524,7 @@ namespace Soup {
 		public virtual signal void request_started (Soup.ServerMessage msg);
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_server_message_get_type ()")]
-	public class ServerMessage : GLib.Object {
+	public sealed class ServerMessage : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected ServerMessage ();
 		public Soup.HTTPVersion get_http_version ();
@@ -619,7 +619,7 @@ namespace Soup {
 	public class Socket {
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_websocket_connection_get_type ()")]
-	public class WebsocketConnection : GLib.Object {
+	public sealed class WebsocketConnection : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public WebsocketConnection (GLib.IOStream stream, GLib.Uri uri, Soup.WebsocketConnectionType type, string? origin, string? protocol, owned GLib.List<Soup.WebsocketExtension> extensions);
 		public void close (ushort code, string? data);
@@ -665,12 +665,12 @@ namespace Soup {
 		public virtual GLib.Bytes process_outgoing_message (ref uint8 header, owned GLib.Bytes payload) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_websocket_extension_deflate_get_type ()")]
-	public class WebsocketExtensionDeflate : Soup.WebsocketExtension {
+	public sealed class WebsocketExtensionDeflate : Soup.WebsocketExtension {
 		[CCode (has_construct_function = false)]
 		protected WebsocketExtensionDeflate ();
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_websocket_extension_manager_get_type ()")]
-	public class WebsocketExtensionManager : GLib.Object, Soup.SessionFeature {
+	public sealed class WebsocketExtensionManager : GLib.Object, Soup.SessionFeature {
 		[CCode (has_construct_function = false)]
 		protected WebsocketExtensionManager ();
 	}
