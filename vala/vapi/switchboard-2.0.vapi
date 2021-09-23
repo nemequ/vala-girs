@@ -75,17 +75,10 @@ namespace Switchboard {
 		 * The icon representing the plug.
 		 */
 		public string icon { get; construct; }
-		/**
-		 * A map of settings:// endpoints and location to pass to the
-		 * {@link search_callback} method if the value is not %NULL.
-		 * For example {"input/keyboard", "keyboard"}.
-		 */
 		public Gee.TreeMap<string,string?> supported_settings { get; construct; }
 		/**
 		 * Inform the application that the plug can now be listed in the available plugs.
 		 * The application will also listen to the notify::can-show signal.
-		 *
-		 * @deprecated: The changing {@link can_show} activate the notify::can-show signal.
 		 */
 		public signal void visibility_changed ();
 	}
