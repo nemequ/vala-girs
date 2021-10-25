@@ -1098,6 +1098,20 @@ namespace Gtk {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] search_path { get; set; }
 	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_scheme_preview_get_type ()")]
+	[GIR (name = "StyleSchemePreview")]
+	public class SourceStyleSchemePreview : Gtk.Widget, Gtk.Accessible, Gtk.Actionable, Gtk.Buildable, Gtk.ConstraintTarget {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "5.4")]
+		public SourceStyleSchemePreview (Gtk.SourceStyleScheme scheme);
+		[Version (since = "5.4")]
+		public unowned Gtk.SourceStyleScheme get_scheme ();
+		public bool get_selected ();
+		public void set_selected (bool selected);
+		public Gtk.SourceStyleScheme scheme { get; construct; }
+		public bool selected { get; set; }
+		public signal void activate ();
+	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_tag_get_type ()")]
 	[GIR (name = "Tag")]
 	public class SourceTag : Gtk.TextTag {

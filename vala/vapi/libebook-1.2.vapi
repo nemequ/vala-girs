@@ -22,6 +22,9 @@ namespace E {
 		public static E.BookClient connect_direct_sync (E.SourceRegistry registry, E.Source source, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.8")]
 		public static E.BookClient connect_sync (E.Source source, uint32 wait_for_connected_seconds, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.44")]
+		public async bool contains_email (string email_address, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool contains_email_sync (string email_address, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_contact (string uid, GLib.Cancellable? cancellable, out E.Contact out_contact) throws GLib.Error;
 		public bool get_contact_sync (string uid, out E.Contact out_contact, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool get_contacts (string sexp, GLib.Cancellable? cancellable, out GLib.SList<E.Contact> out_contacts) throws GLib.Error;

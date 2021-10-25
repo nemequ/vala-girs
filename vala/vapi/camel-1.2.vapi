@@ -857,6 +857,8 @@ namespace Camel {
 		public int find_name (string name, out unowned string? addressp);
 		public static string format_address (string name, string addr);
 		public bool @get (int index, out unowned string? namep, out unowned string? addressp);
+		[Version (since = "3.44")]
+		public bool sanitize_ascii_domain ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_key_file_get_type ()")]
 	public class KeyFile : GLib.Object {
@@ -1827,6 +1829,8 @@ namespace Camel {
 		protected Session ();
 		[Version (since = "3.2")]
 		public virtual Camel.Service add_service (string uid, string protocol, Camel.ProviderType type) throws GLib.Error;
+		[Version (since = "3.44")]
+		public virtual bool addressbook_contains_sync (string book_uid, string email_address, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.4")]
 		public async bool authenticate (Camel.Service service, string? mechanism, int io_priority, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.4")]
@@ -3584,6 +3588,12 @@ namespace Camel {
 	public const string RECIPIENT_TYPE_RESENT_TO;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_RECIPIENT_TYPE_TO")]
 	public const string RECIPIENT_TYPE_TO;
+	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_SESSION_BOOK_UID_ANY")]
+	[Version (since = "3.44")]
+	public const string SESSION_BOOK_UID_ANY;
+	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_SESSION_BOOK_UID_COMPLETION")]
+	[Version (since = "3.44")]
+	public const string SESSION_BOOK_UID_COMPLETION;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_STORE_INFO_FOLDER_TYPE_BIT")]
 	public const int STORE_INFO_FOLDER_TYPE_BIT;
 	[CCode (cheader_filename = "camel/camel.h", cname = "CAMEL_STORE_INFO_FOLDER_TYPE_MASK")]
@@ -3793,6 +3803,9 @@ namespace Camel {
 	[Version (since = "3.16")]
 	public static string host_idna_to_ascii (string host);
 	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.44")]
+	public static bool hostname_utils_requires_ascii (string hostname);
+	[CCode (cheader_filename = "camel/camel.h")]
 	public static unowned string iconv_charset_language (string charset);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static unowned string iconv_charset_name (string charset);
@@ -3921,6 +3934,9 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static unowned string strdown (string str);
 	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.44")]
+	public static bool string_is_all_ascii (string? str);
+	[CCode (cheader_filename = "camel/camel.h")]
 	public static string strstrcase (string haystack, string needle);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static Camel.MessageFlags system_flag (string name);
@@ -4021,6 +4037,15 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h")]
 	[Version (since = "3.40")]
 	public static GLib.GenericArray<weak string> util_get_directory_variants (string main_path, string replace_prefix, bool with_modules_dir);
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.44")]
+	public static string? utils_sanitize_ascii_domain_in_address (string email_address, bool do_format);
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.44")]
+	public static bool utils_sanitize_ascii_domain_in_url (Camel.URL url);
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.44")]
+	public static string? utils_sanitize_ascii_domain_in_url_str (string url_str);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static size_t uudecode_step ([CCode (array_length_cname = "inlen", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] @in, [CCode (array_length = false)] ref uint8[] @out, [CCode (array_length_cname = "state", array_length_pos = 2.5)] ref uint32[] save);
 	[CCode (cheader_filename = "camel/camel.h")]

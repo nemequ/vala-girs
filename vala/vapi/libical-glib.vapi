@@ -1860,7 +1860,7 @@ namespace ICal {
 		[Version (since = "1.0")]
 		public void get_time (out int hour, out int minute, out int second);
 		[Version (since = "1.0")]
-		public unowned ICal.Timezone get_timezone ();
+		public ICal.Timezone get_timezone ();
 		[Version (since = "1.0")]
 		public unowned string? get_tzid ();
 		[Version (since = "1.0")]

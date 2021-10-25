@@ -1411,12 +1411,12 @@ namespace GData {
 	public abstract class Parsable : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Parsable ();
-		[CCode (has_construct_function = false)]
+		[CCode (cname = "gdata_parsable_new_from_json")]
 		[Version (since = "0.15.0")]
-		public Parsable.from_json (GLib.Type parsable_type, string json, int length) throws GLib.Error;
-		[CCode (has_construct_function = false)]
+		public static GData.Parsable from_json (GLib.Type parsable_type, string json, int length) throws GLib.Error;
+		[CCode (cname = "gdata_parsable_new_from_xml")]
 		[Version (since = "0.4.0")]
-		public Parsable.from_xml (GLib.Type parsable_type, string xml, int length) throws GLib.Error;
+		public static GData.Parsable from_xml (GLib.Type parsable_type, string xml, int length) throws GLib.Error;
 		[Version (since = "0.17.7")]
 		public unowned string get_content_type ();
 		[NoWrapper]

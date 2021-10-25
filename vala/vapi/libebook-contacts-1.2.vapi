@@ -1072,6 +1072,9 @@ namespace E {
 	[Version (since = "3.34")]
 	public static uint32 book_util_conflict_resolution_to_operation_flags (E.ConflictResolution conflict_resolution);
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (since = "3.44")]
+	public static void book_util_foreach_address (string email_address, GLib.HRFunc func);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
 	[Version (since = "3.34")]
 	public static E.ConflictResolution book_util_operation_flags_to_conflict_resolution (uint32 flags);
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]

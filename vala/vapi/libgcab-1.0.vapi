@@ -41,6 +41,8 @@ namespace GCab {
 		public uint32 get_size ();
 		[Version (since = "1.0")]
 		public void set_attributes (uint32 attr);
+		[Version (since = "1.5")]
+		public void set_bytes (GLib.Bytes bytes);
 		[Version (since = "1.0")]
 		public void set_date (GLib.TimeVal tv);
 		[Version (since = "1.4")]
@@ -51,8 +53,7 @@ namespace GCab {
 		public File.with_bytes (string name, GLib.Bytes bytes);
 		[CCode (has_construct_function = false)]
 		public File.with_file (string name, GLib.File file);
-		[NoAccessorMethod]
-		public GLib.Bytes bytes { owned get; set; }
+		public GLib.Bytes bytes { get; set; }
 		[NoAccessorMethod]
 		public GLib.File file { owned get; set; }
 		[NoAccessorMethod]

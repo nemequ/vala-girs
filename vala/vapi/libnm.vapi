@@ -861,6 +861,8 @@ namespace NM {
 		public const string PATH;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PHYSICAL_PORT_ID")]
 		public const string PHYSICAL_PORT_ID;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PORTS")]
+		public const string PORTS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PRODUCT")]
 		public const string PRODUCT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_REAL")]
@@ -978,6 +980,8 @@ namespace NM {
 		[Version (since = "1.26")]
 		public unowned string get_path ();
 		public unowned string get_physical_port_id ();
+		[Version (since = "1.34")]
+		public unowned GLib.GenericArray<NM.Device> get_ports ();
 		public unowned string get_product ();
 		public GLib.Type get_setting_type ();
 		public NM.DeviceState get_state ();
@@ -1033,6 +1037,8 @@ namespace NM {
 		[Version (since = "1.26")]
 		public string path { get; }
 		public string physical_port_id { get; }
+		[Version (since = "1.34")]
+		public GLib.GenericArray<void*> ports { get; }
 		public string product { get; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
@@ -1072,6 +1078,7 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected DeviceBond ();
 		public bool get_carrier ();
+		[Version (deprecated = true, deprecated_since = "1.34")]
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 		public bool carrier { get; }
 		public GLib.GenericArray<NM.Device> slaves { get; }
@@ -1087,6 +1094,7 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected DeviceBridge ();
 		public bool get_carrier ();
+		[Version (deprecated = true, deprecated_since = "1.34")]
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 		public bool carrier { get; }
 		public GLib.GenericArray<NM.Device> slaves { get; }
@@ -1343,7 +1351,7 @@ namespace NM {
 	public class DeviceOvsBridge : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceOvsBridge ();
-		[Version (since = "1.14")]
+		[Version (deprecated = true, deprecated_since = "1.34", since = "1.14")]
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 		[Version (since = "1.22")]
 		public GLib.GenericArray<NM.Device> slaves { get; }
@@ -1357,7 +1365,7 @@ namespace NM {
 	public class DeviceOvsPort : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceOvsPort ();
-		[Version (since = "1.14")]
+		[Version (deprecated = true, deprecated_since = "1.34", since = "1.14")]
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 		[Version (since = "1.22")]
 		public GLib.GenericArray<NM.Device> slaves { get; }
@@ -1382,6 +1390,7 @@ namespace NM {
 		public bool get_carrier ();
 		[Version (since = "1.4")]
 		public unowned string get_config ();
+		[Version (deprecated = true, deprecated_since = "1.34")]
 		public unowned GLib.GenericArray<NM.Device> get_slaves ();
 		public bool carrier { get; }
 		[Version (since = "1.4")]
@@ -2840,6 +2849,8 @@ namespace NM {
 		public const string AUTOCONNECT_RETRIES;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_AUTOCONNECT_SLAVES")]
 		public const string AUTOCONNECT_SLAVES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_DNS_OVER_TLS")]
+		public const string DNS_OVER_TLS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_GATEWAY_PING_TIMEOUT")]
 		public const string GATEWAY_PING_TIMEOUT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_ID")]
@@ -2895,6 +2906,8 @@ namespace NM {
 		[Version (since = "1.2")]
 		public NM.SettingConnectionAutoconnectSlaves get_autoconnect_slaves ();
 		public unowned string get_connection_type ();
+		[Version (since = "1.34")]
+		public NM.SettingConnectionDnsOverTls get_dns_over_tls ();
 		public uint32 get_gateway_ping_timeout ();
 		public unowned string get_id ();
 		public unowned string get_interface_name ();
@@ -2942,6 +2955,9 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public NM.SettingConnectionAutoconnectSlaves autoconnect_slaves { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.34")]
+		public int dns_over_tls { get; set; }
 		[NoAccessorMethod]
 		public uint gateway_ping_timeout { get; set; }
 		[NoAccessorMethod]
@@ -6272,6 +6288,14 @@ namespace NM {
 	public enum SettingConnectionAutoconnectSlaves {
 		DEFAULT,
 		NO,
+		YES
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_CONNECTION_DNS_OVER_TLS_", type_id = "nm_setting_connection_dns_over_tls_get_type ()")]
+	[Version (since = "1.34")]
+	public enum SettingConnectionDnsOverTls {
+		DEFAULT,
+		NO,
+		OPPORTUNISTIC,
 		YES
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_CONNECTION_LLDP_", type_id = "nm_setting_connection_lldp_get_type ()")]

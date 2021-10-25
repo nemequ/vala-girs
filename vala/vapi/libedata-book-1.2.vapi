@@ -9,6 +9,10 @@ namespace E {
 		public void add_view (E.DataBookView view);
 		[Version (since = "3.8")]
 		public void configure_direct (string config);
+		[Version (since = "3.44")]
+		public async bool contains_email (string email_address, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.44")]
+		public bool contains_email_sync (string email_address, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.10")]
 		public async bool create_contacts (string vcards, uint32 opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
@@ -49,6 +53,8 @@ namespace E {
 		public bool get_writable ();
 		[NoWrapper]
 		public virtual void impl_configure_direct (string config);
+		[NoWrapper]
+		public virtual void impl_contains_email (E.DataBook book, uint32 opid, GLib.Cancellable? cancellable, string email_address);
 		[NoWrapper]
 		public virtual void impl_create_contacts (E.DataBook book, uint32 opid, GLib.Cancellable? cancellable, string vcards, uint32 opflags);
 		[NoWrapper]
@@ -160,6 +166,10 @@ namespace E {
 	public class BookBackendSync : E.BookBackend {
 		[CCode (has_construct_function = false)]
 		protected BookBackendSync ();
+		[Version (since = "3.44")]
+		public bool contains_email (string email_address, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[NoWrapper]
+		public virtual bool contains_email_sync (string email_address, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.34")]
 		public bool create_contacts (string vcards, uint32 opflags, out GLib.SList<E.Contact> out_contacts, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.34")]
@@ -186,6 +196,8 @@ namespace E {
 	public class BookCache : E.Cache, E.Extensible {
 		[CCode (has_construct_function = false)]
 		public BookCache (string filename, E.Source? source, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.44")]
+		public bool contains_email (string email_address, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool cursor_calculate (E.BookCacheCursor cursor, out int out_total, out int out_position, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int cursor_compare_contact (E.BookCacheCursor cursor, E.Contact contact, out bool out_matches_sexp);
 		public void cursor_free (E.BookCacheCursor cursor);
@@ -341,6 +353,8 @@ namespace E {
 		public void report_backend_property_changed (string prop_name, string? prop_value);
 		[Version (since = "3.2")]
 		public void report_error (string message);
+		[Version (since = "3.44")]
+		public void respond_contains_email (uint32 opid, GLib.Error error, bool found);
 		[Version (since = "3.4")]
 		public void respond_create_contacts (uint32 opid, GLib.Error error, GLib.SList<E.Contact> contacts);
 		public void respond_get_contact (uint32 opid, owned GLib.Error? error, E.Contact? contact);

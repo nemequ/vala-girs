@@ -825,6 +825,37 @@ namespace Hdy {
 		[Version (since = "1.2")]
 		public string title { get; set; }
 	}
+	[CCode (cheader_filename = "handy.h", type_id = "hdy_style_manager_get_type ()")]
+	public class StyleManager : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected StyleManager ();
+		[Version (since = "1.6")]
+		public Hdy.ColorScheme get_color_scheme ();
+		[Version (since = "1.6")]
+		public bool get_dark ();
+		[Version (since = "1.6")]
+		public static unowned Hdy.StyleManager get_default ();
+		[Version (since = "1.6")]
+		public unowned Gdk.Display get_display ();
+		[Version (since = "1.6")]
+		public static unowned Hdy.StyleManager get_for_display (Gdk.Display display);
+		[Version (since = "1.6")]
+		public bool get_high_contrast ();
+		[Version (since = "1.6")]
+		public bool get_system_supports_color_schemes ();
+		[Version (since = "1.6")]
+		public void set_color_scheme (Hdy.ColorScheme color_scheme);
+		[Version (since = "1.6")]
+		public Hdy.ColorScheme color_scheme { get; set; }
+		[Version (since = "1.6")]
+		public bool dark { get; }
+		[Version (since = "1.6")]
+		public Gdk.Display display { get; construct; }
+		[Version (since = "1.6")]
+		public bool high_contrast { get; }
+		[Version (since = "1.6")]
+		public bool system_supports_color_schemes { get; }
+	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_swipe_group_get_type ()")]
 	public class SwipeGroup : GLib.Object, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
@@ -1257,6 +1288,15 @@ namespace Hdy {
 	public enum CenteringPolicy {
 		LOOSE,
 		STRICT
+	}
+	[CCode (cheader_filename = "handy.h", cprefix = "HDY_COLOR_SCHEME_", type_id = "hdy_color_scheme_get_type ()")]
+	[Version (since = "1.6")]
+	public enum ColorScheme {
+		DEFAULT,
+		FORCE_LIGHT,
+		PREFER_LIGHT,
+		PREFER_DARK,
+		FORCE_DARK
 	}
 	[CCode (cheader_filename = "handy.h", cprefix = "HDY_DECK_TRANSITION_TYPE_", type_id = "hdy_deck_transition_type_get_type ()")]
 	[Version (since = "1.0")]
