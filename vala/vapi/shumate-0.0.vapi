@@ -40,21 +40,25 @@ namespace Shumate {
 	public abstract class Layer : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
 		[CCode (has_construct_function = false)]
 		protected Layer ();
+		public virtual unowned string? get_license ();
+		public virtual unowned string? get_license_uri ();
 		public unowned Shumate.Viewport get_viewport ();
+		public string license { get; }
+		public string license_uri { get; }
 		public Shumate.Viewport viewport { get; construct; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_license_get_type ()")]
 	public class License : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
 		[CCode (has_construct_function = false)]
 		public License ();
-		public void append_map_source (Shumate.MapSource map_source);
 		public unowned string get_extra_text ();
+		public unowned Shumate.Map? get_map ();
 		public float get_xalign ();
-		public void prepend_map_source (Shumate.MapSource map_source);
-		public void remove_map_source (Shumate.MapSource map_source);
 		public void set_extra_text (string text);
+		public void set_map (Shumate.Map? map);
 		public void set_xalign (float xalign);
 		public string extra_text { get; set; }
+		public Shumate.Map map { get; set; }
 		public float xalign { get; set; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_map_get_type ()")]
@@ -65,6 +69,7 @@ namespace Shumate {
 		public void center_on (double latitude, double longitude);
 		public bool get_animate_zoom ();
 		public uint get_go_to_duration ();
+		public GLib.List<weak Shumate.Layer> get_layers ();
 		public Shumate.State get_state ();
 		public unowned Shumate.Viewport get_viewport ();
 		public bool get_zoom_on_double_click ();
@@ -85,6 +90,7 @@ namespace Shumate {
 		public Shumate.Viewport viewport { get; }
 		public bool zoom_on_double_click { get; set; }
 		public signal void animation_completed ();
+		public signal void layers_changed ();
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_map_layer_get_type ()")]
 	public class MapLayer : Shumate.Layer, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
@@ -210,17 +216,21 @@ namespace Shumate {
 		public int get_max_conns ();
 		public bool get_offline ();
 		public unowned string get_proxy_uri ();
+		public unowned Shumate.VectorStyle get_style ();
 		public unowned string get_uri_format ();
 		public void set_max_conns (int max_conns);
 		public void set_offline (bool offline);
 		public void set_proxy_uri (string proxy_uri);
 		public void set_uri_format (string uri_format);
 		public void set_user_agent (string user_agent);
+		[CCode (has_construct_function = false)]
+		public NetworkTileSource.vector_full (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Shumate.MapProjection projection, string uri_format, Shumate.VectorStyle style);
 		[NoAccessorMethod]
 		public Shumate.FileCache file_cache { owned get; }
 		public int max_conns { get; set; }
 		public bool offline { get; set; }
 		public string proxy_uri { get; set; }
+		public Shumate.VectorStyle style { get; construct; }
 		public string uri_format { get; set construct; }
 		public string user_agent { set; }
 	}
@@ -311,6 +321,16 @@ namespace Shumate {
 		public uint y { get; set; }
 		public uint zoom_level { get; set; }
 	}
+	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_vector_style_get_type ()")]
+	public class VectorStyle : GLib.Object, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		protected VectorStyle ();
+		public static Shumate.VectorStyle create (string style_json) throws GLib.Error;
+		public unowned string? get_style_json ();
+		public static bool is_supported ();
+		public Gdk.Texture render (int texture_size, GLib.Bytes tile_data, double zoom_level);
+		public string style_json { get; construct; }
+	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_viewport_get_type ()")]
 	public class Viewport : GLib.Object, Shumate.Location {
 		[CCode (has_construct_function = false)]
@@ -376,6 +396,15 @@ namespace Shumate {
 		OFFLINE;
 		public static GLib.Quark quark ();
 	}
+	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_STYLE_ERROR_")]
+	public errordomain StyleError {
+		FAILED,
+		MALFORMED_STYLE,
+		UNSUPPORTED_LAYER,
+		INVALID_EXPRESSION,
+		SUPPORT_OMITTED;
+		public static GLib.Quark quark ();
+	}
 	[CCode (cheader_filename = "shumate/shumate.h", cname = "SHUMATE_MAJOR_VERSION")]
 	public const int MAJOR_VERSION;
 	[CCode (cheader_filename = "shumate/shumate.h", cname = "SHUMATE_MAP_SOURCE_MFF_RELIEF")]
@@ -414,4 +443,7 @@ namespace Shumate {
 	[CCode (cheader_filename = "shumate/shumate.h")]
 	[Version (replacement = "NetworkSourceError.quark")]
 	public static GLib.Quark network_source_error_quark ();
+	[CCode (cheader_filename = "shumate/shumate.h")]
+	[Version (replacement = "StyleError.quark")]
+	public static GLib.Quark style_error_quark ();
 }

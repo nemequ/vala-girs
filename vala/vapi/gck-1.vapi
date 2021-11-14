@@ -160,7 +160,8 @@ namespace Gck {
 		public bool destroy (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool destroy_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool equal (Gck.Object object2);
-		public static Gck.Object from_handle (Gck.Session session, ulong object_handle);
+		[CCode (cname = "gck_object_from_handle", has_construct_function = false)]
+		public Object.from_handle (Gck.Session session, ulong object_handle);
 		public async Gck.Attributes get_async ([CCode (array_length_cname = "n_attr_types", array_length_pos = 1.5, array_length_type = "guint")] ulong[] attr_types, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (array_length_pos = 2.1, array_length_type = "gsize")]
 		public uint8[] get_data (ulong attr_type, GLib.Cancellable? cancellable) throws GLib.Error;

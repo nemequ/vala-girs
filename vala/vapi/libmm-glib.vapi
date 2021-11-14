@@ -173,6 +173,8 @@ namespace MM {
 		protected BearerStats ();
 		[Version (since = "1.14")]
 		public uint get_attempts ();
+		[Version (since = "1.20")]
+		public uint64 get_downlink_speed ();
 		[Version (since = "1.6")]
 		public uint get_duration ();
 		[Version (since = "1.14")]
@@ -189,6 +191,8 @@ namespace MM {
 		public uint64 get_total_tx_bytes ();
 		[Version (since = "1.6")]
 		public uint64 get_tx_bytes ();
+		[Version (since = "1.20")]
+		public uint64 get_uplink_speed ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_call_get_type ()")]
 	public class Call : MM.GdbusCallProxy, GLib.AsyncInitable, GLib.DBusInterface, GLib.Initable, MM.GdbusCall {
@@ -1040,6 +1044,8 @@ namespace MM {
 		public unowned string get_operator_code ();
 		[Version (since = "1.0")]
 		public unowned string get_operator_name ();
+		[Version (since = "1.20")]
+		public MM.Modem3gppPacketServiceState get_packet_service_state ();
 		[Version (since = "1.0")]
 		public unowned string get_path ();
 		[Version (since = "1.10")]
@@ -1048,6 +1054,8 @@ namespace MM {
 		public MM.Modem3gppRegistrationState get_registration_state ();
 		[Version (deprecated = true, deprecated_since = "1.10.0.", since = "1.0")]
 		public MM.Modem3gppSubscriptionState get_subscription_state ();
+		[Version (replacement = "Modem3gppPacketServiceState.get_string")]
+		public static unowned string packet_service_state_get_string (MM.Modem3gppPacketServiceState val);
 		[Version (since = "1.10")]
 		public unowned MM.BearerProperties peek_initial_eps_bearer_settings ();
 		[Version (since = "1.0")]
@@ -1068,6 +1076,10 @@ namespace MM {
 		public async bool set_initial_eps_bearer_settings (MM.BearerProperties config, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.10")]
 		public bool set_initial_eps_bearer_settings_sync (MM.BearerProperties config, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.20")]
+		public async bool set_packet_service_state (MM.Modem3gppPacketServiceState state, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.20")]
+		public bool set_packet_service_state_sync (MM.Modem3gppPacketServiceState state, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (replacement = "Modem3gppSubscriptionState.get_string")]
 		public static unowned string subscription_state_get_string (MM.Modem3gppSubscriptionState val);
 	}
@@ -2139,11 +2151,14 @@ namespace MM {
 		public bool call_set_eps_ue_mode_operation_sync (uint arg_mode, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_set_initial_eps_bearer_settings (GLib.Variant arg_settings, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_set_initial_eps_bearer_settings_sync (GLib.Variant arg_settings, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_set_packet_service_state (uint arg_state, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_set_packet_service_state_sync (uint arg_state, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_disable_facility_lock (owned GLib.DBusMethodInvocation invocation);
 		public void complete_register (owned GLib.DBusMethodInvocation invocation);
 		public void complete_scan (owned GLib.DBusMethodInvocation invocation, GLib.Variant results);
 		public void complete_set_eps_ue_mode_operation (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_initial_eps_bearer_settings (owned GLib.DBusMethodInvocation invocation);
+		public void complete_set_packet_service_state (owned GLib.DBusMethodInvocation invocation);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
 		[NoAccessorMethod]
@@ -2161,6 +2176,8 @@ namespace MM {
 		[NoAccessorMethod]
 		public abstract string operator_name { owned get; set; }
 		[NoAccessorMethod]
+		public abstract uint packet_service_state { get; set; }
+		[NoAccessorMethod]
 		public abstract GLib.Variant pco { owned get; set; }
 		[NoAccessorMethod]
 		public abstract uint registration_state { get; set; }
@@ -2171,6 +2188,7 @@ namespace MM {
 		public virtual signal bool handle_scan (GLib.DBusMethodInvocation invocation);
 		public virtual signal bool handle_set_eps_ue_mode_operation (GLib.DBusMethodInvocation invocation, uint arg_mode);
 		public virtual signal bool handle_set_initial_eps_bearer_settings (GLib.DBusMethodInvocation invocation, GLib.Variant arg_settings);
+		public virtual signal bool handle_set_packet_service_state (GLib.DBusMethodInvocation invocation, uint arg_state);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusModem3gppProfileManager", type_id = "mm_gdbus_modem3gpp_profile_manager_get_type ()")]
 	public interface GdbusModem3gppProfileManager : GLib.Object {
@@ -2708,7 +2726,13 @@ namespace MM {
 		MANAGEMENT,
 		VOICE,
 		EMERGENCY,
-		PRIVATE;
+		PRIVATE,
+		PURCHASE,
+		VIDEO_SHARE,
+		LOCAL,
+		APP,
+		XCAP,
+		TETHERING;
 		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_IP_FAMILY_", type_id = "mm_bearer_ip_family_get_type ()")]
@@ -2829,6 +2853,14 @@ namespace MM {
 		CURRENT,
 		FORBIDDEN;
 		[CCode (cname = "mm_modem_3gpp_network_availability_get_string")]
+		public unowned string get_string ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_PACKET_SERVICE_STATE_", type_id = "mm_modem_3gpp_packet_service_state_get_type ()")]
+	public enum Modem3gppPacketServiceState {
+		UNKNOWN,
+		DETACHED,
+		ATTACHED;
+		[CCode (cname = "mm_modem_3gpp_packet_service_state_get_string")]
 		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_REGISTRATION_STATE_", type_id = "mm_modem_3gpp_registration_state_get_type ()")]
@@ -4079,6 +4111,8 @@ namespace MM {
 	public const string MODEM_MODEM3GPP_METHOD_SETEPSUEMODEOPERATION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_SETINITIALEPSBEARERSETTINGS")]
 	public const string MODEM_MODEM3GPP_METHOD_SETINITIALEPSBEARERSETTINGS;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_SETPACKETSERVICESTATE")]
+	public const string MODEM_MODEM3GPP_METHOD_SETPACKETSERVICESTATE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROFILEMANAGER_METHOD_DELETE")]
 	public const string MODEM_MODEM3GPP_PROFILEMANAGER_METHOD_DELETE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROFILEMANAGER_METHOD_LIST")]
@@ -4101,6 +4135,8 @@ namespace MM {
 	public const string MODEM_MODEM3GPP_PROPERTY_OPERATORCODE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_OPERATORNAME")]
 	public const string MODEM_MODEM3GPP_PROPERTY_OPERATORNAME;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_PACKETSERVICESTATE")]
+	public const string MODEM_MODEM3GPP_PROPERTY_PACKETSERVICESTATE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_PCO")]
 	public const string MODEM_MODEM3GPP_PROPERTY_PCO;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_REGISTRATIONSTATE")]

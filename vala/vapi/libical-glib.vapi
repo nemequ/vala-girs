@@ -353,6 +353,8 @@ namespace ICal {
 		public void add_depender (GLib.Object depender);
 		[Version (since = "3.0.5")]
 		public static void free_global_objects ();
+		[Version (since = "3.0.11")]
+		public bool get_always_destroy ();
 		[Version (since = "1.0")]
 		public bool get_is_global_memory ();
 		[Version (since = "1.0")]
@@ -361,12 +363,16 @@ namespace ICal {
 		public void remove_depender (GLib.Object depender);
 		[Version (since = "1.0")]
 		public void remove_owner ();
+		[Version (since = "3.0.11")]
+		public void set_always_destroy (bool value);
 		[Version (since = "1.0")]
 		public void set_native_destroy_func (GLib.DestroyNotify native_destroy_func);
 		[Version (since = "1.0")]
 		public void set_owner (GLib.Object owner);
 		[Version (since = "1.0")]
 		public void* steal_native ();
+		[Version (since = "3.0.11")]
+		public bool always_destroy { get; set; }
 		public bool is_global_memory { get; construct; }
 		[NoAccessorMethod]
 		public void* native { get; construct; }
@@ -1860,7 +1866,7 @@ namespace ICal {
 		[Version (since = "1.0")]
 		public void get_time (out int hour, out int minute, out int second);
 		[Version (since = "1.0")]
-		public ICal.Timezone get_timezone ();
+		public unowned ICal.Timezone get_timezone ();
 		[Version (since = "1.0")]
 		public unowned string? get_tzid ();
 		[Version (since = "1.0")]

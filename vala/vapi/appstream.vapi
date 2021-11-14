@@ -749,8 +749,12 @@ namespace AppStream {
 		public Translation ();
 		public unowned string get_id ();
 		public AppStream.TranslationKind get_kind ();
+		[Version (since = "0.14.6")]
+		public unowned string get_source_locale ();
 		public void set_id (string id);
 		public void set_kind (AppStream.TranslationKind kind);
+		[Version (since = "0.14.6")]
+		public void set_source_locale (string? locale);
 	}
 	[CCode (cheader_filename = "appstream.h", type_id = "as_validator_get_type ()")]
 	public class Validator : GLib.Object {

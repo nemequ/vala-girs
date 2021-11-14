@@ -28,7 +28,8 @@ namespace Gcr {
 		public uint8[] encode (bool textual);
 		public Gcr.CertificateRequestFormat get_format ();
 		public unowned Gck.Object get_private_key ();
-		public static Gcr.CertificateRequest prepare (Gcr.CertificateRequestFormat format, Gck.Object private_key);
+		[CCode (cname = "gcr_certificate_request_prepare", has_construct_function = false)]
+		public CertificateRequest.prepare (Gcr.CertificateRequestFormat format, Gck.Object private_key);
 		public void set_cn (string cn);
 		public Gck.Object private_key { get; construct; }
 	}
@@ -265,7 +266,8 @@ namespace Gcr {
 	public interface Prompt : GLib.Object {
 		public void close ();
 		public Gcr.PromptReply confirm (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async Gcr.PromptReply confirm_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		[CCode (vfunc_name = "prompt_confirm_async")]
+		public abstract async Gcr.PromptReply confirm_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public Gcr.PromptReply confirm_run (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public string get_caller_window ();
 		public string get_cancel_label ();
@@ -279,12 +281,9 @@ namespace Gcr {
 		public string get_title ();
 		public string get_warning ();
 		public unowned string password (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public async unowned string password_async (GLib.Cancellable? cancellable) throws GLib.Error;
+		[CCode (vfunc_name = "prompt_password_async")]
+		public abstract async unowned string password_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public unowned string password_run (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[NoWrapper]
-		public abstract async Gcr.PromptReply prompt_confirm_async (GLib.Cancellable? cancellable) throws GLib.Error;
-		[NoWrapper]
-		public abstract async unowned string prompt_password_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public void reset ();
 		public void set_caller_window (string window_id);
 		public void set_cancel_label (string cancel_label);

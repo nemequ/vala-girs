@@ -157,7 +157,6 @@ namespace Gtk {
 		public bool get_empty ();
 		[Version (since = "5.0")]
 		public unowned Gtk.SourceLanguage? get_language ();
-		public void get_start_iter (Gtk.TextIter iter);
 		[Version (since = "5.0")]
 		public unowned Gtk.SourceView? get_view ();
 		[Version (since = "5.0")]
@@ -1224,6 +1223,27 @@ namespace Gtk {
 		[Version (since = "5.0")]
 		public virtual signal void push_snippet (Gtk.SourceSnippet snippet, ref Gtk.TextIter location);
 		public virtual signal void show_completion ();
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_vim_im_context_get_type ()")]
+	[GIR (name = "VimIMContext")]
+	public class SourceVimIMContext : Gtk.IMContext {
+		[CCode (has_construct_function = false, type = "GtkIMContext*")]
+		public SourceVimIMContext ();
+		[Version (since = "5.4")]
+		public unowned string get_command_bar_text ();
+		[Version (since = "5.4")]
+		public unowned string get_command_text ();
+		public string command_bar_text { get; }
+		public string command_text { get; }
+		[Version (since = "5.4")]
+		public signal void edit (Gtk.SourceView view, string? path);
+		[HasEmitter]
+		[Version (since = "5.4")]
+		public signal bool execute_command (string command);
+		[Version (since = "5.4")]
+		public signal void format_text (Gtk.TextIter begin, Gtk.TextIter end);
+		[Version (since = "5.4")]
+		public signal void write (Gtk.SourceView view, string? path);
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_cname = "GtkSourceCompletionProposalInterface", type_id = "gtk_source_completion_proposal_get_type ()")]
 	[GIR (name = "CompletionProposal")]

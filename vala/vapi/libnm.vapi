@@ -555,8 +555,8 @@ namespace NM {
 		public Client (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async NM.ActiveConnection activate_connection_async (NM.Connection? connection, NM.Device? device, string? specific_object, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.16")]
-		public async NM.ActiveConnection add_and_activate_connection2 (NM.Connection? partial, NM.Device device, string? specific_object, GLib.Variant options, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async NM.ActiveConnection add_and_activate_connection_async (NM.Connection? partial, NM.Device device, string? specific_object, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async NM.ActiveConnection add_and_activate_connection2 (NM.Connection? @partial, NM.Device device, string? specific_object, GLib.Variant options, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async NM.ActiveConnection add_and_activate_connection_async (NM.Connection? @partial, NM.Device device, string? specific_object, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.20")]
 		public async NM.RemoteConnection add_connection2 (GLib.Variant settings, NM.SettingsAddConnection2Flags flags, GLib.Variant? args, bool ignore_out_result, GLib.Cancellable? cancellable, out GLib.Variant out_result) throws GLib.Error;
 		public async NM.RemoteConnection add_connection_async (NM.Connection connection, bool save_to_disk, GLib.Cancellable? cancellable) throws GLib.Error;
