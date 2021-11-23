@@ -6834,33 +6834,13 @@ with the gst_element_send_event() function on the element or its parent bin.
 After the EOS has been sent to the element, the application should wait for
 an EOS message to be posted on the pipeline's bus. Once this EOS message is
 received, it may safely shut down the entire pipeline.</doc>
-      <source-position filename="libs/gst/base/gstbasesrc.h" line="254"/>
+      <source-position filename="libs/gst/base/gstbasesrc.h" line="266"/>
       <virtual-method name="alloc">
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="246"/>
-        <return-value transfer-ownership="none">
-          <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="src" transfer-ownership="none">
-            <type name="BaseSrc" c:type="GstBaseSrc*"/>
-          </instance-parameter>
-          <parameter name="offset" transfer-ownership="none">
-            <type name="guint64" c:type="guint64"/>
-          </parameter>
-          <parameter name="size" transfer-ownership="none">
-            <type name="guint" c:type="guint"/>
-          </parameter>
-          <parameter name="buf" transfer-ownership="none">
-            <type name="Gst.Buffer" c:type="GstBuffer**"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="create">
         <doc xml:space="preserve"
              filename="libs/gst/base/gstbasesrc.h"
-             line="235">Ask the subclass to create a buffer with @offset and @size, the default
-implementation will call alloc and fill.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="242"/>
+             line="251">Ask the subclass to allocate an output buffer with @offset and @size, the default
+implementation will use the negotiated allocator.</doc>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="258"/>
         <return-value transfer-ownership="none">
           <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
         </return-value>
@@ -6882,6 +6862,33 @@ implementation will call alloc and fill.</doc>
           </parameter>
         </parameters>
       </virtual-method>
+      <virtual-method name="create">
+        <doc xml:space="preserve"
+             filename="libs/gst/base/gstbasesrc.h"
+             line="242">Ask the subclass to create a buffer with @offset and @size, the default
+implementation will call alloc if no allocated @buf is provided and then call fill.</doc>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="249"/>
+        <return-value transfer-ownership="none">
+          <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="src" transfer-ownership="none">
+            <type name="BaseSrc" c:type="GstBaseSrc*"/>
+          </instance-parameter>
+          <parameter name="offset" transfer-ownership="none">
+            <type name="guint64" c:type="guint64"/>
+          </parameter>
+          <parameter name="size" transfer-ownership="none">
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="buf"
+                     direction="inout"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <type name="Gst.Buffer" c:type="GstBuffer**"/>
+          </parameter>
+        </parameters>
+      </virtual-method>
       <virtual-method name="decide_allocation">
         <source-position filename="libs/gst/base/gstbasesrc.h" line="192"/>
         <return-value transfer-ownership="none">
@@ -6897,7 +6904,7 @@ implementation will call alloc and fill.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="do_seek">
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="221"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="228"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -6911,7 +6918,7 @@ implementation will call alloc and fill.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="event">
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="233"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="240"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -6925,7 +6932,7 @@ implementation will call alloc and fill.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="fill">
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="249"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="261"/>
         <return-value transfer-ownership="none">
           <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
         </return-value>
@@ -6979,15 +6986,25 @@ implementation will call alloc and fill.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="get_size">
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="211"/>
+        <doc xml:space="preserve"
+             filename="libs/gst/base/gstbasesrc.h"
+             line="209">Get the total size of the resource in the format set by
+gst_base_src_set_format().</doc>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="218"/>
         <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="libs/gst/base/gstbasesrc.h"
+               line="216">%TRUE if the size is available and has been set.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="src" transfer-ownership="none">
             <type name="BaseSrc" c:type="GstBaseSrc*"/>
           </instance-parameter>
-          <parameter name="size" transfer-ownership="none">
+          <parameter name="size"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
             <type name="guint64" c:type="guint64*"/>
           </parameter>
         </parameters>
@@ -7023,7 +7040,7 @@ out. The base class will sync on the clock using these times.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="is_seekable">
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="214"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="221"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -7060,7 +7077,7 @@ buffer is allocated.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="prepare_seek_segment">
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="218"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="225"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -7077,7 +7094,7 @@ buffer is allocated.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="query">
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="230"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="237"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -7139,7 +7156,7 @@ buffer is allocated.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="unlock">
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="225"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="232"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -7150,7 +7167,7 @@ buffer is allocated.</doc>
         </parameters>
       </virtual-method>
       <virtual-method name="unlock_stop">
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="227"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="234"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
@@ -7167,7 +7184,7 @@ buffer is allocated.</doc>
 used by the base class and its @params.
 
 Unref the @allocator after usage.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="322"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="334"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7210,7 +7227,7 @@ used</doc>
         <doc xml:space="preserve"
              filename="libs/gst/base/gstbasesrc.c"
              line="785">Get the number of bytes that @src will push out with each buffer.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="300"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="312"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="libs/gst/base/gstbasesrc.c"
@@ -7228,7 +7245,7 @@ used</doc>
       </method>
       <method name="get_buffer_pool"
               c:identifier="gst_base_src_get_buffer_pool">
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="319"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="331"/>
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve"
                filename="libs/gst/base/gstbasesrc.c"
@@ -7251,7 +7268,7 @@ by the src; unref it after usage.</doc>
         <doc xml:space="preserve"
              filename="libs/gst/base/gstbasesrc.c"
              line="829">Query if @src timestamps outgoing buffers based on the current running_time.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="306"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="318"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="libs/gst/base/gstbasesrc.c"
@@ -7271,7 +7288,7 @@ by the src; unref it after usage.</doc>
         <doc xml:space="preserve"
              filename="libs/gst/base/gstbasesrc.c"
              line="695">Get the current async behaviour of @src. See also gst_base_src_set_async().</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="281"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="293"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="libs/gst/base/gstbasesrc.c"
@@ -7291,7 +7308,7 @@ by the src; unref it after usage.</doc>
         <doc xml:space="preserve"
              filename="libs/gst/base/gstbasesrc.c"
              line="586">Check if an element is in live mode.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="266"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="278"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="libs/gst/base/gstbasesrc.c"
@@ -7319,7 +7336,7 @@ if #GstBaseSrcClass::negotiate fails.
 Do not call this in the #GstBaseSrcClass::fill vmethod. Call this in
 #GstBaseSrcClass::create or in #GstBaseSrcClass::alloc, _before_ any
 buffer is allocated.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="284"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="296"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="libs/gst/base/gstbasesrc.c"
@@ -7348,7 +7365,7 @@ as the stream-lock needs to be held.
 The format for the new segment will be the current format of the source, as
 configured with gst_base_src_set_format()</doc>
         <doc-deprecated xml:space="preserve">Use gst_base_src_new_segment()</doc-deprecated>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="309"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="321"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="libs/gst/base/gstbasesrc.c"
@@ -7396,7 +7413,7 @@ of the source, as configured with gst_base_src_set_format().
 
 The format of @src must not be %GST_FORMAT_UNDEFINED and the format
 should be configured via gst_base_src_set_format() before calling this method.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="312"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="324"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="libs/gst/base/gstbasesrc.c"
@@ -7427,7 +7444,7 @@ to the difference between the running time and the timestamp of the first
 buffer.
 
 This function is mostly used by subclasses.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="293"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="305"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="libs/gst/base/gstbasesrc.c"
@@ -7483,7 +7500,7 @@ This function is mostly used by subclasses.</doc>
 close, start, stop, play and pause virtual methods will be executed in a
 different thread and are thus allowed to perform blocking operations. Any
 blocking operation should be unblocked with the unlock vmethod.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="278"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="290"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7517,7 +7534,7 @@ when a buffer outside of the currently configured segment is pushed if
 @automatic_eos is %TRUE. Since 1.16, if @automatic_eos is %FALSE an
 EOS will be pushed only when the #GstBaseSrcClass::create implementation
 returns %GST_FLOW_EOS.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="275"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="287"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7543,7 +7560,7 @@ returns %GST_FLOW_EOS.</doc>
              filename="libs/gst/base/gstbasesrc.c"
              line="767">Set the number of bytes that @src will push out with each buffer. When
 @blocksize is set to -1, a default length will be used.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="297"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="309"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7566,7 +7583,7 @@ returns %GST_FLOW_EOS.</doc>
         <doc xml:space="preserve"
              filename="libs/gst/base/gstbasesrc.c"
              line="981">Set new caps on the basesrc source pad.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="316"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="328"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="libs/gst/base/gstbasesrc.c"
@@ -7596,7 +7613,7 @@ returns %GST_FLOW_EOS.</doc>
              line="808">Configure @src to automatically timestamp outgoing buffers based on the
 current running_time of the pipeline. This property is mostly useful for live
 sources.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="303"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="315"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7622,7 +7639,7 @@ sources.</doc>
              line="632">If not @dynamic, size is only updated when needed, such as when trying to
 read past current tracked size.  Otherwise, size is checked for upon each
 read.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="272"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="284"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7651,7 +7668,7 @@ If a format of GST_FORMAT_BYTES is set, the element will be able to
 operate in pull mode if the #GstBaseSrcClass::is_seekable returns %TRUE.
 
 This function must only be called in states &lt; %GST_STATE_PAUSED.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="269"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="281"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7681,7 +7698,7 @@ will therefore not be able to participate in the PREROLL phase
 of a pipeline. To signal this fact to the application and the
 pipeline, the state change return value of the live source will
 be GST_STATE_CHANGE_NO_PREROLL.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="263"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="275"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7707,7 +7724,7 @@ be GST_STATE_CHANGE_NO_PREROLL.</doc>
 start method, it should call gst_base_src_start_complete() when the start
 operation completes either from the same thread or from an asynchronous
 helper thread.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="287"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="299"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7730,7 +7747,7 @@ helper thread.</doc>
         <doc xml:space="preserve"
              filename="libs/gst/base/gstbasesrc.c"
              line="3703">Wait until the start operation completes.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="290"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="302"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="libs/gst/base/gstbasesrc.c"
@@ -7767,7 +7784,7 @@ function the behaviour is undefined.
 Subclasses must only call this function once per create function call and
 subclasses must only call this function when the source operates in push
 mode.</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="327"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="339"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -7797,7 +7814,7 @@ This function will block until a state change to PLAYING happens (in which
 case this function returns %GST_FLOW_OK) or the processing must be stopped due
 to a state change to READY or a FLUSH event (in which case this function
 returns %GST_FLOW_FLUSHING).</doc>
-        <source-position filename="libs/gst/base/gstbasesrc.h" line="260"/>
+        <source-position filename="libs/gst/base/gstbasesrc.h" line="272"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="libs/gst/base/gstbasesrc.c"
@@ -7902,7 +7919,7 @@ continue. Any other return value should be returned from the create vmethod.</do
            line="117">Subclasses can override any of the available virtual methods or not, as
 needed. At the minimum, the @create method should be overridden to produce
 buffers.</doc>
-      <source-position filename="libs/gst/base/gstbasesrc.h" line="254"/>
+      <source-position filename="libs/gst/base/gstbasesrc.h" line="266"/>
       <field name="parent_class">
         <doc xml:space="preserve"
              filename="libs/gst/base/gstbasesrc.h"
@@ -8060,15 +8077,21 @@ buffers.</doc>
       </field>
       <field name="get_size">
         <callback name="get_size">
-          <source-position filename="libs/gst/base/gstbasesrc.h" line="211"/>
+          <source-position filename="libs/gst/base/gstbasesrc.h" line="218"/>
           <return-value transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="libs/gst/base/gstbasesrc.h"
+                 line="216">%TRUE if the size is available and has been set.</doc>
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
           <parameters>
             <parameter name="src" transfer-ownership="none">
               <type name="BaseSrc" c:type="GstBaseSrc*"/>
             </parameter>
-            <parameter name="size" transfer-ownership="none">
+            <parameter name="size"
+                       direction="out"
+                       caller-allocates="0"
+                       transfer-ownership="full">
               <type name="guint64" c:type="guint64*"/>
             </parameter>
           </parameters>
@@ -8076,7 +8099,7 @@ buffers.</doc>
       </field>
       <field name="is_seekable">
         <callback name="is_seekable">
-          <source-position filename="libs/gst/base/gstbasesrc.h" line="214"/>
+          <source-position filename="libs/gst/base/gstbasesrc.h" line="221"/>
           <return-value transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
@@ -8089,7 +8112,7 @@ buffers.</doc>
       </field>
       <field name="prepare_seek_segment">
         <callback name="prepare_seek_segment">
-          <source-position filename="libs/gst/base/gstbasesrc.h" line="218"/>
+          <source-position filename="libs/gst/base/gstbasesrc.h" line="225"/>
           <return-value transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
@@ -8108,7 +8131,7 @@ buffers.</doc>
       </field>
       <field name="do_seek">
         <callback name="do_seek">
-          <source-position filename="libs/gst/base/gstbasesrc.h" line="221"/>
+          <source-position filename="libs/gst/base/gstbasesrc.h" line="228"/>
           <return-value transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
@@ -8124,7 +8147,7 @@ buffers.</doc>
       </field>
       <field name="unlock">
         <callback name="unlock">
-          <source-position filename="libs/gst/base/gstbasesrc.h" line="225"/>
+          <source-position filename="libs/gst/base/gstbasesrc.h" line="232"/>
           <return-value transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
@@ -8137,7 +8160,7 @@ buffers.</doc>
       </field>
       <field name="unlock_stop">
         <callback name="unlock_stop">
-          <source-position filename="libs/gst/base/gstbasesrc.h" line="227"/>
+          <source-position filename="libs/gst/base/gstbasesrc.h" line="234"/>
           <return-value transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
@@ -8150,7 +8173,7 @@ buffers.</doc>
       </field>
       <field name="query">
         <callback name="query">
-          <source-position filename="libs/gst/base/gstbasesrc.h" line="230"/>
+          <source-position filename="libs/gst/base/gstbasesrc.h" line="237"/>
           <return-value transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
@@ -8166,7 +8189,7 @@ buffers.</doc>
       </field>
       <field name="event">
         <callback name="event">
-          <source-position filename="libs/gst/base/gstbasesrc.h" line="233"/>
+          <source-position filename="libs/gst/base/gstbasesrc.h" line="240"/>
           <return-value transfer-ownership="none">
             <type name="gboolean" c:type="gboolean"/>
           </return-value>
@@ -8182,7 +8205,32 @@ buffers.</doc>
       </field>
       <field name="create">
         <callback name="create">
-          <source-position filename="libs/gst/base/gstbasesrc.h" line="242"/>
+          <source-position filename="libs/gst/base/gstbasesrc.h" line="249"/>
+          <return-value transfer-ownership="none">
+            <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
+          </return-value>
+          <parameters>
+            <parameter name="src" transfer-ownership="none">
+              <type name="BaseSrc" c:type="GstBaseSrc*"/>
+            </parameter>
+            <parameter name="offset" transfer-ownership="none">
+              <type name="guint64" c:type="guint64"/>
+            </parameter>
+            <parameter name="size" transfer-ownership="none">
+              <type name="guint" c:type="guint"/>
+            </parameter>
+            <parameter name="buf"
+                       direction="inout"
+                       caller-allocates="0"
+                       transfer-ownership="full">
+              <type name="Gst.Buffer" c:type="GstBuffer**"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="alloc">
+        <callback name="alloc">
+          <source-position filename="libs/gst/base/gstbasesrc.h" line="258"/>
           <return-value transfer-ownership="none">
             <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
           </return-value>
@@ -8205,31 +8253,9 @@ buffers.</doc>
           </parameters>
         </callback>
       </field>
-      <field name="alloc">
-        <callback name="alloc">
-          <source-position filename="libs/gst/base/gstbasesrc.h" line="246"/>
-          <return-value transfer-ownership="none">
-            <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
-          </return-value>
-          <parameters>
-            <parameter name="src" transfer-ownership="none">
-              <type name="BaseSrc" c:type="GstBaseSrc*"/>
-            </parameter>
-            <parameter name="offset" transfer-ownership="none">
-              <type name="guint64" c:type="guint64"/>
-            </parameter>
-            <parameter name="size" transfer-ownership="none">
-              <type name="guint" c:type="guint"/>
-            </parameter>
-            <parameter name="buf" transfer-ownership="none">
-              <type name="Gst.Buffer" c:type="GstBuffer**"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
       <field name="fill">
         <callback name="fill">
-          <source-position filename="libs/gst/base/gstbasesrc.h" line="249"/>
+          <source-position filename="libs/gst/base/gstbasesrc.h" line="261"/>
           <return-value transfer-ownership="none">
             <type name="Gst.FlowReturn" c:type="GstFlowReturn"/>
           </return-value>
