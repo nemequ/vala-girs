@@ -615,32 +615,35 @@ mapping of prefixes and namespaces.</doc>
       <constructor name="new" c:identifier="tracker_namespace_manager_new">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-             line="94">Creates a new #TrackerNamespaceManager instance.</doc>
+             line="96">Creates a new #TrackerNamespaceManager instance.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-namespace-manager.h"
                          line="44"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-               line="99">a new #TrackerNamespaceManager instance</doc>
+               line="101">a new #TrackerNamespaceManager instance</doc>
           <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
         </return-value>
       </constructor>
       <function name="get_default"
-                c:identifier="tracker_namespace_manager_get_default">
+                c:identifier="tracker_namespace_manager_get_default"
+                deprecated="1"
+                deprecated-version="3.3">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-             line="111">Returns the global #TrackerNamespaceManager that contains a set of well-known
+             line="113">Returns the global #TrackerNamespaceManager that contains a set of well-known
 namespaces and prefixes, such as rdf:, rdfs:, nie:, tracker:, etc.
 
 Note that the list of prefixes and namespaces is hardcoded in
 libtracker-sparql. It may not correspond with the installed set of
 ontologies, if they have been modified since they were installed.</doc>
+        <doc-deprecated xml:space="preserve">Use tracker_sparql_connection_get_namespace_manager() instead.</doc-deprecated>
         <source-position filename="../src/libtracker-sparql/tracker-namespace-manager.h"
                          line="46"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-               line="121">a global, shared #TrackerNamespaceManager instance</doc>
+               line="123">a global, shared #TrackerNamespaceManager instance</doc>
           <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
         </return-value>
       </function>
@@ -648,12 +651,16 @@ ontologies, if they have been modified since they were installed.</doc>
               c:identifier="tracker_namespace_manager_add_prefix">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-             line="199">Adds @prefix as the recognised abbreviaton of @namespace.
+             line="203">Adds @prefix as the recognised abbreviaton of @namespace.
 
 Only one prefix is allowed for a given namespace, and all prefixes must
-be unique.</doc>
+be unique.
+
+Since 3.3, This function may not be used on #TrackerNamespaceManager
+instances that were obtained through
+tracker_sparql_connection_get_namespace_manager().</doc>
         <source-position filename="../src/libtracker-sparql/tracker-namespace-manager.h"
-                         line="57"/>
+                         line="60"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -661,19 +668,50 @@ be unique.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="201">a #TrackerNamespaceManager</doc>
+                 line="205">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
           <parameter name="prefix" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="202">a short, unique prefix to identify @namespace</doc>
+                 line="206">a short, unique prefix to identify @namespace</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="ns" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="203">the URL of the given namespace</doc>
+                 line="207">the URL of the given namespace</doc>
+            <type name="utf8" c:type="const char*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="compress_uri"
+              c:identifier="tracker_namespace_manager_compress_uri"
+              version="3.3">
+        <doc xml:space="preserve"
+             filename="../src/libtracker-sparql/tracker-namespace-manager.c"
+             line="298">If @uri begins with one of the namespaces known to this
+#TrackerNamespaceManager, then the return value will be the
+compressed URI. Otherwise, %NULL will be returned.</doc>
+        <source-position filename="../src/libtracker-sparql/tracker-namespace-manager.h"
+                         line="52"/>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="../src/libtracker-sparql/tracker-namespace-manager.c"
+               line="307">(nullable): the compressed URI</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/libtracker-sparql/tracker-namespace-manager.c"
+                 line="300">a #TrackerNamespaceManager</doc>
+            <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
+          </instance-parameter>
+          <parameter name="uri" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../src/libtracker-sparql/tracker-namespace-manager.c"
+                 line="301">a URI or compact URI</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -682,7 +720,7 @@ be unique.</doc>
               c:identifier="tracker_namespace_manager_expand_uri">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-             line="245">If @compact_uri begins with one of the prefixes known to this
+             line="254">If @compact_uri begins with one of the prefixes known to this
 #TrackerNamespaceManager, then the return value will be the
 expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-namespace-manager.h"
@@ -690,20 +728,20 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-               line="254">a newly-allocated string</doc>
+               line="263">a newly-allocated string</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="247">a #TrackerNamespaceManager</doc>
+                 line="256">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
           <parameter name="compact_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="248">a URI or compact URI</doc>
+                 line="257">a URI or compact URI</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -711,9 +749,9 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
       <method name="foreach" c:identifier="tracker_namespace_manager_foreach">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-             line="320">Calls @func for each known prefix / URI pair.</doc>
+             line="367">Calls @func for each known prefix / URI pair.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-namespace-manager.h"
-                         line="63"/>
+                         line="66"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -721,7 +759,7 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="322">a #TrackerNamespaceManager</doc>
+                 line="369">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
           <parameter name="func"
@@ -730,7 +768,7 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
                      closure="1">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="323">the function to call for each prefix / URI pair</doc>
+                 line="370">the function to call for each prefix / URI pair</doc>
             <type name="GLib.HFunc" c:type="GHFunc"/>
           </parameter>
           <parameter name="user_data"
@@ -739,7 +777,7 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="324">user data to pass to the function</doc>
+                 line="371">user data to pass to the function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -748,26 +786,26 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
               c:identifier="tracker_namespace_manager_has_prefix">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-             line="154">Returns whether @prefix is known.</doc>
+             line="158">Returns whether @prefix is known.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-namespace-manager.h"
-                         line="52"/>
+                         line="55"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-               line="161">%TRUE if the #TrackerNamespaceManager knows about @prefix, %FALSE otherwise</doc>
+               line="165">%TRUE if the #TrackerNamespaceManager knows about @prefix, %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="156">a #TrackerNamespaceManager</doc>
+                 line="160">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
           <parameter name="prefix" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="157">a string</doc>
+                 line="161">a string</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -776,27 +814,27 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
               c:identifier="tracker_namespace_manager_lookup_prefix">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-             line="176">Looks up the namespace URI corresponding to @prefix, or %NULL if the prefix
+             line="180">Looks up the namespace URI corresponding to @prefix, or %NULL if the prefix
 is not known.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-namespace-manager.h"
-                         line="54"/>
+                         line="57"/>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-               line="184">a string owned by the #TrackerNamespaceManager, or %NULL</doc>
+               line="188">a string owned by the #TrackerNamespaceManager, or %NULL</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="178">a #TrackerNamespaceManager</doc>
+                 line="182">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
           <parameter name="prefix" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="179">a string</doc>
+                 line="183">a string</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -805,20 +843,20 @@ is not known.</doc>
               c:identifier="tracker_namespace_manager_print_turtle">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-             line="289">Writes out all namespaces as Turtle @prefix statements.</doc>
+             line="336">Writes out all namespaces as Turtle @prefix statements.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-namespace-manager.h"
-                         line="60"/>
+                         line="63"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-               line="295">a newly-allocated string</doc>
+               line="342">a newly-allocated string</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="291">a #TrackerNamespaceManager</doc>
+                 line="338">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
         </parameters>
@@ -1240,20 +1278,20 @@ notified upon, typically of the form "urn:uuid:...".</doc>
            glib:type-struct="ResourceClass">
       <doc xml:space="preserve"
            filename="../src/libtracker-sparql/tracker-resource.c"
-           line="67">The &lt;structname&gt;TrackerResource&lt;/structname&gt; object represents information
+           line="70">The &lt;structname&gt;TrackerResource&lt;/structname&gt; object represents information
 about a given resource.</doc>
       <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                        line="31"/>
       <constructor name="new" c:identifier="tracker_resource_new">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="224">Creates a TrackerResource instance.</doc>
+             line="227">Creates a TrackerResource instance.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="34"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="230">a newly created #TrackerResource. Free with g_object_unref() when done</doc>
+               line="233">a newly created #TrackerResource. Free with g_object_unref() when done</doc>
           <type name="Resource" c:type="TrackerResource*"/>
         </return-value>
         <parameters>
@@ -1263,7 +1301,7 @@ about a given resource.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="226">A string containing a URI, or %NULL.</doc>
+                 line="229">A string containing a URI, or %NULL.</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1295,7 +1333,7 @@ use a common #TrackerNamespaceManager.</doc>
       <method name="add_boolean" c:identifier="tracker_resource_add_boolean">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="569">Adds a boolean object to a multi-valued property.</doc>
+             line="572">Adds a boolean object to a multi-valued property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="60"/>
         <return-value transfer-ownership="none">
@@ -1305,19 +1343,19 @@ use a common #TrackerNamespaceManager.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="571">the #TrackerResource</doc>
+                 line="574">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="572">a string identifying the property to modify</doc>
+                 line="575">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="573">the property object</doc>
+                 line="576">the property object</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -1327,7 +1365,7 @@ use a common #TrackerNamespaceManager.</doc>
               version="3.2">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="658">Adds GDateTime object to the multi-valued property.</doc>
+             line="661">Adds GDateTime object to the multi-valued property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="76"/>
         <return-value transfer-ownership="none">
@@ -1337,19 +1375,19 @@ use a common #TrackerNamespaceManager.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="660">the #TrackerResource</doc>
+                 line="663">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="661">a string identifying the property to modify</doc>
+                 line="664">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="662">the property object</doc>
+                 line="665">the property object</doc>
             <type name="GLib.DateTime" c:type="GDateTime*"/>
           </parameter>
         </parameters>
@@ -1357,7 +1395,7 @@ use a common #TrackerNamespaceManager.</doc>
       <method name="add_double" c:identifier="tracker_resource_add_double">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="579">Adds a double object to a multi-valued property.</doc>
+             line="582">Adds a double object to a multi-valued property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="62"/>
         <return-value transfer-ownership="none">
@@ -1367,19 +1405,19 @@ use a common #TrackerNamespaceManager.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="581">the #TrackerResource</doc>
+                 line="584">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="582">a string identifying the property to modify</doc>
+                 line="585">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="583">the property object</doc>
+                 line="586">the property object</doc>
             <type name="gdouble" c:type="double"/>
           </parameter>
         </parameters>
@@ -1387,7 +1425,7 @@ use a common #TrackerNamespaceManager.</doc>
       <method name="add_gvalue" c:identifier="tracker_resource_add_gvalue">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="455">Add 'value' to the list of values for given property.
+             line="458">Add 'value' to the list of values for given property.
 
 You can pass any kind of GValue for @value, but serialization functions will
 normally only be able to serialize URIs/relationships and fundamental value
@@ -1401,19 +1439,19 @@ types (string, int, etc.).</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="457">the #TrackerResource</doc>
+                 line="460">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="458">a string identifying the property to set</doc>
+                 line="461">a string identifying the property to set</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="459">an initialised #GValue</doc>
+                 line="462">an initialised #GValue</doc>
             <type name="GObject.Value" c:type="const GValue*"/>
           </parameter>
         </parameters>
@@ -1421,7 +1459,7 @@ types (string, int, etc.).</doc>
       <method name="add_int" c:identifier="tracker_resource_add_int">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="589">Adds an integer object to a multi-valued property.</doc>
+             line="592">Adds an integer object to a multi-valued property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="64"/>
         <return-value transfer-ownership="none">
@@ -1431,19 +1469,19 @@ types (string, int, etc.).</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="591">the #TrackerResource</doc>
+                 line="594">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="592">a string identifying the property to modify</doc>
+                 line="595">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="593">the property object</doc>
+                 line="596">the property object</doc>
             <type name="gint" c:type="int"/>
           </parameter>
         </parameters>
@@ -1451,7 +1489,7 @@ types (string, int, etc.).</doc>
       <method name="add_int64" c:identifier="tracker_resource_add_int64">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="599">Adds an integer object to a multi-valued property.</doc>
+             line="602">Adds an integer object to a multi-valued property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="66"/>
         <return-value transfer-ownership="none">
@@ -1461,19 +1499,19 @@ types (string, int, etc.).</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="601">the #TrackerResource</doc>
+                 line="604">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="602">a string identifying the property to modify</doc>
+                 line="605">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="603">the property object</doc>
+                 line="606">the property object</doc>
             <type name="gint64" c:type="gint64"/>
           </parameter>
         </parameters>
@@ -1481,7 +1519,7 @@ types (string, int, etc.).</doc>
       <method name="add_relation" c:identifier="tracker_resource_add_relation">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="609">Adds a resource object to a multi-valued property. This
+             line="612">Adds a resource object to a multi-valued property. This
 function produces similar RDF to tracker_resource_add_uri(),
 although in this function the URI will depend on the identifier
 set on @resource.</doc>
@@ -1494,19 +1532,19 @@ set on @resource.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="611">the #TrackerResource</doc>
+                 line="614">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="612">a string identifying the property to modify</doc>
+                 line="615">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="resource" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="613">the property object</doc>
+                 line="616">the property object</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </parameter>
         </parameters>
@@ -1514,7 +1552,7 @@ set on @resource.</doc>
       <method name="add_string" c:identifier="tracker_resource_add_string">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="636">Adds a string object to a multi-valued property.</doc>
+             line="639">Adds a string object to a multi-valued property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="72"/>
         <return-value transfer-ownership="none">
@@ -1524,19 +1562,19 @@ set on @resource.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="638">the #TrackerResource</doc>
+                 line="641">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="639">a string identifying the property to modify</doc>
+                 line="642">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="640">the property object</doc>
+                 line="643">the property object</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1546,7 +1584,7 @@ set on @resource.</doc>
               introspectable="0">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="622">Adds a resource object to a multi-valued property. This
+             line="625">Adds a resource object to a multi-valued property. This
 function produces similar RDF to tracker_resource_add_uri(),
 although in this function the URI will depend on the identifier
 set on @resource. This function takes ownership of @resource.</doc>
@@ -1559,19 +1597,19 @@ set on @resource. This function takes ownership of @resource.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="624">the #TrackerResource</doc>
+                 line="627">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="625">a string identifying the property to modify</doc>
+                 line="628">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="resource" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="626">the property object</doc>
+                 line="629">the property object</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </parameter>
         </parameters>
@@ -1579,7 +1617,7 @@ set on @resource. This function takes ownership of @resource.</doc>
       <method name="add_uri" c:identifier="tracker_resource_add_uri">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="646">Adds a resource object to a multi-valued property. This function
+             line="649">Adds a resource object to a multi-valued property. This function
 produces similar RDF to tracker_resource_add_relation(), although
 it requires that the URI is previously known.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
@@ -1591,19 +1629,19 @@ it requires that the URI is previously known.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="648">the #TrackerResource</doc>
+                 line="651">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="649">a string identifying the property to modify</doc>
+                 line="652">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="650">the property object</doc>
+                 line="653">the property object</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1612,26 +1650,26 @@ it requires that the URI is previously known.</doc>
               c:identifier="tracker_resource_get_first_boolean">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="745">Returns the first boolean object previously assigned to a property.</doc>
+             line="748">Returns the first boolean object previously assigned to a property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="82"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="752">the first boolean object</doc>
+               line="755">the first boolean object</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="747">A #TrackerResource</doc>
+                 line="750">A #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="748">a string identifying the property to look up</doc>
+                 line="751">a string identifying the property to look up</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1641,26 +1679,26 @@ it requires that the URI is previously known.</doc>
               version="3.2">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="822">Returns the first resource object previously assigned to a property.</doc>
+             line="825">Returns the first resource object previously assigned to a property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="96"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="829">the first GDateTime object</doc>
+               line="832">the first GDateTime object</doc>
           <type name="GLib.DateTime" c:type="GDateTime*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="824">A #TrackerResource</doc>
+                 line="827">A #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="825">a string identifying the property to look up</doc>
+                 line="828">a string identifying the property to look up</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1669,26 +1707,26 @@ it requires that the URI is previously known.</doc>
               c:identifier="tracker_resource_get_first_double">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="756">Returns the first double object previously assigned to a property.</doc>
+             line="759">Returns the first double object previously assigned to a property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="84"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="763">the first double object</doc>
+               line="766">the first double object</doc>
           <type name="gdouble" c:type="double"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="758">A #TrackerResource</doc>
+                 line="761">A #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="759">a string identifying the property to look up</doc>
+                 line="762">a string identifying the property to look up</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1697,26 +1735,26 @@ it requires that the URI is previously known.</doc>
               c:identifier="tracker_resource_get_first_int">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="767">Returns the first integer object previously assigned to a property.</doc>
+             line="770">Returns the first integer object previously assigned to a property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="86"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="774">the first integer object</doc>
+               line="777">the first integer object</doc>
           <type name="gint" c:type="int"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="769">A #TrackerResource</doc>
+                 line="772">A #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="770">a string identifying the property to look up</doc>
+                 line="773">a string identifying the property to look up</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1725,26 +1763,26 @@ it requires that the URI is previously known.</doc>
               c:identifier="tracker_resource_get_first_int64">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="778">Returns the first integer object previously assigned to a property.</doc>
+             line="781">Returns the first integer object previously assigned to a property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="88"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="785">the first integer object</doc>
+               line="788">the first integer object</doc>
           <type name="gint64" c:type="gint64"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="780">A #TrackerResource</doc>
+                 line="783">A #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="781">a string identifying the property to look up</doc>
+                 line="784">a string identifying the property to look up</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1753,26 +1791,26 @@ it requires that the URI is previously known.</doc>
               c:identifier="tracker_resource_get_first_relation">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="789">Returns the first resource object previously assigned to a property.</doc>
+             line="792">Returns the first resource object previously assigned to a property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="90"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="796">the first resource object</doc>
+               line="799">the first resource object</doc>
           <type name="Resource" c:type="TrackerResource*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="791">A #TrackerResource</doc>
+                 line="794">A #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="792">a string identifying the property to look up</doc>
+                 line="795">a string identifying the property to look up</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1781,26 +1819,26 @@ it requires that the URI is previously known.</doc>
               c:identifier="tracker_resource_get_first_string">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="800">Returns the first string object previously assigned to a property.</doc>
+             line="803">Returns the first string object previously assigned to a property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="92"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="807">the first string object</doc>
+               line="810">the first string object</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="802">A #TrackerResource</doc>
+                 line="805">A #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="803">a string identifying the property to look up</doc>
+                 line="806">a string identifying the property to look up</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1809,26 +1847,26 @@ it requires that the URI is previously known.</doc>
               c:identifier="tracker_resource_get_first_uri">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="811">Returns the first resource object previously assigned to a property.</doc>
+             line="814">Returns the first resource object previously assigned to a property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="94"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="818">the first resource object as an URI.</doc>
+               line="821">the first resource object as an URI.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="813">A #TrackerResource</doc>
+                 line="816">A #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="814">a string identifying the property to look up</doc>
+                 line="817">a string identifying the property to look up</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1838,7 +1876,7 @@ it requires that the URI is previously known.</doc>
               glib:get-property="identifier">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="834">Returns the identifier of a resource.
+             line="837">Returns the identifier of a resource.
 
 If the identifier was set to NULL, the identifier returned will be a unique
 SPARQL blank node identifier, such as "_:123".</doc>
@@ -1847,14 +1885,14 @@ SPARQL blank node identifier, such as "_:123".</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="843">a string owned by the resource</doc>
+               line="846">a string owned by the resource</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="836">A #TrackerResource</doc>
+                 line="839">A #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
         </parameters>
@@ -1864,13 +1902,13 @@ SPARQL blank node identifier, such as "_:123".</doc>
               version="3.0">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="948">Gets the list of properties defined in @resource</doc>
+             line="951">Gets the list of properties defined in @resource</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="106"/>
         <return-value transfer-ownership="container">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="954">The list of properties.
+               line="957">The list of properties.
          The list should be freed with g_list_free().</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="utf8"/>
@@ -1880,7 +1918,7 @@ SPARQL blank node identifier, such as "_:123".</doc>
           <instance-parameter name="resource" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="950">a #TrackerResource</doc>
+                 line="953">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
         </parameters>
@@ -1918,13 +1956,13 @@ in the SPARQL issued by @resource.</doc>
       <method name="get_values" c:identifier="tracker_resource_get_values">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="669">Returns the list of all known values of the given property.</doc>
+             line="672">Returns the list of all known values of the given property.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="79"/>
         <return-value transfer-ownership="container">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="676">a #GList of #GValue
+               line="679">a #GList of #GValue
 instances. The list should be freed with g_list_free()</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="GObject.Value"/>
@@ -1934,13 +1972,13 @@ instances. The list should be freed with g_list_free()</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="671">the #TrackerResource</doc>
+                 line="674">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="672">a string identifying the property to look up</doc>
+                 line="675">a string identifying the property to look up</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1949,14 +1987,14 @@ instances. The list should be freed with g_list_free()</doc>
               c:identifier="tracker_resource_identifier_compare_func">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="895">A helper function that compares a #TrackerResource by its identifier
+             line="898">A helper function that compares a #TrackerResource by its identifier
 string.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="103"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="903">an integer less than, equal to, or greater than zero, if the
+               line="906">an integer less than, equal to, or greater than zero, if the
          resource identifier is &lt;, == or &gt; than @identifier</doc>
           <type name="gint" c:type="gint"/>
         </return-value>
@@ -1964,13 +2002,13 @@ string.</doc>
           <instance-parameter name="resource" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="897">a #TrackerResource</doc>
+                 line="900">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="identifier" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="898">a string identifying the resource</doc>
+                 line="901">a string identifying the resource</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -1978,15 +2016,14 @@ string.</doc>
       <method name="print_jsonld" c:identifier="tracker_resource_print_jsonld">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="1708">Serialize all the information in @resource as a JSON-LD document.
+             line="1709">Serialize all the information in @resource as a JSON-LD document.
 
 See &lt;http://www.jsonld.org/&gt; for more information on the JSON-LD
 serialization format.
 
 The @namespaces object is used to expand any compact URI values. In most
-cases you should pass %NULL, which means the set of namespaces returned by
-tracker_namespace_manager_get_default() will be used. This defines the
-usual prefixes for all of the ontologies that Tracker ships with by default.</doc>
+cases you should pass the one returned by tracker_sparql_connection_get_namespace_manager()
+from the connection that is the intended recipient of this data.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="115"/>
         <return-value transfer-ownership="full">
@@ -1999,7 +2036,7 @@ usual prefixes for all of the ontologies that Tracker ships with by default.</do
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="1710">a #TrackerResource</doc>
+                 line="1711">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="namespaces"
@@ -2008,8 +2045,8 @@ usual prefixes for all of the ontologies that Tracker ships with by default.</do
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="1711">a set of prefixed URLs, or %NULL to use the
-    default set</doc>
+                 line="1712">a set of prefixed URLs, or %NULL to use the
+    Nepomuk set</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </parameter>
         </parameters>
@@ -2018,26 +2055,25 @@ usual prefixes for all of the ontologies that Tracker ships with by default.</do
               c:identifier="tracker_resource_print_sparql_update">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="1520">Generates a SPARQL command to update a database with the information
+             line="1522">Generates a SPARQL command to update a database with the information
 stored in @resource.
 
 The @namespaces object is used to expand any compact URI values. In most
-cases you should pass %NULL, which means the set of namespaces returned by
-tracker_namespace_manager_get_default() will be used. This defines the
-usual prefixes for all of the ontologies that Tracker ships with by default.</doc>
+cases you should pass the one returned by tracker_sparql_connection_get_namespace_manager()
+from the connection that is the intended recipient of this data.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="112"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="1536">a newly-allocated string containing a SPARQL update command.</doc>
+               line="1537">a newly-allocated string containing a SPARQL update command.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="1522">a #TrackerResource</doc>
+                 line="1524">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="namespaces"
@@ -2046,8 +2082,8 @@ usual prefixes for all of the ontologies that Tracker ships with by default.</do
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="1523">a set of prefixed URLs, or %NULL to use the
-    default set</doc>
+                 line="1525">a set of prefixed URLs, or %NULL to use the
+    Nepomuk set</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </parameter>
           <parameter name="graph_id"
@@ -2056,7 +2092,7 @@ usual prefixes for all of the ontologies that Tracker ships with by default.</do
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="1525">the URN of the graph the data should be added to,
+                 line="1527">the URN of the graph the data should be added to,
     or %NULL</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -2065,28 +2101,27 @@ usual prefixes for all of the ontologies that Tracker ships with by default.</do
       <method name="print_turtle" c:identifier="tracker_resource_print_turtle">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="1265">Serialize all the information in @resource as a Turtle document.
+             line="1268">Serialize all the information in @resource as a Turtle document.
 
 The generated Turtle should correspond to this standard:
 &lt;https://www.w3.org/TR/2014/REC-turtle-20140225/&gt;
 
 The @namespaces object is used to expand any compact URI values. In most
-cases you should pass %NULL, which means the set of namespaces returned by
-tracker_namespace_manager_get_default() will be used. This defines the
-usual prefixes for all of the ontologies that Tracker ships with by default.</doc>
+cases you should pass the one returned by tracker_sparql_connection_get_namespace_manager()
+from the connection that is the intended recipient of this data.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="109"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-resource.c"
-               line="1281">a newly-allocated string</doc>
+               line="1283">a newly-allocated string</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="1267">a #TrackerResource</doc>
+                 line="1270">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="namespaces"
@@ -2095,8 +2130,8 @@ usual prefixes for all of the ontologies that Tracker ships with by default.</do
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="1268">a set of prefixed URLs, or %NULL to use the
-    default set</doc>
+                 line="1271">a set of prefixed URLs, or %NULL to use the
+    Nepomuk set</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </parameter>
         </parameters>
@@ -2128,7 +2163,7 @@ that both ends use a common #TrackerNamespaceManager.</doc>
       <method name="set_boolean" c:identifier="tracker_resource_set_boolean">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="356">Sets a single-valued boolean object.</doc>
+             line="359">Sets a single-valued boolean object.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="39"/>
         <return-value transfer-ownership="none">
@@ -2138,19 +2173,19 @@ that both ends use a common #TrackerNamespaceManager.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="358">the #TrackerResource</doc>
+                 line="361">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="359">a string identifying the property to modify</doc>
+                 line="362">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="360">the property object</doc>
+                 line="363">the property object</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -2160,7 +2195,7 @@ that both ends use a common #TrackerNamespaceManager.</doc>
               version="3.2">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="444">Sets a single-valued GDateTime as a #TrackerResource</doc>
+             line="447">Sets a single-valued GDateTime as a #TrackerResource</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="55"/>
         <return-value transfer-ownership="none">
@@ -2170,19 +2205,19 @@ that both ends use a common #TrackerNamespaceManager.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="446">the #TrackerResource</doc>
+                 line="449">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="447">a string identifying the property to modify</doc>
+                 line="450">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="448">the property object</doc>
+                 line="451">the property object</doc>
             <type name="GLib.DateTime" c:type="GDateTime*"/>
           </parameter>
         </parameters>
@@ -2190,7 +2225,7 @@ that both ends use a common #TrackerNamespaceManager.</doc>
       <method name="set_double" c:identifier="tracker_resource_set_double">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="366">Sets a single-valued double object.</doc>
+             line="369">Sets a single-valued double object.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="41"/>
         <return-value transfer-ownership="none">
@@ -2200,19 +2235,19 @@ that both ends use a common #TrackerNamespaceManager.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="368">the #TrackerResource</doc>
+                 line="371">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="369">a string identifying the property to modify</doc>
+                 line="372">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="370">the property object</doc>
+                 line="373">the property object</doc>
             <type name="gdouble" c:type="double"/>
           </parameter>
         </parameters>
@@ -2220,7 +2255,7 @@ that both ends use a common #TrackerNamespaceManager.</doc>
       <method name="set_gvalue" c:identifier="tracker_resource_set_gvalue">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="250">State that the only value for the given property is 'value'. Any existing
+             line="253">State that the only value for the given property is 'value'. Any existing
 values for 'property' will be removed.
 
 When serialising to SPARQL, any properties that were set with this function
@@ -2239,19 +2274,19 @@ types (string, int, etc.).</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="252">the #TrackerResource</doc>
+                 line="255">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="253">a string identifying the property to set</doc>
+                 line="256">a string identifying the property to set</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="254">an initialised #GValue</doc>
+                 line="257">an initialised #GValue</doc>
             <type name="GObject.Value" c:type="const GValue*"/>
           </parameter>
         </parameters>
@@ -2261,7 +2296,7 @@ types (string, int, etc.).</doc>
               glib:set-property="identifier">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="857">Changes the identifier of a #TrackerResource. The identifier should be a
+             line="860">Changes the identifier of a #TrackerResource. The identifier should be a
 URI or compact URI, but this is not necessarily enforced. Invalid
 identifiers may cause errors when serializing the resource or trying to
 insert the results in a database.
@@ -2277,7 +2312,7 @@ If the identifier is set to NULL, a SPARQL blank node identifier such as
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="859">a #TrackerResource</doc>
+                 line="862">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="identifier"
@@ -2286,7 +2321,7 @@ If the identifier is set to NULL, a SPARQL blank node identifier such as
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="860">a string identifying the resource</doc>
+                 line="863">a string identifying the resource</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -2294,7 +2329,7 @@ If the identifier is set to NULL, a SPARQL blank node identifier such as
       <method name="set_int" c:identifier="tracker_resource_set_int">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="376">Sets a single-valued integer object.</doc>
+             line="379">Sets a single-valued integer object.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="43"/>
         <return-value transfer-ownership="none">
@@ -2304,19 +2339,19 @@ If the identifier is set to NULL, a SPARQL blank node identifier such as
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="378">the #TrackerResource</doc>
+                 line="381">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="379">a string identifying the property to modify</doc>
+                 line="382">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="380">the property object</doc>
+                 line="383">the property object</doc>
             <type name="gint" c:type="int"/>
           </parameter>
         </parameters>
@@ -2324,7 +2359,7 @@ If the identifier is set to NULL, a SPARQL blank node identifier such as
       <method name="set_int64" c:identifier="tracker_resource_set_int64">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="386">Sets a single-valued integer object.</doc>
+             line="389">Sets a single-valued integer object.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="45"/>
         <return-value transfer-ownership="none">
@@ -2334,19 +2369,19 @@ If the identifier is set to NULL, a SPARQL blank node identifier such as
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="388">the #TrackerResource</doc>
+                 line="391">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="389">a string identifying the property to modify</doc>
+                 line="392">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="390">the property object</doc>
+                 line="393">the property object</doc>
             <type name="gint64" c:type="gint64"/>
           </parameter>
         </parameters>
@@ -2354,7 +2389,7 @@ If the identifier is set to NULL, a SPARQL blank node identifier such as
       <method name="set_relation" c:identifier="tracker_resource_set_relation">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="396">Sets a single-valued resource object as a #TrackerResource. This
+             line="399">Sets a single-valued resource object as a #TrackerResource. This
 function produces similar RDF to tracker_resource_set_uri(),
 although in this function the URI will depend on the identifier
 set on @resource.</doc>
@@ -2367,19 +2402,19 @@ set on @resource.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="398">the #TrackerResource</doc>
+                 line="401">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="399">a string identifying the property to modify</doc>
+                 line="402">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="resource" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="400">the property object</doc>
+                 line="403">the property object</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </parameter>
         </parameters>
@@ -2387,7 +2422,7 @@ set on @resource.</doc>
       <method name="set_string" c:identifier="tracker_resource_set_string">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="422">Sets a single-valued string object.</doc>
+             line="425">Sets a single-valued string object.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
                          line="51"/>
         <return-value transfer-ownership="none">
@@ -2397,19 +2432,19 @@ set on @resource.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="424">the #TrackerResource</doc>
+                 line="427">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="425">a string identifying the property to modify</doc>
+                 line="428">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="426">the property object</doc>
+                 line="429">the property object</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -2419,7 +2454,7 @@ set on @resource.</doc>
               introspectable="0">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="409">Sets a single-valued resource object as a #TrackerResource. This
+             line="412">Sets a single-valued resource object as a #TrackerResource. This
 function produces similar RDF to tracker_resource_set_uri(),
 although in this function the URI will depend on the identifier
 set on @resource. This function takes ownership of @resource.</doc>
@@ -2432,19 +2467,19 @@ set on @resource. This function takes ownership of @resource.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="411">the #TrackerResource</doc>
+                 line="414">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="412">a string identifying the property to modify</doc>
+                 line="415">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="resource" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="413">the property object</doc>
+                 line="416">the property object</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </parameter>
         </parameters>
@@ -2452,7 +2487,7 @@ set on @resource. This function takes ownership of @resource.</doc>
       <method name="set_uri" c:identifier="tracker_resource_set_uri">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="432">Sets a single-valued resource object as a string URI. This function
+             line="435">Sets a single-valued resource object as a string URI. This function
 produces similar RDF to tracker_resource_set_relation(), although
 it requires that the URI is previously known.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-resource.h"
@@ -2464,19 +2499,19 @@ it requires that the URI is previously known.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="434">the #TrackerResource</doc>
+                 line="437">the #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="435">a string identifying the property to modify</doc>
+                 line="438">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="value" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-resource.c"
-                 line="436">the property object</doc>
+                 line="439">the property object</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -2488,7 +2523,7 @@ it requires that the URI is previously known.</doc>
                 getter="get_identifier">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-resource.c"
-             line="104">The URI identifier for this class, or %NULL for a
+             line="107">The URI identifier for this class, or %NULL for a
 blank node.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
@@ -2846,7 +2881,7 @@ local machine. This is an asynchronous operation.</doc>
               version="3.0">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-connection.c"
-             line="721">Closes a SPARQL connection. No other API calls than g_object_unref()
+             line="726">Closes a SPARQL connection. No other API calls than g_object_unref()
 should happen after this call.
 
 This call is blocking. All pending updates will be flushed, and the
@@ -2861,7 +2896,7 @@ will be cancelled. Notifiers will no longer emit events.</doc>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-connection.c"
-                 line="723">a #TrackerSparqlConnection</doc>
+                 line="728">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
         </parameters>
@@ -2871,7 +2906,7 @@ will be cancelled. Notifiers will no longer emit events.</doc>
               version="3.0">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-connection.c"
-             line="742">Closes a connection asynchronously. No other API calls than g_object_unref()
+             line="747">Closes a connection asynchronously. No other API calls than g_object_unref()
 should happen after this call. See tracker_sparql_connection_close() for more
 information.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-connection.h"
@@ -2883,7 +2918,7 @@ information.</doc>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-connection.c"
-                 line="744">a #TrackerSparqlConnection</doc>
+                 line="749">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -2892,7 +2927,7 @@ information.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-connection.c"
-                 line="745">a #GCancellable, or %NULL</doc>
+                 line="750">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -2903,7 +2938,7 @@ information.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-connection.c"
-                 line="746">user-defined #GAsyncReadyCallback to be called when
+                 line="751">user-defined #GAsyncReadyCallback to be called when
            asynchronous operation is finished.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
@@ -2913,7 +2948,7 @@ information.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-connection.c"
-                 line="748">user-defined data to be passed to @callback</doc>
+                 line="753">user-defined data to be passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -2924,26 +2959,26 @@ information.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-connection.c"
-             line="770">Finishes the asynchronous connection close.</doc>
+             line="775">Finishes the asynchronous connection close.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-connection.h"
                          line="211"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-connection.c"
-               line="778">%FALSE if some error occurred, %TRUE otherwise</doc>
+               line="783">%FALSE if some error occurred, %TRUE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-connection.c"
-                 line="772">a #TrackerSparqlConnection</doc>
+                 line="777">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="res" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-connection.c"
-                 line="773">the #GAsyncResult</doc>
+                 line="778">the #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -2952,21 +2987,21 @@ information.</doc>
               c:identifier="tracker_sparql_connection_create_batch">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-connection.c"
-             line="793">Creates a new batch to store and execute update commands. If the connection
+             line="798">Creates a new batch to store and execute update commands. If the connection
 is readonly or cannot issue SPARQL updates, %NULL will be returned.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-connection.h"
                          line="172"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-connection.c"
-               line="800">(nullable): A new #TrackerBatch</doc>
+               line="805">(nullable): A new #TrackerBatch</doc>
           <type name="Batch" c:type="TrackerBatch*"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-connection.c"
-                 line="795">a #TrackerSparqlConnection</doc>
+                 line="800">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
         </parameters>
@@ -2975,7 +3010,7 @@ is readonly or cannot issue SPARQL updates, %NULL will be returned.</doc>
               c:identifier="tracker_sparql_connection_create_notifier">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-connection.c"
-             line="702">Creates a new #TrackerNotifier to notify about changes in @connection.
+             line="707">Creates a new #TrackerNotifier to notify about changes in @connection.
 See #TrackerNotifier documentation for information about how to use this
 object.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-connection.h"
@@ -2983,7 +3018,7 @@ object.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-connection.c"
-               line="710">a newly created notifier. Free with g_object_unref()
+               line="715">a newly created notifier. Free with g_object_unref()
          when no longer needed.</doc>
           <type name="Notifier" c:type="TrackerNotifier*"/>
         </return-value>
@@ -2991,7 +3026,7 @@ object.</doc>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-connection.c"
-                 line="704">a #TrackerSparqlConnection</doc>
+                 line="709">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
         </parameters>
@@ -3180,26 +3215,26 @@ Call g_object_unref() on the returned cursor when no longer needed.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../src/libtracker-sparql/tracker-connection.c"
-             line="674">Prepares the given @sparql as a #TrackerSparqlStatement.</doc>
+             line="679">Prepares the given @sparql as a #TrackerSparqlStatement.</doc>
         <source-position filename="../src/libtracker-sparql/tracker-connection.h"
                          line="194"/>
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve"
                filename="../src/libtracker-sparql/tracker-connection.c"
-               line="683">a prepared statement</doc>
+               line="688">a prepared statement</doc>
           <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-connection.c"
-                 line="676">a #TrackerSparqlConnection</doc>
+                 line="681">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="sparql" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-connection.c"
-                 line="677">the SPARQL query</doc>
+                 line="682">the SPARQL query</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
@@ -3208,7 +3243,7 @@ Call g_object_unref() on the returned cursor when no longer needed.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="../src/libtracker-sparql/tracker-connection.c"
-                 line="678">a #GCancellable used to cancel the operation, or %NULL</doc>
+                 line="683">a #GCancellable used to cancel the operation, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -5060,7 +5095,7 @@ context than the one creating the #TrackerSparqlConnection.</doc>
     <docsection name="tracker-namespace-manager">
       <doc xml:space="preserve"
            filename="../src/libtracker-sparql/tracker-namespace-manager.c"
-           line="44">#TrackerNamespaceManager keeps track of namespaces. It allows you to assign
+           line="46">#TrackerNamespaceManager keeps track of namespaces. It allows you to assign
 short prefixes for them to avoid typing full URLs all the time.
 
 The syntax used is that of Compact URIs (CURIEs) as defined here:
@@ -5100,7 +5135,7 @@ is created, events can be listened for by connecting to the
     <docsection name="tracker-resource">
       <doc xml:space="preserve"
            filename="../src/libtracker-sparql/tracker-resource.c"
-           line="48">#TrackerResource keeps track of a set of properties for a given resource.
+           line="51">#TrackerResource keeps track of a set of properties for a given resource.
 The resulting data can be serialized in several ways.</doc>
     </docsection>
     <docsection name="tracker-sparql-connection">

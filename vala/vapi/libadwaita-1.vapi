@@ -28,6 +28,33 @@ namespace Adw {
 		public int title_lines { get; set; }
 		public signal void activated ();
 	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_animation_get_type ()")]
+	[Version (since = "1.0")]
+	public class Animation : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected Animation ();
+		public Adw.AnimationState get_state ();
+		public unowned Adw.AnimationTarget get_target ();
+		public double get_value ();
+		public unowned Gtk.Widget get_widget ();
+		public void pause ();
+		public void play ();
+		public void reset ();
+		public void resume ();
+		public void skip ();
+		public Adw.AnimationState state { get; }
+		[NoAccessorMethod]
+		public Adw.AnimationTarget target { owned get; set construct; }
+		public double value { get; }
+		public Gtk.Widget widget { get; construct; }
+		public signal void done ();
+	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_animation_target_get_type ()")]
+	[Version (since = "1.0")]
+	public abstract class AnimationTarget : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected AnimationTarget ();
+	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_application_get_type ()")]
 	[Version (since = "1.0")]
 	public class Application : Gtk.Application, GLib.ActionGroup, GLib.ActionMap {
@@ -91,6 +118,12 @@ namespace Adw {
 		public string label { get; set; }
 		public bool use_underline { get; set; }
 	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_callback_animation_target_get_type ()")]
+	[Version (since = "1.0")]
+	public sealed class CallbackAnimationTarget : Adw.AnimationTarget {
+		[CCode (has_construct_function = false, type = "AdwAnimationTarget*")]
+		public CallbackAnimationTarget (owned Adw.AnimationTargetFunc? callback);
+	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_carousel_get_type ()")]
 	[Version (since = "1.0")]
 	public sealed class Carousel : Gtk.Widget, Adw.Swipeable, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Orientable {
@@ -112,7 +145,7 @@ namespace Adw {
 		public void remove (Gtk.Widget child);
 		public void reorder (Gtk.Widget child, int position);
 		public void scroll_to (Gtk.Widget widget);
-		public void scroll_to_full (Gtk.Widget widget, int64 duration);
+		public void scroll_to_full (Gtk.Widget widget, uint duration);
 		public void set_allow_long_swipes (bool allow_long_swipes);
 		public void set_allow_mouse_drag (bool allow_mouse_drag);
 		public void set_allow_scroll_wheel (bool allow_scroll_wheel);
@@ -626,7 +659,7 @@ namespace Adw {
 		public bool reversed { get; set; }
 		public Adw.Swipeable swipeable { get; construct; }
 		public signal void begin_swipe ();
-		public signal void end_swipe (int64 duration, double to);
+		public signal void end_swipe (uint duration, double to);
 		public signal void prepare (Adw.NavigationDirection direction);
 		public signal void update_swipe (double progress);
 	}
@@ -777,6 +810,33 @@ namespace Adw {
 		public signal void page_reordered (Adw.TabPage page, int position);
 		public signal void setup_menu (Adw.TabPage? page);
 	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_timed_animation_get_type ()")]
+	[Version (since = "1.0")]
+	public sealed class TimedAnimation : Adw.Animation {
+		[CCode (has_construct_function = false, type = "AdwAnimation*")]
+		public TimedAnimation (Gtk.Widget widget, double from, double to, uint duration, owned Adw.AnimationTarget target);
+		public bool get_alternate ();
+		public uint get_duration ();
+		public Adw.Easing get_easing ();
+		public uint get_repeat_count ();
+		public bool get_reverse ();
+		public double get_value_from ();
+		public double get_value_to ();
+		public void set_alternate (bool alternate);
+		public void set_duration (uint duration);
+		public void set_easing (Adw.Easing easing);
+		public void set_repeat_count (uint repeat_count);
+		public void set_reverse (bool reverse);
+		public void set_value_from (double value);
+		public void set_value_to (double value);
+		public bool alternate { get; set construct; }
+		public uint duration { get; set construct; }
+		public Adw.Easing easing { get; set construct; }
+		public uint repeat_count { get; set construct; }
+		public bool reverse { get; set construct; }
+		public double value_from { get; set construct; }
+		public double value_to { get; set construct; }
+	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_toast_get_type ()")]
 	[Version (since = "1.0")]
 	public sealed class Toast : GLib.Object {
@@ -787,18 +847,21 @@ namespace Adw {
 		public unowned GLib.Variant? get_action_target_value ();
 		public unowned string? get_button_label ();
 		public Adw.ToastPriority get_priority ();
+		public uint get_timeout ();
 		public unowned string get_title ();
 		public void set_action_name (string? action_name);
 		public void set_action_target_value (GLib.Variant? action_target);
 		public void set_button_label (string? button_label);
 		public void set_detailed_action_name (string? detailed_action_name);
 		public void set_priority (Adw.ToastPriority priority);
+		public void set_timeout (uint timeout);
 		public void set_title (string title);
 		public string action_name { get; set; }
 		[NoAccessorMethod]
 		public GLib.Variant action_target { owned get; set; }
 		public string button_label { get; set; }
 		public Adw.ToastPriority priority { get; set; }
+		public uint timeout { get; set; }
 		public string title { get; set; }
 		public signal void dismissed ();
 	}
@@ -822,23 +885,18 @@ namespace Adw {
 		public unowned Adw.ViewStackPage add_titled (Gtk.Widget child, string? name, string title);
 		public unowned Gtk.Widget? get_child_by_name (string name);
 		public bool get_hhomogeneous ();
-		public bool get_interpolate_size ();
 		public unowned Adw.ViewStackPage get_page (Gtk.Widget child);
 		public Gtk.SelectionModel get_pages ();
-		public bool get_transition_running ();
 		public bool get_vhomogeneous ();
 		public unowned Gtk.Widget? get_visible_child ();
 		public unowned string? get_visible_child_name ();
 		public void remove (Gtk.Widget child);
 		public void set_hhomogeneous (bool hhomogeneous);
-		public void set_interpolate_size (bool interpolate_size);
 		public void set_vhomogeneous (bool vhomogeneous);
 		public void set_visible_child (Gtk.Widget child);
 		public void set_visible_child_name (string name);
 		public bool hhomogeneous { get; set; }
-		public bool interpolate_size { get; set; }
 		public Gtk.SelectionModel pages { owned get; }
-		public bool transition_running { get; }
 		public bool vhomogeneous { get; set; }
 		public Gtk.Widget visible_child { get; set; }
 		public string visible_child_name { get; set; }
@@ -947,6 +1005,14 @@ namespace Adw {
 		public abstract double[] get_snap_points ();
 		public abstract Gdk.Rectangle get_swipe_area (Adw.NavigationDirection navigation_direction, bool is_drag);
 	}
+	[CCode (cheader_filename = "adwaita.h", cprefix = "ADW_ANIMATION_", type_id = "adw_animation_state_get_type ()")]
+	[Version (since = "1.0")]
+	public enum AnimationState {
+		IDLE,
+		PAUSED,
+		PLAYING,
+		FINISHED
+	}
 	[CCode (cheader_filename = "adwaita.h", cprefix = "ADW_CENTERING_POLICY_", type_id = "adw_centering_policy_get_type ()")]
 	[Version (since = "1.0")]
 	public enum CenteringPolicy {
@@ -961,6 +1027,42 @@ namespace Adw {
 		PREFER_LIGHT,
 		PREFER_DARK,
 		FORCE_DARK
+	}
+	[CCode (cheader_filename = "adwaita.h", cprefix = "ADW_", type_id = "adw_easing_get_type ()")]
+	[Version (since = "1.0")]
+	public enum Easing {
+		LINEAR,
+		EASE_IN_QUAD,
+		EASE_OUT_QUAD,
+		EASE_IN_OUT_QUAD,
+		EASE_IN_CUBIC,
+		EASE_OUT_CUBIC,
+		EASE_IN_OUT_CUBIC,
+		EASE_IN_QUART,
+		EASE_OUT_QUART,
+		EASE_IN_OUT_QUART,
+		EASE_IN_QUINT,
+		EASE_OUT_QUINT,
+		EASE_IN_OUT_QUINT,
+		EASE_IN_SINE,
+		EASE_OUT_SINE,
+		EASE_IN_OUT_SINE,
+		EASE_IN_EXPO,
+		EASE_OUT_EXPO,
+		EASE_IN_OUT_EXPO,
+		EASE_IN_CIRC,
+		EASE_OUT_CIRC,
+		EASE_IN_OUT_CIRC,
+		EASE_IN_ELASTIC,
+		EASE_OUT_ELASTIC,
+		EASE_IN_OUT_ELASTIC,
+		EASE_IN_BACK,
+		EASE_OUT_BACK,
+		EASE_IN_OUT_BACK,
+		EASE_IN_BOUNCE,
+		EASE_OUT_BOUNCE,
+		EASE_IN_OUT_BOUNCE;
+		public double ease (double value);
 	}
 	[CCode (cheader_filename = "adwaita.h", cprefix = "ADW_FLAP_FOLD_POLICY_", type_id = "adw_flap_fold_policy_get_type ()")]
 	[Version (since = "1.0")]
@@ -1012,6 +1114,9 @@ namespace Adw {
 		NARROW,
 		WIDE
 	}
+	[CCode (cheader_filename = "adwaita.h", instance_pos = 0.9)]
+	[Version (since = "1.0")]
+	public delegate void AnimationTargetFunc (double value);
 	[CCode (cheader_filename = "adwaita.h", cname = "ADW_MAJOR_VERSION")]
 	public const int MAJOR_VERSION;
 	[CCode (cheader_filename = "adwaita.h", cname = "ADW_MICRO_VERSION")]
@@ -1021,8 +1126,8 @@ namespace Adw {
 	[CCode (cheader_filename = "adwaita.h", cname = "ADW_VERSION_S")]
 	public const string VERSION_S;
 	[CCode (cheader_filename = "adwaita.h")]
-	[Version (since = "1.0")]
-	public static double ease_out_cubic (double t);
+	[Version (replacement = "Easing.ease", since = "1.0")]
+	public static double easing_ease (Adw.Easing self, double value);
 	[CCode (cheader_filename = "adwaita.h")]
 	[Version (since = "1.0")]
 	public static bool get_enable_animations (Gtk.Widget widget);
@@ -1037,4 +1142,7 @@ namespace Adw {
 	public static void init ();
 	[CCode (cheader_filename = "adwaita.h")]
 	public static bool is_initialized ();
+	[CCode (cheader_filename = "adwaita.h")]
+	[Version (since = "1.0")]
+	public static double lerp (double a, double b, double t);
 }

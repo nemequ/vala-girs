@@ -138,6 +138,8 @@ namespace Vte {
 		[Version (deprecated = true, deprecated_since = "0.54")]
 		public void match_set_cursor_type (int tag, Gdk.CursorType cursor_type);
 		public void paste_primary ();
+		[Version (since = "0.68")]
+		public void paste_text (string text);
 		public Vte.Pty pty_new_sync (Vte.PtyFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void reset (bool clear_tabstops, bool clear_history);
 		public bool search_find_next ();

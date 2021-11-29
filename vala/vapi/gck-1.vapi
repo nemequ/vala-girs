@@ -52,6 +52,7 @@ namespace Gck {
 		public Gck.Attributes @ref ();
 		public Gck.Attributes ref_sink ();
 		public string to_string ();
+		[DestroysInstance]
 		public void unref ();
 	}
 	[CCode (cheader_filename = "gck/gck.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gck_builder_get_type ()")]
@@ -347,6 +348,7 @@ namespace Gck {
 		[CCode (has_construct_function = false)]
 		public UriData ();
 		public Gck.UriData copy ();
+		[DestroysInstance]
 		public void free ();
 	}
 	[CCode (cheader_filename = "gck/gck.h", type_id = "gck_object_cache_get_type ()")]
@@ -460,7 +462,7 @@ namespace Gck {
 	[CCode (cheader_filename = "gck/gck.h")]
 	public static Gck.UriData uri_parse (string string, Gck.UriFlags flags) throws GLib.Error;
 	[CCode (cheader_filename = "gck/gck.h")]
-	public static bool value_to_boolean ([CCode (array_length_cname = "length", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] value, bool result);
+	public static bool value_to_boolean ([CCode (array_length_cname = "length", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] value, out bool result);
 	[CCode (cheader_filename = "gck/gck.h")]
-	public static bool value_to_ulong ([CCode (array_length_cname = "length", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] value, ulong result);
+	public static bool value_to_ulong ([CCode (array_length_cname = "length", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] value, out ulong result);
 }

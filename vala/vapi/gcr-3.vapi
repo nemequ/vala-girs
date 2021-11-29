@@ -28,8 +28,7 @@ namespace Gcr {
 		public uint8[] encode (bool textual);
 		public Gcr.CertificateRequestFormat get_format ();
 		public unowned Gck.Object get_private_key ();
-		[CCode (cname = "gcr_certificate_request_prepare", has_construct_function = false)]
-		public CertificateRequest.prepare (Gcr.CertificateRequestFormat format, Gck.Object private_key);
+		public static Gcr.CertificateRequest prepare (Gcr.CertificateRequestFormat format, Gck.Object private_key);
 		public void set_cn (string cn);
 		public Gck.Object private_key { get; construct; }
 	}

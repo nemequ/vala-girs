@@ -97,7 +97,7 @@ namespace ICal {
 		public ICal.CompIter begin_component (ICal.ComponentKind kind);
 		[Version (since = "1.0")]
 		public int check_restrictions ();
-		[Version (since = "3.1")]
+		[Version (since = "1.0")]
 		public ICal.Component clone ();
 		[Version (since = "1.0")]
 		public void convert_errors ();
@@ -397,7 +397,7 @@ namespace ICal {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Parameter.charset (string v);
-		[Version (since = "3.1")]
+		[Version (since = "1.0")]
 		public ICal.Parameter clone ();
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
@@ -842,7 +842,7 @@ namespace ICal {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Property.@class (ICal.Property_Class v);
-		[Version (since = "3.1")]
+		[Version (since = "1.0")]
 		public ICal.Property clone ();
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
@@ -1656,8 +1656,6 @@ namespace ICal {
 		public RecurIterator (ICal.Recurrence rule, ICal.Time dtstart);
 		[Version (since = "1.0")]
 		public ICal.Time next ();
-		[Version (since = "3.1")]
-		public int set_end (ICal.Time end);
 		[Version (since = "3.0")]
 		public int set_start (ICal.Time start);
 	}
@@ -1672,10 +1670,6 @@ namespace ICal {
 		public static ICal.RecurrenceWeekday day_day_of_week (short day);
 		[Version (since = "1.0")]
 		public static int day_position (short day);
-		[Version (since = "3.0.5")]
-		public static short encode_day (ICal.RecurrenceWeekday weekday, int position);
-		[Version (since = "3.0.5")]
-		public static short encode_month (int month, bool is_leap);
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Recurrence.from_string (string str);
@@ -2064,7 +2058,7 @@ namespace ICal {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Value.@class (ICal.Property_Class v);
-		[Version (since = "3.1")]
+		[Version (since = "1.0")]
 		public ICal.Value clone ();
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]

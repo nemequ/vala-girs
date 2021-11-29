@@ -104,6 +104,8 @@ namespace GUsb {
 		public string get_string_descriptor (uint8 desc_index) throws GLib.Error;
 		[Version (since = "0.3.6")]
 		public GLib.Bytes get_string_descriptor_bytes (uint8 desc_index, uint16 langid) throws GLib.Error;
+		[Version (since = "0.3.8")]
+		public GLib.Bytes get_string_descriptor_bytes_full (uint8 desc_index, uint16 langid, size_t length) throws GLib.Error;
 		[Version (since = "0.1.0")]
 		public uint16 get_vid ();
 		[Version (since = "0.2.4")]

@@ -17,6 +17,13 @@ namespace Shumate {
 		[CCode (has_construct_function = false)]
 		public Coordinate.full (double latitude, double longitude);
 	}
+	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_data_source_get_type ()")]
+	public class DataSource : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected DataSource ();
+		public virtual async GLib.Bytes? get_tile_data_async (int x, int y, int zoom_level, GLib.Cancellable? cancellable) throws GLib.Error;
+		public signal void received_data (int x, int y, int zoom_level, GLib.Bytes bytes);
+	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_file_cache_get_type ()")]
 	public class FileCache : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -27,11 +34,11 @@ namespace Shumate {
 		public unowned string get_cache_key ();
 		public uint get_size_limit ();
 		[CCode (async_result_pos = 3.1)]
-		public async GLib.Bytes get_tile_async (Shumate.Tile tile, GLib.Cancellable? cancellable, out string? etag, out GLib.DateTime? modtime) throws GLib.Error;
-		public void mark_up_to_date (Shumate.Tile tile);
+		public async GLib.Bytes get_tile_async (int x, int y, int zoom_level, GLib.Cancellable? cancellable, out string? etag, out GLib.DateTime? modtime) throws GLib.Error;
+		public void mark_up_to_date (int x, int y, int zoom_level);
 		public async bool purge_cache_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public void set_size_limit (uint size_limit);
-		public async bool store_tile_async (Shumate.Tile tile, GLib.Bytes bytes, string? etag, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool store_tile_async (int x, int y, int zoom_level, GLib.Bytes bytes, string? etag, GLib.Cancellable? cancellable) throws GLib.Error;
 		public string cache_dir { get; construct; }
 		public string cache_key { get; construct; }
 		public uint size_limit { get; set construct; }
@@ -207,33 +214,6 @@ namespace Shumate {
 		public bool try_fill_tile (Shumate.Tile tile, string source_id);
 		public uint size_limit { get; set construct; }
 	}
-	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_network_tile_source_get_type ()")]
-	public class NetworkTileSource : Shumate.MapSource {
-		[CCode (has_construct_function = false)]
-		protected NetworkTileSource ();
-		[CCode (has_construct_function = false)]
-		public NetworkTileSource.full (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Shumate.MapProjection projection, string uri_format);
-		public int get_max_conns ();
-		public bool get_offline ();
-		public unowned string get_proxy_uri ();
-		public unowned Shumate.VectorStyle get_style ();
-		public unowned string get_uri_format ();
-		public void set_max_conns (int max_conns);
-		public void set_offline (bool offline);
-		public void set_proxy_uri (string proxy_uri);
-		public void set_uri_format (string uri_format);
-		public void set_user_agent (string user_agent);
-		[CCode (has_construct_function = false)]
-		public NetworkTileSource.vector_full (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Shumate.MapProjection projection, string uri_format, Shumate.VectorStyle style);
-		[NoAccessorMethod]
-		public Shumate.FileCache file_cache { owned get; }
-		public int max_conns { get; set; }
-		public bool offline { get; set; }
-		public string proxy_uri { get; set; }
-		public Shumate.VectorStyle style { get; construct; }
-		public string uri_format { get; set construct; }
-		public string user_agent { set; }
-	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_path_layer_get_type ()")]
 	public class PathLayer : Shumate.Layer, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
 		[CCode (has_construct_function = false)]
@@ -274,6 +254,19 @@ namespace Shumate {
 	public class Point : Shumate.Marker, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget, Shumate.Location {
 		[CCode (has_construct_function = false, type = "ShumateMarker*")]
 		public Point ();
+	}
+	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_raster_renderer_get_type ()")]
+	public class RasterRenderer : Shumate.MapSource {
+		[CCode (has_construct_function = false)]
+		public RasterRenderer (Shumate.DataSource data_source);
+		[CCode (has_construct_function = false)]
+		public RasterRenderer.from_url (string url_template);
+		[CCode (has_construct_function = false)]
+		public RasterRenderer.full (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Shumate.MapProjection projection, Shumate.DataSource data_source);
+		[CCode (has_construct_function = false)]
+		public RasterRenderer.full_from_url (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Shumate.MapProjection projection, string url_template);
+		[NoAccessorMethod]
+		public Shumate.DataSource data_source { owned get; construct; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_scale_get_type ()")]
 	public class Scale : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
@@ -321,15 +314,28 @@ namespace Shumate {
 		public uint y { get; set; }
 		public uint zoom_level { get; set; }
 	}
-	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_vector_style_get_type ()")]
-	public class VectorStyle : GLib.Object, GLib.Initable {
+	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_tile_downloader_get_type ()")]
+	public class TileDownloader : Shumate.DataSource {
 		[CCode (has_construct_function = false)]
-		protected VectorStyle ();
-		public static Shumate.VectorStyle create (string style_json) throws GLib.Error;
-		public unowned string? get_style_json ();
+		public TileDownloader (string url_template);
+		[NoAccessorMethod]
+		public string url_template { owned get; construct; }
+	}
+	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_vector_renderer_get_type ()")]
+	public class VectorRenderer : Shumate.MapSource, GLib.Initable {
+		[CCode (has_construct_function = false)]
+		public VectorRenderer (Shumate.DataSource data_source, string style_json) throws GLib.Error;
+		[CCode (has_construct_function = false)]
+		public VectorRenderer.from_url (string url_template, string style_json) throws GLib.Error;
+		[CCode (has_construct_function = false)]
+		public VectorRenderer.full (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Shumate.MapProjection projection, Shumate.DataSource data_source, string style_json) throws GLib.Error;
+		[CCode (has_construct_function = false)]
+		public VectorRenderer.full_from_url (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Shumate.MapProjection projection, string url_template, string style_json) throws GLib.Error;
 		public static bool is_supported ();
-		public Gdk.Texture render (int texture_size, GLib.Bytes tile_data, double zoom_level);
-		public string style_json { get; construct; }
+		[NoAccessorMethod]
+		public Shumate.DataSource data_source { owned get; construct; }
+		[NoAccessorMethod]
+		public string style_json { owned get; construct; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_viewport_get_type ()")]
 	public class Viewport : GLib.Object, Shumate.Location {
@@ -387,15 +393,6 @@ namespace Shumate {
 		FAILED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_NETWORK_SOURCE_ERROR_")]
-	public errordomain NetworkSourceError {
-		FAILED,
-		BAD_RESPONSE,
-		COULD_NOT_CONNECT,
-		MALFORMED_URL,
-		OFFLINE;
-		public static GLib.Quark quark ();
-	}
 	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_STYLE_ERROR_")]
 	public errordomain StyleError {
 		FAILED,
@@ -403,6 +400,15 @@ namespace Shumate {
 		UNSUPPORTED_LAYER,
 		INVALID_EXPRESSION,
 		SUPPORT_OMITTED;
+		public static GLib.Quark quark ();
+	}
+	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_TILE_DOWNLOADER_ERROR_")]
+	public errordomain TileDownloaderError {
+		FAILED,
+		BAD_RESPONSE,
+		COULD_NOT_CONNECT,
+		MALFORMED_URL,
+		OFFLINE;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", cname = "SHUMATE_MAJOR_VERSION")]
@@ -441,9 +447,9 @@ namespace Shumate {
 	[Version (replacement = "FileCacheError.quark")]
 	public static GLib.Quark file_cache_error_quark ();
 	[CCode (cheader_filename = "shumate/shumate.h")]
-	[Version (replacement = "NetworkSourceError.quark")]
-	public static GLib.Quark network_source_error_quark ();
-	[CCode (cheader_filename = "shumate/shumate.h")]
 	[Version (replacement = "StyleError.quark")]
 	public static GLib.Quark style_error_quark ();
+	[CCode (cheader_filename = "shumate/shumate.h")]
+	[Version (replacement = "TileDownloaderError.quark")]
+	public static GLib.Quark tile_downloader_error_quark ();
 }
