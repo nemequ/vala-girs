@@ -70,6 +70,7 @@ namespace GWeather {
 		public GWeather.Location deserialize (GLib.Variant serialized);
 		[CCode (has_construct_function = false)]
 		public Location.detached (string name, string? icao, double latitude, double longitude);
+		[CCode (finish_instance = false)]
 		public async GWeather.Location detect_nearest_city (double lat, double lon, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool equal (GWeather.Location two);
 		public GWeather.Location find_by_country_code (string country_code);
