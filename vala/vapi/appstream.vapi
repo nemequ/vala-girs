@@ -144,17 +144,23 @@ namespace AppStream {
 		public void add_review (AppStream.Review review);
 		public void add_screenshot (AppStream.Screenshot sshot);
 		public void add_suggested (AppStream.Suggested suggested);
+		[Version (since = "0.14.8")]
+		public bool add_tag (string ns, string tag);
 		[Version (since = "0.9.2")]
 		public void add_translation (AppStream.Translation tr);
 		[Version (since = "0.6.2")]
 		public void add_url (AppStream.UrlKind url_kind, string url);
 		[Version (since = "0.14.5")]
 		public void clear_languages ();
+		[Version (since = "0.14.8")]
+		public void clear_tags ();
 		public unowned string get_active_locale ();
 		[Version (since = "0.9.2")]
 		public unowned GLib.GenericArray<AppStream.Component> get_addons ();
 		[Version (since = "0.12.1")]
 		public unowned AppStream.Agreement? get_agreement_by_kind (AppStream.AgreementKind kind);
+		[Version (since = "0.14.8")]
+		public unowned GLib.GenericArray<AppStream.Agreement> get_agreements ();
 		[Version (since = "0.14.0")]
 		public unowned string get_branch ();
 		[Version (since = "0.8.0")]
@@ -230,6 +236,8 @@ namespace AppStream {
 		public unowned GLib.GenericArray<AppStream.Suggested> get_suggested ();
 		public unowned string get_summary ();
 		public unowned GLib.HashTable<void*,void*> get_summary_table ();
+		[Version (since = "0.14.8")]
+		public unowned GLib.GenericArray<AppStream.Relation> get_supports ();
 		[Version (since = "0.9.2")]
 		public unowned GLib.GenericArray<AppStream.Translation> get_translations ();
 		[Version (since = "0.6.2")]
@@ -237,6 +245,8 @@ namespace AppStream {
 		public AppStream.ValueFlags get_value_flags ();
 		public bool has_bundle ();
 		public bool has_category (string category);
+		[Version (since = "0.14.8")]
+		public bool has_tag (string ns, string tag);
 		[Version (since = "0.10.5")]
 		public bool insert_custom_value (string key, string value);
 		public bool is_compulsory_for_desktop (string desktop);
@@ -248,6 +258,8 @@ namespace AppStream {
 		public bool load_from_bytes (AppStream.Context context, AppStream.FormatKind format, GLib.Bytes bytes) throws GLib.Error;
 		[Version (since = "0.12.10")]
 		public bool load_from_xml_data (AppStream.Context context, string data) throws GLib.Error;
+		[Version (since = "0.14.8")]
+		public bool remove_tag (string ns, string tag);
 		[Version (since = "0.9.7")]
 		public uint search_matches (string term);
 		[Version (since = "0.9.8")]
@@ -480,17 +492,29 @@ namespace AppStream {
 	public class Pool : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Pool ();
+		[Version (deprecated = true, deprecated_since = "0.14.7")]
 		public bool add_component (AppStream.Component cpt) throws GLib.Error;
+		[Version (since = "0.14.8")]
+		public bool add_components (GLib.GenericArray<AppStream.Component> cpts) throws GLib.Error;
+		public void add_extra_data_location (string directory, AppStream.FormatStyle format_style);
+		[Version (since = "0.14.7")]
+		public void add_flags (AppStream.PoolFlags flags);
+		[Version (deprecated = true, deprecated_since = "0.14.7")]
 		public void add_metadata_location (string directory);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] build_search_tokens (string search);
 		public void clear ();
 		public bool clear2 () throws GLib.Error;
+		[Version (deprecated = true, deprecated_since = "0.14.7")]
 		public void clear_metadata_locations ();
+		[Version (deprecated = true, deprecated_since = "0.14.7")]
 		public AppStream.CacheFlags get_cache_flags ();
+		[Version (deprecated = true, deprecated_since = "0.14.7")]
 		public unowned string get_cache_location ();
 		public GLib.GenericArray<AppStream.Component> get_components ();
 		public GLib.GenericArray<AppStream.Component> get_components_by_categories (string categories);
+		[Version (since = "0.14.7")]
+		public GLib.GenericArray<AppStream.Component> get_components_by_extends (string extended_id);
 		public GLib.GenericArray<AppStream.Component> get_components_by_id (string cid);
 		public GLib.GenericArray<AppStream.Component> get_components_by_kind (AppStream.ComponentKind kind);
 		[Version (since = "0.11.4")]
@@ -503,14 +527,23 @@ namespace AppStream {
 		public async bool load_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool load_cache_file (string fname) throws GLib.Error;
 		public bool refresh_cache (bool force) throws GLib.Error;
+		[Version (since = "0.14.7")]
+		public void remove_flags (AppStream.PoolFlags flags);
+		[Version (since = "0.14.7")]
+		public void reset_extra_data_locations ();
 		public bool save_cache_file (string fname) throws GLib.Error;
 		[Version (since = "0.9.7")]
 		public GLib.GenericArray<AppStream.Component> search (string search);
+		[Version (deprecated = true, deprecated_since = "0.14.7")]
 		public void set_cache_flags (AppStream.CacheFlags flags);
-		[Version (since = "0.12.7")]
+		[Version (deprecated = true, deprecated_since = "0.14.7", since = "0.12.7")]
 		public void set_cache_location (string fname);
 		public void set_flags (AppStream.PoolFlags flags);
+		[Version (since = "0.14.7")]
+		public void set_load_std_data_locations (bool enabled);
 		public void set_locale (string locale);
+		[Version (since = "0.14.8")]
+		public virtual signal void changed ();
 	}
 	[CCode (cheader_filename = "appstream.h", type_id = "as_provided_get_type ()")]
 	public class Provided : GLib.Object {
@@ -957,7 +990,8 @@ namespace AppStream {
 		GAMEPAD,
 		VOICE,
 		VISION,
-		TV_REMOTE;
+		TV_REMOTE,
+		TABLET;
 		[Version (since = "0.12.11")]
 		public static AppStream.ControlKind from_string (string kind_str);
 		[Version (since = "0.12.11")]
@@ -1103,10 +1137,21 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_POOL_FLAG_", type_id = "as_pool_flags_get_type ()")]
 	[Flags]
 	public enum PoolFlags {
-		NONE,
+		[Version (deprecated = true, replacement = "LOAD_OS_COLLECTION")]
 		READ_COLLECTION,
+		[Version (deprecated = true, replacement = "LOAD_OS_METAINFO")]
 		READ_METAINFO,
-		READ_DESKTOP_FILES
+		[Version (deprecated = true, replacement = "LOAD_OS_DESKTOP_FILES")]
+		READ_DESKTOP_FILES,
+		NONE,
+		LOAD_OS_COLLECTION,
+		LOAD_OS_METAINFO,
+		LOAD_OS_DESKTOP_FILES,
+		LOAD_FLATPAK,
+		IGNORE_CACHE_AGE,
+		RESOLVE_ADDONS,
+		PREFER_OS_METAINFO,
+		MONITOR
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_PROVIDED_KIND_", has_type_id = false)]
 	public enum ProvidedKind {
@@ -1154,7 +1199,8 @@ namespace AppStream {
 		MEMORY,
 		FIRMWARE,
 		CONTROL,
-		DISPLAY_LENGTH;
+		DISPLAY_LENGTH,
+		HARDWARE;
 		[Version (since = "0.12.0")]
 		public static AppStream.RelationItemKind from_string (string kind_str);
 		[Version (since = "0.12.0")]
@@ -1164,7 +1210,8 @@ namespace AppStream {
 	public enum RelationKind {
 		UNKNOWN,
 		REQUIRES,
-		RECOMMENDS;
+		RECOMMENDS,
+		SUPPORTS;
 		[Version (since = "0.12.0")]
 		public static AppStream.RelationKind from_string (string kind_str);
 		[Version (since = "0.12.0")]
@@ -1615,6 +1662,9 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (replacement = "UtilsError.quark", since = "0.14.0")]
 	public static GLib.Quark utils_error_quark ();
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (since = "0.14.8")]
+	public static AppStream.ComponentScope utils_guess_scope_from_path (string path);
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.14.0")]
 	public static bool utils_install_metadata_file (AppStream.MetadataLocation location, string filename, string origin, string destdir) throws GLib.Error;

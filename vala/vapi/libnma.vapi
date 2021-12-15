@@ -18,9 +18,8 @@ namespace NMA {
 	}
 	[CCode (cheader_filename = "NMA-1.0.h", type_id = "nma_bar_code_widget_get_type ()")]
 	public class BarCodeWidget : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
-		[CCode (has_construct_function = false, type = "GtkWidget*")]
-		[Version (since = "1.8.22")]
-		public BarCodeWidget (NM.Connection connection);
+		[CCode (has_construct_function = false)]
+		protected BarCodeWidget ();
 		[NoAccessorMethod]
 		public NM.Connection connection { owned get; set; }
 	}
@@ -136,7 +135,7 @@ namespace NMA {
 		public string service_providers { owned get; construct; }
 	}
 	[CCode (cheader_filename = "NMA-1.0.h", type_id = "nma_mobile_wizard_get_type ()")]
-	public class MobileWizard : Gtk.Assistant, Atk.Implementor, Gtk.Buildable {
+	public class MobileWizard : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected MobileWizard ();
 		public void destroy ();
@@ -180,63 +179,72 @@ namespace NMA {
 		public Gtk.Widget nag_user ();
 		public void set_nag_ignored (bool ignored);
 	}
-	[CCode (cheader_filename = "NMA-1.0.h", lower_case_csuffix = "ws_802_1x", type_id = "nma_ws_802_1x_get_type ()")]
-	public class Ws8021x : Gtk.Grid, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, NMA.Ws {
-		[CCode (has_construct_function = false)]
-		public Ws8021x (NM.Connection connection, bool is_editor, bool secrets_only);
-		[NoAccessorMethod]
-		public bool is_editor { get; set construct; }
-		[CCode (array_length = false, array_null_terminated = true)]
-		[NoAccessorMethod]
-		public string[] secrets_hints { owned get; set construct; }
-	}
-	[CCode (cheader_filename = "NMA-1.0.h", type_id = "nma_ws_dynamic_wep_get_type ()")]
-	public class WsDynamicWep : NMA.Ws8021x, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, NMA.Ws {
-		[CCode (has_construct_function = false)]
-		public WsDynamicWep (NM.Connection connection, bool is_editor, bool secrets_only);
-	}
-	[CCode (cheader_filename = "NMA-1.0.h", type_id = "nma_ws_leap_get_type ()")]
-	public class WsLeap : Gtk.Grid, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, NMA.Ws {
-		[CCode (has_construct_function = false)]
-		public WsLeap (NM.Connection connection, bool secrets_only);
-	}
-	[CCode (cheader_filename = "NMA-1.0.h", type_id = "nma_ws_sae_get_type ()")]
-	public class WsSae : Gtk.Grid, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, NMA.Ws {
-		[CCode (has_construct_function = false)]
-		public WsSae (NM.Connection connection, bool secrets_only);
-	}
-	[CCode (cheader_filename = "NMA-1.0.h", type_id = "nma_ws_wep_key_get_type ()")]
-	public class WsWepKey : Gtk.Grid, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, NMA.Ws {
-		[CCode (has_construct_function = false)]
-		public WsWepKey (NM.Connection connection, NM.WepKeyType type, bool adhoc_create, bool secrets_only);
-		[NoAccessorMethod]
-		public bool adhoc_create { get; set construct; }
-		[NoAccessorMethod]
-		public uint key_type { get; set construct; }
-	}
-	[CCode (cheader_filename = "NMA-1.0.h", type_id = "nma_ws_wpa_eap_get_type ()")]
-	public class WsWpaEap : NMA.Ws8021x, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, NMA.Ws {
-		[CCode (has_construct_function = false)]
-		public WsWpaEap (NM.Connection connection, bool is_editor, bool secrets_only, string secrets_hints);
-	}
-	[CCode (cheader_filename = "NMA-1.0.h", type_id = "nma_ws_wpa_psk_get_type ()")]
-	public class WsWpaPsk : Gtk.Grid, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, NMA.Ws {
-		[CCode (has_construct_function = false)]
-		public WsWpaPsk (NM.Connection connection, bool secrets_only);
-	}
-	[CCode (cheader_filename = "NMA-1.0.h", type_cname = "NMAWsInterface", type_id = "nma_ws_get_type ()")]
-	public interface Ws : GLib.Object {
-		public void add_to_size_group (Gtk.SizeGroup group);
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class Ws {
 		public bool adhoc_compatible ();
-		public void fill_connection (NM.Connection connection);
 		public bool hotspot_compatible ();
-		public void update_secrets (NM.Connection connection);
 		public bool validate () throws GLib.Error;
-		[NoAccessorMethod]
-		public abstract NM.Connection connection { owned get; set construct; }
-		[NoAccessorMethod]
-		public abstract bool secrets_only { get; set construct; }
-		public signal void ws_changed ();
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class Ws8021x {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class Ws8021xClass {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsDynamicWep {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsDynamicWepClass {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsInterface {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsLeap {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsLeapClass {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsSae {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsSaeClass {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsWepKey {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsWepKeyClass {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsWpaEap {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsWpaEapClass {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsWpaPsk {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsWpaPskClass {
 	}
 	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
 	public struct MobileWizardAccessMethod {

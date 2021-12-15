@@ -25,7 +25,7 @@ namespace ECal {
 		[Version (since = "3.6")]
 		public async bool create_objects (GLib.SList<ICal.Component> icalcomps, ECal.OperationFlags opflags, GLib.Cancellable? cancellable, out GLib.SList<string> out_uids) throws GLib.Error;
 		[Version (since = "3.6")]
-		public bool create_objects_sync (GLib.SList<ICal.Component> icalcomps, ECal.OperationFlags opflags, out GLib.SList<string>? out_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool create_objects_sync (GLib.SList<ICal.Component> icalcomps, ECal.OperationFlags opflags, out GLib.SList<string> out_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool discard_alarm (string uid, string? rid, string auid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool discard_alarm_sync (string uid, string? rid, string auid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static GLib.Error error_create (ECal.ClientError code, string? custom_msg);
@@ -1115,6 +1115,9 @@ namespace ECal {
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_TASK_DATE_ONLY")]
 	[Version (since = "3.24")]
 	public const string STATIC_CAPABILITY_TASK_DATE_ONLY;
+	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_TASK_ESTIMATED_DURATION")]
+	[Version (since = "3.44")]
+	public const string STATIC_CAPABILITY_TASK_ESTIMATED_DURATION;
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_TASK_HANDLE_RECUR")]
 	[Version (since = "3.34")]
 	public const string STATIC_CAPABILITY_TASK_HANDLE_RECUR;

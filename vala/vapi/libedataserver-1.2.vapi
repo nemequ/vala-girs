@@ -1210,6 +1210,16 @@ namespace E {
 		public string location { get; set construct; }
 		public E.SourceWeatherUnits units { get; set construct; }
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", lower_case_csuffix = "source_webdav_notes", type_id = "e_source_webdav_notes_get_type ()")]
+	[Version (since = "3.44")]
+	public class SourceWebDAVNotes : E.SourceExtension {
+		[CCode (has_construct_function = false)]
+		protected SourceWebDAVNotes ();
+		public string? dup_default_ext ();
+		public unowned string? get_default_ext ();
+		public void set_default_ext (string? default_ext);
+		public string default_ext { get; set construct; }
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_webdav_get_type ()")]
 	[Version (since = "3.6")]
 	public class SourceWebdav : E.SourceExtension {
@@ -1956,6 +1966,9 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_WEBDAV_BACKEND")]
 	[Version (since = "3.6")]
 	public const string SOURCE_EXTENSION_WEBDAV_BACKEND;
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_EXTENSION_WEBDAV_NOTES")]
+	[Version (since = "3.44")]
+	public const string SOURCE_EXTENSION_WEBDAV_NOTES;
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "E_SOURCE_PARAM_SETTING")]
 	[Version (since = "3.6")]
 	public const int SOURCE_PARAM_SETTING;

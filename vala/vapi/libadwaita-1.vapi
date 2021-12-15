@@ -133,34 +133,33 @@ namespace Adw {
 		public bool get_allow_long_swipes ();
 		public bool get_allow_mouse_drag ();
 		public bool get_allow_scroll_wheel ();
-		public uint get_animation_duration ();
 		public bool get_interactive ();
 		public uint get_n_pages ();
 		public unowned Gtk.Widget get_nth_page (uint n);
 		public double get_position ();
 		public uint get_reveal_duration ();
+		public Adw.SpringParams get_scroll_params ();
 		public uint get_spacing ();
 		public void insert (Gtk.Widget child, int position);
 		public void prepend (Gtk.Widget child);
 		public void remove (Gtk.Widget child);
 		public void reorder (Gtk.Widget child, int position);
-		public void scroll_to (Gtk.Widget widget);
-		public void scroll_to_full (Gtk.Widget widget, uint duration);
+		public void scroll_to (Gtk.Widget widget, bool animate);
 		public void set_allow_long_swipes (bool allow_long_swipes);
 		public void set_allow_mouse_drag (bool allow_mouse_drag);
 		public void set_allow_scroll_wheel (bool allow_scroll_wheel);
-		public void set_animation_duration (uint duration);
 		public void set_interactive (bool interactive);
 		public void set_reveal_duration (uint reveal_duration);
+		public void set_scroll_params (Adw.SpringParams @params);
 		public void set_spacing (uint spacing);
 		public bool allow_long_swipes { get; set; }
 		public bool allow_mouse_drag { get; set; }
 		public bool allow_scroll_wheel { get; set; }
-		public uint animation_duration { get; set; }
 		public bool interactive { get; set; }
 		public uint n_pages { get; }
 		public double position { get; }
 		public uint reveal_duration { get; set; }
+		public Adw.SpringParams scroll_params { owned get; set; }
 		public uint spacing { get; set; }
 		public signal void page_changed (uint index);
 	}
@@ -310,8 +309,8 @@ namespace Adw {
 		public bool get_folded ();
 		public bool get_locked ();
 		public bool get_modal ();
-		public uint get_reveal_duration ();
 		public bool get_reveal_flap ();
+		public Adw.SpringParams get_reveal_params ();
 		public double get_reveal_progress ();
 		public unowned Gtk.Widget? get_separator ();
 		public bool get_swipe_to_close ();
@@ -325,8 +324,8 @@ namespace Adw {
 		public void set_fold_threshold_policy (Adw.FoldThresholdPolicy policy);
 		public void set_locked (bool locked);
 		public void set_modal (bool modal);
-		public void set_reveal_duration (uint duration);
 		public void set_reveal_flap (bool reveal_flap);
+		public void set_reveal_params (Adw.SpringParams @params);
 		public void set_separator (Gtk.Widget? separator);
 		public void set_swipe_to_close (bool swipe_to_close);
 		public void set_swipe_to_open (bool swipe_to_open);
@@ -340,8 +339,8 @@ namespace Adw {
 		public bool folded { get; }
 		public bool locked { get; set; }
 		public bool modal { get; set; }
-		public uint reveal_duration { get; set; }
 		public bool reveal_flap { get; set; }
+		public Adw.SpringParams reveal_params { owned get; set; }
 		public double reveal_progress { get; }
 		public Gtk.Widget separator { get; set; }
 		public bool swipe_to_close { get; set; }
@@ -383,7 +382,7 @@ namespace Adw {
 		public bool get_can_navigate_forward ();
 		public bool get_can_unfold ();
 		public unowned Gtk.Widget? get_child_by_name (string name);
-		public uint get_child_transition_duration ();
+		public Adw.SpringParams get_child_transition_params ();
 		public bool get_child_transition_running ();
 		public Adw.FoldThresholdPolicy get_fold_threshold_policy ();
 		public bool get_folded ();
@@ -402,7 +401,7 @@ namespace Adw {
 		public void set_can_navigate_back (bool can_navigate_back);
 		public void set_can_navigate_forward (bool can_navigate_forward);
 		public void set_can_unfold (bool can_unfold);
-		public void set_child_transition_duration (uint duration);
+		public void set_child_transition_params (Adw.SpringParams @params);
 		public void set_fold_threshold_policy (Adw.FoldThresholdPolicy policy);
 		public void set_homogeneous (bool homogeneous);
 		public void set_mode_transition_duration (uint duration);
@@ -412,7 +411,7 @@ namespace Adw {
 		public bool can_navigate_back { get; set; }
 		public bool can_navigate_forward { get; set; }
 		public bool can_unfold { get; set; }
-		public uint child_transition_duration { get; set; }
+		public Adw.SpringParams child_transition_params { owned get; set; }
 		public bool child_transition_running { get; }
 		public Adw.FoldThresholdPolicy fold_threshold_policy { get; set; }
 		public bool folded { get; }
@@ -544,6 +543,49 @@ namespace Adw {
 		public signal void activate ();
 		public signal void clicked ();
 	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_spring_animation_get_type ()")]
+	[Version (since = "1.0")]
+	public class SpringAnimation : Adw.Animation {
+		[CCode (has_construct_function = false, type = "AdwAnimation*")]
+		public SpringAnimation (Gtk.Widget widget, double from, double to, owned Adw.SpringParams spring_params, owned Adw.AnimationTarget target);
+		public bool get_clamp ();
+		public double get_epsilon ();
+		public uint get_estimated_duration ();
+		public double get_initial_velocity ();
+		public unowned Adw.SpringParams get_spring_params ();
+		public double get_value_from ();
+		public double get_value_to ();
+		public double get_velocity ();
+		public void set_clamp (bool clamp);
+		public void set_epsilon (double epsilon);
+		public void set_initial_velocity (double velocity);
+		public void set_spring_params (Adw.SpringParams spring_params);
+		public void set_value_from (double value);
+		public void set_value_to (double value);
+		public bool clamp { get; set; }
+		public double epsilon { get; set; }
+		public uint estimated_duration { get; }
+		public double initial_velocity { get; set; }
+		public Adw.SpringParams spring_params { get; set construct; }
+		public double value_from { get; set construct; }
+		public double value_to { get; set construct; }
+		public double velocity { get; }
+	}
+	[CCode (cheader_filename = "adwaita.h", ref_function = "adw_spring_params_ref", type_id = "adw_spring_params_get_type ()", unref_function = "adw_spring_params_unref")]
+	[Compact]
+	[Version (since = "1.0")]
+	public class SpringParams {
+		[CCode (has_construct_function = false)]
+		public SpringParams (double damping_ratio, double mass, double stiffness);
+		[CCode (has_construct_function = false)]
+		public SpringParams.full (double damping, double mass, double stiffness);
+		public double get_damping ();
+		public double get_damping_ratio ();
+		public double get_mass ();
+		public double get_stiffness ();
+		public Adw.SpringParams @ref ();
+		public void unref ();
+	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_squeezer_get_type ()")]
 	[Version (since = "1.0")]
 	public sealed class Squeezer : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Orientable {
@@ -659,7 +701,7 @@ namespace Adw {
 		public bool reversed { get; set; }
 		public Adw.Swipeable swipeable { get; construct; }
 		public signal void begin_swipe ();
-		public signal void end_swipe (uint duration, double to);
+		public signal void end_swipe (double velocity, double to);
 		public signal void prepare (Adw.NavigationDirection direction);
 		public signal void update_swipe (double progress);
 	}
@@ -1114,9 +1156,11 @@ namespace Adw {
 		NARROW,
 		WIDE
 	}
-	[CCode (cheader_filename = "adwaita.h", instance_pos = 0.9)]
+	[CCode (cheader_filename = "adwaita.h", instance_pos = 1.9)]
 	[Version (since = "1.0")]
 	public delegate void AnimationTargetFunc (double value);
+	[CCode (cheader_filename = "adwaita.h", cname = "ADW_DURATION_INFINITE")]
+	public const uint DURATION_INFINITE;
 	[CCode (cheader_filename = "adwaita.h", cname = "ADW_MAJOR_VERSION")]
 	public const int MAJOR_VERSION;
 	[CCode (cheader_filename = "adwaita.h", cname = "ADW_MICRO_VERSION")]

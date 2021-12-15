@@ -286,7 +286,7 @@ namespace Camel {
 		[Version (since = "3.24")]
 		public Camel.TransferEncoding get_encoding ();
 		public virtual string get_mime_type ();
-		public virtual unowned Camel.ContentType get_mime_type_field ();
+		public virtual unowned Camel.ContentType? get_mime_type_field ();
 		public virtual bool is_offline ();
 		[Version (since = "3.24")]
 		public void set_encoding (Camel.TransferEncoding encoding);
@@ -917,8 +917,8 @@ namespace Camel {
 		[Version (since = "3.24")]
 		public virtual unowned Camel.NameValueArray get_headers ();
 		public virtual void remove_header (string name);
-		public virtual void set_content (Camel.DataWrapper content);
-		public virtual void set_header (string name, string value);
+		public virtual void set_content (Camel.DataWrapper? content);
+		public virtual void set_header (string name, string? value);
 		public Camel.DataWrapper content { get; set; }
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
@@ -1358,26 +1358,26 @@ namespace Camel {
 		[Version (since = "3.0")]
 		public virtual bool construct_from_parser_sync (Camel.MimeParser parser, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "2.30")]
-		public unowned Camel.ContentDisposition get_content_disposition ();
-		public unowned string get_content_id ();
-		public unowned GLib.List<string> get_content_languages ();
-		public unowned string get_content_location ();
-		public unowned string get_content_md5 ();
-		public unowned Camel.ContentType get_content_type ();
-		public unowned string get_description ();
-		public unowned string get_disposition ();
+		public unowned Camel.ContentDisposition? get_content_disposition ();
+		public unowned string? get_content_id ();
+		public unowned GLib.List<string>? get_content_languages ();
+		public unowned string? get_content_location ();
+		public unowned string? get_content_md5 ();
+		public unowned Camel.ContentType? get_content_type ();
+		public unowned string? get_description ();
+		public unowned string? get_disposition ();
 		public Camel.TransferEncoding get_encoding ();
-		public unowned string get_filename ();
+		public unowned string? get_filename ();
 		public void set_content ([CCode (array_length_cname = "length", array_length_pos = 1.5)] uint8[]? data, string? type);
-		public void set_content_id (string contentid);
-		public void set_content_languages (GLib.List<string> content_languages);
-		public void set_content_location (string location);
-		public void set_content_md5 (string md5sum);
-		public void set_content_type (string content_type);
+		public void set_content_id (string? contentid);
+		public void set_content_languages (owned GLib.List<string>? content_languages);
+		public void set_content_location (string? location);
+		public void set_content_md5 (string? md5sum);
+		public void set_content_type (string? content_type);
 		public void set_description (string description);
-		public void set_disposition (string disposition);
+		public void set_disposition (string? disposition);
 		public void set_encoding (Camel.TransferEncoding encoding);
-		public void set_filename (string filename);
+		public void set_filename (string? filename);
 		public string content_id { get; set; }
 		public string content_md5 { get; set; }
 		public string description { get; set; }

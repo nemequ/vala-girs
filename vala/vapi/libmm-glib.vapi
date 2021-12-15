@@ -80,6 +80,8 @@ namespace MM {
 		public int get_profile_id ();
 		[Version (since = "1.0")]
 		public MM.BearerProperties get_properties ();
+		[Version (since = "1.20")]
+		public bool get_reload_stats_supported ();
 		[Version (since = "1.6")]
 		public MM.BearerStats get_stats ();
 		[Version (since = "1.0")]
@@ -1641,6 +1643,8 @@ namespace MM {
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "1.12")]
 		public unowned string[] get_emergency_numbers ();
+		[Version (since = "1.20")]
+		public MM.SimEsimStatus get_esim_status ();
 		[Version (since = "1.0")]
 		public unowned string get_identifier ();
 		[Version (since = "1.0")]
@@ -1653,6 +1657,10 @@ namespace MM {
 		public unowned string get_path ();
 		[Version (since = "1.18")]
 		public GLib.List<MM.SimPreferredNetwork> get_preferred_networks ();
+		[Version (since = "1.20")]
+		public MM.SimRemovability get_removability ();
+		[Version (since = "1.20")]
+		public MM.SimType get_sim_type ();
 		[Version (since = "1.0")]
 		public async bool send_pin (string pin, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
@@ -1948,6 +1956,8 @@ namespace MM {
 		public abstract int profile_id { get; set; }
 		[NoAccessorMethod]
 		public abstract GLib.Variant properties { owned get; set; }
+		[NoAccessorMethod]
+		public abstract bool reload_stats_supported { get; set; }
 		[NoAccessorMethod]
 		public abstract GLib.Variant stats { owned get; set; }
 		[NoAccessorMethod]
@@ -2614,6 +2624,8 @@ namespace MM {
 		[NoAccessorMethod]
 		public abstract string[] emergency_numbers { owned get; set; }
 		[NoAccessorMethod]
+		public abstract uint esim_status { get; set; }
+		[NoAccessorMethod]
 		public abstract string imsi { owned get; set; }
 		[NoAccessorMethod]
 		public abstract string operator_identifier { owned get; set; }
@@ -2622,7 +2634,11 @@ namespace MM {
 		[NoAccessorMethod]
 		public abstract GLib.Variant preferred_networks { owned get; set; }
 		[NoAccessorMethod]
+		public abstract uint removability { get; set; }
+		[NoAccessorMethod]
 		public abstract string sim_identifier { owned get; set; }
+		[NoAccessorMethod]
+		public abstract uint sim_type { get; set; }
 		public virtual signal bool handle_change_pin (GLib.DBusMethodInvocation invocation, string arg_old_pin, string arg_new_pin);
 		public virtual signal bool handle_enable_pin (GLib.DBusMethodInvocation invocation, string arg_pin, bool arg_enabled);
 		public virtual signal bool handle_send_pin (GLib.DBusMethodInvocation invocation, string arg_pin);
@@ -3045,7 +3061,56 @@ namespace MM {
 		UTRAN_25,
 		UTRAN_26,
 		UTRAN_32,
-		ANY;
+		ANY,
+		NGRAN_1,
+		NGRAN_2,
+		NGRAN_3,
+		NGRAN_5,
+		NGRAN_7,
+		NGRAN_8,
+		NGRAN_12,
+		NGRAN_14,
+		NGRAN_18,
+		NGRAN_20,
+		NGRAN_25,
+		NGRAN_28,
+		NGRAN_29,
+		NGRAN_30,
+		NGRAN_34,
+		NGRAN_38,
+		NGRAN_39,
+		NGRAN_40,
+		NGRAN_41,
+		NGRAN_48,
+		NGRAN_50,
+		NGRAN_51,
+		NGRAN_65,
+		NGRAN_66,
+		NGRAN_70,
+		NGRAN_71,
+		NGRAN_74,
+		NGRAN_75,
+		NGRAN_76,
+		NGRAN_77,
+		NGRAN_78,
+		NGRAN_79,
+		NGRAN_80,
+		NGRAN_81,
+		NGRAN_82,
+		NGRAN_83,
+		NGRAN_84,
+		NGRAN_86,
+		NGRAN_89,
+		NGRAN_90,
+		NGRAN_91,
+		NGRAN_92,
+		NGRAN_93,
+		NGRAN_94,
+		NGRAN_95,
+		NGRAN_257,
+		NGRAN_258,
+		NGRAN_260,
+		NGRAN_261;
 		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_CAPABILITY_", type_id = "mm_modem_capability_get_type ()")]
@@ -3259,6 +3324,27 @@ namespace MM {
 		NETWORK_INITIATED_PRL_UPDATE,
 		DEVICE_INITIATED_PRL_UPDATE,
 		DEVICE_INITIATED_HANDS_FREE_ACTIVATION;
+		public unowned string get_string ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SIM_ESIM_STATUS_", type_id = "mm_sim_esim_status_get_type ()")]
+	public enum SimEsimStatus {
+		UNKNOWN,
+		NO_PROFILES,
+		WITH_PROFILES;
+		public unowned string get_string ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SIM_REMOVABILITY_", type_id = "mm_sim_removability_get_type ()")]
+	public enum SimRemovability {
+		UNKNOWN,
+		REMOVABLE,
+		NOT_REMOVABLE;
+		public unowned string get_string ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SIM_TYPE_", type_id = "mm_sim_type_get_type ()")]
+	public enum SimType {
+		UNKNOWN,
+		PHYSICAL,
+		ESIM;
 		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SMS_CDMA_SERVICE_CATEGORY_", type_id = "mm_sms_cdma_service_category_get_type ()")]
@@ -3928,6 +4014,8 @@ namespace MM {
 	public const string BEARER_PROPERTY_PROFILEID;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_PROPERTY_PROPERTIES")]
 	public const string BEARER_PROPERTY_PROPERTIES;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_PROPERTY_RELOADSTATSSUPPORTED")]
+	public const string BEARER_PROPERTY_RELOADSTATSSUPPORTED;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_PROPERTY_STATS")]
 	public const string BEARER_PROPERTY_STATS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_BEARER_PROPERTY_SUSPENDED")]
@@ -4367,6 +4455,8 @@ namespace MM {
 	public const string SIM_PROPERTY_EID;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_EMERGENCYNUMBERS")]
 	public const string SIM_PROPERTY_EMERGENCYNUMBERS;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_ESIMSTATUS")]
+	public const string SIM_PROPERTY_ESIMSTATUS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_IMSI")]
 	public const string SIM_PROPERTY_IMSI;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_OPERATORIDENTIFIER")]
@@ -4375,8 +4465,12 @@ namespace MM {
 	public const string SIM_PROPERTY_OPERATORNAME;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_PREFERREDNETWORKS")]
 	public const string SIM_PROPERTY_PREFERREDNETWORKS;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_REMOVABILITY")]
+	public const string SIM_PROPERTY_REMOVABILITY;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_SIMIDENTIFIER")]
 	public const string SIM_PROPERTY_SIMIDENTIFIER;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SIM_PROPERTY_SIMTYPE")]
+	public const string SIM_PROPERTY_SIMTYPE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SMS_METHOD_SEND")]
 	public const string SMS_METHOD_SEND;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_SMS_METHOD_STORE")]
@@ -4641,6 +4735,15 @@ namespace MM {
 	[CCode (cheader_filename = "libmm-glib.h")]
 	[Version (replacement = "SerialError.quark")]
 	public static GLib.Quark serial_error_quark ();
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "SimEsimStatus.get_string")]
+	public static unowned string sim_esim_status_get_string (MM.SimEsimStatus val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "SimRemovability.get_string")]
+	public static unowned string sim_removability_get_string (MM.SimRemovability val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "SimType.get_string")]
+	public static unowned string sim_type_get_string (MM.SimType val);
 	[CCode (cheader_filename = "libmm-glib.h")]
 	[Version (replacement = "SmsCdmaServiceCategory.get_string")]
 	public static unowned string sms_cdma_service_category_get_string (MM.SmsCdmaServiceCategory val);
