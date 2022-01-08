@@ -120,7 +120,11 @@ namespace Vte {
 		[Version (since = "0.68")]
 		public Vte.Align get_xalign ();
 		[Version (since = "0.68")]
+		public bool get_xfill ();
+		[Version (since = "0.68")]
 		public Vte.Align get_yalign ();
+		[Version (since = "0.68")]
+		public bool get_yfill ();
 		[Version (since = "0.50")]
 		public string? hyperlink_check_event (Gdk.Event event);
 		[Version (deprecated = true, deprecated_since = "0.46")]
@@ -215,7 +219,11 @@ namespace Vte {
 		[Version (since = "0.68")]
 		public void set_xalign (Vte.Align align);
 		[Version (since = "0.68")]
+		public void set_xfill (bool fill);
+		[Version (since = "0.68")]
 		public void set_yalign (Vte.Align align);
+		[Version (since = "0.68")]
+		public void set_yfill (bool fill);
 		[Version (since = "0.48")]
 		public void spawn_async (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable);
 		[Version (deprecated = true, deprecated_since = "0.48")]
@@ -282,7 +290,11 @@ namespace Vte {
 		[Version (since = "0.68")]
 		public Vte.Align xalign { get; set; }
 		[Version (since = "0.68")]
+		public bool xfill { get; set; }
+		[Version (since = "0.68")]
 		public Vte.Align yalign { get; set; }
+		[Version (since = "0.68")]
+		public bool yfill { get; set; }
 		public virtual signal void bell ();
 		public virtual signal void char_size_changed (uint char_width, uint char_height);
 		public virtual signal void child_exited (int status);
@@ -339,8 +351,7 @@ namespace Vte {
 	public enum Align {
 		START,
 		CENTER,
-		END,
-		START_FILL
+		END
 	}
 	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_CURSOR_BLINK_", type_id = "vte_cursor_blink_mode_get_type ()")]
 	public enum CursorBlinkMode {

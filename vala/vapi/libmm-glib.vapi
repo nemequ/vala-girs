@@ -9,12 +9,16 @@ namespace MM {
 		public @3gppProfile ();
 		public bool consume_string (string key, string value) throws GLib.Error;
 		public bool consume_variant (string key, GLib.Variant value) throws GLib.Error;
+		[Version (since = "1.20")]
+		public MM.BearerAccessTypePreference get_access_type_preference ();
 		[Version (since = "1.18")]
 		public MM.BearerAllowedAuth get_allowed_auth ();
 		[Version (since = "1.18")]
 		public unowned string get_apn ();
 		[Version (since = "1.18")]
 		public MM.BearerApnType get_apn_type ();
+		[Version (since = "1.20")]
+		public bool get_enabled ();
 		[Version (since = "1.18")]
 		public MM.BearerIpFamily get_ip_type ();
 		[Version (since = "1.18")]
@@ -23,14 +27,22 @@ namespace MM {
 		public int get_profile_id ();
 		[Version (since = "1.20")]
 		public unowned string get_profile_name ();
+		[Version (since = "1.20")]
+		public MM.BearerProfileSource get_profile_source ();
+		[Version (since = "1.20")]
+		public MM.BearerRoamingAllowance get_roaming_allowance ();
 		[Version (since = "1.18")]
 		public unowned string get_user ();
+		[Version (since = "1.20")]
+		public void set_access_type_preference (MM.BearerAccessTypePreference access_type_preference);
 		[Version (since = "1.18")]
 		public void set_allowed_auth (MM.BearerAllowedAuth allowed_auth);
 		[Version (since = "1.18")]
 		public void set_apn (string apn);
 		[Version (since = "1.18")]
 		public void set_apn_type (MM.BearerApnType apn_type);
+		[Version (since = "1.20")]
+		public void set_enabled (bool enabled);
 		[Version (since = "1.18")]
 		public void set_ip_type (MM.BearerIpFamily ip_type);
 		[Version (since = "1.18")]
@@ -39,6 +51,10 @@ namespace MM {
 		public void set_profile_id (int profile_id);
 		[Version (since = "1.20")]
 		public void set_profile_name (string profile_name);
+		[Version (since = "1.20")]
+		public void set_profile_source (MM.BearerProfileSource profile_source);
+		[Version (since = "1.20")]
+		public void set_roaming_allowance (MM.BearerRoamingAllowance roaming_allowance);
 		[Version (since = "1.18")]
 		public void set_user (string user);
 	}
@@ -120,6 +136,8 @@ namespace MM {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public BearerProperties ();
+		[Version (since = "1.20")]
+		public MM.BearerAccessTypePreference get_access_type_preference ();
 		[Version (since = "1.0")]
 		public bool get_allow_roaming ();
 		[Version (since = "1.0")]
@@ -142,8 +160,12 @@ namespace MM {
 		public unowned string get_profile_name ();
 		[Version (since = "1.0")]
 		public MM.ModemCdmaRmProtocol get_rm_protocol ();
+		[Version (since = "1.20")]
+		public MM.BearerRoamingAllowance get_roaming_allowance ();
 		[Version (since = "1.0")]
 		public unowned string get_user ();
+		[Version (since = "1.20")]
+		public void set_access_type_preference (MM.BearerAccessTypePreference access_type_preference);
 		[Version (since = "1.0")]
 		public void set_allow_roaming (bool allow_roaming);
 		[Version (since = "1.0")]
@@ -166,6 +188,8 @@ namespace MM {
 		public void set_profile_name (string profile_name);
 		[Version (since = "1.0")]
 		public void set_rm_protocol (MM.ModemCdmaRmProtocol protocol);
+		[Version (since = "1.20")]
+		public void set_roaming_allowance (MM.BearerRoamingAllowance roaming_allowance);
 		[Version (since = "1.0")]
 		public void set_user (string user);
 	}
@@ -1016,6 +1040,8 @@ namespace MM {
 		public async bool disable_facility_lock (MM.Modem3gppFacility facility, string control_key, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.20")]
 		public bool disable_facility_lock_sync (MM.Modem3gppFacility facility, string control_key, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (replacement = "Modem3gppDrxCycle.get_string")]
+		public static unowned string drx_cycle_get_string (MM.Modem3gppDrxCycle val);
 		[Version (since = "1.0")]
 		public string dup_imei ();
 		[Version (since = "1.10")]
@@ -1042,6 +1068,8 @@ namespace MM {
 		public MM.BearerProperties get_initial_eps_bearer_settings ();
 		[Version (since = "1.10")]
 		public MM.Bearer get_initial_eps_bearer_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.20")]
+		public MM.Nr5gRegistrationSettings get_nr5g_registration_settings ();
 		[Version (since = "1.0")]
 		public unowned string get_operator_code ();
 		[Version (since = "1.0")]
@@ -1056,10 +1084,14 @@ namespace MM {
 		public MM.Modem3gppRegistrationState get_registration_state ();
 		[Version (deprecated = true, deprecated_since = "1.10.0.", since = "1.0")]
 		public MM.Modem3gppSubscriptionState get_subscription_state ();
+		[Version (replacement = "Modem3gppMicoMode.get_string")]
+		public static unowned string mico_mode_get_string (MM.Modem3gppMicoMode val);
 		[Version (replacement = "Modem3gppPacketServiceState.get_string")]
 		public static unowned string packet_service_state_get_string (MM.Modem3gppPacketServiceState val);
 		[Version (since = "1.10")]
 		public unowned MM.BearerProperties peek_initial_eps_bearer_settings ();
+		[Version (since = "1.20")]
+		public unowned MM.Nr5gRegistrationSettings peek_nr5g_registration_settings ();
 		[Version (since = "1.0")]
 		public async bool register (string network_id, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
@@ -1078,6 +1110,10 @@ namespace MM {
 		public async bool set_initial_eps_bearer_settings (MM.BearerProperties config, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.10")]
 		public bool set_initial_eps_bearer_settings_sync (MM.BearerProperties config, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.20")]
+		public async bool set_nr5g_registration_settings (MM.Nr5gRegistrationSettings settings, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.20")]
+		public bool set_nr5g_registration_settings_sync (MM.Nr5gRegistrationSettings settings, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.20")]
 		public async bool set_packet_service_state (MM.Modem3gppPacketServiceState state, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.20")]
@@ -1111,8 +1147,12 @@ namespace MM {
 		public async bool @delete (MM.3gppProfile profile, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.18")]
 		public bool delete_sync (MM.3gppProfile profile, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.20")]
+		public string dup_index_field ();
 		[Version (since = "1.18")]
 		public string dup_path ();
+		[Version (since = "1.20")]
+		public unowned string get_index_field ();
 		[Version (since = "1.18")]
 		public unowned string get_path ();
 		[Version (since = "1.18")]
@@ -1519,6 +1559,20 @@ namespace MM {
 		public int32 get_leap_seconds ();
 		[Version (since = "1.0")]
 		public int32 get_offset ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_nr5g_registration_settings_get_type ()")]
+	public class Nr5gRegistrationSettings : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.20")]
+		public Nr5gRegistrationSettings ();
+		[Version (since = "1.20")]
+		public MM.Modem3gppDrxCycle get_drx_cycle ();
+		[Version (since = "1.20")]
+		public MM.Modem3gppMicoMode get_mico_mode ();
+		[Version (since = "1.20")]
+		public void set_drx_cycle (MM.Modem3gppDrxCycle drx_cycle);
+		[Version (since = "1.20")]
+		public void set_mico_mode (MM.Modem3gppMicoMode mico_mode);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_object_get_type ()")]
 	public class Object : MM.GdbusObjectProxy, GLib.DBusObject, MM.GdbusObject {
@@ -2161,6 +2215,8 @@ namespace MM {
 		public bool call_set_eps_ue_mode_operation_sync (uint arg_mode, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_set_initial_eps_bearer_settings (GLib.Variant arg_settings, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_set_initial_eps_bearer_settings_sync (GLib.Variant arg_settings, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_set_nr5g_registration_settings (GLib.Variant arg_properties, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_set_nr5g_registration_settings_sync (GLib.Variant arg_properties, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_set_packet_service_state (uint arg_state, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_set_packet_service_state_sync (uint arg_state, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void complete_disable_facility_lock (owned GLib.DBusMethodInvocation invocation);
@@ -2168,6 +2224,7 @@ namespace MM {
 		public void complete_scan (owned GLib.DBusMethodInvocation invocation, GLib.Variant results);
 		public void complete_set_eps_ue_mode_operation (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_initial_eps_bearer_settings (owned GLib.DBusMethodInvocation invocation);
+		public void complete_set_nr5g_registration_settings (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_packet_service_state (owned GLib.DBusMethodInvocation invocation);
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
@@ -2181,6 +2238,8 @@ namespace MM {
 		public abstract string initial_eps_bearer { owned get; set; }
 		[NoAccessorMethod]
 		public abstract GLib.Variant initial_eps_bearer_settings { owned get; set; }
+		[NoAccessorMethod]
+		public abstract GLib.Variant nr5g_registration_settings { owned get; set; }
 		[NoAccessorMethod]
 		public abstract string operator_code { owned get; set; }
 		[NoAccessorMethod]
@@ -2198,6 +2257,7 @@ namespace MM {
 		public virtual signal bool handle_scan (GLib.DBusMethodInvocation invocation);
 		public virtual signal bool handle_set_eps_ue_mode_operation (GLib.DBusMethodInvocation invocation, uint arg_mode);
 		public virtual signal bool handle_set_initial_eps_bearer_settings (GLib.DBusMethodInvocation invocation, GLib.Variant arg_settings);
+		public virtual signal bool handle_set_nr5g_registration_settings (GLib.DBusMethodInvocation invocation, GLib.Variant arg_properties);
 		public virtual signal bool handle_set_packet_service_state (GLib.DBusMethodInvocation invocation, uint arg_state);
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MmGdbusModem3gppProfileManager", type_id = "mm_gdbus_modem3gpp_profile_manager_get_type ()")]
@@ -2216,6 +2276,8 @@ namespace MM {
 		public void emit_updated ();
 		public static unowned GLib.DBusInterfaceInfo interface_info ();
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
+		[NoAccessorMethod]
+		public abstract string index_field { owned get; set; }
 		public virtual signal bool handle_delete (GLib.DBusMethodInvocation invocation, GLib.Variant arg_properties);
 		public virtual signal bool handle_list (GLib.DBusMethodInvocation invocation);
 		public virtual signal bool handle_set (GLib.DBusMethodInvocation invocation, GLib.Variant arg_requested_properties);
@@ -2717,7 +2779,19 @@ namespace MM {
 		NO_PROFILE_NAME,
 		NO_AUTH,
 		NO_APN_TYPE,
-		NO_IP_TYPE
+		NO_IP_TYPE,
+		NO_ACCESS_TYPE_PREFERENCE,
+		NO_ENABLED,
+		NO_ROAMING_ALLOWANCE,
+		NO_PROFILE_SOURCE
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_ACCESS_TYPE_PREFERENCE_", type_id = "mm_bearer_access_type_preference_get_type ()")]
+	public enum BearerAccessTypePreference {
+		NONE,
+		@3GPP_ONLY,
+		@3GPP_PREFERRED,
+		NON_3GPP_ONLY;
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_ALLOWED_AUTH_", type_id = "mm_bearer_allowed_auth_get_type ()")]
 	[Flags]
@@ -2777,6 +2851,16 @@ namespace MM {
 		REQUIRED;
 		public unowned string get_string ();
 	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_PROFILE_SOURCE_", type_id = "mm_bearer_profile_source_get_type ()")]
+	public enum BearerProfileSource {
+		UNKNOWN,
+		ADMIN,
+		USER,
+		OPERATOR,
+		MODEM,
+		DEVICE;
+		public unowned string get_string ();
+	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_PROPERTIES_CMP_FLAGS_", has_type_id = false)]
 	[Flags]
 	public enum BearerPropertiesCmpFlags {
@@ -2787,7 +2871,18 @@ namespace MM {
 		NO_RM_PROTOCOL,
 		NO_APN_TYPE,
 		NO_PROFILE_ID,
-		NO_PROFILE_NAME
+		NO_PROFILE_NAME,
+		NO_ACCESS_TYPE_PREFERENCE,
+		NO_ROAMING_ALLOWANCE
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_ROAMING_ALLOWANCE_", type_id = "mm_bearer_roaming_allowance_get_type ()")]
+	[Flags]
+	public enum BearerRoamingAllowance {
+		NONE,
+		HOME,
+		PARTNER,
+		NON_PARTNER;
+		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_BEARER_TYPE_", type_id = "mm_bearer_type_get_type ()")]
 	public enum BearerType {
@@ -2837,6 +2932,17 @@ namespace MM {
 		GOBI;
 		public unowned string get_string ();
 	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_DRX_CYCLE_", type_id = "mm_modem_3gpp_drx_cycle_get_type ()")]
+	public enum Modem3gppDrxCycle {
+		UNKNOWN,
+		UNSUPPORTED,
+		@32,
+		@64,
+		@128,
+		@256;
+		[CCode (cname = "mm_modem_3gpp_drx_cycle_get_string")]
+		public unowned string get_string ();
+	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_EPS_UE_MODE_OPERATION_", type_id = "mm_modem_3gpp_eps_ue_mode_operation_get_type ()")]
 	public enum Modem3gppEpsUeModeOperation {
 		UNKNOWN,
@@ -2861,6 +2967,15 @@ namespace MM {
 		CORP_PERS;
 		[CCode (cname = "mm_modem_3gpp_facility_build_string_from_mask")]
 		public string build_string_from_mask ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_MICO_MODE_", type_id = "mm_modem_3gpp_mico_mode_get_type ()")]
+	public enum Modem3gppMicoMode {
+		UNKNOWN,
+		UNSUPPORTED,
+		DISABLED,
+		ENABLED;
+		[CCode (cname = "mm_modem_3gpp_mico_mode_get_string")]
+		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_3GPP_NETWORK_AVAILABILITY_", type_id = "mm_modem_3gpp_network_availability_get_type ()")]
 	public enum Modem3gppNetworkAvailability {
@@ -4199,6 +4314,8 @@ namespace MM {
 	public const string MODEM_MODEM3GPP_METHOD_SETEPSUEMODEOPERATION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_SETINITIALEPSBEARERSETTINGS")]
 	public const string MODEM_MODEM3GPP_METHOD_SETINITIALEPSBEARERSETTINGS;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_SETNR5GREGISTRATIONSETTINGS")]
+	public const string MODEM_MODEM3GPP_METHOD_SETNR5GREGISTRATIONSETTINGS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_SETPACKETSERVICESTATE")]
 	public const string MODEM_MODEM3GPP_METHOD_SETPACKETSERVICESTATE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROFILEMANAGER_METHOD_DELETE")]
@@ -4207,6 +4324,8 @@ namespace MM {
 	public const string MODEM_MODEM3GPP_PROFILEMANAGER_METHOD_LIST;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROFILEMANAGER_METHOD_SET")]
 	public const string MODEM_MODEM3GPP_PROFILEMANAGER_METHOD_SET;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROFILEMANAGER_PROPERTY_INDEXFIELD")]
+	public const string MODEM_MODEM3GPP_PROFILEMANAGER_PROPERTY_INDEXFIELD;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROFILEMANAGER_SIGNAL_UPDATED")]
 	public const string MODEM_MODEM3GPP_PROFILEMANAGER_SIGNAL_UPDATED;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_ENABLEDFACILITYLOCKS")]
@@ -4219,6 +4338,8 @@ namespace MM {
 	public const string MODEM_MODEM3GPP_PROPERTY_INITIALEPSBEARER;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_INITIALEPSBEARERSETTINGS")]
 	public const string MODEM_MODEM3GPP_PROPERTY_INITIALEPSBEARERSETTINGS;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_NR5GREGISTRATIONSETTINGS")]
+	public const string MODEM_MODEM3GPP_PROPERTY_NR5GREGISTRATIONSETTINGS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_OPERATORCODE")]
 	public const string MODEM_MODEM3GPP_PROPERTY_OPERATORCODE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_PROPERTY_OPERATORNAME")]
@@ -4511,6 +4632,9 @@ namespace MM {
 	[Version (since = "1.0")]
 	public const int UNLOCK_RETRIES_UNKNOWN;
 	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "BearerAccessTypePreference.get_string")]
+	public static unowned string bearer_access_type_preference_get_string (MM.BearerAccessTypePreference val);
+	[CCode (cheader_filename = "libmm-glib.h")]
 	[Version (replacement = "BearerAllowedAuth.build_string_from_mask")]
 	public static string bearer_allowed_auth_build_string_from_mask (MM.BearerAllowedAuth mask);
 	[CCode (cheader_filename = "libmm-glib.h")]
@@ -4525,6 +4649,12 @@ namespace MM {
 	[CCode (cheader_filename = "libmm-glib.h")]
 	[Version (replacement = "BearerMultiplexSupport.get_string")]
 	public static unowned string bearer_multiplex_support_get_string (MM.BearerMultiplexSupport val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "BearerProfileSource.get_string")]
+	public static unowned string bearer_profile_source_get_string (MM.BearerProfileSource val);
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "BearerRoamingAllowance.build_string_from_mask")]
+	public static string bearer_roaming_allowance_build_string_from_mask (MM.BearerRoamingAllowance mask);
 	[CCode (cheader_filename = "libmm-glib.h")]
 	[Version (replacement = "BearerType.get_string")]
 	public static unowned string bearer_type_get_string (MM.BearerType val);

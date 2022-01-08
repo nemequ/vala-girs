@@ -557,8 +557,12 @@ namespace Gda {
 		[Version (since = "6.0")]
 		public void append_view (Gda.DbView view);
 		public static GLib.Quark error_quark ();
+		[Version (since = "6.2")]
+		public unowned Gda.DbTable get_table (string catalog, string schema, string name);
 		[Version (since = "6.0")]
 		public unowned GLib.List<Gda.DbTable> get_tables ();
+		[Version (since = "6.0")]
+		public unowned Gda.DbView get_view (string catalog, string schema, string name);
 		[Version (since = "6.0")]
 		public unowned GLib.List<Gda.DbView> get_views ();
 		[Version (since = "6.0")]

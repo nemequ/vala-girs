@@ -21,6 +21,8 @@ namespace GUsb {
 		public GLib.GenericArray<GUsb.Device> get_devices ();
 		[Version (since = "0.2.11")]
 		public GUsb.ContextFlags get_flags ();
+		[Version (since = "0.3.10")]
+		public uint get_hotplug_poll_interval ();
 		[Version (since = "0.2.5")]
 		public unowned GLib.MainContext get_main_context ();
 		[Version (since = "0.1.0")]
@@ -29,6 +31,8 @@ namespace GUsb {
 		public void set_debug (GLib.LogLevelFlags flags);
 		[Version (since = "0.2.11")]
 		public void set_flags (GUsb.ContextFlags flags);
+		[Version (since = "0.3.10")]
+		public void set_hotplug_poll_interval (uint hotplug_poll_interval);
 		[Version (since = "0.2.5")]
 		public void set_main_context (GLib.MainContext main_ctx);
 		[Version (since = "0.2.9")]

@@ -1031,6 +1031,8 @@ namespace Soup {
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static unowned string tld_get_base_domain (string hostname) throws GLib.Error;
 	[CCode (cheader_filename = "libsoup/soup.h")]
+	public static GLib.Uri uri_copy (GLib.Uri uri, ...);
+	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static GLib.Bytes uri_decode_data_uri (string uri, out string? content_type);
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static bool uri_equal (GLib.Uri uri1, GLib.Uri uri2);

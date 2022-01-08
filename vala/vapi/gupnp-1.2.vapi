@@ -103,6 +103,7 @@ namespace GUPnP {
 		public ControlPoint (GUPnP.Context context, string target);
 		[CCode (has_construct_function = false)]
 		public ControlPoint.full (GUPnP.Context context, GUPnP.ResourceFactory factory, string target);
+		[Version (deprecated = true, deprecated_since = "1.4.1")]
 		public unowned GUPnP.Context get_context ();
 		public unowned GUPnP.ResourceFactory get_resource_factory ();
 		public unowned GLib.List<GUPnP.DeviceProxy> list_device_proxies ();
@@ -197,7 +198,9 @@ namespace GUPnP {
 		public RootDevice.full (GUPnP.Context context, GUPnP.ResourceFactory factory, GUPnP.XMLDoc description_doc, string description_path, string description_dir) throws GLib.Error;
 		public bool get_available ();
 		public unowned string get_description_dir ();
+		public unowned string get_description_document_name ();
 		public unowned string get_description_path ();
+		[Version (deprecated = true, deprecated_since = "1.4.2")]
 		public unowned string get_relative_location ();
 		[Version (since = "0.20.0")]
 		public unowned GSSDP.ResourceGroup get_ssdp_resource_group ();
@@ -205,7 +208,7 @@ namespace GUPnP {
 		public bool available { get; set; }
 		public string description_dir { get; construct; }
 		[NoAccessorMethod]
-		[Version (since = "0.14.0")]
+		[Version (deprecated = true, deprecated_since = "1.14.2", since = "0.14.0")]
 		public GUPnP.XMLDoc description_doc { construct; }
 		[Version (since = "0.13.0")]
 		public string description_path { get; construct; }
@@ -239,8 +242,10 @@ namespace GUPnP {
 		public void get_value (string argument, ref GLib.Value value);
 		[Version (since = "0.14.0")]
 		public GLib.List<GLib.Value?> get_values (GLib.List<string> arg_names, GLib.List<GLib.Type?> arg_types);
+		[Version (deprecated = true, deprecated_since = "1.4.2")]
 		public void @return ();
 		public void return_error (uint error_code, string error_description);
+		public void return_success ();
 		public void @set (...);
 		public void set_value (string argument, GLib.Value value);
 		[Version (since = "0.14.0")]
@@ -339,6 +344,8 @@ namespace GUPnP {
 		[Version (since = "1.2.0")]
 		public bool get_result_list (GLib.List<string> out_names, GLib.List<GLib.Type?> out_types, out GLib.List<GLib.Value?> out_values) throws GLib.Error;
 		public GUPnP.ServiceProxyAction @ref ();
+		[Version (since = "1.4.0")]
+		public bool @set (string key, GLib.Value value) throws GLib.Error;
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gupnp_service_state_variable_info_get_type ()")]
@@ -371,28 +378,27 @@ namespace GUPnP {
 	public class UUID {
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_context_filter_get_type ()")]
+	[Version (deprecated = true, deprecated_since = "1.4.0")]
 	public class WhiteList : GUPnP.ContextFilter {
 		[CCode (has_construct_function = false)]
 		protected WhiteList ();
-		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
+		[Version (since = "0.20.5")]
 		public bool add_entry (string entry);
-		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.8")]
+		[Version (since = "0.20.8")]
 		public void add_entryv ([CCode (array_length = false, array_null_terminated = true)] string[] entries);
-		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
+		[Version (since = "0.20.5")]
 		public bool check_context (GUPnP.Context context);
-		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
+		[Version (since = "0.20.5")]
 		public void clear ();
-		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
+		[Version (since = "0.20.5")]
 		public bool get_enabled ();
-		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
+		[Version (since = "0.20.5")]
 		public unowned GLib.List<string>? get_entries ();
-		[Version (deprecated = true, deprecated_since = "1.4.0")]
 		public bool is_empty ();
-		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
+		[Version (since = "0.20.5")]
 		public static GUPnP.WhiteList @new ();
-		[Version (deprecated = true, deprecated_since = "1.4.0", since = "0.20.5")]
+		[Version (since = "0.20.5")]
 		public bool remove_entry (string entry);
-		[Version (deprecated = true, deprecated_since = "1.4.0")]
 		public void set_enabled (bool enable);
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_xml_doc_get_type ()")]

@@ -30,7 +30,7 @@ namespace Adw {
 	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_animation_get_type ()")]
 	[Version (since = "1.0")]
-	public class Animation : GLib.Object {
+	public abstract class Animation : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Animation ();
 		public Adw.AnimationState get_state ();

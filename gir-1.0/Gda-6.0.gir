@@ -13543,12 +13543,14 @@ to uniquely identify a single row in a table when creating modification statemen
       <method name="compare" c:identifier="gda_db_base_compare" version="6.0">
         <doc xml:space="preserve"
              filename="../libgda/gda-db-base.c"
-             line="319">Compares two objects similar to g_strcmp().</doc>
+             line="319">Compares two objects similar to g_strcmp(). In general, catalog and schema can be %NULL. In this case
+those pairs are ignored. If we represent a full name as catalog.schema.name then two objects
+null.null.customer and main.main.customer are identical.</doc>
         <source-position filename="../libgda/gda-db-base.h" line="58"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../libgda/gda-db-base.c"
-               line="326">0 if catalog, schema and name are the same</doc>
+               line="328">0 if two objects are identical or -1 or 1 otherwise.</doc>
           <type name="gint" c:type="gint"/>
         </return-value>
         <parameters>
@@ -14029,7 +14031,7 @@ set. If @catalog is %NULL @schema may not be %NULL but if @schema is
               version="6.0">
         <doc xml:space="preserve"
              filename="../libgda/gda-db-catalog.c"
-             line="774">This method append @table to the total list of all tables stored in @self. This method increase
+             line="876">This method append @table to the total list of all tables stored in @self. This method increase
 reference count for @table.</doc>
         <source-position filename="../libgda/gda-db-catalog.h" line="90"/>
         <return-value transfer-ownership="none">
@@ -14039,13 +14041,13 @@ reference count for @table.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libgda/gda-db-catalog.c"
-                 line="776">a #GdaDbCatalog instance</doc>
+                 line="878">a #GdaDbCatalog instance</doc>
             <type name="DbCatalog" c:type="GdaDbCatalog*"/>
           </instance-parameter>
           <parameter name="table" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libgda/gda-db-catalog.c"
-                 line="777">table to append</doc>
+                 line="879">table to append</doc>
             <type name="DbTable" c:type="GdaDbTable*"/>
           </parameter>
         </parameters>
@@ -14055,7 +14057,7 @@ reference count for @table.</doc>
               version="6.0">
         <doc xml:space="preserve"
              filename="../libgda/gda-db-catalog.c"
-             line="795">This method append @view to the total list of all views stored in @self. This method increase
+             line="897">This method append @view to the total list of all views stored in @self. This method increase
 reference count for @view.</doc>
         <source-position filename="../libgda/gda-db-catalog.h" line="93"/>
         <return-value transfer-ownership="none">
@@ -14065,14 +14067,52 @@ reference count for @view.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libgda/gda-db-catalog.c"
-                 line="797">a #GdaDbCatalog instance</doc>
+                 line="899">a #GdaDbCatalog instance</doc>
             <type name="DbCatalog" c:type="GdaDbCatalog*"/>
           </instance-parameter>
           <parameter name="view" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libgda/gda-db-catalog.c"
-                 line="798">view to append</doc>
+                 line="900">view to append</doc>
             <type name="DbView" c:type="GdaDbView*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_table"
+              c:identifier="gda_db_catalog_get_table"
+              version="6.2">
+        <doc xml:space="preserve"
+             filename="../libgda/gda-db-catalog.c"
+             line="553">Convenient function to get a table based on @name. The coller is responsible
+for calling gda_db_catalog_parse_cnc() before calling this function.</doc>
+        <source-position filename="../libgda/gda-db-catalog.h" line="109"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../libgda/gda-db-catalog.c"
+               line="563">table as #GdaDbTable or %NULL if the table is not found. The
+returned pointer should not be freed and belongs to the @self.</doc>
+          <type name="DbTable" c:type="GdaDbTable*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../libgda/gda-db-catalog.c"
+                 line="555">a #GdaDbCatalog object
+@catalog (nullable): catalog name or %NULL
+@schema (nullable): schema name or %NULL</doc>
+            <type name="DbCatalog" c:type="GdaDbCatalog*"/>
+          </instance-parameter>
+          <parameter name="catalog" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="schema" transfer-ownership="none">
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../libgda/gda-db-catalog.c"
+                 line="558">table name</doc>
+            <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
       </method>
@@ -14095,6 +14135,78 @@ reference count for @view.</doc>
                  line="521">a #GdaDbCatalog object</doc>
             <type name="DbCatalog" c:type="GdaDbCatalog*"/>
           </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_view"
+              c:identifier="gda_db_catalog_get_view"
+              version="6.0">
+        <doc xml:space="preserve"
+             filename="../libgda/gda-db-catalog.c"
+             line="602">Convenient function to get a view based on name. The coller is responsible
+for calling gda_db_catalog_parse_cnc() before calling this function. This
+code is equivalent to the following code:
+
+|[&lt;!-- language="C" --&gt;
+ GdaDbBase *iobj;
+ GList *it;
+
+ GdaDbCatalogPrivate *priv = gda_db_catalog_get_instance_private (self);
+
+ if (gda_db_catalog_parse_cnc (self, error))
+   return NULL;
+
+ iobj = gda_db_base_new ();
+ gda_db_base_set_names (iobj, catalog, schema, name);
+
+ for (it = priv-&gt;mp_views; it; it = it-&gt;next)
+   {
+     if (!gda_db_base_compare (iobj, GDA_DB_BASE (it-&gt;data)))
+       {
+         if (iobj)
+           g_object_unref (iobj);
+
+         return GDA_DB_VIEW (it-&gt;data);
+       }
+   }
+
+ if (iobj)
+   g_object_unref (iobj);
+
+ return NULL;
+]|</doc>
+        <source-position filename="../libgda/gda-db-catalog.h" line="114"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="../libgda/gda-db-catalog.c"
+               line="641">View as #GdaDbView or %NULL if the view is not found. The returned
+pointer should not be freed and belongs to @self</doc>
+          <type name="DbView" c:type="GdaDbView*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../libgda/gda-db-catalog.c"
+                 line="604">a #GdaDbCatalog object</doc>
+            <type name="DbCatalog" c:type="GdaDbCatalog*"/>
+          </instance-parameter>
+          <parameter name="catalog" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../libgda/gda-db-catalog.c"
+                 line="605">a catalog name or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="schema" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../libgda/gda-db-catalog.c"
+                 line="606">a schema name or %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="name" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="../libgda/gda-db-catalog.c"
+                 line="607">view name. Can't be %NULL</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
         </parameters>
       </method>
       <method name="get_views"
@@ -14124,21 +14236,21 @@ reference count for @view.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../libgda/gda-db-catalog.c"
-             line="698">Parse internal cnc to populate @self object. This method should be called every time after
+             line="784">Parse internal cnc to populate @self object. This method should be called every time after
 database was modified or @self was just created using gda_connection_create_db_catalog(). The
 method will return %FALSE if no internal #GdaConnection available.</doc>
         <source-position filename="../libgda/gda-db-catalog.h" line="87"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../libgda/gda-db-catalog.c"
-               line="707">Returns %TRUE if succeeded, %FALSE otherwise.</doc>
+               line="793">Returns %TRUE if succeeded, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libgda/gda-db-catalog.c"
-                 line="700">a #GdaDbCatalog instance</doc>
+                 line="786">a #GdaDbCatalog instance</doc>
             <type name="DbCatalog" c:type="GdaDbCatalog*"/>
           </instance-parameter>
         </parameters>
@@ -14149,7 +14261,7 @@ method will return %FALSE if no internal #GdaConnection available.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../libgda/gda-db-catalog.c"
-             line="1016">For detailed description see gda_db_catalog_parse_file_from_path()</doc>
+             line="1118">For detailed description see gda_db_catalog_parse_file_from_path()</doc>
         <source-position filename="../libgda/gda-db-catalog.h" line="80"/>
         <return-value transfer-ownership="none">
           <type name="gboolean" c:type="gboolean"/>
@@ -14158,13 +14270,13 @@ method will return %FALSE if no internal #GdaConnection available.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libgda/gda-db-catalog.c"
-                 line="1018">an instance of #GdaDbCatalog</doc>
+                 line="1120">an instance of #GdaDbCatalog</doc>
             <type name="DbCatalog" c:type="GdaDbCatalog*"/>
           </instance-parameter>
           <parameter name="xmlfile" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libgda/gda-db-catalog.c"
-                 line="1019">xml file as #GFile instance</doc>
+                 line="1121">xml file as #GFile instance</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
         </parameters>
@@ -14252,7 +14364,7 @@ before parsing it.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../libgda/gda-db-catalog.c"
-             line="816">After population @self with all data this method may be
+             line="918">After population @self with all data this method may be
 called to trigger code and modify user database. This is the main
 method to work with database. For retrieving information from database to an
 xml file use gda_db_catalog_parse_cnc() and gda_db_buildable_write_node().
@@ -14279,7 +14391,7 @@ issue was open on gitlab page.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libgda/gda-db-catalog.c"
-                 line="818">a #GdaDbCatalog object</doc>
+                 line="920">a #GdaDbCatalog object</doc>
             <type name="DbCatalog" c:type="GdaDbCatalog*"/>
           </instance-parameter>
         </parameters>
@@ -14290,26 +14402,26 @@ issue was open on gitlab page.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../libgda/gda-db-catalog.c"
-             line="932">This method writes database description as xml file.
+             line="1034">This method writes database description as xml file.
 Similar to gda_db_catalog_write_to_path()</doc>
         <source-position filename="../libgda/gda-db-catalog.h" line="99"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../libgda/gda-db-catalog.c"
-               line="941">%TRUE if no error occurred, %FALSE otherwise.</doc>
+               line="1043">%TRUE if no error occurred, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libgda/gda-db-catalog.c"
-                 line="934">a #GdaDbCatalog instance</doc>
+                 line="1036">a #GdaDbCatalog instance</doc>
             <type name="DbCatalog" c:type="GdaDbCatalog*"/>
           </instance-parameter>
           <parameter name="file" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libgda/gda-db-catalog.c"
-                 line="935">a #GFile to write database description</doc>
+                 line="1037">a #GFile to write database description</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
         </parameters>
@@ -14320,25 +14432,25 @@ Similar to gda_db_catalog_write_to_path()</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="../libgda/gda-db-catalog.c"
-             line="959">Save content of @self to a user friendly xml file.</doc>
+             line="1061">Save content of @self to a user friendly xml file.</doc>
         <source-position filename="../libgda/gda-db-catalog.h" line="103"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="../libgda/gda-db-catalog.c"
-               line="967">%TRUE is no error, %FALSE otherwise.</doc>
+               line="1069">%TRUE is no error, %FALSE otherwise.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libgda/gda-db-catalog.c"
-                 line="961">a #GdaDbCatalog instance</doc>
+                 line="1063">a #GdaDbCatalog instance</doc>
             <type name="DbCatalog" c:type="GdaDbCatalog*"/>
           </instance-parameter>
           <parameter name="path" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../libgda/gda-db-catalog.c"
-                 line="962">path to xml file to save #GdaDbCatalog</doc>
+                 line="1064">path to xml file to save #GdaDbCatalog</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
