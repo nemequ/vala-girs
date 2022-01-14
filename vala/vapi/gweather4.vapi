@@ -96,6 +96,7 @@ namespace GWeather {
 		public GLib.TimeZone[] get_timezones ();
 		public static GWeather.Location? get_world ();
 		public bool has_coords ();
+		public bool has_timezone ();
 		public GWeather.Location? next_child (owned GWeather.Location? child);
 		public unowned GLib.Variant serialize ();
 	}

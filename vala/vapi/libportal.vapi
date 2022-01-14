@@ -30,6 +30,9 @@ namespace Xdp {
 		public async bool print_file (Xdp.Parent? parent, string title, uint token, string file, Xdp.PrintFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void remove_notification (string id);
 		public async bool request_background (Xdp.Parent? parent, string? reason, owned GLib.GenericArray<weak string> commandline, Xdp.BackgroundFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static bool running_under_flatpak ();
+		public static bool running_under_sandbox ();
+		public static bool running_under_snap () throws GLib.Error;
 		public async GLib.Variant save_file (Xdp.Parent? parent, string title, string? current_name, string? current_folder, string? current_file, GLib.Variant? filters, GLib.Variant? current_filter, GLib.Variant? choices, Xdp.SaveFileFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async GLib.Variant save_files (Xdp.Parent? parent, string title, string? current_name, string? current_folder, GLib.Variant files, GLib.Variant? choices, Xdp.SaveFileFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async int session_inhibit (Xdp.Parent? parent, string? reason, Xdp.InhibitFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;

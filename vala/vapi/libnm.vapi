@@ -3867,9 +3867,14 @@ namespace NM {
 		public SettingOvsDpdk ();
 		[Version (since = "1.20")]
 		public unowned string get_devargs ();
+		[Version (since = "1.36")]
+		public uint32 get_n_rxq ();
 		[NoAccessorMethod]
 		[Version (since = "1.20")]
 		public string devargs { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.36")]
+		public uint n_rxq { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_external_ids_get_type ()")]
 	public class SettingOvsExternalIDs : NM.Setting {
@@ -7264,6 +7269,8 @@ namespace NM {
 	public const string SETTING_OVS_BRIDGE_STP_ENABLE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_DEVARGS")]
 	public const string SETTING_OVS_DPDK_DEVARGS;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_N_RXQ")]
+	public const string SETTING_OVS_DPDK_N_RXQ;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_SETTING_NAME")]
 	public const string SETTING_OVS_DPDK_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_EXTERNAL_IDS_DATA")]

@@ -62,7 +62,7 @@ namespace GClue {
 		public unowned GClue.Location get_location ();
 		[CCode (has_construct_function = false)]
 		public Simple.sync (string desktop_id, GClue.AccuracyLevel accuracy_level, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[CCode (cname = "gclue_simple_new_with_thresholds", finish_name = "gclue_simple_new_finish", has_construct_function = false)]
+		[CCode (cname = "gclue_simple_new_with_thresholds", has_construct_function = false)]
 		public async Simple.with_thresholds (string desktop_id, GClue.AccuracyLevel accuracy_level, uint time_threshold, uint distance_threshold, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public Simple.with_thresholds_sync (string desktop_id, GClue.AccuracyLevel accuracy_level, uint time_threshold, uint distance_threshold, GLib.Cancellable? cancellable = null) throws GLib.Error;
