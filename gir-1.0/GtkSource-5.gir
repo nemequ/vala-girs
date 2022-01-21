@@ -9281,7 +9281,9 @@ Either @filename or @content_type may be %NULL. This function can be used as fol
 
 ```c
 GtkSourceLanguage *lang;
-lang = gtk_source_language_manager_guess_language (filename, NULL);
+GtkSourceLanguageManager *manager;
+lm = gtk_source_language_manager_get_default ();
+lang = gtk_source_language_manager_guess_language (manager, filename, NULL);
 gtk_source_buffer_set_language (buffer, lang);
 ```
 
@@ -9289,6 +9291,7 @@ or
 
 ```c
 GtkSourceLanguage *lang = NULL;
+GtkSourceLanguageManager *manager;
 gboolean result_uncertain;
 gchar *content_type;
 
@@ -9299,6 +9302,7 @@ if (result_uncertain)
     content_type = NULL;
   }
 
+manager = gtk_source_language_manager_get_default ();
 lang = gtk_source_language_manager_guess_language (manager, filename, content_type);
 gtk_source_buffer_set_language (buffer, lang);
 
@@ -9312,7 +9316,7 @@ if you need full control over file -&gt; language mapping.</doc>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="../gtksourceview/gtksourcelanguagemanager.c"
-               line="644">a #GtkSourceLanguage, or %NULL if there
+               line="648">a #GtkSourceLanguage, or %NULL if there
 is no suitable language for given @filename and/or @content_type. Return
 value is owned by @lm and should not be freed.</doc>
           <type name="Language" c:type="GtkSourceLanguage*"/>
@@ -15490,7 +15494,7 @@ which are set when given style is used.</doc>
       <method name="apply" c:identifier="gtk_source_style_apply">
         <doc xml:space="preserve"
              filename="../gtksourceview/gtksourcestyle.c"
-             line="512">This function modifies the [class@Gtk.TextTag] properties that are related to the
+             line="547">This function modifies the [class@Gtk.TextTag] properties that are related to the
 #GtkSourceStyle properties. Other [class@Gtk.TextTag] properties are left untouched.
 
 If @style is non-%NULL, applies @style to @tag.
@@ -15509,13 +15513,13 @@ If @style is %NULL, the related *-set properties of [class@Gtk.TextTag] are set 
                               allow-none="1">
             <doc xml:space="preserve"
                  filename="../gtksourceview/gtksourcestyle.c"
-                 line="514">a #GtkSourceStyle to apply, or %NULL.</doc>
+                 line="549">a #GtkSourceStyle to apply, or %NULL.</doc>
             <type name="Style" c:type="const GtkSourceStyle*"/>
           </instance-parameter>
           <parameter name="tag" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gtksourceview/gtksourcestyle.c"
-                 line="515">a #GtkTextTag to apply styles to.</doc>
+                 line="550">a #GtkTextTag to apply styles to.</doc>
             <type name="Gtk.TextTag" c:type="GtkTextTag*"/>
           </parameter>
         </parameters>
@@ -15523,14 +15527,14 @@ If @style is %NULL, the related *-set properties of [class@Gtk.TextTag] are set 
       <method name="copy" c:identifier="gtk_source_style_copy">
         <doc xml:space="preserve"
              filename="../gtksourceview/gtksourcestyle.c"
-             line="479">Creates a copy of @style, that is a new #GtkSourceStyle instance which
+             line="513">Creates a copy of @style, that is a new #GtkSourceStyle instance which
 has the same attributes set.</doc>
         <source-position filename="../gtksourceview/gtksourcestyle.h"
                          line="38"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="../gtksourceview/gtksourcestyle.c"
-               line="486">copy of @style, call g_object_unref()
+               line="520">copy of @style, call g_object_unref()
 when you are done with it.</doc>
           <type name="Style" c:type="GtkSourceStyle*"/>
         </return-value>
@@ -15538,7 +15542,7 @@ when you are done with it.</doc>
           <instance-parameter name="style" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gtksourceview/gtksourcestyle.c"
-                 line="481">a #GtkSourceStyle structure to copy.</doc>
+                 line="515">a #GtkSourceStyle structure to copy.</doc>
             <type name="Style" c:type="const GtkSourceStyle*"/>
           </instance-parameter>
         </parameters>
@@ -15646,6 +15650,18 @@ when you are done with it.</doc>
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="underline-set"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="gboolean" c:type="gboolean"/>
+      </property>
+      <property name="weight"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none">
+        <type name="Pango.Weight"/>
+      </property>
+      <property name="weight-set"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none">
@@ -15773,13 +15789,13 @@ parsing a style scheme file or %NULL in the other cases.</doc>
               version="5.4">
         <doc xml:space="preserve"
              filename="../gtksourceview/gtksourcestylescheme.c"
-             line="1554">Gets a metadata property from the style scheme.</doc>
+             line="1620">Gets a metadata property from the style scheme.</doc>
         <source-position filename="../gtksourceview/gtksourcestylescheme.h"
                          line="51"/>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="../gtksourceview/gtksourcestylescheme.c"
-               line="1561">value of property @name stored in
+               line="1627">value of property @name stored in
   the metadata of @scheme or %NULL if @scheme does not contain the
   specified metadata property.</doc>
           <type name="utf8" c:type="const char*"/>
@@ -15788,13 +15804,13 @@ parsing a style scheme file or %NULL in the other cases.</doc>
           <instance-parameter name="scheme" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gtksourceview/gtksourcestylescheme.c"
-                 line="1556">a #GtkSourceStyleScheme.</doc>
+                 line="1622">a #GtkSourceStyleScheme.</doc>
             <type name="StyleScheme" c:type="GtkSourceStyleScheme*"/>
           </instance-parameter>
           <parameter name="name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="../gtksourceview/gtksourcestylescheme.c"
-                 line="1557">metadata property name.</doc>
+                 line="1623">metadata property name.</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>

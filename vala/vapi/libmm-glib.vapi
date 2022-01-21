@@ -355,6 +355,145 @@ namespace MM {
 		[Version (since = "1.2")]
 		public bool set_spc (string spc) throws GLib.Error;
 	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_cell_info_get_type ()")]
+	public class CellInfo : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected CellInfo ();
+		[NoWrapper]
+		public virtual GLib.StringBuilder build_string ();
+		[Version (since = "1.20")]
+		public MM.CellType get_cell_type ();
+		[NoWrapper]
+		public virtual GLib.VariantDict get_dictionary ();
+		[Version (since = "1.20")]
+		public bool get_serving ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_cell_info_cdma_get_type ()")]
+	public class CellInfoCdma : MM.CellInfo {
+		[CCode (has_construct_function = false)]
+		protected CellInfoCdma ();
+		[Version (since = "1.20")]
+		public unowned string get_base_station_id ();
+		[Version (since = "1.20")]
+		public unowned string get_nid ();
+		[Version (since = "1.20")]
+		public uint get_pilot_strength ();
+		[Version (since = "1.20")]
+		public unowned string get_ref_pn ();
+		[Version (since = "1.20")]
+		public unowned string get_sid ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_cell_info_gsm_get_type ()")]
+	public class CellInfoGsm : MM.CellInfo {
+		[CCode (has_construct_function = false)]
+		protected CellInfoGsm ();
+		[Version (since = "1.20")]
+		public uint get_arfcn ();
+		[Version (since = "1.20")]
+		public unowned string get_base_station_id ();
+		[Version (since = "1.20")]
+		public unowned string get_ci ();
+		[Version (since = "1.20")]
+		public unowned string get_lac ();
+		[Version (since = "1.20")]
+		public unowned string get_operator_id ();
+		[Version (since = "1.20")]
+		public uint get_rx_level ();
+		[Version (since = "1.20")]
+		public uint get_timing_advance ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_cell_info_lte_get_type ()")]
+	public class CellInfoLte : MM.CellInfo {
+		[CCode (has_construct_function = false)]
+		protected CellInfoLte ();
+		[Version (since = "1.20")]
+		public unowned string get_ci ();
+		[Version (since = "1.20")]
+		public uint get_earfcn ();
+		[Version (since = "1.20")]
+		public unowned string get_operator_id ();
+		[Version (since = "1.20")]
+		public unowned string get_physical_ci ();
+		[Version (since = "1.20")]
+		public double get_rsrp ();
+		[Version (since = "1.20")]
+		public double get_rsrq ();
+		[Version (since = "1.20")]
+		public unowned string get_tac ();
+		[Version (since = "1.20")]
+		public uint get_timing_advance ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_cell_info_nr5g_get_type ()")]
+	public class CellInfoNr5g : MM.CellInfo {
+		[CCode (has_construct_function = false)]
+		protected CellInfoNr5g ();
+		[Version (since = "1.20")]
+		public unowned string get_ci ();
+		[Version (since = "1.20")]
+		public uint get_nrarfcn ();
+		[Version (since = "1.20")]
+		public unowned string get_operator_id ();
+		[Version (since = "1.20")]
+		public unowned string get_physical_ci ();
+		[Version (since = "1.20")]
+		public double get_rsrp ();
+		[Version (since = "1.20")]
+		public double get_rsrq ();
+		[Version (since = "1.20")]
+		public double get_sinr ();
+		[Version (since = "1.20")]
+		public unowned string get_tac ();
+		[Version (since = "1.20")]
+		public uint get_timing_advance ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_cell_info_tdscdma_get_type ()")]
+	public class CellInfoTdscdma : MM.CellInfo {
+		[CCode (has_construct_function = false)]
+		protected CellInfoTdscdma ();
+		[Version (since = "1.20")]
+		public uint get_cell_parameter_id ();
+		[Version (since = "1.20")]
+		public unowned string get_ci ();
+		[Version (since = "1.20")]
+		public unowned string get_lac ();
+		[Version (since = "1.20")]
+		public unowned string get_operator_id ();
+		[Version (since = "1.20")]
+		public uint get_path_loss ();
+		[Version (since = "1.20")]
+		public double get_rscp ();
+		[Version (since = "1.20")]
+		public uint get_timing_advance ();
+		[Version (since = "1.20")]
+		public uint get_uarfcn ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_cell_info_umts_get_type ()")]
+	public class CellInfoUmts : MM.CellInfo {
+		[CCode (has_construct_function = false)]
+		protected CellInfoUmts ();
+		[Version (since = "1.20")]
+		public unowned string get_ci ();
+		[Version (since = "1.20")]
+		public double get_ecio ();
+		[Version (since = "1.20")]
+		public uint get_frequency_fdd_dl ();
+		[Version (since = "1.20")]
+		public uint get_frequency_fdd_ul ();
+		[Version (since = "1.20")]
+		public uint get_frequency_tdd ();
+		[Version (since = "1.20")]
+		public unowned string get_lac ();
+		[Version (since = "1.20")]
+		public unowned string get_operator_id ();
+		[Version (since = "1.20")]
+		public uint get_path_loss ();
+		[Version (since = "1.20")]
+		public uint get_psc ();
+		[Version (since = "1.20")]
+		public double get_rscp ();
+		[Version (since = "1.20")]
+		public uint get_uarfcn ();
+	}
 	[CCode (cheader_filename = "libmm-glib.h", type_id = "mm_firmware_properties_get_type ()")]
 	public class FirmwareProperties : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -919,6 +1058,10 @@ namespace MM {
 		public unowned string get_carrier_configuration ();
 		[Version (since = "1.12")]
 		public unowned string get_carrier_configuration_revision ();
+		[Version (since = "1.20")]
+		public async GLib.List<MM.CellInfo> get_cell_info (GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.20")]
+		public GLib.List<MM.CellInfo> get_cell_info_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.0")]
 		public bool get_current_bands ([CCode (array_length_cname = "n_bands", array_length_pos = 1.1, array_length_type = "guint")] out MM.ModemBand[] bands);
 		[Version (since = "1.0")]
@@ -2085,6 +2228,9 @@ namespace MM {
 		public async bool call_factory_reset (string arg_code, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_factory_reset_sync (string arg_code, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (async_result_pos = 2.1)]
+		public async bool call_get_cell_info (GLib.Cancellable? cancellable, out GLib.Variant out_cell_info) throws GLib.Error;
+		public bool call_get_cell_info_sync (out GLib.Variant out_cell_info, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (async_result_pos = 2.1)]
 		public async bool call_list_bearers (GLib.Cancellable? cancellable, [CCode (array_length = false, array_null_terminated = true)] out string[] out_bearers) throws GLib.Error;
 		public bool call_list_bearers_sync ([CCode (array_length = false, array_null_terminated = true)] out string[] out_bearers, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_reset (GLib.Cancellable? cancellable) throws GLib.Error;
@@ -2104,6 +2250,7 @@ namespace MM {
 		public void complete_delete_bearer (owned GLib.DBusMethodInvocation invocation);
 		public void complete_enable (owned GLib.DBusMethodInvocation invocation);
 		public void complete_factory_reset (owned GLib.DBusMethodInvocation invocation);
+		public void complete_get_cell_info (owned GLib.DBusMethodInvocation invocation, GLib.Variant cell_info);
 		public void complete_list_bearers (owned GLib.DBusMethodInvocation invocation, string bearers);
 		public void complete_reset (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_current_bands (owned GLib.DBusMethodInvocation invocation);
@@ -2193,6 +2340,7 @@ namespace MM {
 		public virtual signal bool handle_delete_bearer (GLib.DBusMethodInvocation invocation, string arg_bearer);
 		public virtual signal bool handle_enable (GLib.DBusMethodInvocation invocation, bool arg_enable);
 		public virtual signal bool handle_factory_reset (GLib.DBusMethodInvocation invocation, string arg_code);
+		public virtual signal bool handle_get_cell_info (GLib.DBusMethodInvocation invocation);
 		public virtual signal bool handle_list_bearers (GLib.DBusMethodInvocation invocation);
 		public virtual signal bool handle_reset (GLib.DBusMethodInvocation invocation);
 		public virtual signal bool handle_set_current_bands (GLib.DBusMethodInvocation invocation, GLib.Variant arg_bands);
@@ -2923,6 +3071,17 @@ namespace MM {
 		AUDIO_SETUP_FAILED,
 		TRANSFERRED,
 		DEFLECTED;
+		public unowned string get_string ();
+	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CELL_TYPE_", type_id = "mm_cell_type_get_type ()")]
+	public enum CellType {
+		UNKNOWN,
+		CDMA,
+		GSM,
+		UMTS,
+		TDSCDMA,
+		LTE,
+		@5GNR;
 		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_FIRMWARE_IMAGE_TYPE_", type_id = "mm_firmware_image_type_get_type ()")]
@@ -4290,6 +4449,8 @@ namespace MM {
 	public const string MODEM_METHOD_ENABLE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_METHOD_FACTORYRESET")]
 	public const string MODEM_METHOD_FACTORYRESET;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_METHOD_GETCELLINFO")]
+	public const string MODEM_METHOD_GETCELLINFO;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_METHOD_LISTBEARERS")]
 	public const string MODEM_METHOD_LISTBEARERS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_METHOD_RESET")]
@@ -4670,6 +4831,9 @@ namespace MM {
 	[CCode (cheader_filename = "libmm-glib.h")]
 	[Version (replacement = "CdmaActivationError.quark")]
 	public static GLib.Quark cdma_activation_error_quark ();
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "CellType.get_string")]
+	public static unowned string cell_type_get_string (MM.CellType val);
 	[CCode (cheader_filename = "libmm-glib.h")]
 	[Version (replacement = "ConnectionError.quark")]
 	public static GLib.Quark connection_error_quark ();

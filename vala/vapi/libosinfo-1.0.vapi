@@ -357,7 +357,7 @@ namespace Osinfo {
 		[Version (since = "0.2.0")]
 		public void set_l10n_language (string language);
 		[Version (since = "0.2.0")]
-		public void set_l10n_timezone (string timezone);
+		public void set_l10n_timezone (string tz);
 		[Version (since = "0.2.2")]
 		public void set_post_install_drivers_disk (string disk);
 		[Version (since = "0.2.2")]
@@ -658,6 +658,7 @@ namespace Osinfo {
 		public unowned Osinfo.DeviceLink add_device (Osinfo.Device dev);
 		[Version (since = "0.2.2")]
 		public void add_device_driver (Osinfo.DeviceDriver driver);
+		[Version (since = "1.7.0")]
 		public void add_firmware (Osinfo.Firmware firmware);
 		[Version (since = "1.3.0")]
 		public void add_image (Osinfo.Image image);
@@ -680,6 +681,8 @@ namespace Osinfo {
 		[Version (since = "0.0.5")]
 		public Osinfo.DeviceList get_all_devices (Osinfo.Filter? filter);
 		public unowned string get_cloud_image_username ();
+		[Version (since = "1.10.0")]
+		public Osinfo.FirmwareList get_complete_firmware_list (Osinfo.Filter? filter);
 		[Version (since = "0.2.2")]
 		public unowned Osinfo.DeviceDriverList get_device_drivers ();
 		[Version (since = "1.7.0")]
@@ -1262,4 +1265,13 @@ namespace Osinfo {
 	public const string TREE_PROP_URL;
 	[CCode (cheader_filename = "osinfo/osinfo.h", cname = "OSINFO_TREE_PROP_VARIANT")]
 	public const string TREE_PROP_VARIANT;
+	[CCode (cheader_filename = "osinfo/osinfo.h")]
+	[Version (replacement = "Error.quark", since = "1.3.0")]
+	public static GLib.Quark error_quark ();
+	[CCode (cheader_filename = "osinfo/osinfo.h")]
+	[Version (replacement = "MediaError.quark")]
+	public static GLib.Quark media_error_quark ();
+	[CCode (cheader_filename = "osinfo/osinfo.h")]
+	[Version (replacement = "TreeError.quark", since = "0.1.0")]
+	public static GLib.Quark tree_error_quark ();
 }

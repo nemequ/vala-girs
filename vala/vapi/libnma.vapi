@@ -261,7 +261,8 @@ namespace NMA {
 		NONE,
 		CERT,
 		PASSWORDS,
-		PEM
+		PEM,
+		NO_PASSWORDS
 	}
 	[CCode (cheader_filename = "NMA-1.0.h", cprefix = "NMA_MOBILE_FAMILY_", has_type_id = false)]
 	public enum MobileFamily {

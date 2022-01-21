@@ -687,6 +687,10 @@ namespace GtkSource {
 		public bool underline_color_set { get; construct; }
 		[NoAccessorMethod]
 		public bool underline_set { get; construct; }
+		[NoAccessorMethod]
+		public Pango.Weight weight { get; construct; }
+		[NoAccessorMethod]
+		public bool weight_set { get; construct; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_scheme_get_type ()")]
 	public class StyleScheme : GLib.Object {
