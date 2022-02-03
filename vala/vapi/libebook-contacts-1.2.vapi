@@ -15,7 +15,7 @@ namespace E {
 		[Version (since = "3.24")]
 		public E.AddressWestern copy ();
 		public void free ();
-		public static E.AddressWestern parse (string in_address);
+		public static E.AddressWestern? parse (string? in_address);
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", ref_function = "e_book_query_ref", type_id = "e_book_query_get_type ()", unref_function = "e_book_query_unref")]
 	[Compact]
@@ -1043,7 +1043,7 @@ namespace E {
 	public const string VCARD_21_VALID_PROPERTIES;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
 	[Version (replacement = "AddressWestern.parse")]
-	public static E.AddressWestern address_western_parse (string in_address);
+	public static E.AddressWestern? address_western_parse (string? in_address);
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
 	[Version (replacement = "BookQuery.and")]
 	public static E.BookQuery book_query_and (int nqs, E.BookQuery qs, bool unref);

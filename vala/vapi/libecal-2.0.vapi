@@ -159,11 +159,11 @@ namespace ECal {
 		[Version (since = "3.34")]
 		public GLib.SList<ECal.ComponentText>? get_comments ();
 		[Version (since = "3.34")]
-		public ICal.Time get_completed ();
+		public ICal.Time? get_completed ();
 		[Version (since = "3.34")]
 		public GLib.SList<ECal.ComponentText> get_contacts ();
 		[Version (since = "3.34")]
-		public ICal.Time get_created ();
+		public ICal.Time? get_created ();
 		[Version (since = "3.34")]
 		public GLib.SList<ECal.ComponentText>? get_descriptions ();
 		[Version (since = "3.34")]
@@ -187,7 +187,7 @@ namespace ECal {
 		[Version (since = "3.34")]
 		public ECal.ComponentId get_id ();
 		[Version (since = "3.34")]
-		public ICal.Time get_last_modified ();
+		public ICal.Time? get_last_modified ();
 		[Version (since = "3.34")]
 		public string? get_location ();
 		[Version (since = "3.34")]
@@ -792,7 +792,7 @@ namespace ECal {
 		[CCode (cname = "e_reminder_data_new", has_construct_function = false)]
 		public ReminderData (string source_uid, ECal.Component component, ECal.ComponentAlarmInstance instance);
 		[CCode (cname = "e_reminder_data_copy")]
-		public ECal.ReminderData copy ();
+		public ECal.ReminderData? copy ();
 		[CCode (cname = "e_reminder_data_free")]
 		public void free ();
 		[CCode (cname = "e_reminder_data_get_component")]
@@ -1128,7 +1128,7 @@ namespace ECal {
 	public static string isodate_from_time_t (long t);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.24")]
-	public static unowned string match_tzid (string tzid);
+	public static unowned string? match_tzid (string tzid);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.30")]
 	public static string? recur_describe_recurrence (ICal.Component icalcomp, GLib.DateWeekday week_start_day, uint32 flags);
@@ -1148,7 +1148,7 @@ namespace ECal {
 	public static long recur_obtain_enddate (ICal.Recurrence ir, ICal.Property prop, ICal.Timezone zone, bool convert_end_date);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.28")]
-	public static string system_timezone_get_location ();
+	public static string? system_timezone_get_location ();
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "time_add_day")]
 	public static long time_add_day (long time, int days);
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "time_add_day_with_zone")]
@@ -1253,7 +1253,7 @@ namespace ECal {
 	public static unowned ICal.Timezone? util_get_system_timezone ();
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.28")]
-	public static string util_get_system_timezone_location ();
+	public static string? util_get_system_timezone_location ();
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.22")]
 	public static Posix.tm? util_icaltime_to_tm (ICal.Time itt);

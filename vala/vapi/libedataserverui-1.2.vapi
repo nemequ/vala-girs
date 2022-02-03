@@ -32,10 +32,10 @@ namespace E {
 		public E.SourceCredentialsProvider provider { get; }
 		public E.SourceRegistry registry { get; construct; }
 		[HasEmitter]
-		public virtual signal unowned Gtk.Window get_dialog_parent ();
+		public virtual signal unowned Gtk.Window? get_dialog_parent ();
 		[HasEmitter]
 		[Version (since = "3.42")]
-		public signal unowned Gtk.Window get_dialog_parent_full (E.Source? auth_source);
+		public signal unowned Gtk.Window? get_dialog_parent_full (E.Source? auth_source);
 	}
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", type_id = "e_credentials_prompter_impl_get_type ()")]
 	[Version (since = "3.16")]
@@ -94,7 +94,7 @@ namespace E {
 		[Version (since = "3.18")]
 		public unowned Gtk.TreeSelection get_tree_selection ();
 		[Version (since = "3.18")]
-		public string get_user_address ();
+		public string? get_user_address ();
 		[Version (since = "3.18")]
 		public async bool refresh (string? display_name, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.18")]

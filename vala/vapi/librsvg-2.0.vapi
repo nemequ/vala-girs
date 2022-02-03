@@ -150,6 +150,7 @@ namespace Rsvg {
 	}
 	[CCode (cheader_filename = "librsvg/rsvg.h", cprefix = "RSVG_HANDLE_", type_id = "rsvg_handle_flags_get_type ()")]
 	[Flags]
+	[Version (since = "2.40.3")]
 	public enum HandleFlags {
 		FLAGS_NONE,
 		FLAG_UNLIMITED,

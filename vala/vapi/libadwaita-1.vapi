@@ -450,11 +450,17 @@ namespace Adw {
 		public PreferencesGroup ();
 		public void add (Gtk.Widget child);
 		public unowned string? get_description ();
+		[Version (since = "1.1")]
+		public unowned Gtk.Widget? get_header_suffix ();
 		public unowned string get_title ();
 		public void remove (Gtk.Widget child);
 		public void set_description (string? description);
+		[Version (since = "1.1")]
+		public void set_header_suffix (Gtk.Widget child);
 		public void set_title (string title);
 		public string description { get; set; }
+		[Version (since = "1.1")]
+		public Gtk.Widget header_suffix { get; set; }
 		public string title { get; set; }
 	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_preferences_page_get_type ()")]
@@ -483,10 +489,13 @@ namespace Adw {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public PreferencesRow ();
 		public unowned string get_title ();
+		public bool get_title_selectable ();
 		public bool get_use_underline ();
 		public void set_title (string title);
+		public void set_title_selectable (bool title_selectable);
 		public void set_use_underline (bool use_underline);
 		public string title { get; set; }
+		public bool title_selectable { get; set; }
 		public bool use_underline { get; set; }
 	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_preferences_window_get_type ()")]

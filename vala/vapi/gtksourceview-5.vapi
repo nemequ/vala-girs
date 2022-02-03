@@ -378,6 +378,8 @@ namespace GtkSource {
 	public class LanguageManager : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public LanguageManager ();
+		[Version (since = "5.4")]
+		public void append_search_path (string path);
 		public static unowned GtkSource.LanguageManager get_default ();
 		public unowned GtkSource.Language? get_language (string id);
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -385,6 +387,8 @@ namespace GtkSource {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_search_path ();
 		public unowned GtkSource.Language? guess_language (string? filename, string? content_type);
+		[Version (since = "5.4")]
+		public void prepend_search_path (string path);
 		public void set_search_path ([CCode (array_length = false, array_null_terminated = true)] string[]? dirs);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] language_ids { get; }

@@ -3443,7 +3443,8 @@ namespace MM {
 		FASTBOOT,
 		QMI_PDC,
 		MBIM_QDU,
-		FIREHOSE;
+		FIREHOSE,
+		SAHARA;
 		public string build_string_from_mask ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MODEM_LOCATION_ASSISTANCE_DATA_TYPE_", type_id = "mm_modem_location_assistance_data_type_get_type ()")]

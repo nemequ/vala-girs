@@ -32,6 +32,8 @@ namespace Babl {
 		NONE,
 		EQUALIZE
 	}
+	[CCode (cheader_filename = "babl.h", has_target = false)]
+	public delegate void FishProcess (Babl.Object babl, string src, string dst, long n, void* data);
 	[CCode (cheader_filename = "babl.h", instance_pos = 4.9)]
 	public delegate void FuncLinear (Babl.Object conversion, string src, string dst, long n);
 	[CCode (cheader_filename = "babl.h", instance_pos = 8.9)]

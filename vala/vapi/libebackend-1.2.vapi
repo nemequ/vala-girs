@@ -134,7 +134,7 @@ namespace E {
 		[Version (since = "3.26")]
 		public CacheColumnInfo (string name, string type, string? index_name);
 		[Version (since = "3.26")]
-		public E.CacheColumnInfo copy ();
+		public E.CacheColumnInfo? copy ();
 		[Version (since = "3.26")]
 		public static void free (void* info);
 	}
@@ -155,7 +155,7 @@ namespace E {
 		[Version (since = "3.26")]
 		public void init_iter (GLib.HashTableIter iter);
 		[Version (since = "3.26")]
-		public unowned string lookup (string name);
+		public unowned string? lookup (string name);
 		[Version (since = "3.26")]
 		public void put (string name, string? value);
 		[Version (since = "3.26")]
@@ -177,7 +177,7 @@ namespace E {
 		public weak string uid;
 		[CCode (has_construct_function = false)]
 		public CacheOfflineChange (string uid, string? revision, string? object, E.OfflineState state);
-		public E.CacheOfflineChange copy ();
+		public E.CacheOfflineChange? copy ();
 		public static void free (void* change);
 	}
 	[CCode (cheader_filename = "libebackend/libebackend.h", type_id = "e_cache_reaper_get_type ()")]
@@ -195,12 +195,12 @@ namespace E {
 		protected CollectionBackend ();
 		[Version (since = "3.16")]
 		public void authenticate_children (E.NamedParameters credentials);
-		public GLib.List<E.Source> claim_all_resources ();
+		public GLib.List<E.Source>? claim_all_resources ();
 		public virtual async bool create_resource (E.Source source, GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual bool create_resource_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public virtual async bool delete_resource (E.Source source, GLib.Cancellable? cancellable) throws GLib.Error;
 		public virtual bool delete_resource_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public virtual string dup_resource_id (E.Source child_source);
+		public virtual string? dup_resource_id (E.Source child_source);
 		[Version (since = "3.38")]
 		public bool freeze_populate ();
 		public unowned string get_cache_dir ();
@@ -264,7 +264,7 @@ namespace E {
 		public virtual void complete_open (GLib.DBusMethodInvocation invocation, string object_path, string bus_name, string extension_name);
 		[Version (since = "3.16")]
 		public string construct_path ();
-		public virtual E.Backend create_backend (E.BackendFactory backend_factory, E.Source source);
+		public virtual E.Backend? create_backend (E.BackendFactory backend_factory, E.Source source);
 		public int get_backend_per_process ();
 		[Version (since = "3.16")]
 		public unowned E.SourceRegistry get_registry ();
@@ -272,7 +272,7 @@ namespace E {
 		public GLib.SList<E.Backend> list_opened_backends ();
 		public virtual string open_backend (E.Backend backend, GLib.DBusConnection connection, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.6")]
-		public E.BackendFactory ref_backend_factory (string backend_name, string extension_name);
+		public E.BackendFactory? ref_backend_factory (string backend_name, string extension_name);
 		[Version (since = "3.16")]
 		public void spawn_subprocess_backend (GLib.DBusMethodInvocation invocation, string uid, string extension_name, string subprocess_path);
 		public bool use_backend_per_process ();
@@ -289,7 +289,7 @@ namespace E {
 		public void freeze_changes ();
 		public unowned string get_filename ();
 		public GLib.SList<weak string> get_keys ();
-		public unowned string get_object (string key);
+		public unowned string? get_object (string key);
 		public GLib.SList<weak string> get_objects ();
 		public bool remove ();
 		public bool remove_object (string key);
@@ -301,7 +301,7 @@ namespace E {
 	[Version (since = "3.6")]
 	public class ServerSideSource : E.Source, GLib.Initable, GLib.ProxyResolver {
 		[CCode (has_construct_function = false, type = "ESource*")]
-		public ServerSideSource (E.SourceRegistryServer server, GLib.File file) throws GLib.Error;
+		public ServerSideSource (E.SourceRegistryServer server, GLib.File? file) throws GLib.Error;
 		public bool get_exported ();
 		public unowned GLib.File? get_file ();
 		public unowned GLib.Node? get_node ();
@@ -310,18 +310,18 @@ namespace E {
 		public unowned string get_write_directory ();
 		public bool load (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false, type = "ESource*")]
-		public ServerSideSource.memory_only (E.SourceRegistryServer server, string uid) throws GLib.Error;
-		public static GLib.File new_user_file (string uid);
+		public ServerSideSource.memory_only (E.SourceRegistryServer server, string? uid) throws GLib.Error;
+		public static GLib.File new_user_file (string? uid);
 		[Version (since = "3.8")]
 		public E.OAuth2Support? ref_oauth2_support ();
 		[Version (since = "3.8")]
-		public void set_oauth2_support (E.OAuth2Support oauth2_support);
+		public void set_oauth2_support (E.OAuth2Support? oauth2_support);
 		public void set_remote_creatable (bool remote_creatable);
 		public void set_remote_deletable (bool remote_deletable);
 		public void set_removable (bool removable);
 		public void set_writable (bool writable);
 		public void set_write_directory (string write_directory);
-		public static string uid_from_file (GLib.File file) throws GLib.Error;
+		public static string? uid_from_file (GLib.File file) throws GLib.Error;
 		public bool exported { get; }
 		public GLib.File file { get; construct; }
 		[NoAccessorMethod]
@@ -353,7 +353,7 @@ namespace E {
 		public E.Source? find_extension (E.Source source, string extension_name);
 		[Version (since = "3.28")]
 		public unowned E.OAuth2Services get_oauth2_services ();
-		public GLib.List<E.Source> list_sources (string extension_name);
+		public GLib.List<E.Source> list_sources (string? extension_name);
 		public bool load_directory (string path, E.SourcePermissionFlags flags) throws GLib.Error;
 		public E.Source? load_file (GLib.File file, E.SourcePermissionFlags flags) throws GLib.Error;
 		[Version (since = "3.8")]
@@ -459,7 +459,8 @@ namespace E {
 		UNSUPPORTED_FIELD,
 		UNSUPPORTED_QUERY,
 		END_OF_LIST,
-		LOAD
+		LOAD,
+		CORRUPT
 	}
 	[CCode (cheader_filename = "libebackend/libebackend.h", cprefix = "E_CACHE_LOCK_", has_type_id = false)]
 	[Version (since = "3.26")]

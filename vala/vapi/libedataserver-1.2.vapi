@@ -135,7 +135,7 @@ namespace E {
 		[Version (since = "3.28")]
 		public bool is_expired ();
 		[Version (since = "3.28")]
-		public E.Source ref_source ();
+		public E.Source? ref_source ();
 		[Version (since = "3.28")]
 		public void set_credentials (E.NamedParameters? credentials);
 		[Version (since = "3.28")]
@@ -345,10 +345,10 @@ namespace E {
 		public static string parameter_to_key (string param_name);
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "3.12")]
-		public async string[] proxy_lookup (string uri, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async string[]? proxy_lookup (string uri, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (array_length = false, array_null_terminated = true)]
 		[Version (since = "3.12")]
-		public string[] proxy_lookup_sync (string uri, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public string[]? proxy_lookup_sync (string uri, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public GLib.DBusObject? ref_dbus_object ();
 		public GLib.MainContext ref_main_context ();
 		public uint refresh_add_timeout (GLib.MainContext? context, owned E.SourceRefreshFunc callback);
@@ -587,9 +587,9 @@ namespace E {
 		public bool delete_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool lookup (E.Source source, GLib.Cancellable? cancellable, out E.NamedParameters out_credentials) throws GLib.Error;
 		public bool lookup_sync (E.Source source, GLib.Cancellable? cancellable, out E.NamedParameters out_credentials) throws GLib.Error;
-		public E.Source ref_credentials_source (E.Source source);
+		public E.Source? ref_credentials_source (E.Source source);
 		public GLib.Object ref_registry ();
-		public virtual E.Source ref_source (string uid);
+		public virtual E.Source? ref_source (string uid);
 		public bool register_impl (E.SourceCredentialsProviderImpl provider_impl);
 		public async bool store (E.Source source, E.NamedParameters credentials, bool permanently, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool store_sync (E.Source source, E.NamedParameters credentials, bool permanently, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -1048,7 +1048,7 @@ namespace E {
 		public E.Source ref_default_calendar ();
 		public E.Source? ref_default_for_extension_name (string extension_name);
 		public E.Source ref_default_mail_account ();
-		public E.Source ref_default_mail_identity ();
+		public E.Source? ref_default_mail_identity ();
 		public E.Source ref_default_memo_list ();
 		public E.Source ref_default_task_list ();
 		public E.Source? ref_source (string uid);
@@ -1294,7 +1294,7 @@ namespace E {
 		[Version (since = "3.26")]
 		public void append_privilege (owned E.WebDAVPrivilege privilege);
 		[Version (since = "3.26")]
-		public E.WebDAVAccessControlEntry copy ();
+		public E.WebDAVAccessControlEntry? copy ();
 		[Version (since = "3.26")]
 		public static void free (void* ptr);
 		[Version (since = "3.26")]
@@ -1326,7 +1326,7 @@ namespace E {
 		[Version (since = "3.26")]
 		public WebDAVPrivilege (string? ns_uri, string? name, string? description, E.WebDAVPrivilegeKind kind, E.WebDAVPrivilegeHint hint);
 		[Version (since = "3.26")]
-		public E.WebDAVPrivilege copy ();
+		public E.WebDAVPrivilege? copy ();
 		[Version (since = "3.26")]
 		public static void free (void* ptr);
 	}
@@ -1338,7 +1338,7 @@ namespace E {
 		public weak string ns_uri;
 		public weak string value;
 		[Version (since = "3.26")]
-		public E.WebDAVPropertyChange copy ();
+		public E.WebDAVPropertyChange? copy ();
 		[Version (since = "3.26")]
 		public static void free (void* ptr);
 		[CCode (has_construct_function = false)]
@@ -1367,7 +1367,7 @@ namespace E {
 		[Version (since = "3.26")]
 		public WebDAVResource (E.WebDAVResourceKind kind, uint32 supports, string href, string? etag, string? display_name, string? content_type, size_t content_length, long creation_date, long last_modified, string? description, string? color, uint order);
 		[Version (since = "3.26")]
-		public E.WebDAVResource copy ();
+		public E.WebDAVResource? copy ();
 		[Version (since = "3.26")]
 		public static void free (void* ptr);
 	}
@@ -1386,7 +1386,7 @@ namespace E {
 		public bool get_current_user_privilege_set_sync (string? uri, out GLib.SList<E.WebDAVPrivilege> out_privileges, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_data_sync (string uri, out string? out_href, out string? out_etag, out string out_bytes, out size_t out_length, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.36")]
-		public unowned string get_last_dav_error_code ();
+		public unowned string? get_last_dav_error_code ();
 		[Version (since = "3.36")]
 		public bool get_last_dav_error_is_permission ();
 		public bool get_principal_collection_set_sync (string? uri, out GLib.SList<string> out_principal_hrefs, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -2110,7 +2110,7 @@ namespace E {
 	public static void debug_log_set_max_lines (int num_lines);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cname = "eds_check_version")]
 	[Version (since = "2.24")]
-	public static unowned string eds_check_version (uint required_major, uint required_minor, uint required_micro);
+	public static unowned string? eds_check_version (uint required_major, uint required_minor, uint required_micro);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.8")]
 	public static bool enum_from_string (GLib.Type enum_type, string string, int enum_value);
@@ -2127,10 +2127,10 @@ namespace E {
 	public static void filename_make_safe (string string);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.4")]
-	public static string filename_mkdir_encoded (string basepath, string fileprefix, string filename, int fileindex);
+	public static string? filename_mkdir_encoded (string basepath, string fileprefix, string? filename, int fileindex);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.16")]
-	public static string free_form_exp_to_sexp (string free_form_exp, E.FreeFormExpSymbol symbols);
+	public static string? free_form_exp_to_sexp (string free_form_exp, E.FreeFormExpSymbol symbols);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "2.32")]
 	public static unowned string get_user_cache_dir ();
@@ -2214,7 +2214,7 @@ namespace E {
 	public static GLib.SList<string> util_copy_string_slist (owned GLib.SList<string>? copy_to, GLib.SList<string> strings);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.0")]
-	public static unowned string util_ensure_gdbus_string (string str, string gdbus_str);
+	public static unowned string util_ensure_gdbus_string (string? str, string gdbus_str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.6")]
 	public static void util_free_nullable_object_slist (GLib.SList<GLib.Object> objects);
@@ -2268,25 +2268,25 @@ namespace E {
 	public static void util_unref_in_thread (void* object);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.6")]
-	public static string util_utf8_data_make_valid (string data, size_t data_bytes);
+	public static string util_utf8_data_make_valid (string? data, size_t data_bytes);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.26")]
 	public static string util_utf8_decompose (string text);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.0")]
-	public static string util_utf8_make_valid (string str);
+	public static string util_utf8_make_valid (string? str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "3.8")]
 	public static string? util_utf8_normalize (string? str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "2.28")]
-	public static string util_utf8_remove_accents (string str);
+	public static string? util_utf8_remove_accents (string? str);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static int util_utf8_strcasecmp (string s1, string s2);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static unowned string? util_utf8_strstrcase (string? haystack, string? needle);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
-	public static unowned string util_utf8_strstrcasedecomp (string haystack, string needle);
+	public static unowned string? util_utf8_strstrcasedecomp (string haystack, string needle);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (replacement = "WebDAVAccessControlEntry.free", since = "3.26")]
 	public static void webdav_access_control_entry_free (void* ptr);

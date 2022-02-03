@@ -5995,7 +5995,8 @@ namespace NM {
 		POTS,
 		CDMA_EVDO,
 		GSM_UMTS,
-		LTE
+		LTE,
+		@5GNR
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_STATE_", type_id = "nm_device_state_get_type ()")]
 	public enum DeviceState {

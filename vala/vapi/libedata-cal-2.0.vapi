@@ -13,15 +13,15 @@ namespace E {
 		[Version (since = "3.2")]
 		public void add_view (E.DataCalView view);
 		[Version (since = "3.4")]
-		public string create_cache_filename (string uid, string filename, int fileindex);
+		public string create_cache_filename (string uid, string? filename, int fileindex);
 		[Version (since = "3.10")]
 		public async bool create_objects (string calobjs, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
 		public bool create_objects_sync (string calobjs, ECal.OperationFlags opflags, GLib.Queue out_uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.10")]
-		public async bool discard_alarm (string uid, string rid, string alarm_uid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool discard_alarm (string uid, string? rid, string alarm_uid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
-		public bool discard_alarm_sync (string uid, string rid, string alarm_uid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool discard_alarm_sync (string uid, string? rid, string alarm_uid, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.10")]
 		public string dup_cache_dir ();
 		[Version (since = "3.34")]
@@ -29,9 +29,9 @@ namespace E {
 		[Version (since = "3.34")]
 		public void foreach_view_notify_progress (bool only_completed_views, int percent, string? message);
 		[Version (since = "3.10")]
-		public async bool get_attachment_uris (string uid, string rid, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool get_attachment_uris (string uid, string? rid, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
-		public bool get_attachment_uris_sync (string uid, string rid, GLib.Queue out_attachment_uris, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_attachment_uris_sync (string uid, string? rid, GLib.Queue out_attachment_uris, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.10")]
 		public string get_backend_property (string prop_name);
 		[Version (since = "2.32")]
@@ -42,13 +42,13 @@ namespace E {
 		public bool get_free_busy_sync (long start, long end, [CCode (array_length = false, array_null_terminated = true)] string[] users, GLib.SList<string> out_freebusy, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public ICal.ComponentKind get_kind ();
 		[Version (since = "3.10")]
-		public async string get_object (string uid, string rid, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async string get_object (string uid, string? rid, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
 		public async bool get_object_list (string query, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
 		public bool get_object_list_sync (string query, GLib.Queue out_objects, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.10")]
-		public string get_object_sync (string uid, string rid, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public string get_object_sync (string uid, string? rid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.6")]
 		public unowned E.SourceRegistry get_registry ();
 		[Version (since = "3.10")]
@@ -115,7 +115,7 @@ namespace E {
 		[Version (since = "3.10")]
 		public bool receive_objects_sync (string calobj, ECal.OperationFlags opflags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.10")]
-		public E.DataCal ref_data_cal ();
+		public E.DataCal? ref_data_cal ();
 		[Version (since = "3.12")]
 		public GLib.ProxyResolver? ref_proxy_resolver ();
 		[Version (since = "3.10")]
@@ -191,7 +191,7 @@ namespace E {
 		[Version (since = "3.2")]
 		public void get_attachment_uris (E.DataCal cal, GLib.Cancellable? cancellable, string uid, string rid, GLib.SList<string> attachments) throws GLib.Error;
 		public void get_free_busy (E.DataCal cal, GLib.Cancellable? cancellable, GLib.SList<string> users, long start, long end, out GLib.SList<string> freebusyobjects) throws GLib.Error;
-		public void get_object (E.DataCal cal, GLib.Cancellable? cancellable, string uid, string rid, out string calobj) throws GLib.Error;
+		public void get_object (E.DataCal cal, GLib.Cancellable? cancellable, string uid, string? rid, out string calobj) throws GLib.Error;
 		public void get_object_list (E.DataCal cal, GLib.Cancellable? cancellable, string sexp, out GLib.SList<string> calobjs) throws GLib.Error;
 		[NoWrapper]
 		public virtual void get_object_sync (E.DataCal cal, GLib.Cancellable? cancellable, string uid, string rid, string calobj) throws GLib.Error;
@@ -270,7 +270,7 @@ namespace E {
 		public weak string uid;
 		[CCode (has_construct_function = false)]
 		public CalCacheOfflineChange (string uid, string? rid, string? revision, string? object, E.OfflineState state);
-		public E.CalCacheOfflineChange copy ();
+		public E.CalCacheOfflineChange? copy ();
 		public static void free (void* change);
 	}
 	[CCode (cheader_filename = "libedata-cal/libedata-cal.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_cal_cache_search_data_get_type ()")]
@@ -283,7 +283,7 @@ namespace E {
 		public weak string uid;
 		[CCode (has_construct_function = false)]
 		public CalCacheSearchData (string uid, string? rid, string object, string? extra);
-		public E.CalCacheSearchData copy ();
+		public E.CalCacheSearchData? copy ();
 		public static void free (void* ptr);
 	}
 	[CCode (cheader_filename = "libedata-cal/libedata-cal.h", type_id = "e_cal_meta_backend_get_type ()")]
@@ -407,7 +407,7 @@ namespace E {
 		[Version (since = "3.8")]
 		public unowned GLib.DBusConnection get_connection ();
 		[Version (since = "3.2")]
-		public unowned GLib.HashTable<void*,void*> get_fields_of_interest ();
+		public unowned GLib.HashTable<void*,void*>? get_fields_of_interest ();
 		[Version (since = "3.6")]
 		public ECal.ClientViewFlags get_flags ();
 		[Version (since = "3.8")]

@@ -216,7 +216,7 @@ namespace E {
 		public bool put_contact (E.Contact contact, string? extra, uint32 custom_flags, E.CacheOfflineFlag offline_flag, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool put_contacts (GLib.SList<E.Contact> contacts, GLib.SList<string>? extras, GLib.SList<uint32>? custom_flags, E.CacheOfflineFlag offline_flag, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public E.Collator ref_collator ();
-		public E.Source ref_source ();
+		public E.Source? ref_source ();
 		public bool remove_contact (string uid, uint32 custom_flags, E.CacheOfflineFlag offline_flag, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool remove_contacts (GLib.SList<string> uids, GLib.SList<uint32>? custom_flags, E.CacheOfflineFlag offline_flag, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool search (string? sexp, bool meta_contacts, out GLib.SList<E.BookCacheSearchData> out_list, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -237,7 +237,7 @@ namespace E {
 	[Version (since = "3.26")]
 	public class BookCacheCursor {
 		[CCode (has_construct_function = false)]
-		public BookCacheCursor (E.BookCache book_cache, string sexp, [CCode (array_length_cname = "n_sort_fields", array_length_pos = 4.1, array_length_type = "guint")] E.ContactField[] sort_fields, [CCode (array_length_cname = "n_sort_fields", array_length_pos = 4.1, array_length_type = "guint")] E.BookCursorSortType[] sort_types) throws GLib.Error;
+		public BookCacheCursor (E.BookCache book_cache, string? sexp, [CCode (array_length_cname = "n_sort_fields", array_length_pos = 4.1, array_length_type = "guint")] E.ContactField[] sort_fields, [CCode (array_length_cname = "n_sort_fields", array_length_pos = 4.1, array_length_type = "guint")] E.BookCursorSortType[] sort_types) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_book_cache_search_data_get_type ()")]
 	[Compact]
@@ -248,7 +248,7 @@ namespace E {
 		public weak string vcard;
 		[CCode (has_construct_function = false)]
 		public BookCacheSearchData (string uid, string vcard, string? extra);
-		public E.BookCacheSearchData copy ();
+		public E.BookCacheSearchData? copy ();
 		public static void free (void* data);
 	}
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", type_id = "e_book_meta_backend_get_type ()")]
@@ -301,7 +301,7 @@ namespace E {
 		[Version (since = "3.26")]
 		public BookMetaBackendInfo (string uid, string? revision, string? object, string? extra);
 		[Version (since = "3.26")]
-		public E.BookMetaBackendInfo copy ();
+		public E.BookMetaBackendInfo? copy ();
 		[Version (since = "3.26")]
 		public static void free (void* ptr);
 	}
@@ -314,7 +314,7 @@ namespace E {
 		public bool add_contacts (GLib.SList<E.Contact> contacts, GLib.SList<string>? extra, bool replace, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		[CCode (has_construct_function = false)]
-		public BookSqlite.full (string path, E.Source source, E.SourceBackendSummarySetup? setup, [CCode (delegate_target_pos = 5.33333, scope = "async")] E.bSqlVCardCallback? vcard_callback, [CCode (delegate_target_pos = 5.33333, destroy_notify_pos = 5.66667)] owned E.bSqlChangeCallback? change_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public BookSqlite.full (string path, E.Source? source, E.SourceBackendSummarySetup? setup, [CCode (delegate_target_pos = 5.33333, scope = "async")] E.bSqlVCardCallback? vcard_callback, [CCode (delegate_target_pos = 5.33333, destroy_notify_pos = 5.66667)] owned E.bSqlChangeCallback? change_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_contact (string uid, bool meta_contact, out E.Contact ret_contact) throws GLib.Error;
 		public bool get_contact_extra (string uid, out string ret_extra) throws GLib.Error;
 		public bool get_key_value (string key, out string value) throws GLib.Error;
@@ -325,7 +325,7 @@ namespace E {
 		public bool @lock (E.bSqlLockType lock_type, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public E.Collator ref_collator ();
 		[Version (since = "3.16")]
-		public E.Source ref_source ();
+		public E.Source? ref_source ();
 		public bool remove_contact (string uid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool remove_contacts (GLib.SList<string> uids, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool search (string? sexp, bool meta_contacts, out GLib.SList<E.bSqlSearchData?> ret_list, GLib.Cancellable? cancellable = null) throws GLib.Error;
