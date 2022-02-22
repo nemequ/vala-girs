@@ -2008,15 +2008,15 @@ namespace Camel {
 		public void add (Camel.StoreInfo info);
 		public unowned Camel.StoreInfo? add_from_path (string path);
 		public GLib.GenericArray<Camel.StoreInfo?> array ();
-		public void array_free (GLib.GenericArray<Camel.StoreInfo?> array);
+		public void array_free (owned GLib.GenericArray<Camel.StoreInfo?> array);
 		[Version (since = "3.4")]
 		public bool connect_folder_summary (string path, Camel.FolderSummary folder_summary);
 		public int count ();
 		[Version (since = "3.4")]
 		public bool disconnect_folder_summary (Camel.FolderSummary folder_summary);
-		public unowned Camel.StoreInfo? info_new ();
+		public Camel.StoreInfo? info_new ();
 		public Camel.StoreInfo? info_ref (Camel.StoreInfo info);
-		public void info_unref (Camel.StoreInfo info);
+		public void info_unref (owned Camel.StoreInfo info);
 		public int load ();
 		public unowned Camel.StoreInfo? path (string path);
 		public void remove (Camel.StoreInfo info);
@@ -2026,7 +2026,7 @@ namespace Camel {
 		[Version (since = "3.24")]
 		public void sort (GLib.CompareDataFunc compare_func);
 		[NoWrapper]
-		public virtual void store_info_free (Camel.StoreInfo info);
+		public virtual void store_info_free (owned Camel.StoreInfo info);
 		[NoWrapper]
 		public virtual unowned Camel.StoreInfo? store_info_load ([CCode (type = "FILE*")] GLib.FileStream file);
 		[NoWrapper]

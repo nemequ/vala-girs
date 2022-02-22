@@ -53,7 +53,7 @@ type.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1930">A convenience macro to ease adding private data to instances of a new type
+           line="1965">A convenience macro to ease adding private data to instances of a new type
 in the @_C_ section of G_DEFINE_TYPE_WITH_CODE() or
 G_DEFINE_ABSTRACT_TYPE_WITH_CODE().
 
@@ -119,12 +119,12 @@ It is safe to call the `_get_instance_private` function on %NULL or invalid
 objects since it's only adding an offset to the instance pointer. In that
 case the returned pointer must not be dereferenced.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2002"/>
+                       line="2037"/>
       <parameters>
         <parameter name="TypeName">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1932">the name of the type in CamelCase</doc>
+               line="1967">the name of the type in CamelCase</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -5283,7 +5283,7 @@ connection.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1455">A convenience macro for emitting the usual declarations in the
+           line="1466">A convenience macro for emitting the usual declarations in the
 header file for a type which is intended to be subclassed.
 
 You might use it in a header as follows:
@@ -5311,6 +5311,18 @@ GtkWidget *    gtk_frobber_new   (void);
 ...
 
 #endif
+]|
+
+Since the instance structure is public it is often needed to declare a
+private struct as follow in your C file:
+
+|[&lt;!-- language="C" --&gt;
+typedef struct _GtkFrobberPrivate GtkFrobberPrivate;
+struct _GtkFrobberPrivate
+{
+  ...
+};
+G_DEFINE_TYPE_WITH_PRIVATE (GtkFrobber, gtk_frobber, GTK_TYPE_WIDGET)
 ]|
 
 This results in the following things happening:
@@ -5348,33 +5360,33 @@ structures, use G_DECLARE_FINAL_TYPE().
 If you must use G_DECLARE_DERIVABLE_TYPE() you should be sure to include some padding at the bottom of your
 class structure to leave space for the addition of future virtual functions.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1531"/>
+                       line="1554"/>
       <parameters>
         <parameter name="ModuleObjName">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1457">The name of the new type, in camel case (like `GtkWidget`)</doc>
+               line="1468">The name of the new type, in camel case (like `GtkWidget`)</doc>
         </parameter>
         <parameter name="module_obj_name">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1458">The name of the new type in lowercase, with words
+               line="1469">The name of the new type in lowercase, with words
  separated by `_` (like `gtk_widget`)</doc>
         </parameter>
         <parameter name="MODULE">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1460">The name of the module, in all caps (like `GTK`)</doc>
+               line="1471">The name of the module, in all caps (like `GTK`)</doc>
         </parameter>
         <parameter name="OBJ_NAME">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1461">The bare name of the type, in all caps (like `WIDGET`)</doc>
+               line="1472">The bare name of the type, in all caps (like `WIDGET`)</doc>
         </parameter>
         <parameter name="ParentName">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1462">the name of the parent type, in camel case (like `GtkWidget`)</doc>
+               line="1473">the name of the parent type, in camel case (like `GtkWidget`)</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -5403,6 +5415,17 @@ MyAppWindow *    my_app_window_new    (void);
 ...
 
 #endif
+]|
+
+And use it as follow in your C file:
+
+|[&lt;!-- language="C" --&gt;
+struct _MyAppWindow
+{
+ GtkWindow parent;
+ ...
+};
+G_DEFINE_TYPE (MyAppWindow, my_app_window, GTK_TYPE_WINDOW)
 ]|
 
 This results in the following things happening:
@@ -5439,7 +5462,7 @@ should therefore use G_DECLARE_FINAL_TYPE() until you are sure that it makes sen
 subclassed.  Once a class structure has been exposed it is not possible to change its size or remove or
 reorder items without breaking the API and/or ABI.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1440"/>
+                       line="1451"/>
       <parameters>
         <parameter name="ModuleObjName">
           <doc xml:space="preserve"
@@ -5475,7 +5498,7 @@ reorder items without breaking the API and/or ABI.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1553">A convenience macro for emitting the usual declarations in the header file for a #GInterface type.
+           line="1576">A convenience macro for emitting the usual declarations in the header file for a #GInterface type.
 
 You might use it in a header as follows:
 
@@ -5501,6 +5524,18 @@ gpointer my_model_get_item (MyModel *model);
 #endif
 ]|
 
+And use it as follow in your C file:
+
+|[&lt;!-- language="C" --&gt;
+G_DEFINE_INTERFACE (MyModel, my_model, G_TYPE_OBJECT);
+
+static void
+my_model_default_init (MyModelInterface *iface)
+{
+  ...
+}
+]|
+
 This results in the following things happening:
 
 - the usual `my_model_get_type()` function is declared with a return type of #GType
@@ -5522,33 +5557,33 @@ manually define this as a macro for yourself.
 The declaration of the `_get_type()` function is the first thing emitted by the macro.  This allows this macro
 to be used in the usual way with export control and API versioning macros.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1611"/>
+                       line="1646"/>
       <parameters>
         <parameter name="ModuleObjName">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1555">The name of the new type, in camel case (like `GtkWidget`)</doc>
+               line="1578">The name of the new type, in camel case (like `GtkWidget`)</doc>
         </parameter>
         <parameter name="module_obj_name">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1556">The name of the new type in lowercase, with words
+               line="1579">The name of the new type in lowercase, with words
  separated by `_` (like `gtk_widget`)</doc>
         </parameter>
         <parameter name="MODULE">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1558">The name of the module, in all caps (like `GTK`)</doc>
+               line="1581">The name of the module, in all caps (like `GTK`)</doc>
         </parameter>
         <parameter name="OBJ_NAME">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1559">The bare name of the type, in all caps (like `WIDGET`)</doc>
+               line="1582">The bare name of the type, in all caps (like `WIDGET`)</doc>
         </parameter>
         <parameter name="PrerequisiteName">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1560">the name of the prerequisite type, in camel case (like `GtkWidget`)</doc>
+               line="1583">the name of the prerequisite type, in camel case (like `GtkWidget`)</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -5558,28 +5593,28 @@ to be used in the usual way with export control and API versioning macros.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1685">A convenience macro for type implementations.
+           line="1720">A convenience macro for type implementations.
 
 Similar to G_DEFINE_TYPE(), but defines an abstract type.
 See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1699"/>
+                       line="1734"/>
       <parameters>
         <parameter name="TN">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1687">The name of the new type, in Camel case.</doc>
+               line="1722">The name of the new type, in Camel case.</doc>
         </parameter>
         <parameter name="t_n">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1688">The name of the new type, in lowercase, with words
+               line="1723">The name of the new type, in lowercase, with words
  separated by `_`.</doc>
         </parameter>
         <parameter name="T_P">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1690">The #GType of the parent type.</doc>
+               line="1725">The #GType of the parent type.</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -5589,7 +5624,7 @@ See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1700">A convenience macro for type implementations.
+           line="1735">A convenience macro for type implementations.
 
 Similar to G_DEFINE_TYPE_WITH_CODE(), but defines an abstract type and
 allows you to insert custom code into the `*_get_type()` function, e.g.
@@ -5597,28 +5632,28 @@ interface implementations  via G_IMPLEMENT_INTERFACE().
 
 See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1718"/>
+                       line="1753"/>
       <parameters>
         <parameter name="TN">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1702">The name of the new type, in Camel case.</doc>
+               line="1737">The name of the new type, in Camel case.</doc>
         </parameter>
         <parameter name="t_n">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1703">The name of the new type, in lowercase, with words
+               line="1738">The name of the new type, in lowercase, with words
  separated by `_`.</doc>
         </parameter>
         <parameter name="T_P">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1705">The #GType of the parent type.</doc>
+               line="1740">The #GType of the parent type.</doc>
         </parameter>
         <parameter name="_C_">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1706">Custom code that gets inserted in the `type_name_get_type()` function.</doc>
+               line="1741">Custom code that gets inserted in the `type_name_get_type()` function.</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -5628,27 +5663,27 @@ See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1719">Similar to G_DEFINE_TYPE_WITH_PRIVATE(), but defines an abstract type.
+           line="1754">Similar to G_DEFINE_TYPE_WITH_PRIVATE(), but defines an abstract type.
 
 See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1732"/>
+                       line="1767"/>
       <parameters>
         <parameter name="TN">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1721">The name of the new type, in Camel case.</doc>
+               line="1756">The name of the new type, in Camel case.</doc>
         </parameter>
         <parameter name="t_n">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1722">The name of the new type, in lowercase, with words
+               line="1757">The name of the new type, in lowercase, with words
  separated by `_`.</doc>
         </parameter>
         <parameter name="T_P">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1724">The #GType of the parent type.</doc>
+               line="1759">The #GType of the parent type.</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -5658,7 +5693,7 @@ See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="2173">A convenience macro for defining a new custom boxed type.
+           line="2208">A convenience macro for defining a new custom boxed type.
 
 Using this macro is the recommended way of defining new custom boxed
 types, over calling g_boxed_type_register_static() directly. It defines
@@ -5676,28 +5711,28 @@ foo ()
 }
 ]|</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2201"/>
+                       line="2236"/>
       <parameters>
         <parameter name="TypeName">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2175">The name of the new type, in Camel case</doc>
+               line="2210">The name of the new type, in Camel case</doc>
         </parameter>
         <parameter name="type_name">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2176">The name of the new type, in lowercase, with words
+               line="2211">The name of the new type, in lowercase, with words
  separated by `_`</doc>
         </parameter>
         <parameter name="copy_func">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2178">the #GBoxedCopyFunc for the new type</doc>
+               line="2213">the #GBoxedCopyFunc for the new type</doc>
         </parameter>
         <parameter name="free_func">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2179">the #GBoxedFreeFunc for the new type</doc>
+               line="2214">the #GBoxedFreeFunc for the new type</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -5707,7 +5742,7 @@ foo ()
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="2202">A convenience macro for boxed type implementations.
+           line="2237">A convenience macro for boxed type implementations.
 
 Similar to G_DEFINE_BOXED_TYPE(), but allows to insert custom code into the
 `type_name_get_type()` function, e.g. to register value transformations with
@@ -5723,33 +5758,33 @@ G_DEFINE_BOXED_TYPE_WITH_CODE (GdkRectangle, gdk_rectangle,
 Similarly to the %G_DEFINE_TYPE family of macros, the #GType of the newly
 defined boxed type is exposed in the `g_define_type_id` variable.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2229"/>
+                       line="2264"/>
       <parameters>
         <parameter name="TypeName">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2204">The name of the new type, in Camel case</doc>
+               line="2239">The name of the new type, in Camel case</doc>
         </parameter>
         <parameter name="type_name">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2205">The name of the new type, in lowercase, with words
+               line="2240">The name of the new type, in lowercase, with words
  separated by `_`</doc>
         </parameter>
         <parameter name="copy_func">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2207">the #GBoxedCopyFunc for the new type</doc>
+               line="2242">the #GBoxedCopyFunc for the new type</doc>
         </parameter>
         <parameter name="free_func">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2208">the #GBoxedFreeFunc for the new type</doc>
+               line="2243">the #GBoxedFreeFunc for the new type</doc>
         </parameter>
         <parameter name="_C_">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2209">Custom code that gets inserted in the `*_get_type()` function</doc>
+               line="2244">Custom code that gets inserted in the `*_get_type()` function</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -5894,80 +5929,9 @@ gtk_gadget_register_type (GTypeModule *type_module)
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1733">A convenience macro for type implementations.
-
-Similar to G_DEFINE_TYPE(), but defines a final type.
-
-See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
-      <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1748"/>
-      <parameters>
-        <parameter name="TN">
-          <doc xml:space="preserve"
-               filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1735">the name of the new type, in Camel case</doc>
-        </parameter>
-        <parameter name="t_n">
-          <doc xml:space="preserve"
-               filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1736">the name of the new type, in lower case, with words
-  separated by `_` (snake case)</doc>
-        </parameter>
-        <parameter name="T_P">
-          <doc xml:space="preserve"
-               filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1738">the #GType of the parent type</doc>
-        </parameter>
-      </parameters>
-    </function-macro>
-    <function-macro name="DEFINE_FINAL_TYPE_WITH_CODE"
-                    c:identifier="G_DEFINE_FINAL_TYPE_WITH_CODE"
-                    version="2.70"
-                    introspectable="0">
-      <doc xml:space="preserve"
-           filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1749">A convenience macro for type implementations.
-
-Similar to G_DEFINE_TYPE_WITH_CODE(), but defines a final type and
-allows you to insert custom code into the `*_get_type()` function, e.g.
-interface implementations  via G_IMPLEMENT_INTERFACE().
-
-See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
-      <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1767"/>
-      <parameters>
-        <parameter name="TN">
-          <doc xml:space="preserve"
-               filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1751">the name of the new type, in Camel case</doc>
-        </parameter>
-        <parameter name="t_n">
-          <doc xml:space="preserve"
-               filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1752">the name of the new type, in lower case, with words
-  separated by `_` (snake case)</doc>
-        </parameter>
-        <parameter name="T_P">
-          <doc xml:space="preserve"
-               filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1754">the #GType of the parent type</doc>
-        </parameter>
-        <parameter name="_C_">
-          <doc xml:space="preserve"
-               filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1755">Custom code that gets inserted in the `type_name_get_type()` function.</doc>
-        </parameter>
-      </parameters>
-    </function-macro>
-    <function-macro name="DEFINE_FINAL_TYPE_WITH_PRIVATE"
-                    c:identifier="G_DEFINE_FINAL_TYPE_WITH_PRIVATE"
-                    version="2.70"
-                    introspectable="0">
-      <doc xml:space="preserve"
-           filename="install/include/glib-2.0/gobject/gtype.h"
            line="1768">A convenience macro for type implementations.
 
-Similar to G_DEFINE_TYPE_WITH_PRIVATE(), but defines a final type.
+Similar to G_DEFINE_TYPE(), but defines a final type.
 
 See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
@@ -5991,13 +5955,84 @@ See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
         </parameter>
       </parameters>
     </function-macro>
+    <function-macro name="DEFINE_FINAL_TYPE_WITH_CODE"
+                    c:identifier="G_DEFINE_FINAL_TYPE_WITH_CODE"
+                    version="2.70"
+                    introspectable="0">
+      <doc xml:space="preserve"
+           filename="install/include/glib-2.0/gobject/gtype.h"
+           line="1784">A convenience macro for type implementations.
+
+Similar to G_DEFINE_TYPE_WITH_CODE(), but defines a final type and
+allows you to insert custom code into the `*_get_type()` function, e.g.
+interface implementations  via G_IMPLEMENT_INTERFACE().
+
+See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
+      <source-position filename="install/include/glib-2.0/gobject/gtype.h"
+                       line="1802"/>
+      <parameters>
+        <parameter name="TN">
+          <doc xml:space="preserve"
+               filename="install/include/glib-2.0/gobject/gtype.h"
+               line="1786">the name of the new type, in Camel case</doc>
+        </parameter>
+        <parameter name="t_n">
+          <doc xml:space="preserve"
+               filename="install/include/glib-2.0/gobject/gtype.h"
+               line="1787">the name of the new type, in lower case, with words
+  separated by `_` (snake case)</doc>
+        </parameter>
+        <parameter name="T_P">
+          <doc xml:space="preserve"
+               filename="install/include/glib-2.0/gobject/gtype.h"
+               line="1789">the #GType of the parent type</doc>
+        </parameter>
+        <parameter name="_C_">
+          <doc xml:space="preserve"
+               filename="install/include/glib-2.0/gobject/gtype.h"
+               line="1790">Custom code that gets inserted in the `type_name_get_type()` function.</doc>
+        </parameter>
+      </parameters>
+    </function-macro>
+    <function-macro name="DEFINE_FINAL_TYPE_WITH_PRIVATE"
+                    c:identifier="G_DEFINE_FINAL_TYPE_WITH_PRIVATE"
+                    version="2.70"
+                    introspectable="0">
+      <doc xml:space="preserve"
+           filename="install/include/glib-2.0/gobject/gtype.h"
+           line="1803">A convenience macro for type implementations.
+
+Similar to G_DEFINE_TYPE_WITH_PRIVATE(), but defines a final type.
+
+See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
+      <source-position filename="install/include/glib-2.0/gobject/gtype.h"
+                       line="1818"/>
+      <parameters>
+        <parameter name="TN">
+          <doc xml:space="preserve"
+               filename="install/include/glib-2.0/gobject/gtype.h"
+               line="1805">the name of the new type, in Camel case</doc>
+        </parameter>
+        <parameter name="t_n">
+          <doc xml:space="preserve"
+               filename="install/include/glib-2.0/gobject/gtype.h"
+               line="1806">the name of the new type, in lower case, with words
+  separated by `_` (snake case)</doc>
+        </parameter>
+        <parameter name="T_P">
+          <doc xml:space="preserve"
+               filename="install/include/glib-2.0/gobject/gtype.h"
+               line="1808">the #GType of the parent type</doc>
+        </parameter>
+      </parameters>
+    </function-macro>
     <function-macro name="DEFINE_INTERFACE"
                     c:identifier="G_DEFINE_INTERFACE"
                     version="2.24"
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1863">A convenience macro for #GTypeInterface definitions, which declares
+           line="1898">A convenience macro for #GTypeInterface definitions, which declares
 a default vtable initialization function and defines a `*_get_type()`
 function.
 
@@ -6011,22 +6046,22 @@ the full #GInterfaceInitFunc signature, for brevity and convenience. If you
 need to use an initialization function with an `iface_data` argument, you
 must write the #GTypeInterface definitions manually.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1886"/>
+                       line="1921"/>
       <parameters>
         <parameter name="TN">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1865">The name of the new type, in Camel case.</doc>
+               line="1900">The name of the new type, in Camel case.</doc>
         </parameter>
         <parameter name="t_n">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1866">The name of the new type, in lowercase, with words separated by `_`.</doc>
+               line="1901">The name of the new type, in lowercase, with words separated by `_`.</doc>
         </parameter>
         <parameter name="T_P">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1867">The #GType of the prerequisite type for the interface, or %G_TYPE_INVALID
+               line="1902">The #GType of the prerequisite type for the interface, or %G_TYPE_INVALID
 for no prerequisite type.</doc>
         </parameter>
       </parameters>
@@ -6037,7 +6072,7 @@ for no prerequisite type.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1888">A convenience macro for #GTypeInterface definitions.
+           line="1923">A convenience macro for #GTypeInterface definitions.
 
 Similar to G_DEFINE_INTERFACE(), but allows you to insert custom code
 into the `*_get_type()` function, e.g. additional interface implementations
@@ -6046,28 +6081,28 @@ via G_IMPLEMENT_INTERFACE(), or additional prerequisite types.
 See G_DEFINE_TYPE_EXTENDED() for a similar example using
 G_DEFINE_TYPE_WITH_CODE().</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1907"/>
+                       line="1942"/>
       <parameters>
         <parameter name="TN">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1890">The name of the new type, in Camel case.</doc>
+               line="1925">The name of the new type, in Camel case.</doc>
         </parameter>
         <parameter name="t_n">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1891">The name of the new type, in lowercase, with words separated by `_`.</doc>
+               line="1926">The name of the new type, in lowercase, with words separated by `_`.</doc>
         </parameter>
         <parameter name="T_P">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1892">The #GType of the prerequisite type for the interface, or %G_TYPE_INVALID
+               line="1927">The #GType of the prerequisite type for the interface, or %G_TYPE_INVALID
 for no prerequisite type.</doc>
         </parameter>
         <parameter name="_C_">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1894">Custom code that gets inserted in the `*_get_type()` function.</doc>
+               line="1929">Custom code that gets inserted in the `*_get_type()` function.</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -6077,20 +6112,20 @@ for no prerequisite type.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="2298">A convenience macro for pointer type implementations, which defines a
+           line="2333">A convenience macro for pointer type implementations, which defines a
 `type_name_get_type()` function registering the pointer type.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2309"/>
+                       line="2344"/>
       <parameters>
         <parameter name="TypeName">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2300">The name of the new type, in Camel case</doc>
+               line="2335">The name of the new type, in Camel case</doc>
         </parameter>
         <parameter name="type_name">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2301">The name of the new type, in lowercase, with words
+               line="2336">The name of the new type, in lowercase, with words
  separated by `_`</doc>
         </parameter>
       </parameters>
@@ -6101,27 +6136,27 @@ for no prerequisite type.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="2310">A convenience macro for pointer type implementations.
+           line="2345">A convenience macro for pointer type implementations.
 Similar to G_DEFINE_POINTER_TYPE(), but allows to insert
 custom code into the `type_name_get_type()` function.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2323"/>
+                       line="2358"/>
       <parameters>
         <parameter name="TypeName">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2312">The name of the new type, in Camel case</doc>
+               line="2347">The name of the new type, in Camel case</doc>
         </parameter>
         <parameter name="type_name">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2313">The name of the new type, in lowercase, with words
+               line="2348">The name of the new type, in lowercase, with words
  separated by `_`</doc>
         </parameter>
         <parameter name="_C_">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2315">Custom code that gets inserted in the `*_get_type()` function</doc>
+               line="2350">Custom code that gets inserted in the `*_get_type()` function</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -6131,29 +6166,29 @@ custom code into the `type_name_get_type()` function.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1627">A convenience macro for type implementations, which declares a class
+           line="1662">A convenience macro for type implementations, which declares a class
 initialization function, an instance initialization function (see #GTypeInfo
 for information about these) and a static variable named `t_n_parent_class`
 pointing to the parent class. Furthermore, it defines a `*_get_type()` function.
 See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1642"/>
+                       line="1677"/>
       <parameters>
         <parameter name="TN">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1629">The name of the new type, in Camel case.</doc>
+               line="1664">The name of the new type, in Camel case.</doc>
         </parameter>
         <parameter name="t_n">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1630">The name of the new type, in lowercase, with words
+               line="1665">The name of the new type, in lowercase, with words
  separated by `_`.</doc>
         </parameter>
         <parameter name="T_P">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1632">The #GType of the parent type.</doc>
+               line="1667">The #GType of the parent type.</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -6163,7 +6198,7 @@ See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1784">The most general convenience macro for type implementations, on which
+           line="1819">The most general convenience macro for type implementations, on which
 G_DEFINE_TYPE(), etc are based.
 
 |[&lt;!-- language="C" --&gt;
@@ -6229,33 +6264,33 @@ The only pieces which have to be manually provided are the definitions of
 the instance and class structure and the definitions of the instance and
 class init functions.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1861"/>
+                       line="1896"/>
       <parameters>
         <parameter name="TN">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1786">The name of the new type, in Camel case.</doc>
+               line="1821">The name of the new type, in Camel case.</doc>
         </parameter>
         <parameter name="t_n">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1787">The name of the new type, in lowercase, with words
+               line="1822">The name of the new type, in lowercase, with words
    separated by `_`.</doc>
         </parameter>
         <parameter name="T_P">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1789">The #GType of the parent type.</doc>
+               line="1824">The #GType of the parent type.</doc>
         </parameter>
         <parameter name="_f_">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1790">#GTypeFlags to pass to g_type_register_static()</doc>
+               line="1825">#GTypeFlags to pass to g_type_register_static()</doc>
         </parameter>
         <parameter name="_C_">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1791">Custom code that gets inserted in the `*_get_type()` function.</doc>
+               line="1826">Custom code that gets inserted in the `*_get_type()` function.</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -6265,33 +6300,33 @@ class init functions.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1643">A convenience macro for type implementations.
+           line="1678">A convenience macro for type implementations.
 
 Similar to G_DEFINE_TYPE(), but allows you to insert custom code into the
 `*_get_type()` function, e.g. interface implementations via G_IMPLEMENT_INTERFACE().
 See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1658"/>
+                       line="1693"/>
       <parameters>
         <parameter name="TN">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1645">The name of the new type, in Camel case.</doc>
+               line="1680">The name of the new type, in Camel case.</doc>
         </parameter>
         <parameter name="t_n">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1646">The name of the new type in lowercase, with words separated by `_`.</doc>
+               line="1681">The name of the new type in lowercase, with words separated by `_`.</doc>
         </parameter>
         <parameter name="T_P">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1647">The #GType of the parent type.</doc>
+               line="1682">The #GType of the parent type.</doc>
         </parameter>
         <parameter name="_C_">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1648">Custom code that gets inserted in the `*_get_type()` function.</doc>
+               line="1683">Custom code that gets inserted in the `*_get_type()` function.</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -6301,7 +6336,7 @@ See G_DEFINE_TYPE_EXTENDED() for an example.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1659">A convenience macro for type implementations, which declares a class
+           line="1694">A convenience macro for type implementations, which declares a class
 initialization function, an instance initialization function (see #GTypeInfo
 for information about these), a static variable named `t_n_parent_class`
 pointing to the parent class, and adds private instance data to the type.
@@ -6317,23 +6352,23 @@ getter function `t_n_get_instance_private()`.
 
 See also: G_ADD_PRIVATE()</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1684"/>
+                       line="1719"/>
       <parameters>
         <parameter name="TN">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1661">The name of the new type, in Camel case.</doc>
+               line="1696">The name of the new type, in Camel case.</doc>
         </parameter>
         <parameter name="t_n">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1662">The name of the new type, in lowercase, with words
+               line="1697">The name of the new type, in lowercase, with words
  separated by `_`.</doc>
         </parameter>
         <parameter name="T_P">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1664">The #GType of the parent type.</doc>
+               line="1699">The #GType of the parent type.</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -6563,24 +6598,24 @@ nickname.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="1909">A convenience macro to ease interface addition in the `_C_` section
+           line="1944">A convenience macro to ease interface addition in the `_C_` section
 of G_DEFINE_TYPE_WITH_CODE() or G_DEFINE_ABSTRACT_TYPE_WITH_CODE().
 See G_DEFINE_TYPE_EXTENDED() for an example.
 
 Note that this macro can only be used together with the `G_DEFINE_TYPE_*`
 macros, since it depends on variable names from those macros.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="1923"/>
+                       line="1958"/>
       <parameters>
         <parameter name="TYPE_IFACE">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1911">The #GType of the interface to add</doc>
+               line="1946">The #GType of the interface to add</doc>
         </parameter>
         <parameter name="iface_init">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="1912">The interface init function, of type #GInterfaceInitFunc</doc>
+               line="1947">The interface init function, of type #GInterfaceInitFunc</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -11313,34 +11348,34 @@ Since 2.13.0</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="2042">Evaluates to the @field_name inside the @inst private data
+           line="2077">Evaluates to the @field_name inside the @inst private data
 structure for @TypeName.
 
 Note that this macro can only be used together with the `G_DEFINE_TYPE_*`
 and G_ADD_PRIVATE() macros, since it depends on variable names from
 those macros.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2058"/>
+                       line="2093"/>
       <parameters>
         <parameter name="TypeName">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2044">the name of the type in CamelCase</doc>
+               line="2079">the name of the type in CamelCase</doc>
         </parameter>
         <parameter name="inst">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2045">the instance of @TypeName you wish to access</doc>
+               line="2080">the instance of @TypeName you wish to access</doc>
         </parameter>
         <parameter name="field_type">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2046">the type of the field in the private data structure</doc>
+               line="2081">the type of the field in the private data structure</doc>
         </parameter>
         <parameter name="field_name">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2047">the name of the field in the private data structure</doc>
+               line="2082">the name of the field in the private data structure</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -11350,29 +11385,29 @@ those macros.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="2024">Evaluates to a pointer to the @field_name inside the @inst private data
+           line="2059">Evaluates to a pointer to the @field_name inside the @inst private data
 structure for @TypeName.
 
 Note that this macro can only be used together with the `G_DEFINE_TYPE_*`
 and G_ADD_PRIVATE() macros, since it depends on variable names from
 those macros.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2039"/>
+                       line="2074"/>
       <parameters>
         <parameter name="TypeName">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2026">the name of the type in CamelCase</doc>
+               line="2061">the name of the type in CamelCase</doc>
         </parameter>
         <parameter name="inst">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2027">the instance of @TypeName you wish to access</doc>
+               line="2062">the instance of @TypeName you wish to access</doc>
         </parameter>
         <parameter name="field_name">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2028">the name of the field in the private data structure</doc>
+               line="2063">the name of the field in the private data structure</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -11382,24 +11417,24 @@ those macros.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="2007">Evaluates to the offset of the @field inside the instance private data
+           line="2042">Evaluates to the offset of the @field inside the instance private data
 structure for @TypeName.
 
 Note that this macro can only be used together with the `G_DEFINE_TYPE_*`
 and G_ADD_PRIVATE() macros, since it depends on variable names from
 those macros.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2021"/>
+                       line="2056"/>
       <parameters>
         <parameter name="TypeName">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2009">the name of the type in CamelCase</doc>
+               line="2044">the name of the type in CamelCase</doc>
         </parameter>
         <parameter name="field">
           <doc xml:space="preserve"
                filename="install/include/glib-2.0/gobject/gtype.h"
-               line="2010">the name of the field in the private data structure</doc>
+               line="2045">the name of the field in the private data structure</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -14293,9 +14328,9 @@ This macro should only be used in type implementations.</doc>
               c:type="G_TYPE_FLAG_RESERVED_ID_BIT">
       <doc xml:space="preserve"
            filename="install/include/glib-2.0/gobject/gtype.h"
-           line="2471">A bit in the type number that's supposed to be left untouched.</doc>
+           line="2506">A bit in the type number that's supposed to be left untouched.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2476"/>
+                       line="2511"/>
       <type name="GLib.Type" c:type="GType"/>
     </constant>
     <function-macro name="TYPE_FROM_CLASS"
@@ -15174,7 +15209,7 @@ implementations. It unreferences a class without consulting the chain
 of #GTypeClassCacheFuncs, avoiding the recursion which would occur
 otherwise.</doc>
         <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                         line="2370"/>
+                         line="2405"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -15625,7 +15660,7 @@ at most one instantiatable prerequisite type.</doc>
 if @interface_type has not been added to @instance_type or does
 not have a #GTypePlugin structure. See g_type_add_interface_dynamic().</doc>
         <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                         line="2352"/>
+                         line="2387"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="checkout/gobject-introspection/gir/gobject-2.0.c"
@@ -16736,7 +16771,7 @@ Note that this function should only be used from source code
 that implements or has internal knowledge of the implementation of
 @type.</doc>
         <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                         line="2380"/>
+                         line="2415"/>
         <return-value>
           <doc xml:space="preserve"
                filename="checkout/gobject-introspection/gir/gobject-2.0.c"
@@ -26166,7 +26201,7 @@ passed in to figure whether they actually want to cache the class of this
 type, since all classes are routed through the same #GTypeClassCacheFunc
 chain.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2364"/>
+                       line="2399"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -26255,7 +26290,7 @@ implementation of #GObject uses this facility to check that an
 object implements all of the properties that are defined on its
 interfaces.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2373"/>
+                       line="2408"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -26350,7 +26385,7 @@ pointed to by @info is used to manage the relationship.</doc>
               c:identifier="g_type_check_class_cast"
               introspectable="0">
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2396"/>
+                       line="2431"/>
       <return-value>
         <type name="TypeClass" c:type="GTypeClass*"/>
       </return-value>
@@ -26366,7 +26401,7 @@ pointed to by @info is used to manage the relationship.</doc>
     <function name="type_check_class_is_a"
               c:identifier="g_type_check_class_is_a">
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2399"/>
+                       line="2434"/>
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
@@ -26385,7 +26420,7 @@ pointed to by @info is used to manage the relationship.</doc>
            line="5792">Private helper function to aid implementation of the
 G_TYPE_CHECK_INSTANCE() macro.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2385"/>
+                       line="2420"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/gobject-2.0.c"
@@ -26405,7 +26440,7 @@ G_TYPE_CHECK_INSTANCE() macro.</doc>
               c:identifier="g_type_check_instance_cast"
               introspectable="0">
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2387"/>
+                       line="2422"/>
       <return-value>
         <type name="TypeInstance" c:type="GTypeInstance*"/>
       </return-value>
@@ -26421,7 +26456,7 @@ G_TYPE_CHECK_INSTANCE() macro.</doc>
     <function name="type_check_instance_is_a"
               c:identifier="g_type_check_instance_is_a">
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2390"/>
+                       line="2425"/>
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
@@ -26437,7 +26472,7 @@ G_TYPE_CHECK_INSTANCE() macro.</doc>
     <function name="type_check_instance_is_fundamentally_a"
               c:identifier="g_type_check_instance_is_fundamentally_a">
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2393"/>
+                       line="2428"/>
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
@@ -26453,7 +26488,7 @@ G_TYPE_CHECK_INSTANCE() macro.</doc>
     <function name="type_check_is_value_type"
               c:identifier="g_type_check_is_value_type">
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2402"/>
+                       line="2437"/>
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
@@ -26465,7 +26500,7 @@ G_TYPE_CHECK_INSTANCE() macro.</doc>
     </function>
     <function name="type_check_value" c:identifier="g_type_check_value">
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2404"/>
+                       line="2439"/>
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
@@ -26478,7 +26513,7 @@ G_TYPE_CHECK_INSTANCE() macro.</doc>
     <function name="type_check_value_holds"
               c:identifier="g_type_check_value_holds">
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2406"/>
+                       line="2441"/>
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
@@ -26652,7 +26687,7 @@ Note: Do not use this function, unless you're implementing a
 fundamental type. Also language bindings should not use this
 function, but g_object_new() instead.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2359"/>
+                       line="2394"/>
       <return-value>
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/gobject-2.0.c"
@@ -26814,7 +26849,7 @@ the type, if there is one.
 Like g_type_create_instance(), this function is reserved for
 implementors of fundamental types.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2361"/>
+                       line="2396"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -26857,7 +26892,7 @@ yet).</doc>
            line="6128">Internal function, used to extract the fundamental type ID portion.
 Use G_TYPE_FUNDAMENTAL() instead.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2357"/>
+                       line="2392"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/gobject-2.0.c"
@@ -26882,7 +26917,7 @@ register a new fundamental type with g_type_register_fundamental().
 The returned type ID represents the highest currently registered
 fundamental type identifier.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2355"/>
+                       line="2390"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/gobject-2.0.c"
@@ -26923,7 +26958,7 @@ variable to include instance-count).</doc>
            filename="checkout/gobject-introspection/gir/gobject-2.0.c"
            line="6167">Returns the #GTypePlugin structure for @type.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2350"/>
+                       line="2385"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/gobject-2.0.c"
@@ -27075,7 +27110,7 @@ at most one instantiatable prerequisite type.</doc>
 if @interface_type has not been added to @instance_type or does
 not have a #GTypePlugin structure. See g_type_add_interface_dynamic().</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2352"/>
+                       line="2387"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/gobject-2.0.c"
@@ -27294,7 +27329,7 @@ not be passed in and will most likely lead to a crash.</doc>
     <function name="type_name_from_class"
               c:identifier="g_type_name_from_class">
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2417"/>
+                       line="2452"/>
       <return-value transfer-ownership="none">
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
@@ -27307,7 +27342,7 @@ not be passed in and will most likely lead to a crash.</doc>
     <function name="type_name_from_instance"
               c:identifier="g_type_name_from_instance">
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2415"/>
+                       line="2450"/>
       <return-value transfer-ownership="none">
         <type name="utf8" c:type="const gchar*"/>
       </return-value>
@@ -27639,7 +27674,7 @@ struct and calling g_type_register_static().</doc>
 maintained by @cache_func has to be empty when calling
 g_type_remove_class_cache_func() to avoid leaks.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2367"/>
+                       line="2402"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -27670,7 +27705,7 @@ g_type_remove_class_cache_func() to avoid leaks.</doc>
            line="6682">Removes an interface check function added with
 g_type_add_interface_check().</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2376"/>
+                       line="2411"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -27728,7 +27763,7 @@ g_type_add_interface_check().</doc>
     </function>
     <function name="type_test_flags" c:identifier="g_type_test_flags">
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2409"/>
+                       line="2444"/>
       <return-value transfer-ownership="none">
         <type name="gboolean" c:type="gboolean"/>
       </return-value>
@@ -27753,7 +27788,7 @@ Note that this function should only be used from source code
 that implements or has internal knowledge of the implementation of
 @type.</doc>
       <source-position filename="install/include/glib-2.0/gobject/gtype.h"
-                       line="2380"/>
+                       line="2415"/>
       <return-value>
         <doc xml:space="preserve"
              filename="checkout/gobject-introspection/gir/gobject-2.0.c"

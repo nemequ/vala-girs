@@ -61,6 +61,18 @@ namespace AppStream {
 		public void set_platform (string platform);
 		public void set_size (uint64 size, AppStream.SizeKind kind);
 	}
+	[CCode (cheader_filename = "appstream.h", type_id = "as_branding_get_type ()")]
+	public class Branding : GLib.Object {
+		[CCode (has_construct_function = false)]
+		[Version (since = "0.10")]
+		public Branding ();
+		[Version (since = "0.15.2")]
+		public unowned string? get_color (AppStream.ColorKind kind, AppStream.ColorSchemeKind scheme_kind);
+		[Version (since = "0.15.2")]
+		public void remove_color (AppStream.ColorKind kind, AppStream.ColorSchemeKind scheme_preference);
+		[Version (since = "0.15.2")]
+		public void set_color (AppStream.ColorKind kind, AppStream.ColorSchemeKind scheme_preference, string colorcode);
+	}
 	[CCode (cheader_filename = "appstream.h", type_id = "as_bundle_get_type ()")]
 	public class Bundle : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -163,6 +175,8 @@ namespace AppStream {
 		public unowned GLib.GenericArray<AppStream.Agreement> get_agreements ();
 		[Version (since = "0.14.0")]
 		public unowned string get_branch ();
+		[Version (since = "0.15.2")]
+		public unowned AppStream.Branding? get_branding ();
 		[Version (since = "0.8.0")]
 		public unowned AppStream.Bundle? get_bundle (AppStream.BundleKind bundle_kind);
 		[Version (since = "0.10")]
@@ -180,6 +194,8 @@ namespace AppStream {
 		[Version (since = "0.10.5")]
 		public unowned string get_custom_value (string key);
 		public unowned string get_data_id ();
+		[Version (since = "0.15.2")]
+		public unowned string get_date_eol ();
 		public unowned string get_description ();
 		[Version (deprecated = true, deprecated_since = "0.11.0", since = "0.9.8")]
 		public unowned string get_desktop_id ();
@@ -238,6 +254,8 @@ namespace AppStream {
 		public unowned GLib.HashTable<void*,void*> get_summary_table ();
 		[Version (since = "0.15.0")]
 		public unowned GLib.GenericArray<AppStream.Relation> get_supports ();
+		[Version (since = "0.15.2")]
+		public uint64 get_timestamp_eol ();
 		[Version (since = "0.9.2")]
 		public unowned GLib.GenericArray<AppStream.Translation> get_translations ();
 		[Version (since = "0.6.2")]
@@ -267,8 +285,12 @@ namespace AppStream {
 		public void set_active_locale (string? locale);
 		[Version (since = "0.14.0")]
 		public void set_branch (string branch);
+		[Version (since = "0.15.2")]
+		public void set_branding (AppStream.Branding branding);
 		public void set_compulsory_for_desktop (string desktop);
 		public void set_data_id (string value);
+		[Version (since = "0.15.2")]
+		public void set_date_eol (string date);
 		public void set_description (string value, string? locale);
 		public void set_developer_name (string value, string? locale);
 		public void set_id (string value);
@@ -857,6 +879,11 @@ namespace AppStream {
 		public void set_url (string url);
 		public void set_width (uint width);
 	}
+	[CCode (cheader_filename = "appstream.h", has_type_id = false)]
+	public struct BrandingColorIter {
+		public void init (AppStream.Branding branding);
+		public bool next (out AppStream.ColorKind kind, out AppStream.ColorSchemeKind scheme_preference, out string value);
+	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_AGREEMENT_KIND_", type_id = "as_agreement_kind_get_type ()")]
 	public enum AgreementKind {
 		UNKNOWN,
@@ -907,6 +934,26 @@ namespace AppStream {
 		BLAKE2B,
 		BLAKE2S;
 		public static AppStream.ChecksumKind from_string (string kind_str);
+		public unowned string to_string ();
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_COLOR_KIND_", type_id = "as_color_kind_get_type ()")]
+	public enum ColorKind {
+		UNKNOWN,
+		PRIMARY,
+		PRIMARY_TEXT;
+		[Version (since = "0.15.2")]
+		public static AppStream.ColorKind from_string (string str);
+		[Version (since = "0.15.2")]
+		public unowned string to_string ();
+	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_COLOR_SCHEME_KIND_", type_id = "as_color_scheme_kind_get_type ()")]
+	public enum ColorSchemeKind {
+		UNKNOWN,
+		LIGHT,
+		DARK;
+		[Version (since = "0.15.2")]
+		public static AppStream.ColorSchemeKind from_string (string str);
+		[Version (since = "0.15.2")]
 		public unowned string to_string ();
 	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_COMPONENT_KIND_", has_type_id = false)]
@@ -1414,6 +1461,18 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (replacement = "ChecksumKind.to_string")]
 	public static unowned string checksum_kind_to_string (AppStream.ChecksumKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ColorKind.from_string", since = "0.15.2")]
+	public static AppStream.ColorKind color_kind_from_string (string str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ColorKind.to_string", since = "0.15.2")]
+	public static unowned string color_kind_to_string (AppStream.ColorKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ColorSchemeKind.from_string", since = "0.15.2")]
+	public static AppStream.ColorSchemeKind color_scheme_kind_from_string (string str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ColorSchemeKind.to_string", since = "0.15.2")]
+	public static unowned string color_scheme_kind_to_string (AppStream.ColorSchemeKind kind);
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (replacement = "ComponentKind.from_string")]
 	public static AppStream.ComponentKind component_kind_from_string (string kind_str);

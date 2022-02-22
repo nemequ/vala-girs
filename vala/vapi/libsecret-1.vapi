@@ -180,7 +180,7 @@ namespace Secret {
 		public Secret.Value @ref ();
 		public void unref ();
 		[Version (since = "0.19.0")]
-		public string unref_to_password (size_t length);
+		public string unref_to_password (ref size_t length);
 	}
 	[CCode (cheader_filename = "libsecret/secret.h", type_cname = "SecretBackendInterface", type_id = "secret_backend_get_type ()")]
 	[Version (since = "0.19.0")]
