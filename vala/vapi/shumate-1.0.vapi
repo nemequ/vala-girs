@@ -404,12 +404,12 @@ namespace Shumate {
 		METRIC,
 		IMPERIAL
 	}
-	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_FILE_CACHE_ERROR_")]
+	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_FILE_CACHE_ERROR_", type_id = "shumate_file_cache_error_get_type ()")]
 	public errordomain FileCacheError {
 		FAILED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_STYLE_ERROR_")]
+	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_STYLE_ERROR_", type_id = "shumate_style_error_get_type ()")]
 	public errordomain StyleError {
 		FAILED,
 		MALFORMED_STYLE,
@@ -418,7 +418,7 @@ namespace Shumate {
 		SUPPORT_OMITTED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_TILE_DOWNLOADER_ERROR_")]
+	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_TILE_DOWNLOADER_ERROR_", type_id = "shumate_tile_downloader_error_get_type ()")]
 	public errordomain TileDownloaderError {
 		FAILED,
 		BAD_RESPONSE,
@@ -462,6 +462,10 @@ namespace Shumate {
 	[CCode (cheader_filename = "shumate/shumate.h")]
 	[Version (replacement = "FileCacheError.quark")]
 	public static GLib.Quark file_cache_error_quark ();
+	[CCode (cheader_filename = "shumate/shumate.h")]
+	public static unowned string get_user_agent ();
+	[CCode (cheader_filename = "shumate/shumate.h")]
+	public static void set_user_agent (string? new_user_agent);
 	[CCode (cheader_filename = "shumate/shumate.h")]
 	[Version (replacement = "StyleError.quark")]
 	public static GLib.Quark style_error_quark ();

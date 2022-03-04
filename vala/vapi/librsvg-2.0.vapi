@@ -168,7 +168,7 @@ namespace Rsvg {
 		PT,
 		PC
 	}
-	[CCode (cheader_filename = "librsvg/rsvg.h", cprefix = "RSVG_ERROR_")]
+	[CCode (cheader_filename = "librsvg/rsvg.h", cprefix = "RSVG_ERROR_", type_id = "rsvg_error_get_type ()")]
 	public errordomain Error {
 		FAILED;
 		public static GLib.Quark quark ();

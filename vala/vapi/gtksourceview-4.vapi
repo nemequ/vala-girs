@@ -1214,7 +1214,7 @@ namespace Gtk {
 		LINES,
 		MARKS
 	}
-	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_COMPLETION_ERROR_")]
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_COMPLETION_ERROR_", type_id = "gtk_source_completion_error_get_type ()")]
 	[GIR (name = "CompletionError")]
 	public errordomain SourceCompletionError {
 		ALREADY_BOUND,
@@ -1224,7 +1224,7 @@ namespace Gtk {
 		[Version (replacement = "CompletionError.quark")]
 		public static GLib.Quark uark ();
 	}
-	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_FILE_LOADER_ERROR_")]
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_FILE_LOADER_ERROR_", type_id = "gtk_source_file_loader_error_get_type ()")]
 	[GIR (name = "FileLoaderError")]
 	public errordomain SourceFileLoaderError {
 		TOO_BIG,
@@ -1235,7 +1235,7 @@ namespace Gtk {
 		[Version (replacement = "FileLoaderError.quark")]
 		public static GLib.Quark uark ();
 	}
-	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_FILE_SAVER_ERROR_")]
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_FILE_SAVER_ERROR_", type_id = "gtk_source_file_saver_error_get_type ()")]
 	[GIR (name = "FileSaverError")]
 	[Version (since = "3.14")]
 	public errordomain SourceFileSaverError {

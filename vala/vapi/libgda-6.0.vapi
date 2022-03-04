@@ -3198,7 +3198,7 @@ namespace Gda {
 		ROLLBACK,
 		RECOVER
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DATA_MODEL_")]
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DATA_MODEL_", has_type_id = false)]
 	public errordomain DataModelError {
 		ROW_OUT_OF_RANGE_ERROR,
 		COLUMN_OUT_OF_RANGE_ERROR,
@@ -3215,7 +3215,7 @@ namespace Gda {
 		[Version (replacement = "DataModel.error_quark")]
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DDL_MODIFIABLE_")]
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_DDL_MODIFIABLE_", has_type_id = false)]
 	public errordomain DdlModifiableError {
 		NOT_IMPLEMENTED,
 		CONNECTION_NOT_OPENED,
@@ -3223,14 +3223,14 @@ namespace Gda {
 		[Version (replacement = "DdlModifiable.error_quark")]
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_PROVIDER_META_")]
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_PROVIDER_META_", has_type_id = false)]
 	public errordomain ProviderMetaError {
 		NO_CONNECTION_ERROR,
 		QUERY_ERROR;
 		[Version (replacement = "ProviderMeta.error_quark")]
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_SQL_")]
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_SQL_", has_type_id = false)]
 	public errordomain SqlError {
 		STRUCTURE_CONTENTS_ERROR,
 		MALFORMED_IDENTIFIER_ERROR,
@@ -3238,7 +3238,7 @@ namespace Gda {
 		VALIDATION_ERROR;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_WORKER_")]
+	[CCode (cheader_filename = "libgda/libgda.h", cprefix = "GDA_WORKER_", has_type_id = false)]
 	public errordomain WorkerError {
 		INTER_THREAD_ERROR,
 		JOB_NOT_FOUND_ERROR,

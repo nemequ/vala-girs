@@ -104,7 +104,7 @@ namespace GSSDP {
 		[CCode (cname = "GSSDP_UDA_VERSION_1_1")]
 		VERSION_1_1
 	}
-	[CCode (cheader_filename = "libgssdp/gssdp.h", cprefix = "GSSDP_ERROR_")]
+	[CCode (cheader_filename = "libgssdp/gssdp.h", cprefix = "GSSDP_ERROR_", type_id = "gssdp_error_get_type ()")]
 	public errordomain Error {
 		NO_IP_ADDRESS,
 		FAILED;

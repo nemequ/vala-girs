@@ -422,7 +422,7 @@ namespace GUPnP {
 		IN,
 		OUT
 	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", cprefix = "GUPNP_CONTROL_ERROR_")]
+	[CCode (cheader_filename = "libgupnp/gupnp.h", cprefix = "GUPNP_CONTROL_ERROR_", type_id = "gupnp_control_error_get_type ()")]
 	public errordomain ControlError {
 		INVALID_ACTION,
 		INVALID_ARGS,
@@ -430,14 +430,14 @@ namespace GUPnP {
 		ACTION_FAILED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", cprefix = "GUPNP_EVENTING_ERROR_")]
+	[CCode (cheader_filename = "libgupnp/gupnp.h", cprefix = "GUPNP_EVENTING_ERROR_", type_id = "gupnp_eventing_error_get_type ()")]
 	public errordomain EventingError {
 		SUBSCRIPTION_FAILED,
 		SUBSCRIPTION_LOST,
 		NOTIFY_FAILED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", cprefix = "GUPNP_ROOT_DEVICE_ERROR_")]
+	[CCode (cheader_filename = "libgupnp/gupnp.h", cprefix = "GUPNP_ROOT_DEVICE_ERROR_", type_id = "gupnp_rootdevice_error_get_type ()")]
 	public errordomain RootdeviceError {
 		NO_CONTEXT,
 		NO_DESCRIPTION_PATH,
@@ -446,7 +446,7 @@ namespace GUPnP {
 		FAIL;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", cprefix = "GUPNP_SERVER_ERROR_")]
+	[CCode (cheader_filename = "libgupnp/gupnp.h", cprefix = "GUPNP_SERVER_ERROR_", type_id = "gupnp_server_error_get_type ()")]
 	public errordomain ServerError {
 		INTERNAL_SERVER_ERROR,
 		NOT_FOUND,
@@ -456,7 +456,7 @@ namespace GUPnP {
 		OTHER;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libgupnp/gupnp.h", cprefix = "GUPNP_XML_ERROR_")]
+	[CCode (cheader_filename = "libgupnp/gupnp.h", cprefix = "GUPNP_XML_ERROR_", type_id = "gupnp_xml_error_get_type ()")]
 	public errordomain XMLError {
 		PARSE,
 		NO_NODE,

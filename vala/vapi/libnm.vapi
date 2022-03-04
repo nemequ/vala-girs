@@ -5904,7 +5904,8 @@ namespace NM {
 		DESTROY_ALL,
 		DELETE_NEW_CONNECTIONS,
 		DISCONNECT_NEW_DEVICES,
-		ALLOW_OVERLAPPING
+		ALLOW_OVERLAPPING,
+		NO_PRESERVE_EXTERNAL_PORTS
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_INSTANCE_FLAGS_", type_id = "nm_client_instance_flags_get_type ()")]
 	[Flags]
@@ -6610,7 +6611,7 @@ namespace NM {
 		PARTNER,
 		ROAMING_PARTNER
 	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_AGENT_MANAGER_ERROR_")]
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_AGENT_MANAGER_ERROR_", type_id = "nm_agent_manager_error_get_type ()")]
 	public errordomain AgentManagerError {
 		FAILED,
 		[CCode (cname = "NM_AGENT_MANAGER_ERROR_PERMISSION_DENIED")]
@@ -6625,14 +6626,14 @@ namespace NM {
 		USERCANCELED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_ERROR_")]
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CLIENT_ERROR_", type_id = "nm_client_error_get_type ()")]
 	public errordomain ClientError {
 		FAILED,
 		MANAGER_NOT_RUNNING,
 		OBJECT_CREATION_FAILED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CONNECTION_ERROR_")]
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CONNECTION_ERROR_", type_id = "nm_connection_error_get_type ()")]
 	public errordomain ConnectionError {
 		FAILED,
 		[CCode (cname = "NM_CONNECTION_ERROR_SETTING_NOT_FOUND")]
@@ -6651,7 +6652,7 @@ namespace NM {
 		INVALIDPROPERTY;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CRYPTO_ERROR_")]
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_CRYPTO_ERROR_", type_id = "nm_crypto_error_get_type ()")]
 	public errordomain CryptoError {
 		FAILED,
 		INVALID_DATA,
@@ -6661,7 +6662,7 @@ namespace NM {
 		ENCRYPTION_FAILED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_ERROR_")]
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_ERROR_", type_id = "nm_device_error_get_type ()")]
 	public errordomain DeviceError {
 		FAILED,
 		[CCode (cname = "NM_DEVICE_ERROR_CREATION_FAILED")]
@@ -6686,7 +6687,7 @@ namespace NM {
 		INVALIDARGUMENT;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_MANAGER_ERROR_")]
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_MANAGER_ERROR_", type_id = "nm_manager_error_get_type ()")]
 	public errordomain ManagerError {
 		FAILED,
 		[CCode (cname = "NM_MANAGER_ERROR_PERMISSION_DENIED")]
@@ -6717,7 +6718,7 @@ namespace NM {
 		MISSINGPLUGIN;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SECRET_AGENT_ERROR_")]
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SECRET_AGENT_ERROR_", type_id = "nm_secret_agent_error_get_type ()")]
 	public errordomain SecretAgentError {
 		FAILED,
 		[CCode (cname = "NM_SECRET_AGENT_ERROR_PERMISSION_DENIED")]
@@ -6732,7 +6733,7 @@ namespace NM {
 		NOSECRETS;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTINGS_ERROR_")]
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTINGS_ERROR_", type_id = "nm_settings_error_get_type ()")]
 	public errordomain SettingsError {
 		FAILED,
 		[CCode (cname = "NM_SETTINGS_ERROR_PERMISSION_DENIED")]
@@ -6751,7 +6752,7 @@ namespace NM {
 		INVALIDARGUMENTS;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_VPN_PLUGIN_ERROR_")]
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_VPN_PLUGIN_ERROR_", type_id = "nm_vpn_plugin_error_get_type ()")]
 	public errordomain VpnPluginError {
 		FAILED,
 		[CCode (cname = "NM_VPN_PLUGIN_ERROR_STARTING_IN_PROGRESS")]

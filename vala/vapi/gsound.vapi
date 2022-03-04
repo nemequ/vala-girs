@@ -112,7 +112,7 @@ namespace GSound {
 		public bool set_attributesv (GLib.HashTable<string,string> attrs) throws GLib.Error;
 		public bool set_driver (string driver) throws GLib.Error;
 	}
-	[CCode (cheader_filename = "gsound.h", cprefix = "GSOUND_ERROR_")]
+	[CCode (cheader_filename = "gsound.h", cprefix = "GSOUND_ERROR_", has_type_id = false)]
 	public errordomain Error {
 		NOTSUPPORTED,
 		INVALID,

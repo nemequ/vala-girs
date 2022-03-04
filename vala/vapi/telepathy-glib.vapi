@@ -2863,7 +2863,7 @@ namespace TelepathyGLib {
 		DBUS,
 		STREAM
 	}
-	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_ERROR_")]
+	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", cprefix = "TP_ERROR_", has_type_id = false)]
 	public errordomain Error {
 		NETWORK_ERROR,
 		NOT_IMPLEMENTED,

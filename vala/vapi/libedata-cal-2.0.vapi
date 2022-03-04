@@ -25,7 +25,7 @@ namespace E {
 		[Version (since = "3.10")]
 		public string dup_cache_dir ();
 		[Version (since = "3.34")]
-		public bool foreach_view ();
+		public bool foreach_view (E.CalBackendForeachViewFunc? func);
 		[Version (since = "3.34")]
 		public void foreach_view_notify_progress (bool only_completed_views, int percent, string? message);
 		[Version (since = "3.10")]
@@ -249,7 +249,7 @@ namespace E {
 		public bool search (string? sexp, out GLib.SList<E.CalCacheSearchData> out_data, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool search_components (string? sexp, out GLib.SList<ECal.Component> out_components, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool search_ids (string? sexp, out GLib.SList<ECal.ComponentId> out_ids, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public bool search_with_callback (string? sexp, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool search_with_callback (string? sexp, [CCode (delegate_target_pos = 2.5)] E.CalCacheSearchFunc? func, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.34")]
 		public bool set_component_custom_flags (string uid, string? rid, uint32 custom_flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool set_component_extra (string uid, string? rid, string? extra, GLib.Cancellable? cancellable = null) throws GLib.Error;

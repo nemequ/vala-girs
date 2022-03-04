@@ -16,9 +16,9 @@ namespace Vte {
 		public bool set_size (int rows, int columns) throws GLib.Error;
 		public bool set_utf8 (bool utf8) throws GLib.Error;
 		[Version (since = "0.48")]
-		public async bool spawn_async (string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable, out GLib.Pid child_pid) throws GLib.Error;
+		public async bool spawn_async (string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 5.33333, destroy_notify_pos = 5.66667)] owned GLib.SpawnChildSetupFunc? child_setup, int timeout, GLib.Cancellable? cancellable, out GLib.Pid child_pid) throws GLib.Error;
 		[Version (since = "0.62")]
-		public async void spawn_with_fds_async (string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, [CCode (array_length_cname = "n_fds", array_length_pos = 4.5)] int[]? fds, [CCode (array_length_cname = "n_map_fds", array_length_pos = 5.5)] int[]? map_fds, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable);
+		public async void spawn_with_fds_async (string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, [CCode (array_length_cname = "n_fds", array_length_pos = 4.5)] int[]? fds, [CCode (array_length_cname = "n_map_fds", array_length_pos = 5.5)] int[]? map_fds, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 7.33333, destroy_notify_pos = 7.66667)] owned GLib.SpawnChildSetupFunc? child_setup, int timeout, GLib.Cancellable? cancellable);
 		[CCode (has_construct_function = false)]
 		public Pty.sync (Vte.PtyFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int fd { get; construct; }
@@ -225,11 +225,11 @@ namespace Vte {
 		[Version (since = "0.70")]
 		public void set_yfill (bool fill);
 		[Version (since = "0.48")]
-		public void spawn_async (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable);
+		public void spawn_async (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 6.33333, destroy_notify_pos = 6.66667)] owned GLib.SpawnChildSetupFunc? child_setup, int timeout, GLib.Cancellable? cancellable, [CCode (scope = "async")] Vte.TerminalSpawnAsyncCallback? callback);
 		[Version (deprecated = true, deprecated_since = "0.48")]
 		public bool spawn_sync (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 6.5)] GLib.SpawnChildSetupFunc? child_setup, out GLib.Pid child_pid, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "0.62")]
-		public void spawn_with_fds_async (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, [CCode (array_length_cname = "n_fds", array_length_pos = 5.5)] int[]? fds, [CCode (array_length_cname = "n_map_fds", array_length_pos = 6.5)] int[]? map_fds, GLib.SpawnFlags spawn_flags, int timeout, GLib.Cancellable? cancellable);
+		public void spawn_with_fds_async (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, [CCode (array_length_cname = "n_fds", array_length_pos = 5.5)] int[]? fds, [CCode (array_length_cname = "n_map_fds", array_length_pos = 6.5)] int[]? map_fds, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 8.33333, destroy_notify_pos = 8.66667)] owned GLib.SpawnChildSetupFunc? child_setup, int timeout, GLib.Cancellable? cancellable, [CCode (scope = "async")] Vte.TerminalSpawnAsyncCallback? callback);
 		public void unselect_all ();
 		public void watch_child (GLib.Pid child_pid);
 		public bool write_contents_sync (GLib.OutputStream stream, Vte.WriteFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -414,13 +414,13 @@ namespace Vte {
 	public enum WriteFlags {
 		DEFAULT
 	}
-	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_PTY_ERROR_")]
+	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_PTY_ERROR_", type_id = "vte_pty_error_get_type ()")]
 	public errordomain PtyError {
 		PTY_HELPER_FAILED,
 		PTY98_FAILED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_REGEX_ERROR_")]
+	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_REGEX_ERROR_", type_id = "vte_regex_error_get_type ()")]
 	[Version (since = "0.46")]
 	public errordomain RegexError {
 		INCOMPATIBLE,

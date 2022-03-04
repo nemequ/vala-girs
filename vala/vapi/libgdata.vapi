@@ -2213,19 +2213,19 @@ namespace GData {
 	public enum YouTubeStandardFeedType {
 		FEED
 	}
-	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_DOCUMENTS_SERVICE_ERROR_INVALID_CONTENT_")]
+	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_DOCUMENTS_SERVICE_ERROR_INVALID_CONTENT_", type_id = "gdata_documents_service_error_get_type ()")]
 	[Version (since = "0.4.0")]
 	public errordomain DocumentsServiceError {
 		TYPE;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_PARSER_ERROR_")]
+	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_PARSER_ERROR_", type_id = "gdata_parser_error_get_type ()")]
 	public errordomain ParserError {
 		PARSING_STRING,
 		EMPTY_DOCUMENT;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_SERVICE_ERROR_")]
+	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_SERVICE_ERROR_", type_id = "gdata_service_error_get_type ()")]
 	public errordomain ServiceError {
 		UNAVAILABLE,
 		PROTOCOL_ERROR,
@@ -2242,7 +2242,7 @@ namespace GData {
 		API_QUOTA_EXCEEDED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_YOUTUBE_SERVICE_ERROR_")]
+	[CCode (cheader_filename = "gdata/gdata.h", cprefix = "GDATA_YOUTUBE_SERVICE_ERROR_", type_id = "gdata_youtube_service_error_get_type ()")]
 	public errordomain YouTubeServiceError {
 		API_QUOTA_EXCEEDED,
 		ENTRY_QUOTA_EXCEEDED,

@@ -141,7 +141,7 @@ namespace Gspell {
 		public abstract void change_all (string word, string change_to);
 		public abstract bool goto_next (out string word, out Gspell.Checker spell_checker) throws GLib.Error;
 	}
-	[CCode (cheader_filename = "gspell/gspell.h", cprefix = "GSPELL_CHECKER_ERROR_")]
+	[CCode (cheader_filename = "gspell/gspell.h", cprefix = "GSPELL_CHECKER_ERROR_", type_id = "gspell_checker_error_get_type ()")]
 	public errordomain CheckerError {
 		DICTIONARY,
 		NO_LANGUAGE_SET;

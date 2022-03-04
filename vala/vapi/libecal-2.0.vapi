@@ -683,7 +683,7 @@ namespace ECal {
 		[Version (since = "3.34")]
 		public uint remove_by_kind (ICal.ParameterKind kind, bool all);
 		[Version (since = "3.34")]
-		public void set_from_property (ICal.Property property);
+		public void set_from_property (ICal.Property property, ECal.ComponentParameterBagFilterFunc? func);
 		[Version (since = "3.34")]
 		public void take (owned ICal.Parameter param);
 	}
@@ -747,7 +747,7 @@ namespace ECal {
 		[Version (since = "3.34")]
 		public uint remove_by_kind (ICal.PropertyKind kind, bool all);
 		[Version (since = "3.34")]
-		public void set_from_component (ICal.Component component);
+		public void set_from_component (ICal.Component component, ECal.ComponentPropertyBagFilterFunc? func);
 		[Version (since = "3.34")]
 		public void take (owned ICal.Property prop);
 	}

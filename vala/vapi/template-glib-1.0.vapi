@@ -146,7 +146,7 @@ namespace Template {
 		EXPR,
 		VALUE
 	}
-	[CCode (cheader_filename = "tmpl-glib.h", cprefix = "TMPL_ERROR_")]
+	[CCode (cheader_filename = "tmpl-glib.h", cprefix = "TMPL_ERROR_", type_id = "tmpl_error_get_type ()")]
 	public errordomain Error {
 		INVALID_STATE,
 		TEMPLATE_NOT_FOUND,

@@ -114,7 +114,7 @@ namespace Libmsi {
 		STRING,
 		FILETIME
 	}
-	[CCode (cheader_filename = "libmsi.h", cprefix = "LIBMSI_DB_ERROR_")]
+	[CCode (cheader_filename = "libmsi.h", cprefix = "LIBMSI_DB_ERROR_", type_id = "libmsi_db_error_get_type ()")]
 	public errordomain DBError {
 		SUCCESS,
 		INVALIDARG,
@@ -151,7 +151,7 @@ namespace Libmsi {
 		BADLOCALIZEATTRIB;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libmsi.h", cprefix = "LIBMSI_RESULT_")]
+	[CCode (cheader_filename = "libmsi.h", cprefix = "LIBMSI_RESULT_", type_id = "libmsi_result_error_get_type ()")]
 	public errordomain ResultError {
 		SUCCESS,
 		ACCESS_DENIED,

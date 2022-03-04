@@ -809,7 +809,7 @@ namespace Goa {
 		[Version (deprecated = true, since = "3.26.0")]
 		public static uint override_properties (GLib.ObjectClass klass, uint property_id_begin);
 	}
-	[CCode (cheader_filename = "goa/goa.h", cprefix = "GOA_ERROR_")]
+	[CCode (cheader_filename = "goa/goa.h", cprefix = "GOA_ERROR_", type_id = "goa_error_get_type ()")]
 	public errordomain Error {
 		FAILED,
 		NOT_SUPPORTED,

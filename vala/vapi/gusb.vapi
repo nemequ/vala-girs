@@ -288,7 +288,7 @@ namespace GUsb {
 		VENDOR,
 		RESERVED
 	}
-	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_SOURCE_ERROR_")]
+	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_SOURCE_ERROR_", has_type_id = false)]
 	public errordomain SourceError {
 		[CCode (cname = "G_USB_SOURCE_ERROR_INTERNAL")]
 		SOURCE_ERROR_INTERNAL;

@@ -939,8 +939,7 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_COLOR_KIND_", type_id = "as_color_kind_get_type ()")]
 	public enum ColorKind {
 		UNKNOWN,
-		PRIMARY,
-		PRIMARY_TEXT;
+		PRIMARY;
 		[Version (since = "0.15.2")]
 		public static AppStream.ColorKind from_string (string str);
 		[Version (since = "0.15.2")]
@@ -1395,7 +1394,7 @@ namespace AppStream {
 		public static AppStream.VideoContainerKind from_string (string str);
 		public unowned string to_string ();
 	}
-	[CCode (cheader_filename = "appstream.h", cprefix = "AS_METADATA_ERROR_")]
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_METADATA_ERROR_", type_id = "as_metadata_error_get_type ()")]
 	public errordomain MetadataError {
 		FAILED,
 		PARSE,
@@ -1404,7 +1403,7 @@ namespace AppStream {
 		VALUE_MISSING;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "appstream.h", cprefix = "AS_POOL_ERROR_")]
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_POOL_ERROR_", type_id = "as_pool_error_get_type ()")]
 	public errordomain PoolError {
 		FAILED,
 		TARGET_NOT_WRITABLE,
@@ -1413,7 +1412,7 @@ namespace AppStream {
 		OLD_CACHE;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "appstream.h", cprefix = "AS_UTILS_ERROR_")]
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_UTILS_ERROR_", type_id = "as_utils_error_get_type ()")]
 	public errordomain UtilsError {
 		FAILED;
 		[Version (since = "0.14.0")]

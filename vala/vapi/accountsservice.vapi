@@ -46,11 +46,13 @@ namespace Act {
 		public void set_location (string location);
 		public void set_locked (bool locked);
 		public void set_password (string password, string hint);
+		public void set_password_expiration_policy (int64 min_days_between_changes, int64 max_days_between_changes, int64 days_to_warn, int64 days_after_expiration_until_lock);
 		public void set_password_hint (string hint);
 		public void set_password_mode (Act.UserPasswordMode password_mode);
 		public void set_real_name (string real_name);
 		public void set_session (string session);
 		public void set_session_type (string session_type);
+		public void set_user_expiration_policy (int64 expiration_time);
 		public void set_user_name (string user_name);
 		public void set_x_session (string x_session);
 		public int account_type { get; }
@@ -130,7 +132,7 @@ namespace Act {
 		SET_AT_LOGIN,
 		NONE
 	}
-	[CCode (cheader_filename = "act/act.h", cprefix = "ACT_USER_MANAGER_ERROR_")]
+	[CCode (cheader_filename = "act/act.h", cprefix = "ACT_USER_MANAGER_ERROR_", type_id = "act_user_manager_error_get_type ()")]
 	public errordomain UserManagerError {
 		FAILED,
 		USER_EXISTS,

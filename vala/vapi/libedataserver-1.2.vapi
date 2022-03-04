@@ -1406,17 +1406,17 @@ namespace E {
 		[Version (since = "3.32")]
 		public bool post_with_content_type_sync (string? uri, string data, size_t data_length, string? in_content_type, owned string? out_content_type, owned GLib.ByteArray? out_content, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool principal_property_search_sync (string? uri, bool apply_to_principal_collection_set, string? match_ns_uri, string match_property, string match_value, out GLib.SList<E.WebDAVResource> out_principals, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public bool propfind_sync (string? uri, string depth, E.XmlDocument? xml, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool propfind_sync (string? uri, string depth, E.XmlDocument? xml, [CCode (delegate_target_pos = 4.5)] E.WebDAVPropstatTraverseFunc? func, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool proppatch_sync (string? uri, E.XmlDocument xml, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool put_data_sync (string uri, string? etag, string content_type, string bytes, size_t length, out string? out_href, out string? out_etag, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool put_sync (string uri, string? etag, string content_type, GLib.InputStream stream, out string? out_href, out string? out_etag, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool refresh_lock_sync (string? uri, string lock_token, int32 lock_timeout, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool replace_with_detailed_error (Soup.RequestHTTP request, GLib.ByteArray? response_data, bool ignore_multistatus, string? prefix) throws GLib.Error;
-		public bool report_sync (string? uri, string? depth, E.XmlDocument xml, owned string? out_content_type, owned GLib.ByteArray? out_content, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool report_sync (string? uri, string? depth, E.XmlDocument xml, [CCode (delegate_target_pos = 4.5)] E.WebDAVPropstatTraverseFunc? func, owned string? out_content_type, owned GLib.ByteArray? out_content, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool set_acl_sync (string? uri, GLib.SList<E.WebDAVAccessControlEntry> entries, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public bool traverse_mkcalendar_response (Soup.Message? message, GLib.ByteArray xml_data) throws GLib.Error;
-		public bool traverse_mkcol_response (Soup.Message? message, GLib.ByteArray xml_data) throws GLib.Error;
-		public bool traverse_multistatus_response (Soup.Message? message, GLib.ByteArray xml_data) throws GLib.Error;
+		public bool traverse_mkcalendar_response (Soup.Message? message, GLib.ByteArray xml_data, E.WebDAVPropstatTraverseFunc? func) throws GLib.Error;
+		public bool traverse_mkcol_response (Soup.Message? message, GLib.ByteArray xml_data, E.WebDAVPropstatTraverseFunc? func) throws GLib.Error;
+		public bool traverse_multistatus_response (Soup.Message? message, GLib.ByteArray xml_data, E.WebDAVPropstatTraverseFunc? func) throws GLib.Error;
 		public bool unlock_sync (string? uri, string lock_token, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool update_properties_sync (string? uri, GLib.SList<E.WebDAVPropertyChange> changes, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static void util_free_privileges (GLib.Node? privileges);
@@ -1790,7 +1790,7 @@ namespace E {
 		OBJECT_UID,
 		PROPERTY
 	}
-	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_COLLATOR_ERROR_")]
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_COLLATOR_ERROR_", has_type_id = false)]
 	public errordomain CollatorError {
 		OPEN,
 		CONVERSION,

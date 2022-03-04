@@ -3805,7 +3805,7 @@ namespace MM {
 		ENHANCED;
 		public unowned string get_string ();
 	}
-	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CDMA_ACTIVATION_ERROR_")]
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CDMA_ACTIVATION_ERROR_", type_id = "mm_cdma_activation_error_get_type ()")]
 	public errordomain CdmaActivationError {
 		NONE,
 		UNKNOWN,
@@ -3826,7 +3826,7 @@ namespace MM {
 		STARTFAILED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CONNECTION_ERROR_")]
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CONNECTION_ERROR_", type_id = "mm_connection_error_get_type ()")]
 	public errordomain ConnectionError {
 		UNKNOWN,
 		[CCode (cname = "MM_CONNECTION_ERROR_NO_CARRIER")]
@@ -3838,7 +3838,7 @@ namespace MM {
 		NOANSWER;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CORE_ERROR_")]
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_CORE_ERROR_", type_id = "mm_core_error_get_type ()")]
 	public errordomain CoreError {
 		FAILED,
 		CANCELLED,
@@ -3862,7 +3862,7 @@ namespace MM {
 		EXISTS;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MESSAGE_ERROR_")]
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MESSAGE_ERROR_", type_id = "mm_message_error_get_type ()")]
 	public errordomain MessageError {
 		[CCode (cname = "MM_MESSAGE_ERROR_ME_FAILURE")]
 		MEFAILURE,
@@ -3911,7 +3911,7 @@ namespace MM {
 		UNKNOWN;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MOBILE_EQUIPMENT_ERROR_")]
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MOBILE_EQUIPMENT_ERROR_", type_id = "mm_mobile_equipment_error_get_type ()")]
 	public errordomain MobileEquipmentError {
 		[CCode (cname = "MM_MOBILE_EQUIPMENT_ERROR_PHONE_FAILURE")]
 		PHONEFAILURE,
@@ -4239,7 +4239,7 @@ namespace MM {
 		WIRELINEACCESSAREANOTALLOWED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SERIAL_ERROR_")]
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SERIAL_ERROR_", type_id = "mm_serial_error_get_type ()")]
 	public errordomain SerialError {
 		UNKNOWN,
 		[CCode (cname = "MM_SERIAL_ERROR_OPEN_FAILED")]

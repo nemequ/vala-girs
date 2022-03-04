@@ -850,7 +850,7 @@ namespace E {
 		@21,
 		@30
 	}
-	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CLIENT_ERROR_")]
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CLIENT_ERROR_", has_type_id = false)]
 	[Version (since = "3.2")]
 	public errordomain BookClientError {
 		NO_SUCH_BOOK,
@@ -860,7 +860,7 @@ namespace E {
 		NO_SPACE;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_PHONE_NUMBER_ERROR_")]
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_PHONE_NUMBER_ERROR_", has_type_id = false)]
 	[Version (since = "3.8")]
 	public errordomain PhoneNumberError {
 		NOT_IMPLEMENTED,

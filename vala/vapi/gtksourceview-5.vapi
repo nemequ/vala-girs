@@ -988,14 +988,14 @@ namespace GtkSource {
 		LINES,
 		MARKS
 	}
-	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_FILE_LOADER_ERROR_")]
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_FILE_LOADER_ERROR_", type_id = "gtk_source_file_loader_error_get_type ()")]
 	public errordomain FileLoaderError {
 		TOO_BIG,
 		ENCODING_AUTO_DETECTION_FAILED,
 		CONVERSION_FALLBACK;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_FILE_SAVER_ERROR_")]
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_FILE_SAVER_ERROR_", type_id = "gtk_source_file_saver_error_get_type ()")]
 	public errordomain FileSaverError {
 		INVALID_CHARS,
 		EXTERNALLY_MODIFIED;

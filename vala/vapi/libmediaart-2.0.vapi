@@ -33,7 +33,7 @@ namespace MediaArt {
 		ALBUM,
 		VIDEO
 	}
-	[CCode (cheader_filename = "libmediaart/mediaart.h", cprefix = "MEDIA_ART_ERROR_")]
+	[CCode (cheader_filename = "libmediaart/mediaart.h", cprefix = "MEDIA_ART_ERROR_", has_type_id = false)]
 	[Version (since = "0.2.0")]
 	public errordomain Error {
 		NO_STORAGE,

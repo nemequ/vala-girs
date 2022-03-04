@@ -26,7 +26,7 @@ namespace E {
 		[Version (since = "3.12")]
 		public string dup_locale ();
 		[Version (since = "3.34")]
-		public bool foreach_view ();
+		public bool foreach_view (E.BookBackendForeachViewFunc? func);
 		[Version (since = "3.34")]
 		public void foreach_view_notify_progress (bool only_completed_views, int percent, string? message);
 		[Version (since = "3.10")]
@@ -221,7 +221,7 @@ namespace E {
 		public bool remove_contacts (GLib.SList<string> uids, GLib.SList<uint32>? custom_flags, E.CacheOfflineFlag offline_flag, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool search (string? sexp, bool meta_contacts, out GLib.SList<E.BookCacheSearchData> out_list, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool search_uids (string? sexp, out GLib.SList<string> out_list, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public bool search_with_callback (string? sexp, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool search_with_callback (string? sexp, [CCode (delegate_target_pos = 2.5)] E.BookCacheSearchFunc? func, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.34")]
 		public bool set_contact_custom_flags (string uid, uint32 custom_flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool set_contact_extra (string uid, string? extra, GLib.Cancellable? cancellable = null) throws GLib.Error;

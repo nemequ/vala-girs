@@ -92,7 +92,7 @@ namespace GCab {
 		EXEC,
 		NAME_IS_UTF
 	}
-	[CCode (cheader_filename = "libgcab.h", cprefix = "GCAB_ERROR_")]
+	[CCode (cheader_filename = "libgcab.h", cprefix = "GCAB_ERROR_", has_type_id = false)]
 	public errordomain Error {
 		FORMAT,
 		FAILED,

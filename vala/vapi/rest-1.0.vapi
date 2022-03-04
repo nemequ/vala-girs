@@ -256,12 +256,12 @@ namespace Rest {
 		PLAINTEXT,
 		HMAC_SHA1
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cprefix = "REST_PROXY_CALL_")]
+	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cprefix = "REST_PROXY_CALL_", type_id = "rest_proxy_call_error_get_type ()")]
 	public errordomain ProxyCallError {
 		FAILED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cprefix = "REST_PROXY_ERROR_")]
+	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cprefix = "REST_PROXY_ERROR_", type_id = "rest_proxy_error_get_type ()")]
 	public errordomain ProxyError {
 		CANCELLED,
 		RESOLUTION,

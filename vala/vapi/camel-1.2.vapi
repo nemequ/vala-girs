@@ -1274,7 +1274,7 @@ namespace Camel {
 		public void dump (int body);
 		public void encode_8bit_parts ();
 		[Version (since = "3.34")]
-		public void foreach_part ();
+		public void foreach_part (Camel.ForeachPartFunc? callback);
 		public long get_date (out int offset);
 		public long get_date_received (out int offset);
 		public unowned Camel.InternetAddress? get_from ();
@@ -3378,14 +3378,14 @@ namespace Camel {
 		COMPLEX,
 		@8BIT
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_ERROR_")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_ERROR_", has_type_id = false)]
 	[Version (since = "2.32")]
 	public errordomain Error {
 		[CCode (cname = "CAMEL_ERROR_GENERIC")]
 		ERROR_GENERIC;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FOLDER_ERROR_")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_FOLDER_ERROR_", type_id = "camel_folder_error_get_type ()")]
 	[Version (since = "2.32")]
 	public errordomain FolderError {
 		INVALID,
@@ -3398,7 +3398,7 @@ namespace Camel {
 		SUMMARY_INVALID;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SERVICE_ERROR_")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_SERVICE_ERROR_", type_id = "camel_service_error_get_type ()")]
 	[Version (since = "2.32")]
 	public errordomain ServiceError {
 		INVALID,
@@ -3408,7 +3408,7 @@ namespace Camel {
 		NOT_CONNECTED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_ERROR_")]
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_ERROR_", type_id = "camel_store_error_get_type ()")]
 	[Version (since = "2.32")]
 	public errordomain StoreError {
 		INVALID,
