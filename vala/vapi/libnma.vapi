@@ -216,6 +216,14 @@ namespace NMA {
 	}
 	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
 	[Compact]
+	public class WsOwe {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
+	public class WsOweClass {
+	}
+	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]
+	[Compact]
 	public class WsSae {
 	}
 	[CCode (cheader_filename = "NMA-1.0.h", has_type_id = false)]

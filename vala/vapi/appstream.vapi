@@ -203,6 +203,7 @@ namespace AppStream {
 		[Version (since = "0.7.0")]
 		public unowned GLib.GenericArray<string>? get_extends ();
 		public unowned AppStream.Icon? get_icon_by_size (uint width, uint height);
+		public unowned AppStream.Icon? get_icon_stock ();
 		public unowned GLib.GenericArray<AppStream.Icon> get_icons ();
 		public unowned string get_id ();
 		[CCode (array_length = false, array_null_terminated = true)]

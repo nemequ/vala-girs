@@ -532,6 +532,16 @@ namespace Ggit {
 		public unowned Ggit.IndexEntryResolveUndo? @ref ();
 		public void unref ();
 	}
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_mailmap_get_type ()")]
+	public class Mailmap : Ggit.Native {
+		[CCode (has_construct_function = false)]
+		public Mailmap () throws GLib.Error;
+		public void add_entry (string? real_name, string? real_email, string? replace_name, string replace_email) throws GLib.Error;
+		[CCode (has_construct_function = false)]
+		public Mailmap.from_repository (Ggit.Repository repository) throws GLib.Error;
+		public void resolve (out unowned string real_name, out unowned string real_email, string replace_name, string replace_email) throws GLib.Error;
+		public Ggit.Signature? resolve_signature (Ggit.Signature signature) throws GLib.Error;
+	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "ggit_merge_options_get_type ()")]
 	[Compact]
 	public class MergeOptions {
@@ -1121,7 +1131,10 @@ namespace Ggit {
 		RENAMED,
 		COPIED,
 		IGNORED,
-		UNTRACKED
+		UNTRACKED,
+		TYPECHANGE,
+		UNREADABLE,
+		CONFLICTED
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_DIFF_BINARY_", type_id = "ggit_diff_binary_type_get_type ()")]
 	public enum DiffBinaryType {
@@ -1335,7 +1348,10 @@ namespace Ggit {
 		WORKING_TREE_MODIFIED,
 		WORKING_TREE_DELETED,
 		WORKING_TREE_TYPECHANGE,
-		IGNORED
+		WORKING_TREE_RENAMED,
+		WORKING_TREE_UNREADABLE,
+		IGNORED,
+		CONFLICTED
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_STATUS_OPTION_", type_id = "ggit_status_option_get_type ()")]
 	[Flags]
@@ -1404,7 +1420,7 @@ namespace Ggit {
 		PRE,
 		POST
 	}
-	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_ERROR_")]
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cprefix = "GGIT_ERROR_", type_id = "ggit_error_get_type ()")]
 	public errordomain Error {
 		GIT_ERROR,
 		NOTFOUND,

@@ -110,9 +110,9 @@ namespace ICal {
 		[Version (since = "1.0")]
 		public ICal.CompIter end_component (ICal.ComponentKind kind);
 		[Version (since = "3.0.5")]
-		public void foreach_recurrence (ICal.Time start, ICal.Time end);
+		public void foreach_recurrence (ICal.Time start, ICal.Time end, ICal.ComponentForeachRecurrenceFunc? callback);
 		[Version (since = "3.0.5")]
-		public void foreach_tzid ();
+		public void foreach_tzid (ICal.ComponentForeachTZIDFunc? callback);
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Component.from_string (string str);
