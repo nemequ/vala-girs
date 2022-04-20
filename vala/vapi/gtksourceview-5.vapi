@@ -83,7 +83,7 @@ namespace GtkSource {
 		public void set_icon_name (string icon_name);
 		public void set_markup (string markup);
 		public void set_paintable (Gdk.Paintable paintable);
-		public void set_text (string text);
+		public void set_text (string? text);
 		public void set_text_with_attributes (string text, Pango.AttrList attrs);
 		public void set_widget (Gtk.Widget child);
 		public GtkSource.CompletionColumn column { get; construct; }
@@ -244,7 +244,8 @@ namespace GtkSource {
 		public uint get_last ();
 		public void get_line_yrange (uint line, GtkSource.GutterRendererAlignmentMode mode, out int y, out int height);
 		public unowned Gtk.TextView get_view ();
-		public void get_yrange (uint line, uint line_y, uint line_height);
+		[Version (since = "5.6")]
+		public bool has_any_class (uint line);
 		public bool has_class (uint line, string name);
 		public bool has_qclass (uint line, GLib.Quark qname);
 		public bool is_cursor (uint line);
@@ -570,6 +571,9 @@ namespace GtkSource {
 		public unowned string get_name ();
 		public unowned GtkSource.SnippetChunk get_nth_chunk (uint nth);
 		public unowned string? get_trigger ();
+		[CCode (has_construct_function = false)]
+		[Version (since = "5.6")]
+		public Snippet.parsed (string text) throws GLib.Error;
 		public void set_description (string description);
 		public void set_language_id (string language_id);
 		public void set_name (string name);

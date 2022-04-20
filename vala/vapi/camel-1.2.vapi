@@ -1987,6 +1987,31 @@ namespace Camel {
 		[HasEmitter]
 		public virtual signal void folder_renamed (string old_name, Camel.FolderInfo folder_info);
 	}
+	[CCode (cheader_filename = "camel/camel.h", ref_function = "camel_store_info_ref", type_id = "camel_store_info_get_type ()", unref_function = "camel_store_info_unref")]
+	[Compact]
+	public class StoreInfo {
+		public uint32 flags;
+		public int refcount;
+		public weak Camel.StoreSummary summary;
+		public uint32 total;
+		public uint32 unread;
+		[Version (since = "3.46")]
+		public unowned string get_name ();
+		[Version (since = "3.46")]
+		public unowned string get_path ();
+		[Version (deprecated = true, deprecated_since = "3.46")]
+		public static unowned string name (Camel.StoreSummary summary, Camel.StoreInfo info);
+		[Version (deprecated = true, deprecated_since = "3.46")]
+		public static unowned string path (Camel.StoreSummary summary, Camel.StoreInfo info);
+		[Version (since = "3.46")]
+		public Camel.StoreInfo @ref ();
+		[Version (deprecated = true, deprecated_since = "3.46")]
+		public static void set_string (Camel.StoreSummary summary, Camel.StoreInfo info, int type, string value);
+		[Version (since = "3.46")]
+		public void set_value (int type, string value);
+		[Version (since = "3.46")]
+		public void unref ();
+	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_store_settings_get_type ()")]
 	[Version (since = "3.2")]
 	public class StoreSettings : Camel.Settings {
@@ -2005,20 +2030,23 @@ namespace Camel {
 	public class StoreSummary : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public StoreSummary ();
-		public void add (Camel.StoreInfo info);
+		public void add (owned Camel.StoreInfo info);
 		public unowned Camel.StoreInfo? add_from_path (string path);
-		public GLib.GenericArray<Camel.StoreInfo?> array ();
-		public void array_free (owned GLib.GenericArray<Camel.StoreInfo?> array);
+		public GLib.GenericArray<Camel.StoreInfo> array ();
+		[Version (deprecated = true, deprecated_since = "3.46")]
+		public void array_free (owned GLib.GenericArray<Camel.StoreInfo> array);
 		[Version (since = "3.4")]
 		public bool connect_folder_summary (string path, Camel.FolderSummary folder_summary);
 		public int count ();
 		[Version (since = "3.4")]
 		public bool disconnect_folder_summary (Camel.FolderSummary folder_summary);
-		public Camel.StoreInfo? info_new ();
-		public Camel.StoreInfo? info_ref (Camel.StoreInfo info);
+		public Camel.StoreInfo info_new ();
+		[Version (deprecated = true, deprecated_since = "3.46")]
+		public Camel.StoreInfo info_ref (Camel.StoreInfo info);
+		[Version (deprecated = true, deprecated_since = "3.46")]
 		public void info_unref (owned Camel.StoreInfo info);
 		public int load ();
-		public unowned Camel.StoreInfo? path (string path);
+		public Camel.StoreInfo? path (string path);
 		public void remove (Camel.StoreInfo info);
 		public void remove_path (string path);
 		public int save ();
@@ -2028,13 +2056,13 @@ namespace Camel {
 		[NoWrapper]
 		public virtual void store_info_free (owned Camel.StoreInfo info);
 		[NoWrapper]
-		public virtual unowned Camel.StoreInfo? store_info_load ([CCode (type = "FILE*")] GLib.FileStream file);
+		public virtual Camel.StoreInfo store_info_load ([CCode (type = "FILE*")] GLib.FileStream file);
 		[NoWrapper]
-		public virtual unowned Camel.StoreInfo? store_info_new (string path);
+		public virtual Camel.StoreInfo store_info_new (string path);
 		[NoWrapper]
 		public virtual int store_info_save ([CCode (type = "FILE*")] GLib.FileStream file, Camel.StoreInfo info);
 		[NoWrapper]
-		public virtual void store_info_set_string (Camel.StoreInfo info, int type, string value);
+		public virtual void store_info_set_value (Camel.StoreInfo info, int type, string value);
 		[NoWrapper]
 		public virtual int summary_header_load ([CCode (type = "FILE*")] GLib.FileStream file);
 		[NoWrapper]
@@ -2653,16 +2681,6 @@ namespace Camel {
 		public Camel.ServiceAuthType? copy ();
 		[Version (since = "3.24")]
 		public void free ();
-	}
-	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
-	public struct StoreInfo {
-		public int refcount;
-		public uint32 flags;
-		public uint32 unread;
-		public uint32 total;
-		public static unowned string name (Camel.StoreSummary summary, Camel.StoreInfo info);
-		public static unowned string path (Camel.StoreSummary summary, Camel.StoreInfo info);
-		public static void set_string (Camel.StoreSummary summary, Camel.StoreInfo info, int type, string value);
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	public struct SummaryMessageID {
@@ -3926,13 +3944,13 @@ namespace Camel {
 	[Version (replacement = "StoreError.quark")]
 	public static GLib.Quark store_error_quark ();
 	[CCode (cheader_filename = "camel/camel.h")]
-	[Version (replacement = "StoreInfo.name")]
+	[Version (deprecated = true, deprecated_since = "3.46", replacement = "StoreInfo.name")]
 	public static unowned string store_info_name (Camel.StoreSummary summary, Camel.StoreInfo info);
 	[CCode (cheader_filename = "camel/camel.h")]
-	[Version (replacement = "StoreInfo.path")]
+	[Version (deprecated = true, deprecated_since = "3.46", replacement = "StoreInfo.path")]
 	public static unowned string store_info_path (Camel.StoreSummary summary, Camel.StoreInfo info);
 	[CCode (cheader_filename = "camel/camel.h")]
-	[Version (replacement = "StoreInfo.set_string")]
+	[Version (deprecated = true, deprecated_since = "3.46", replacement = "StoreInfo.set_string")]
 	public static void store_info_set_string (Camel.StoreSummary summary, Camel.StoreInfo info, int type, string value);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static int strcase_equal (void* a, void* b);

@@ -1499,6 +1499,8 @@ namespace E {
 		public abstract void prepare_refresh_token_message (E.Source source, Soup.Message message);
 		public bool receive_and_store_token_sync (E.Source source, string authorization_code, [CCode (delegate_target_pos = 3.5)] E.OAuth2ServiceRefSourceFunc ref_source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool refresh_and_store_token_sync (E.Source source, string refresh_token, [CCode (delegate_target_pos = 3.5)] E.OAuth2ServiceRefSourceFunc ref_source, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.46")]
+		public static unowned string util_compile_value (string compile_value, out unowned string out_glob_buff, size_t out_glob_buff_size);
 		public static void util_set_to_form (GLib.HashTable<string,string> form, string name, string? value);
 		public static void util_take_to_form (GLib.HashTable<string,string> form, string name, owned string? value);
 	}
@@ -2144,6 +2146,9 @@ namespace E {
 	public static void localtime_with_offset (long tt, [CCode (type = "tm*")] Posix.tm tm, int offset);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static long mktime_utc ([CCode (type = "tm*")] Posix.tm tm);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (replacement = "OAuth2Service.util_compile_value", since = "3.46")]
+	public static unowned string oauth2_service_util_compile_value (string compile_value, out unowned string out_glob_buff, size_t out_glob_buff_size);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (replacement = "OAuth2Service.util_set_to_form", since = "3.28")]
 	public static void oauth2_service_util_set_to_form (GLib.HashTable<string,string> form, string name, string? value);

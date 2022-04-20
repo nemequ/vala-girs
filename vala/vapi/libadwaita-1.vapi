@@ -456,7 +456,7 @@ namespace Adw {
 		public void remove (Gtk.Widget child);
 		public void set_description (string? description);
 		[Version (since = "1.1")]
-		public void set_header_suffix (Gtk.Widget child);
+		public void set_header_suffix (Gtk.Widget? suffix);
 		public void set_title (string title);
 		public string description { get; set; }
 		[Version (since = "1.1")]
@@ -489,13 +489,22 @@ namespace Adw {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public PreferencesRow ();
 		public unowned string get_title ();
+		[Version (since = "1.1")]
 		public bool get_title_selectable ();
+		[Version (since = "1.2")]
+		public bool get_use_markup ();
 		public bool get_use_underline ();
 		public void set_title (string title);
+		[Version (since = "1.1")]
 		public void set_title_selectable (bool title_selectable);
+		[Version (since = "1.2")]
+		public void set_use_markup (bool use_markup);
 		public void set_use_underline (bool use_underline);
 		public string title { get; set; }
+		[Version (since = "1.1")]
 		public bool title_selectable { get; set; }
+		[Version (since = "1.2")]
+		public bool use_markup { get; set; }
 		public bool use_underline { get; set; }
 	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_preferences_window_get_type ()")]
@@ -897,12 +906,16 @@ namespace Adw {
 		public unowned string? get_action_name ();
 		public unowned GLib.Variant? get_action_target_value ();
 		public unowned string? get_button_label ();
+		[Version (since = "1.2")]
+		public unowned Gtk.Widget? get_custom_title ();
 		public Adw.ToastPriority get_priority ();
 		public uint get_timeout ();
-		public unowned string get_title ();
+		public unowned string? get_title ();
 		public void set_action_name (string? action_name);
 		public void set_action_target_value (GLib.Variant? action_target);
 		public void set_button_label (string? button_label);
+		[Version (since = "1.2")]
+		public void set_custom_title (Gtk.Widget? widget);
 		public void set_detailed_action_name (string? detailed_action_name);
 		public void set_priority (Adw.ToastPriority priority);
 		public void set_timeout (uint timeout);
@@ -911,6 +924,8 @@ namespace Adw {
 		[NoAccessorMethod]
 		public GLib.Variant action_target { owned get; set; }
 		public string button_label { get; set; }
+		[Version (since = "1.2")]
+		public Gtk.Widget custom_title { get; set; }
 		public Adw.ToastPriority priority { get; set; }
 		public uint timeout { get; set; }
 		public string title { get; set; }

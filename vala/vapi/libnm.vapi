@@ -533,6 +533,8 @@ namespace NM {
 		public const string PERMISSION_CHANGED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_PRIMARY_CONNECTION")]
 		public const string PRIMARY_CONNECTION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_RADIO_FLAGS")]
+		public const string RADIO_FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_STARTUP")]
 		public const string STARTUP;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_STATE")]
@@ -630,6 +632,8 @@ namespace NM {
 		[Version (since = "1.24")]
 		public NM.Ternary get_permissions_state ();
 		public unowned NM.ActiveConnection get_primary_connection ();
+		[Version (since = "1.38")]
+		public NM.RadioFlags get_radio_flags ();
 		public bool get_startup ();
 		public NM.State get_state ();
 		public unowned string get_version ();
@@ -708,6 +712,8 @@ namespace NM {
 		[Version (since = "1.24")]
 		public NM.Ternary permissions_state { get; }
 		public NM.ActiveConnection primary_connection { get; }
+		[Version (since = "1.38")]
+		public uint radio_flags { get; }
 		public bool startup { get; }
 		public NM.State state { get; }
 		public string version { get; }
@@ -6229,6 +6235,14 @@ namespace NM {
 		NO,
 		GUESS_YES,
 		GUESS_NO
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_RADIO_FLAG_", type_id = "nm_radio_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.38")]
+	public enum RadioFlags {
+		NONE,
+		WLAN_AVAILABLE,
+		WWAN_AVAILABLE
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_ROLLBACK_RESULT_", has_type_id = false)]
 	[Version (since = "1.4")]

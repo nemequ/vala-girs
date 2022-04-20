@@ -1362,7 +1362,9 @@ namespace AppStream {
 		HELP,
 		DONATION,
 		TRANSLATE,
-		CONTACT;
+		CONTACT,
+		VCS_BROWSER,
+		CONTRIBUTE;
 		public static AppStream.UrlKind from_string (string url_kind);
 		public unowned string to_string ();
 	}
