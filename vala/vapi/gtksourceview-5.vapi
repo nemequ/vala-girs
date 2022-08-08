@@ -632,6 +632,8 @@ namespace GtkSource {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_search_path ();
 		public GtkSource.Snippet? get_snippet (string? group, string? language_id, string trigger);
+		[Version (since = "5.6")]
+		public unowned GLib.ListModel list_all ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public (unowned string)[] list_groups ();
 		public GLib.ListModel list_matching (string? group, string? language_id, string? trigger_prefix);

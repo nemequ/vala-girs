@@ -56,6 +56,7 @@ namespace Autoar {
 		public void set_delete_after_extraction (bool delete_after_extraction);
 		public void set_notify_interval (int64 notify_interval);
 		public void set_output_is_dest (bool output_is_dest);
+		public void set_passphrase (string passphrase);
 		public void start (GLib.Cancellable? cancellable = null);
 		public void start_async (GLib.Cancellable? cancellable = null);
 		public uint completed_files { get; }
@@ -132,6 +133,12 @@ namespace Autoar {
 	public delegate int FilterFunc (void* a);
 	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h", has_target = false)]
 	public delegate int FormatFunc (void* a);
+	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h", cname = "AUTOAR_EMPTY_ARCHIVE_ERRNO")]
+	public const int EMPTY_ARCHIVE_ERRNO;
+	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h", cname = "AUTOAR_NOT_AN_ARCHIVE_ERRNO")]
+	public const int NOT_AN_ARCHIVE_ERRNO;
+	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h", cname = "AUTOAR_PASSPHRASE_REQUIRED_ERRNO")]
+	public const int PASSPHRASE_REQUIRED_ERRNO;
 	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h")]
 	public static bool check_mime_type_supported (string mime_type);
 	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h")]

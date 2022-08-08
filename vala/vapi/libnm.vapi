@@ -386,7 +386,7 @@ namespace NM {
 		public unowned string get_id ();
 		public unowned NM.IPConfig get_ip4_config ();
 		public unowned NM.IPConfig get_ip6_config ();
-		public unowned NM.Device get_master ();
+		public void* get_master ();
 		public unowned string get_specific_object_path ();
 		public NM.ActiveConnectionState get_state ();
 		[Version (since = "1.10")]
@@ -1963,7 +1963,7 @@ namespace NM {
 		[CCode (has_construct_function = false)]
 		protected Object ();
 		[Version (since = "1.24")]
-		public unowned NM.Client get_client ();
+		public void* get_client ();
 		public unowned string get_path ();
 		[Version (since = "1.34")]
 		public NM.Client client { get; }
@@ -2896,6 +2896,8 @@ namespace NM {
 		public const string TYPE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_UUID")]
 		public const string UUID;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_WAIT_ACTIVATION_DELAY")]
+		public const string WAIT_ACTIVATION_DELAY;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_WAIT_DEVICE_TIMEOUT")]
 		public const string WAIT_DEVICE_TIMEOUT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_ZONE")]
@@ -2941,6 +2943,8 @@ namespace NM {
 		public unowned string get_stable_id ();
 		public uint64 get_timestamp ();
 		public unowned string get_uuid ();
+		[Version (since = "1.40")]
+		public int32 get_wait_activation_delay ();
 		[Version (since = "1.20")]
 		public int32 get_wait_device_timeout ();
 		public unowned string get_zone ();
@@ -3010,6 +3014,9 @@ namespace NM {
 		public string type { owned get; set; }
 		[NoAccessorMethod]
 		public string uuid { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.40")]
+		public int wait_activation_delay { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.20")]
 		public int wait_device_timeout { get; set; }
@@ -3251,6 +3258,8 @@ namespace NM {
 		public const string DHCP_FQDN;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_DHCP_VENDOR_CLASS_IDENTIFIER")]
 		public const string DHCP_VENDOR_CLASS_IDENTIFIER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_LINK_LOCAL")]
+		public const string LINK_LOCAL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_METHOD_AUTO")]
 		public const string METHOD_AUTO;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_METHOD_DISABLED")]
@@ -3270,6 +3279,8 @@ namespace NM {
 		public unowned string get_dhcp_fqdn ();
 		[Version (since = "1.28")]
 		public unowned string get_dhcp_vendor_class_identifier ();
+		[Version (since = "1.40")]
+		public NM.SettingIP4LinkLocal get_link_local ();
 		[NoAccessorMethod]
 		public string dhcp_client_id { owned get; set; }
 		[NoAccessorMethod]
@@ -3277,6 +3288,8 @@ namespace NM {
 		public string dhcp_fqdn { owned get; set; }
 		[NoAccessorMethod]
 		public string dhcp_vendor_class_identifier { owned get; set; }
+		[NoAccessorMethod]
+		public int link_local { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ip6_config_get_type ()")]
 	public class SettingIP6Config : NM.SettingIPConfig {
@@ -3301,6 +3314,8 @@ namespace NM {
 		public const string METHOD_MANUAL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_SHARED")]
 		public const string METHOD_SHARED;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_MTU")]
+		public const string MTU;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_RA_TIMEOUT")]
 		public const string RA_TIMEOUT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_SETTING_NAME")]
@@ -3314,6 +3329,8 @@ namespace NM {
 		[Version (since = "1.12")]
 		public unowned string get_dhcp_duid ();
 		public NM.SettingIP6ConfigPrivacy get_ip6_privacy ();
+		[Version (since = "1.40")]
+		public uint32 get_mtu ();
 		[Version (since = "1.24")]
 		public int32 get_ra_timeout ();
 		[Version (since = "1.4")]
@@ -3326,6 +3343,9 @@ namespace NM {
 		public string dhcp_duid { owned get; set; }
 		[NoAccessorMethod]
 		public NM.SettingIP6ConfigPrivacy ip6_privacy { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.40")]
+		public uint mtu { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.24")]
 		public int ra_timeout { get; set; }
@@ -6278,6 +6298,7 @@ namespace NM {
 		TLS_1_0_DISABLE,
 		TLS_1_1_DISABLE,
 		TLS_1_2_DISABLE,
+		TLS_ALLOW_UNSAFE_RENEGOTIATION,
 		ALL
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_802_1X_CK_FORMAT_", type_id = "nm_setting_802_1x_ck_format_get_type ()")]
@@ -6358,11 +6379,21 @@ namespace NM {
 		IN_A_DEFAULT,
 		IN_B_DEFAULT
 	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_IP4_LL_", type_id = "nm_setting_ip4_link_local_get_type ()")]
+	[Version (since = "1.40")]
+	public enum SettingIP4LinkLocal {
+		DEFAULT,
+		AUTO,
+		DISABLED,
+		ENABLED
+	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_IP6_CONFIG_ADDR_GEN_MODE_", type_id = "nm_setting_ip6_config_addr_gen_mode_get_type ()")]
 	[Version (since = "1.2")]
 	public enum SettingIP6ConfigAddrGenMode {
 		EUI64,
-		STABLE_PRIVACY
+		STABLE_PRIVACY,
+		DEFAULT_OR_EUI64,
+		DEFAULT
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_SETTING_IP6_CONFIG_PRIVACY_", type_id = "nm_setting_ip6_config_privacy_get_type ()")]
 	public enum SettingIP6ConfigPrivacy {
@@ -7084,6 +7115,8 @@ namespace NM {
 	public const string ETHTOOL_OPTNAME_RING_TX;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ADDRESS_ATTRIBUTE_LABEL")]
 	public const string IP_ADDRESS_ATTRIBUTE_LABEL;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_ADVMSS")]
+	public const string IP_ROUTE_ATTRIBUTE_ADVMSS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_CWND")]
 	public const string IP_ROUTE_ATTRIBUTE_CWND;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_FROM")]
@@ -7092,6 +7125,8 @@ namespace NM {
 	public const string IP_ROUTE_ATTRIBUTE_INITCWND;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_INITRWND")]
 	public const string IP_ROUTE_ATTRIBUTE_INITRWND;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_ADVMSS")]
+	public const string IP_ROUTE_ATTRIBUTE_LOCK_ADVMSS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_CWND")]
 	public const string IP_ROUTE_ATTRIBUTE_LOCK_CWND;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_INITCWND")]
@@ -7106,6 +7141,10 @@ namespace NM {
 	public const string IP_ROUTE_ATTRIBUTE_MTU;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_ONLINK")]
 	public const string IP_ROUTE_ATTRIBUTE_ONLINK;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_QUICKACK")]
+	public const string IP_ROUTE_ATTRIBUTE_QUICKACK;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_RTO_MIN")]
+	public const string IP_ROUTE_ATTRIBUTE_RTO_MIN;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_SCOPE")]
 	public const string IP_ROUTE_ATTRIBUTE_SCOPE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_SRC")]
@@ -7421,6 +7460,9 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (replacement = "ClientError.quark")]
 	public static GLib.Quark client_error_quark ();
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (since = "1.40")]
+	public static NM.Connection conn_wireguard_import (string filename) throws GLib.Error;
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (replacement = "CryptoError.quark")]
 	public static GLib.Quark crypto_error_quark ();

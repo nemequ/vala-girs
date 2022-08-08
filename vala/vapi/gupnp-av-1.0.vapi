@@ -490,4 +490,6 @@ namespace GUPnP {
 		[CCode (cname = "GUPNP_SEARCH_CRITERIA_PARSER_ERROR_FAILED")]
 		FAILED
 	}
+	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h")]
+	public static string format_date_time_for_didl_lite (GLib.DateTime date_time, bool date_only = false);
 }

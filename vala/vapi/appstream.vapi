@@ -774,6 +774,8 @@ namespace AppStream {
 		public Screenshot ();
 		public void add_image (AppStream.Image image);
 		public void add_video (AppStream.Video video);
+		[Version (since = "0.15.4")]
+		public void clear_images ();
 		public unowned string get_active_locale ();
 		public unowned string get_caption ();
 		[Version (since = "0.14.0")]
@@ -784,6 +786,7 @@ namespace AppStream {
 		public AppStream.ScreenshotKind get_kind ();
 		public AppStream.ScreenshotMediaKind get_media_kind ();
 		public unowned GLib.GenericArray<AppStream.Video> get_videos ();
+		public unowned GLib.GenericArray<AppStream.Video> get_videos_all ();
 		public bool is_valid ();
 		public void set_active_locale (string locale);
 		public void set_caption (string caption, string locale);
@@ -816,17 +819,23 @@ namespace AppStream {
 	public class Validator : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Validator ();
+		[Version (since = "0.15.4")]
+		public bool add_override (string tag, AppStream.IssueSeverity severity_override) throws GLib.Error;
 		public void clear_issues ();
 		public bool get_check_urls ();
 		public GLib.List<weak AppStream.ValidatorIssue> get_issues ();
 		[Version (since = "0.12.8")]
 		public unowned GLib.HashTable<string,GLib.GenericArray<AppStream.ValidatorIssue>> get_issues_per_file ();
 		public bool get_report_yaml (string yaml_report);
+		[Version (since = "0.15.4")]
+		public bool get_strict ();
 		public unowned string get_tag_explanation (string tag);
 		public AppStream.IssueSeverity get_tag_severity (string tag);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] get_tags ();
 		public void set_check_urls (bool value);
+		[Version (since = "0.15.4")]
+		public void set_strict (bool is_strict);
 		[Version (since = "0.14.0")]
 		public bool validate_bytes (GLib.Bytes metadata);
 		public bool validate_data (string metadata);
@@ -1421,6 +1430,13 @@ namespace AppStream {
 		[Version (since = "0.14.0")]
 		public static GLib.Quark quark ();
 	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_VALIDATOR_ERROR_", type_id = "as_validator_error_get_type ()")]
+	public errordomain ValidatorError {
+		FAILED,
+		OVERRIDE_INVALID;
+		[Version (since = "0.15.4")]
+		public static GLib.Quark quark ();
+	}
 	[CCode (cheader_filename = "appstream.h", cname = "AS_IMAGE_LARGE_HEIGHT")]
 	public const int IMAGE_LARGE_HEIGHT;
 	[CCode (cheader_filename = "appstream.h", cname = "AS_IMAGE_LARGE_WIDTH")]
@@ -1745,6 +1761,9 @@ namespace AppStream {
 	public static bool utils_locale_is_compatible (string locale1, string locale2);
 	[CCode (cheader_filename = "appstream.h")]
 	public static void utils_sort_components_into_categories (GLib.GenericArray<AppStream.Component> cpts, GLib.GenericArray<AppStream.Category> categories, bool check_duplicates);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "ValidatorError.quark", since = "0.15.4")]
+	public static GLib.Quark validator_error_quark ();
 	[CCode (cheader_filename = "appstream.h")]
 	public static int vercmp (string a, string b, AppStream.VercmpFlags flags);
 	[CCode (cheader_filename = "appstream.h")]

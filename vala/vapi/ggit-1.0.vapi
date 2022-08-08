@@ -1473,6 +1473,14 @@ namespace Ggit {
 	public delegate int TransferProgressCallback (Ggit.TransferProgress stats);
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", instance_pos = 2.9)]
 	public delegate int TreeWalkCallback (string root, Ggit.TreeEntry entry);
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cname = "GGIT_BUILD_TYPE")]
+	public const string BUILD_TYPE;
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cname = "GGIT_MAJOR_VERSION")]
+	public const int MAJOR_VERSION;
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cname = "GGIT_MINOR_VERSION")]
+	public const int MINOR_VERSION;
+	[CCode (cheader_filename = "libgit2-glib/ggit.h", cname = "GGIT_VERSION_S")]
+	public const string VERSION_S;
 	[CCode (cheader_filename = "libgit2-glib/ggit.h")]
 	[Version (replacement = "Error.quark")]
 	public static GLib.Quark error_quark ();

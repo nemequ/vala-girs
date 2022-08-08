@@ -13,6 +13,8 @@ namespace Act {
 		public unowned string get_home_dir ();
 		public unowned string get_icon_file ();
 		public unowned string? get_language ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[]? get_languages ();
 		public unowned string get_location ();
 		public bool get_locked ();
 		public int get_login_frequency ();
@@ -43,6 +45,7 @@ namespace Act {
 		public void set_email (string email);
 		public void set_icon_file (string icon_file);
 		public void set_language (string language);
+		public void set_languages ([CCode (array_length = false, array_null_terminated = true)] string[] languages);
 		public void set_location (string location);
 		public void set_locked (bool locked);
 		public void set_password (string password, string hint);

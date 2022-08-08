@@ -64,6 +64,11 @@ namespace Tracker {
 		NONE = 0,
 	}
 
+	[CCode (cheader_filename = "libtracker-sparql/tracker-connection.h")]
+	public enum DeserializeFlags {
+		NONE = 0,
+	}
+
 	namespace Sparql {
 		[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]
 		public static string escape_string (string literal);
@@ -114,6 +119,7 @@ namespace Tracker {
                 public async virtual bool close_async () throws GLib.IOError;
 
                 public async virtual GLib.InputStream serialize_async (SerializeFlags flags, RdfFormat format, string sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
+                public async virtual bool deserialize_async (DeserializeFlags flags, RdfFormat format, string? default_graph, GLib.InputStream istream, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
                 public virtual void map_connection (string handle_name, Sparql.Connection service_connection);
 	}
 

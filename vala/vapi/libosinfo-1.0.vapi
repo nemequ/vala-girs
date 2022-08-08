@@ -73,8 +73,12 @@ namespace Osinfo {
 		public unowned Osinfo.Os guess_os_from_tree (Osinfo.Tree tree, out unowned Osinfo.Tree matched_tree);
 		[Version (since = "0.2.3")]
 		public bool identify_media (Osinfo.Media media);
+		[Version (since = "1.10.0")]
+		public Osinfo.MediaList identify_medialist (Osinfo.Media media);
 		[Version (since = "1.6.0")]
 		public bool identify_tree (Osinfo.Tree tree);
+		[Version (since = "1.10.0")]
+		public Osinfo.TreeList identify_treelist (Osinfo.Tree tree);
 		public Osinfo.OsList unique_values_for_os_relationship (Osinfo.ProductRelationship relshp);
 		public Osinfo.PlatformList unique_values_for_platform_relationship (Osinfo.ProductRelationship relshp);
 		public GLib.List<weak string> unique_values_for_property_in_deployment (string propName);
@@ -604,6 +608,8 @@ namespace Osinfo {
 		public int64 get_volume_size ();
 		[Version (since = "1.6.0")]
 		public bool is_bootable ();
+		[Version (since = "1.10.0")]
+		public bool matches (Osinfo.Media reference);
 		[Version (since = "1.3.0")]
 		public bool supports_installer_script ();
 		[NoAccessorMethod]
@@ -886,6 +892,8 @@ namespace Osinfo {
 		public unowned string get_treeinfo_version ();
 		[Version (since = "0.1.0")]
 		public unowned string get_url ();
+		[Version (since = "1.10.0")]
+		public bool matches (Osinfo.Tree reference);
 		[Version (since = "1.5.0")]
 		public void set_os (Osinfo.Os os);
 		[NoAccessorMethod]
@@ -978,14 +986,14 @@ namespace Osinfo {
 		PRERELEASE,
 		ROLLING
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_ERROR_")]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_ERROR_", type_id = "osinfo_error_get_type ()")]
 	[Version (since = "1.8.0")]
 	public errordomain Error {
 		GENERIC;
 		[Version (since = "1.3.0")]
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_ERROR_")]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_MEDIA_ERROR_", type_id = "osinfo_media_error_get_type ()")]
 	public errordomain MediaError {
 		NO_DESCRIPTORS,
 		NO_PVD,
@@ -995,7 +1003,7 @@ namespace Osinfo {
 		NO_DIRECTORY_RECORD_EXTENT;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_TREE_ERROR_")]
+	[CCode (cheader_filename = "osinfo/osinfo.h", cprefix = "OSINFO_TREE_ERROR_", type_id = "osinfo_tree_error_get_type ()")]
 	[Version (since = "1.6.0")]
 	public errordomain TreeError {
 		NO_TREEINFO,

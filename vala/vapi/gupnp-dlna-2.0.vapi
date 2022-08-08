@@ -61,6 +61,15 @@ namespace GUPnPDLNA {
 		public int get_max ();
 		public int get_min ();
 	}
+	[CCode (cheader_filename = "libgupnp-dlna/gupnp-dlna.h", type_id = "gupnp_dlna_metadata_extractor_get_type ()")]
+	public abstract class MetadataExtractor : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected MetadataExtractor ();
+		public void emit_done (GUPnPDLNA.Information info, GLib.Error? error);
+		public virtual bool extract_async (string uri, uint timeout_in_ms) throws GLib.Error;
+		public virtual GUPnPDLNA.Information extract_sync (string uri, uint timeout_in_ms) throws GLib.Error;
+		public signal void done (GUPnPDLNA.Information info, GLib.Error? error);
+	}
 	[CCode (cheader_filename = "libgupnp-dlna/gupnp-dlna.h", type_id = "gupnp_dlna_profile_get_type ()")]
 	public class Profile : GLib.Object {
 		[CCode (has_construct_function = false)]

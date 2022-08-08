@@ -266,6 +266,8 @@ namespace Camel {
 		public size_t calculate_decoded_size_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.24")]
 		public size_t calculate_size_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.46")]
+		public bool construct_from_data_sync (void* data, ssize_t data_len, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.12")]
 		public async bool construct_from_input_stream (GLib.InputStream input_stream, int io_priority, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.12")]
@@ -385,6 +387,8 @@ namespace Camel {
 		public unowned Camel.FolderSummary get_folder_summary ();
 		[Version (since = "2.32")]
 		public int get_frozen_count ();
+		[Version (since = "3.46")]
+		public virtual unowned string get_full_display_name ();
 		public unowned string get_full_name ();
 		[Version (since = "3.32")]
 		public Camel.ThreeState get_mark_seen ();
@@ -725,12 +729,17 @@ namespace Camel {
 		public GpgContext (Camel.Session session);
 		[Version (since = "2.32")]
 		public bool get_always_trust ();
+		[Version (since = "3.46")]
+		public bool get_locate_keys ();
 		[Version (since = "3.20")]
 		public bool get_prefer_inline ();
 		public void set_always_trust (bool always_trust);
+		[Version (since = "3.46")]
+		public void set_locate_keys (bool locate_keys);
 		[Version (since = "3.20")]
 		public void set_prefer_inline (bool prefer_inline);
 		public bool always_trust { get; set construct; }
+		public bool locate_keys { get; set construct; }
 		public bool prefer_inline { get; set construct; }
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_html_parser_get_type ()")]
@@ -3125,7 +3134,8 @@ namespace Camel {
 		LABEL,
 		HIDDEN,
 		OPTIONS,
-		PLACEHOLDER
+		PLACEHOLDER,
+		ADVANCED_SECTION_START
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_PROVIDER_", type_id = "camel_provider_flags_get_type ()")]
 	[Flags]
@@ -3252,7 +3262,8 @@ namespace Camel {
 		CAN_EDIT_FOLDERS,
 		USE_CACHE_DIR,
 		CAN_DELETE_FOLDERS_AT_ONCE,
-		SUPPORTS_INITIAL_SETUP
+		SUPPORTS_INITIAL_SETUP,
+		IS_BUILTIN
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_STORE_FOLDER_", type_id = "camel_store_get_folder_flags_get_type ()")]
 	[Flags]

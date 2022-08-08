@@ -2,7 +2,7 @@
 
 [CCode (cprefix = "Rest", gir_namespace = "Rest", gir_version = "1.0", lower_case_cprefix = "rest_")]
 namespace Rest {
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", type_id = "rest_oauth2_proxy_get_type ()")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", type_id = "rest_oauth2_proxy_get_type ()")]
 	public class OAuth2Proxy : Rest.Proxy {
 		[CCode (has_construct_function = false)]
 		public OAuth2Proxy (string authurl, string tokenurl, string redirecturl, string client_id, string client_secret, string baseurl);
@@ -38,74 +38,12 @@ namespace Rest {
 		public string refresh_token { get; set; }
 		public string token_url { get; set; }
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", type_id = "rest_oauth2_proxy_call_get_type ()")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", type_id = "rest_oauth2_proxy_call_get_type ()")]
 	public class OAuth2ProxyCall : Rest.ProxyCall {
 		[CCode (has_construct_function = false)]
 		protected OAuth2ProxyCall ();
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cname = "OAuthProxy", type_id = "oauth_proxy_get_type ()")]
-	public class OAuthProxy : Rest.Proxy {
-		[CCode (cname = "oauth_proxy_new", has_construct_function = false, type = "RestProxy*")]
-		public OAuthProxy (string consumer_key, string consumer_secret, string url_format, bool binding_required);
-		[CCode (cname = "oauth_proxy_access_token")]
-		public bool access_token (string function, string verifier) throws GLib.Error;
-		[CCode (cname = "oauth_proxy_access_token_async")]
-		public async bool access_token_async (string function, string verifier, GLib.Cancellable? cancellable) throws GLib.Error;
-		[CCode (cname = "oauth_proxy_get_consumer_key")]
-		public unowned string get_consumer_key ();
-		[CCode (cname = "oauth_proxy_get_consumer_secret")]
-		public unowned string get_consumer_secret ();
-		[CCode (cname = "oauth_proxy_get_service_url")]
-		public unowned string get_service_url ();
-		[CCode (cname = "oauth_proxy_get_sign_method")]
-		public Rest.OAuthSignatureMethod get_sign_method ();
-		[CCode (cname = "oauth_proxy_get_signature_host")]
-		public unowned string get_signature_host ();
-		[CCode (cname = "oauth_proxy_get_token")]
-		public unowned string get_token ();
-		[CCode (cname = "oauth_proxy_get_token_secret")]
-		public unowned string get_token_secret ();
-		[CCode (cname = "oauth_proxy_is_echo")]
-		public bool is_echo ();
-		[CCode (cname = "oauth_proxy_is_oauth10a")]
-		public bool is_oauth10a ();
-		[CCode (cname = "oauth_proxy_new_echo_proxy")]
-		public Rest.Proxy new_echo_proxy (string service_url, string url_format, bool binding_required);
-		[CCode (cname = "oauth_proxy_request_token")]
-		public bool request_token (string function, string callback_uri) throws GLib.Error;
-		[CCode (cname = "oauth_proxy_request_token_async")]
-		public async bool request_token_async (string? function, string? callback_uri, GLib.Cancellable? cancellable) throws GLib.Error;
-		[CCode (cname = "oauth_proxy_set_oauth10a")]
-		public void set_oauth10a (bool oauth10a);
-		[CCode (cname = "oauth_proxy_set_signature_host")]
-		public void set_signature_host (string signature_host);
-		[CCode (cname = "oauth_proxy_set_token")]
-		public void set_token (string token);
-		[CCode (cname = "oauth_proxy_set_token_secret")]
-		public void set_token_secret (string token_secret);
-		[CCode (cname = "oauth_proxy_new_with_token", has_construct_function = false, type = "RestProxy*")]
-		public OAuthProxy.with_token (string consumer_key, string consumer_secret, string token, string token_secret, string url_format, bool binding_required);
-		[NoAccessorMethod]
-		public string consumer_key { owned get; construct; }
-		[NoAccessorMethod]
-		public string consumer_secret { owned get; construct; }
-		[NoAccessorMethod]
-		public string signature_host { owned get; set; }
-		[NoAccessorMethod]
-		public Rest.OAuthSignatureMethod signature_method { get; set; }
-		[NoAccessorMethod]
-		public string token { owned get; set; }
-		[NoAccessorMethod]
-		public string token_secret { owned get; set; }
-	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cname = "OAuthProxyCall", type_id = "oauth_proxy_call_get_type ()")]
-	public class OAuthProxyCall : Rest.ProxyCall {
-		[CCode (has_construct_function = false)]
-		protected OAuthProxyCall ();
-		[CCode (cname = "oauth_proxy_call_parse_token_response")]
-		public void parse_token_response ();
-	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", ref_function = "rest_param_ref", type_id = "rest_param_get_type ()", unref_function = "rest_param_unref")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", ref_function = "rest_param_ref", type_id = "rest_param_get_type ()", unref_function = "rest_param_unref")]
 	[Compact]
 	public class Param {
 		[CCode (has_construct_function = false)]
@@ -123,7 +61,7 @@ namespace Rest {
 		[CCode (has_construct_function = false)]
 		public Param.with_owner (global::string name, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, global::string content_type, global::string? filename, owned void* owner, GLib.DestroyNotify? owner_dnotify);
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", ref_function = "rest_params_ref", type_id = "rest_params_get_type ()", unref_function = "rest_params_unref")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", ref_function = "rest_params_ref", type_id = "rest_params_get_type ()", unref_function = "rest_params_unref")]
 	[Compact]
 	public class Params {
 		[CCode (has_construct_function = false)]
@@ -137,7 +75,7 @@ namespace Rest {
 		public void remove (string name);
 		public void unref ();
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "rest_pkce_code_challenge_get_type ()")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "rest_pkce_code_challenge_get_type ()")]
 	[Compact]
 	public class PkceCodeChallenge {
 		public Rest.PkceCodeChallenge copy ();
@@ -147,7 +85,7 @@ namespace Rest {
 		[CCode (has_construct_function = false)]
 		public PkceCodeChallenge.random ();
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", type_id = "rest_proxy_get_type ()")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", type_id = "rest_proxy_get_type ()")]
 	public class Proxy : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Proxy (string url_format, bool binding_required);
@@ -176,7 +114,7 @@ namespace Rest {
 		[NoAccessorMethod]
 		public string username { owned get; set; }
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", type_id = "rest_proxy_auth_get_type ()")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", type_id = "rest_proxy_auth_get_type ()")]
 	public class ProxyAuth : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected ProxyAuth ();
@@ -187,7 +125,7 @@ namespace Rest {
 		[Version (deprecated = true, deprecated_since = "0.9")]
 		public void unpause ();
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", type_id = "rest_proxy_call_get_type ()")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", type_id = "rest_proxy_call_get_type ()")]
 	public class ProxyCall : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected ProxyCall ();
@@ -219,7 +157,7 @@ namespace Rest {
 		[NoAccessorMethod]
 		public Rest.Proxy proxy { owned get; construct; }
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "rest_xml_node_get_type ()")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "rest_xml_node_get_type ()")]
 	[Compact]
 	public class XmlNode {
 		public weak GLib.HashTable<void*,void*> attrs;
@@ -234,34 +172,29 @@ namespace Rest {
 		public string print ();
 		public void set_content (string value);
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", type_id = "rest_xml_parser_get_type ()")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", type_id = "rest_xml_parser_get_type ()")]
 	public class XmlParser : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public XmlParser ();
 		public Rest.XmlNode parse_from_data (string data, int64 len);
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", has_type_id = false)]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", has_type_id = false)]
 	public struct ParamsIter {
 		public void init (Rest.Params @params);
 		public bool next (out string name, out Rest.Param param);
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cprefix = "REST_MEMORY_", has_type_id = false)]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cprefix = "REST_MEMORY_", has_type_id = false)]
 	public enum MemoryUse {
 		STATIC,
 		TAKE,
 		COPY
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cname = "OAuthSignatureMethod", cprefix = "", type_id = "oauth_signature_method_get_type ()")]
-	public enum OAuthSignatureMethod {
-		PLAINTEXT,
-		HMAC_SHA1
-	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cprefix = "REST_PROXY_CALL_", type_id = "rest_proxy_call_error_get_type ()")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cprefix = "REST_PROXY_CALL_", type_id = "rest_proxy_call_error_get_type ()")]
 	public errordomain ProxyCallError {
 		FAILED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cprefix = "REST_PROXY_ERROR_", type_id = "rest_proxy_error_get_type ()")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cprefix = "REST_PROXY_ERROR_", type_id = "rest_proxy_error_get_type ()")]
 	public errordomain ProxyError {
 		CANCELLED,
 		RESOLUTION,
@@ -305,20 +238,20 @@ namespace Rest {
 		HTTP_HTTP_VERSION_NOT_SUPPORTED;
 		public static GLib.Quark quark ();
 	}
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", has_target = false)]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", has_target = false)]
 	public delegate void ProxyCallAsyncCallback (Rest.ProxyCall call, GLib.Error error, GLib.Object weak_object, void* userdata);
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", has_target = false)]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", has_target = false)]
 	public delegate void ProxyCallContinuousCallback (Rest.ProxyCall call, string buf, size_t len, GLib.Error error, GLib.Object weak_object, void* userdata);
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", has_target = false)]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", has_target = false)]
 	public delegate void ProxyCallUploadCallback (Rest.ProxyCall call, size_t total, size_t uploaded, GLib.Error error, GLib.Object weak_object, void* userdata);
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h")]
 	public static GLib.Quark oauth2_error_quark ();
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h")]
 	[Version (replacement = "ProxyCallError.quark")]
 	public static GLib.Quark proxy_call_error_quark ();
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h")]
 	[Version (replacement = "ProxyError.quark")]
 	public static GLib.Quark proxy_error_quark ();
-	[CCode (cheader_filename = "rest/oauth-proxy-call.h,rest/oauth-proxy.h,rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cname = "random_string")]
+	[CCode (cheader_filename = "rest/rest-enum-types.h,rest/rest-oauth2-proxy-call.h,rest/rest-oauth2-proxy.h,rest/rest-param.h,rest/rest-params.h,rest/rest-pkce-code-challenge.h,rest/rest-proxy-auth.h,rest/rest-proxy-call.h,rest/rest-proxy.h,rest/rest-utils.h,rest/rest-xml-node.h,rest/rest-xml-parser.h,rest/rest.h", cname = "random_string")]
 	public static string random_string (uint length);
 }

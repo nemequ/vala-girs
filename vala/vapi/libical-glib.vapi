@@ -415,6 +415,12 @@ namespace ICal {
 		[Version (since = "1.0")]
 		public Parameter.dir (string v);
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.0.15")]
+		public Parameter.display (ICal.ParameterDisplay value);
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.0.15")]
+		public Parameter.email (string value);
+		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Parameter.enable (ICal.ParameterEnable v);
 		[CCode (has_construct_function = false)]
@@ -423,6 +429,9 @@ namespace ICal {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Parameter.fbtype (ICal.ParameterFbtype v);
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.0.15")]
+		public Parameter.feature (ICal.ParameterFeature value);
 		[CCode (has_construct_function = false)]
 		[Version (since = "2.0")]
 		public Parameter.filename (string v);
@@ -451,12 +460,18 @@ namespace ICal {
 		public unowned string? get_delegatedto ();
 		[Version (since = "1.0")]
 		public unowned string? get_dir ();
+		[Version (since = "3.0.15")]
+		public ICal.ParameterDisplay get_display ();
+		[Version (since = "3.0.15")]
+		public unowned string? get_email ();
 		[Version (since = "1.0")]
 		public ICal.ParameterEnable get_enable ();
 		[Version (since = "1.0")]
 		public ICal.ParameterEncoding get_encoding ();
 		[Version (since = "1.0")]
 		public ICal.ParameterFbtype get_fbtype ();
+		[Version (since = "3.0.15")]
+		public ICal.ParameterFeature get_feature ();
 		[Version (since = "2.0")]
 		public unowned string? get_filename ();
 		[Version (since = "1.0")]
@@ -469,6 +484,8 @@ namespace ICal {
 		public unowned string? get_iana_value ();
 		[Version (since = "1.0")]
 		public unowned string? get_id ();
+		[Version (since = "3.0.15")]
+		public unowned string? get_label ();
 		[Version (since = "1.0")]
 		public unowned string? get_language ();
 		[Version (since = "1.0")]
@@ -489,6 +506,8 @@ namespace ICal {
 		public ICal.Property? get_parent ();
 		[Version (since = "1.0")]
 		public ICal.ParameterPartstat get_partstat ();
+		[Version (since = "3.0.15")]
+		public ICal.ParameterPatchaction get_patchaction ();
 		[Version (since = "2.0")]
 		public unowned string? get_publiccomment ();
 		[Version (since = "1.0")]
@@ -548,6 +567,9 @@ namespace ICal {
 		[Version (since = "1.0")]
 		public int isa_parameter ();
 		[CCode (has_construct_function = false)]
+		[Version (since = "3.0.15")]
+		public Parameter.label (string value);
+		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Parameter.language (string v);
 		[CCode (has_construct_function = false)]
@@ -574,6 +596,9 @@ namespace ICal {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Parameter.partstat (ICal.ParameterPartstat v);
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.0.15")]
+		public Parameter.patchaction (ICal.ParameterPatchaction value);
 		[CCode (has_construct_function = false)]
 		[Version (since = "2.0")]
 		public Parameter.publiccomment (string v);
@@ -629,12 +654,18 @@ namespace ICal {
 		public void set_delegatedto (string v);
 		[Version (since = "1.0")]
 		public void set_dir (string v);
+		[Version (since = "3.0.15")]
+		public void set_display (ICal.ParameterDisplay value);
+		[Version (since = "3.0.15")]
+		public void set_email (string value);
 		[Version (since = "1.0")]
 		public void set_enable (ICal.ParameterEnable v);
 		[Version (since = "1.0")]
 		public void set_encoding (ICal.ParameterEncoding v);
 		[Version (since = "1.0")]
 		public void set_fbtype (ICal.ParameterFbtype v);
+		[Version (since = "3.0.15")]
+		public void set_feature (ICal.ParameterFeature value);
 		[Version (since = "2.0")]
 		public void set_filename (string v);
 		[Version (since = "1.0")]
@@ -647,6 +678,8 @@ namespace ICal {
 		public void set_iana_value (string v);
 		[Version (since = "1.0")]
 		public void set_id (string v);
+		[Version (since = "3.0.15")]
+		public void set_label (string value);
 		[Version (since = "1.0")]
 		public void set_language (string v);
 		[Version (since = "1.0")]
@@ -667,6 +700,8 @@ namespace ICal {
 		public void set_parent (ICal.Property? property);
 		[Version (since = "1.0")]
 		public void set_partstat (ICal.ParameterPartstat v);
+		[Version (since = "3.0.15")]
+		public void set_patchaction (ICal.ParameterPatchaction value);
 		[Version (since = "2.0")]
 		public void set_publiccomment (string v);
 		[Version (since = "1.0")]
@@ -2402,6 +2437,15 @@ namespace ICal {
 		UNKNOWN,
 		NONE
 	}
+	[CCode (cheader_filename = "libical-glib/libical-glib.h", cprefix = "I_CAL_DISPLAY_", has_type_id = false)]
+	public enum ParameterDisplay {
+		X,
+		BADGE,
+		GRAPHIC,
+		FULLSIZE,
+		THUMBNAIL,
+		NONE
+	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", cprefix = "I_CAL_ENABLE_", has_type_id = false)]
 	public enum ParameterEnable {
 		X,
@@ -2425,6 +2469,18 @@ namespace ICal {
 		BUSYTENTATIVE,
 		NONE
 	}
+	[CCode (cheader_filename = "libical-glib/libical-glib.h", cprefix = "I_CAL_FEATURE_", has_type_id = false)]
+	public enum ParameterFeature {
+		X,
+		AUDIO,
+		CHAT,
+		FEED,
+		MODERATOR,
+		PHONE,
+		SCREEN,
+		VIDEO,
+		NONE
+	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", cprefix = "I_CAL_", has_type_id = false)]
 	public enum ParameterKind {
 		ANY_PARAMETER,
@@ -2436,13 +2492,17 @@ namespace ICal {
 		DELEGATEDFROM_PARAMETER,
 		DELEGATEDTO_PARAMETER,
 		DIR_PARAMETER,
+		DISPLAY_PARAMETER,
+		EMAIL_PARAMETER,
 		ENABLE_PARAMETER,
 		ENCODING_PARAMETER,
 		FBTYPE_PARAMETER,
+		FEATURE_PARAMETER,
 		FILENAME_PARAMETER,
 		FMTTYPE_PARAMETER,
 		IANA_PARAMETER,
 		ID_PARAMETER,
+		LABEL_PARAMETER,
 		LANGUAGE_PARAMETER,
 		LATENCY_PARAMETER,
 		LOCAL_PARAMETER,
@@ -2452,6 +2512,7 @@ namespace ICal {
 		MODIFIED_PARAMETER,
 		OPTIONS_PARAMETER,
 		PARTSTAT_PARAMETER,
+		PATCHACTION_PARAMETER,
 		PUBLICCOMMENT_PARAMETER,
 		RANGE_PARAMETER,
 		REASON_PARAMETER,
@@ -2499,6 +2560,15 @@ namespace ICal {
 		COMPLETED,
 		INPROCESS,
 		FAILED,
+		NONE
+	}
+	[CCode (cheader_filename = "libical-glib/libical-glib.h", cprefix = "I_CAL_PATCHACTION_", has_type_id = false)]
+	public enum ParameterPatchaction {
+		X,
+		CREATE,
+		BYNAME,
+		BYVALUE,
+		BYPARAM,
 		NONE
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", cprefix = "I_CAL_RANGE_", has_type_id = false)]

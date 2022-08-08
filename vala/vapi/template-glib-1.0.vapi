@@ -13,10 +13,17 @@ namespace Template {
 		[CCode (has_construct_function = false)]
 		public Expr.fn_call (global::Template.ExprBuiltin builtin, global::Template.Expr param);
 		public static global::Template.Expr from_string (global::string str) throws GLib.Error;
+		[CCode (has_construct_function = false)]
+		public Expr.func (global::string name, global::string symlist, global::Template.Expr list);
+		public global::Template.Expr new_anon_call (global::Template.Expr @params);
 		public global::Template.Expr new_getattr (global::string attr);
 		public global::Template.Expr new_gi_call (global::string name, global::Template.Expr @params);
 		public global::Template.Expr new_invert_boolean ();
 		public global::Template.Expr new_setattr (global::string attr, global::Template.Expr right);
+		[CCode (has_construct_function = false)]
+		public Expr.nop ();
+		[CCode (has_construct_function = false)]
+		public Expr.@null ();
 		[CCode (has_construct_function = false)]
 		public Expr.number (double value);
 		public global::Template.Expr @ref ();
@@ -24,6 +31,9 @@ namespace Template {
 		public Expr.require (global::string typelib, global::string version);
 		[CCode (has_construct_function = false)]
 		public Expr.simple (global::Template.ExprType type, global::Template.Expr left, global::Template.Expr right);
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.36")]
+		public Expr.stmt_list (owned GLib.GenericArray<global::Template.Expr> stmts);
 		[CCode (has_construct_function = false)]
 		public Expr.string (global::string value, ssize_t length);
 		[CCode (has_construct_function = false)]
@@ -39,13 +49,19 @@ namespace Template {
 	public class Scope {
 		[CCode (has_construct_function = false)]
 		public Scope ();
+		[Version (since = "3.36")]
+		public string? dup_string (string name);
 		public unowned global::Template.Symbol @get (string name);
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] list_symbols (bool recursive);
 		public global::Template.Scope new_with_parent ();
 		public unowned global::Template.Symbol? peek (string name);
 		public global::Template.Scope @ref ();
+		public bool require (string namespace_, string? version);
 		public void @set (string name, global::Template.Symbol? symbol);
 		public void set_boolean (string name, bool value);
 		public void set_double (string name, double value);
+		public void set_null (string name);
 		public void set_object (string name, GLib.Object? value);
 		public void set_resolver (owned global::Template.ScopeResolver resolver);
 		public void set_string (string name, string? value);
@@ -67,9 +83,11 @@ namespace Template {
 		public void assign_strv ([CCode (array_length = false, array_null_terminated = true)] string[]? strv);
 		public void assign_value (GLib.Value value);
 		public void assign_variant (GLib.Variant? v_variant);
+		public void* get_boxed ();
 		public unowned global::Template.Expr get_expr (out unowned GLib.GenericArray<string>? @params);
 		public global::Template.SymbolType get_symbol_type ();
 		public void get_value (GLib.Value value);
+		public bool holds (GLib.Type type);
 		public global::Template.Symbol @ref ();
 		public void unref ();
 	}
@@ -108,7 +126,21 @@ namespace Template {
 		PRINT,
 		REPR,
 		SQRT,
-		TYPEOF
+		TYPEOF,
+		ASSERT,
+		SIN,
+		TAN,
+		COS,
+		PRINTERR,
+		CAST_BYTE,
+		CAST_CHAR,
+		CAST_I32,
+		CAST_U32,
+		CAST_I64,
+		CAST_U64,
+		CAST_FLOAT,
+		CAST_DOUBLE,
+		CAST_BOOL
 	}
 	[CCode (cheader_filename = "tmpl-glib.h", cprefix = "TMPL_EXPR_", type_id = "tmpl_expr_type_get_type ()")]
 	public enum ExprType {
@@ -132,6 +164,7 @@ namespace Template {
 		SYMBOL_REF,
 		SYMBOL_ASSIGN,
 		FN_CALL,
+		ANON_FN_CALL,
 		USER_FN_CALL,
 		GETATTR,
 		SETATTR,
@@ -139,7 +172,11 @@ namespace Template {
 		REQUIRE,
 		AND,
 		OR,
-		INVERT_BOOLEAN
+		INVERT_BOOLEAN,
+		ARGS,
+		FUNC,
+		NOP,
+		NULL
 	}
 	[CCode (cheader_filename = "tmpl-glib.h", cprefix = "TMPL_SYMBOL_", type_id = "tmpl_symbol_type_get_type ()")]
 	public enum SymbolType {

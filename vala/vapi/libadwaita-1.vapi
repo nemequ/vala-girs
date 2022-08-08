@@ -2,6 +2,85 @@
 
 [CCode (cprefix = "Adw", gir_namespace = "Adw", gir_version = "1", lower_case_cprefix = "adw_")]
 namespace Adw {
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_about_window_get_type ()")]
+	[Version (since = "1.2")]
+	public sealed class AboutWindow : Adw.Window, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Native, Gtk.Root, Gtk.ShortcutManager {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public AboutWindow ();
+		public void add_acknowledgement_section (string? name, [CCode (array_length = false, array_null_terminated = true)] string[] people);
+		public void add_credit_section (string? name, [CCode (array_length = false, array_null_terminated = true)] string[] people);
+		public void add_legal_section (string title, string? copyright, Gtk.License license_type, string? license);
+		public void add_link (string title, string url);
+		public unowned string get_application_icon ();
+		public unowned string get_application_name ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[]? get_artists ();
+		public unowned string get_comments ();
+		public unowned string get_copyright ();
+		public unowned string get_debug_info ();
+		public unowned string get_debug_info_filename ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[]? get_designers ();
+		public unowned string get_developer_name ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[]? get_developers ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[]? get_documenters ();
+		public unowned string get_issue_url ();
+		public unowned string get_license ();
+		public Gtk.License get_license_type ();
+		public unowned string get_release_notes ();
+		public unowned string get_release_notes_version ();
+		public unowned string get_support_url ();
+		public unowned string get_translator_credits ();
+		public unowned string get_version ();
+		public unowned string get_website ();
+		public void set_application_icon (string application_icon);
+		public void set_application_name (string application_name);
+		public void set_artists ([CCode (array_length = false, array_null_terminated = true)] string[]? artists);
+		public void set_comments (string comments);
+		public void set_copyright (string copyright);
+		public void set_debug_info (string debug_info);
+		public void set_debug_info_filename (string filename);
+		public void set_designers ([CCode (array_length = false, array_null_terminated = true)] string[]? designers);
+		public void set_developer_name (string developer_name);
+		public void set_developers ([CCode (array_length = false, array_null_terminated = true)] string[]? developers);
+		public void set_documenters ([CCode (array_length = false, array_null_terminated = true)] string[]? documenters);
+		public void set_issue_url (string issue_url);
+		public void set_license (string license);
+		public void set_license_type (Gtk.License license_type);
+		public void set_release_notes (string release_notes);
+		public void set_release_notes_version (string version);
+		public void set_support_url (string support_url);
+		public void set_translator_credits (string translator_credits);
+		public void set_version (string version);
+		public void set_website (string website);
+		public string application_icon { get; set; }
+		public string application_name { get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] artists { get; set; }
+		public string comments { get; set; }
+		public string copyright { get; set; }
+		public string debug_info { get; set; }
+		public string debug_info_filename { get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] designers { get; set; }
+		public string developer_name { get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] developers { get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] documenters { get; set; }
+		public string issue_url { get; set; }
+		public string license { get; set; }
+		public Gtk.License license_type { get; set; }
+		public string release_notes { get; set; }
+		public string release_notes_version { get; set; }
+		public string support_url { get; set; }
+		public string translator_credits { get; set; }
+		public string version { get; set; }
+		public string website { get; set; }
+		public signal bool activate_link (string uri);
+	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_action_row_get_type ()")]
 	[Version (since = "1.0")]
 	public class ActionRow : Adw.PreferencesRow, Gtk.Accessible, Gtk.Actionable, Gtk.Buildable, Gtk.ConstraintTarget {
@@ -41,10 +120,10 @@ namespace Adw {
 		public void play ();
 		public void reset ();
 		public void resume ();
+		public void set_target (Adw.AnimationTarget target);
 		public void skip ();
 		public Adw.AnimationState state { get; }
-		[NoAccessorMethod]
-		public Adw.AnimationTarget target { owned get; set construct; }
+		public Adw.AnimationTarget target { get; set construct; }
 		public double value { get; }
 		public Gtk.Widget widget { get; construct; }
 		public signal void done ();
@@ -122,7 +201,7 @@ namespace Adw {
 	[Version (since = "1.0")]
 	public sealed class CallbackAnimationTarget : Adw.AnimationTarget {
 		[CCode (has_construct_function = false, type = "AdwAnimationTarget*")]
-		public CallbackAnimationTarget (owned Adw.AnimationTargetFunc? callback);
+		public CallbackAnimationTarget (owned Adw.AnimationTargetFunc callback);
 	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_carousel_get_type ()")]
 	[Version (since = "1.0")]
@@ -248,6 +327,35 @@ namespace Adw {
 		public uint selected { get; set; }
 		public GLib.Object selected_item { get; }
 		public bool use_subtitle { get; set; }
+	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_entry_row_get_type ()")]
+	[Version (since = "1.2")]
+	public class EntryRow : Adw.PreferencesRow, Gtk.Accessible, Gtk.Actionable, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Editable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public EntryRow ();
+		public void add_prefix (Gtk.Widget widget);
+		public void add_suffix (Gtk.Widget widget);
+		public bool get_activates_default ();
+		public Pango.AttrList? get_attributes ();
+		public bool get_enable_emoji_completion ();
+		public Gtk.InputHints get_input_hints ();
+		public Gtk.InputPurpose get_input_purpose ();
+		public bool get_show_apply_button ();
+		public void remove (Gtk.Widget widget);
+		public void set_activates_default (bool activates);
+		public void set_attributes (Pango.AttrList? attributes);
+		public void set_enable_emoji_completion (bool enable_emoji_completion);
+		public void set_input_hints (Gtk.InputHints hints);
+		public void set_input_purpose (Gtk.InputPurpose purpose);
+		public void set_show_apply_button (bool show_apply_button);
+		public bool activates_default { get; set; }
+		public Pango.AttrList attributes { owned get; set; }
+		public bool enable_emoji_completion { get; set; }
+		public Gtk.InputHints input_hints { get; set; }
+		public Gtk.InputPurpose input_purpose { get; set; }
+		public bool show_apply_button { get; set; }
+		public signal void apply ();
+		public signal void entry_activated ();
 	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_enum_list_item_get_type ()")]
 	[Version (since = "1.0")]
@@ -443,6 +551,49 @@ namespace Adw {
 		[Version (since = "1.0")]
 		public bool navigatable { get; set; }
 	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_message_dialog_get_type ()")]
+	[Version (since = "1.2")]
+	public class MessageDialog : Gtk.Window, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Native, Gtk.Root, Gtk.ShortcutManager {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public MessageDialog (Gtk.Window? parent, string? heading, string? body);
+		public void add_response (string id, string label);
+		public unowned string get_body ();
+		public bool get_body_use_markup ();
+		public unowned string get_close_response ();
+		public unowned string? get_default_response ();
+		public unowned Gtk.Widget? get_extra_child ();
+		public unowned string? get_heading ();
+		public bool get_heading_use_markup ();
+		public Adw.ResponseAppearance get_response_appearance (string response);
+		public bool get_response_enabled (string response);
+		public unowned string get_response_label (string response);
+		public bool has_response (string response);
+		public void set_body (string body);
+		public void set_body_use_markup (bool use_markup);
+		public void set_close_response (string response);
+		public void set_default_response (string? response);
+		public void set_extra_child (Gtk.Widget? child);
+		public void set_heading (string? heading);
+		public void set_heading_use_markup (bool use_markup);
+		public void set_response_appearance (string response, Adw.ResponseAppearance appearance);
+		public void set_response_enabled (string response, bool enabled);
+		public void set_response_label (string response, string label);
+		public string body { get; set; }
+		public bool body_use_markup { get; set; }
+		public string close_response { get; set; }
+		public string default_response { get; set; }
+		public Gtk.Widget extra_child { get; set; }
+		public string heading { get; set; }
+		public bool heading_use_markup { get; set; }
+		[HasEmitter]
+		public virtual signal void response (string response);
+	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_password_entry_row_get_type ()")]
+	[Version (since = "1.2")]
+	public sealed class PasswordEntryRow : Adw.EntryRow, Gtk.Accessible, Gtk.Actionable, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Editable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public PasswordEntryRow ();
+	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_preferences_group_get_type ()")]
 	[Version (since = "1.0")]
 	public class PreferencesGroup : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
@@ -530,6 +681,18 @@ namespace Adw {
 		public Gtk.Widget visible_page { get; set; }
 		public string visible_page_name { get; set; }
 	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_property_animation_target_get_type ()")]
+	[Version (since = "1.2")]
+	public sealed class PropertyAnimationTarget : Adw.AnimationTarget {
+		[CCode (has_construct_function = false, type = "AdwAnimationTarget*")]
+		public PropertyAnimationTarget (GLib.Object object, string property_name);
+		[CCode (has_construct_function = false, type = "AdwAnimationTarget*")]
+		public PropertyAnimationTarget.for_pspec (GLib.Object object, GLib.ParamSpec pspec);
+		public unowned GLib.Object get_object ();
+		public unowned GLib.ParamSpec get_pspec ();
+		public GLib.Object object { get; construct; }
+		public GLib.ParamSpec pspec { get; construct; }
+	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_split_button_get_type ()")]
 	[Version (since = "1.0")]
 	public sealed class SplitButton : Gtk.Widget, Gtk.Accessible, Gtk.Actionable, Gtk.Buildable, Gtk.ConstraintTarget {
@@ -537,6 +700,8 @@ namespace Adw {
 		public SplitButton ();
 		public unowned Gtk.Widget? get_child ();
 		public Gtk.ArrowType get_direction ();
+		[Version (since = "1.2")]
+		public unowned string get_dropdown_tooltip ();
 		public unowned string? get_icon_name ();
 		public unowned string? get_label ();
 		public unowned GLib.MenuModel? get_menu_model ();
@@ -546,6 +711,8 @@ namespace Adw {
 		public void popup ();
 		public void set_child (Gtk.Widget? child);
 		public void set_direction (Gtk.ArrowType direction);
+		[Version (since = "1.2")]
+		public void set_dropdown_tooltip (string tooltip);
 		public void set_icon_name (string icon_name);
 		public void set_label (string label);
 		public void set_menu_model (GLib.MenuModel? menu_model);
@@ -553,6 +720,8 @@ namespace Adw {
 		public void set_use_underline (bool use_underline);
 		public Gtk.Widget child { get; set; }
 		public Gtk.ArrowType direction { get; set; }
+		[Version (since = "1.2")]
+		public string dropdown_tooltip { get; set; }
 		public string icon_name { get; set; }
 		public string label { get; set; }
 		public GLib.MenuModel menu_model { get; set; }
@@ -765,6 +934,8 @@ namespace Adw {
 		public bool get_indicator_activatable ();
 		[Version (since = "1.0")]
 		public unowned GLib.Icon? get_indicator_icon ();
+		[Version (since = "1.2")]
+		public unowned string get_indicator_tooltip ();
 		[Version (since = "1.0")]
 		public bool get_loading ();
 		[Version (since = "1.0")]
@@ -785,6 +956,8 @@ namespace Adw {
 		public void set_indicator_activatable (bool activatable);
 		[Version (since = "1.0")]
 		public void set_indicator_icon (GLib.Icon? indicator_icon);
+		[Version (since = "1.2")]
+		public void set_indicator_tooltip (string tooltip);
 		[Version (since = "1.0")]
 		public void set_loading (bool loading);
 		[Version (since = "1.0")]
@@ -801,6 +974,8 @@ namespace Adw {
 		public bool indicator_activatable { get; set; }
 		[Version (since = "1.0")]
 		public GLib.Icon indicator_icon { get; set; }
+		[Version (since = "1.2")]
+		public string indicator_tooltip { get; set; }
 		[Version (since = "1.0")]
 		public bool loading { get; set; }
 		[Version (since = "1.0")]
@@ -822,6 +997,8 @@ namespace Adw {
 		[CCode (has_construct_function = false)]
 		public TabView ();
 		public unowned Adw.TabPage add_page (Gtk.Widget child, Adw.TabPage? parent);
+		[Version (since = "1.2")]
+		public void add_shortcuts (Adw.TabViewShortcuts shortcuts);
 		public unowned Adw.TabPage append (Gtk.Widget child);
 		public unowned Adw.TabPage append_pinned (Gtk.Widget child);
 		public void close_other_pages (Adw.TabPage page);
@@ -838,10 +1015,14 @@ namespace Adw {
 		public int get_page_position (Adw.TabPage page);
 		public Gtk.SelectionModel get_pages ();
 		public unowned Adw.TabPage? get_selected_page ();
+		[Version (since = "1.2")]
+		public Adw.TabViewShortcuts get_shortcuts ();
 		public unowned Adw.TabPage insert (Gtk.Widget child, int position);
 		public unowned Adw.TabPage insert_pinned (Gtk.Widget child, int position);
 		public unowned Adw.TabPage prepend (Gtk.Widget child);
 		public unowned Adw.TabPage prepend_pinned (Gtk.Widget child);
+		[Version (since = "1.2")]
+		public void remove_shortcuts (Adw.TabViewShortcuts shortcuts);
 		public bool reorder_backward (Adw.TabPage page);
 		public bool reorder_first (Adw.TabPage page);
 		public bool reorder_forward (Adw.TabPage page);
@@ -853,6 +1034,8 @@ namespace Adw {
 		public void set_menu_model (GLib.MenuModel? menu_model);
 		public void set_page_pinned (Adw.TabPage page, bool pinned);
 		public void set_selected_page (Adw.TabPage selected_page);
+		[Version (since = "1.2")]
+		public void set_shortcuts (Adw.TabViewShortcuts shortcuts);
 		public void transfer_page (Adw.TabPage page, Adw.TabView other_view, int position);
 		public GLib.Icon default_icon { get; set; }
 		public bool is_transferring_page { get; }
@@ -861,6 +1044,8 @@ namespace Adw {
 		public int n_pinned_pages { get; }
 		public Gtk.SelectionModel pages { owned get; }
 		public Adw.TabPage selected_page { get; set; }
+		[Version (since = "1.2")]
+		public Adw.TabViewShortcuts shortcuts { get; set; }
 		[HasEmitter]
 		public signal bool close_page (Adw.TabPage page);
 		public signal unowned Adw.TabView? create_window ();
@@ -929,6 +1114,8 @@ namespace Adw {
 		public Adw.ToastPriority priority { get; set; }
 		public uint timeout { get; set; }
 		public string title { get; set; }
+		[Version (since = "1.2")]
+		public signal void button_clicked ();
 		public signal void dismissed ();
 	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_toast_overlay_get_type ()")]
@@ -949,6 +1136,8 @@ namespace Adw {
 		public unowned Adw.ViewStackPage add (Gtk.Widget child);
 		public unowned Adw.ViewStackPage add_named (Gtk.Widget child, string? name);
 		public unowned Adw.ViewStackPage add_titled (Gtk.Widget child, string? name, string title);
+		[Version (since = "1.2")]
+		public unowned Adw.ViewStackPage add_titled_with_icon (Gtk.Widget child, string? name, string title, string icon_name);
 		public unowned Gtk.Widget? get_child_by_name (string name);
 		public bool get_hhomogeneous ();
 		public unowned Adw.ViewStackPage get_page (Gtk.Widget child);
@@ -1163,11 +1352,37 @@ namespace Adw {
 		BACK,
 		FORWARD
 	}
+	[CCode (cheader_filename = "adwaita.h", cprefix = "ADW_RESPONSE_", type_id = "adw_response_appearance_get_type ()")]
+	[Version (since = "1.2")]
+	public enum ResponseAppearance {
+		DEFAULT,
+		SUGGESTED,
+		DESTRUCTIVE
+	}
 	[CCode (cheader_filename = "adwaita.h", cprefix = "ADW_SQUEEZER_TRANSITION_TYPE_", type_id = "adw_squeezer_transition_type_get_type ()")]
 	[Version (since = "1.0")]
 	public enum SqueezerTransitionType {
 		NONE,
 		CROSSFADE
+	}
+	[CCode (cheader_filename = "adwaita.h", cprefix = "ADW_TAB_VIEW_SHORTCUT_", type_id = "adw_tab_view_shortcuts_get_type ()")]
+	[Flags]
+	[Version (since = "1.2")]
+	public enum TabViewShortcuts {
+		NONE,
+		CONTROL_TAB,
+		CONTROL_SHIFT_TAB,
+		CONTROL_PAGE_UP,
+		CONTROL_PAGE_DOWN,
+		CONTROL_HOME,
+		CONTROL_END,
+		CONTROL_SHIFT_PAGE_UP,
+		CONTROL_SHIFT_PAGE_DOWN,
+		CONTROL_SHIFT_HOME,
+		CONTROL_SHIFT_END,
+		ALT_DIGITS,
+		ALT_ZERO,
+		ALL_SHORTCUTS
 	}
 	[CCode (cheader_filename = "adwaita.h", cprefix = "ADW_TOAST_PRIORITY_", type_id = "adw_toast_priority_get_type ()")]
 	[Version (since = "1.0")]

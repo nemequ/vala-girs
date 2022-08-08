@@ -726,14 +726,11 @@ namespace Gegl {
 		[CCode (cname = "White")]
 		WHITE
 	}
-	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_access_mode_get_type ()")]
+	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_ACCESS_", type_id = "gegl_access_mode_get_type ()")]
 	[Flags]
 	public enum AccessMode {
-		[CCode (cname = "Read")]
 		READ,
-		[CCode (cname = "Write")]
 		WRITE,
-		[CCode (cname = "Read/Write")]
 		READWRITE
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_babl_variant_get_type ()")]
@@ -764,35 +761,29 @@ namespace Gegl {
 		CACHE,
 		DIRTY
 	}
-	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_cache_policy_get_type ()")]
+	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_CACHE_POLICY_", type_id = "gegl_cache_policy_get_type ()")]
 	public enum CachePolicy {
-		[CCode (cname = "Auto")]
 		AUTO,
-		[CCode (cname = "Never")]
 		NEVER,
-		[CCode (cname = "Always")]
 		ALWAYS
 	}
-	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_distance_metric_get_type ()")]
+	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_DISTANCE_METRIC_", type_id = "gegl_distance_metric_get_type ()")]
 	public enum DistanceMetric {
-		[CCode (cname = "Euclidean")]
 		EUCLIDEAN,
-		[CCode (cname = "Manhattan")]
 		MANHATTAN,
-		[CCode (cname = "Chebyshev")]
 		CHEBYSHEV
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_dither_method_get_type ()")]
 	public enum DitherMethod {
-		[CCode (cname = "None")]
+		[CCode (cname = "GEGL_DITHER_NONE")]
 		NONE,
-		[CCode (cname = "Floyd-Steinberg")]
+		[CCode (cname = "GEGL_DITHER_FLOYD_STEINBERG")]
 		FLOYD_STEINBERG,
-		[CCode (cname = "Bayer")]
+		[CCode (cname = "GEGL_DITHER_BAYER")]
 		BAYER,
-		[CCode (cname = "Random")]
+		[CCode (cname = "GEGL_DITHER_RANDOM")]
 		RANDOM,
-		[CCode (cname = "Random Covariant")]
+		[CCode (cname = "GEGL_DITHER_RANDOM_COVARIANT")]
 		RANDOM_COVARIANT,
 		[CCode (cname = "Arithmetic add")]
 		ADD,
@@ -802,9 +793,9 @@ namespace Gegl {
 		XOR,
 		[CCode (cname = "Arithmetic xor covariant")]
 		XOR_COVARIANT,
-		[CCode (cname = "Blue Noise")]
+		[CCode (cname = "GEGL_DITHER_BLUE_NOISE")]
 		BLUE_NOISE,
-		[CCode (cname = "Blue Noise Covariant")]
+		[CCode (cname = "GEGL_DITHER_BLUE_NOISE_COVARIANT")]
 		BLUE_NOISE_COVARIANT
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_MAP_EXCLUDE_", has_type_id = false)]
@@ -812,11 +803,9 @@ namespace Gegl {
 		[CCode (cname = "GEGL_MAP_EXCLUDE_UNMAPPED")]
 		MAP_EXCLUDE_UNMAPPED
 	}
-	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_orientation_get_type ()")]
+	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_ORIENTATION_", type_id = "gegl_orientation_get_type ()")]
 	public enum Orientation {
-		[CCode (cname = "Horizontal")]
 		HORIZONTAL,
-		[CCode (cname = "Vertical")]
 		VERTICAL
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_PARAM_PAD_", has_type_id = false)]
@@ -825,13 +814,10 @@ namespace Gegl {
 		OUTPUT,
 		INPUT
 	}
-	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_rectangle_alignment_get_type ()")]
+	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_RECTANGLE_ALIGNMENT_", type_id = "gegl_rectangle_alignment_get_type ()")]
 	public enum RectangleAlignment {
-		[CCode (cname = "Subset")]
 		SUBSET,
-		[CCode (cname = "Superset")]
 		SUPERSET,
-		[CCode (cname = "Nearest")]
 		NEAREST
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_RESOLUTION_UNIT_", type_id = "gegl_resolution_unit_get_type ()")]
@@ -840,17 +826,12 @@ namespace Gegl {
 		DPI,
 		DPM
 	}
-	[CCode (cheader_filename = "gegl.h", cprefix = "", type_id = "gegl_sampler_type_get_type ()")]
+	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_SAMPLER_", type_id = "gegl_sampler_type_get_type ()")]
 	public enum SamplerType {
-		[CCode (cname = "Nearest")]
 		NEAREST,
-		[CCode (cname = "Linear")]
 		LINEAR,
-		[CCode (cname = "Cubic")]
 		CUBIC,
-		[CCode (cname = "NoHalo")]
 		NOHALO,
-		[CCode (cname = "LoHalo")]
 		LOHALO
 	}
 	[CCode (cheader_filename = "gegl.h", cprefix = "GEGL_SERIALIZE_", has_type_id = false)]
@@ -1108,6 +1089,9 @@ namespace Gegl {
 	public static GLib.ParamSpec param_spec_string (string name, string nick, string blurb, bool no_validate, bool null_ok, string default_value, GLib.ParamFlags flags);
 	[CCode (cheader_filename = "gegl.h")]
 	public static GLib.ParamSpec param_spec_uri (string name, string nick, string blurb, bool no_validate, bool null_ok, string default_value, GLib.ParamFlags flags);
+	[CCode (cheader_filename = "gegl.h")]
+	[Version (replacement = "Rectangle.infinite_plane")]
+	public static Gegl.Rectangle rectangle_infinite_plane ();
 	[CCode (cheader_filename = "gegl.h")]
 	public static void render_op (Gegl.Buffer source_buffer, Gegl.Buffer target_buffer, string operation_name, ...);
 	[CCode (cheader_filename = "gegl.h")]

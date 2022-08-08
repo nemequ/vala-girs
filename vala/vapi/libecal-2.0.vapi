@@ -132,6 +132,14 @@ namespace ECal {
 		public ECal.Component clone ();
 		[Version (since = "3.34")]
 		public void commit_sequence ();
+		[Version (since = "3.46")]
+		public ECal.ComponentText? dup_comment_for_locale (string? locale);
+		[Version (since = "3.46")]
+		public ECal.ComponentText? dup_description_for_locale (string? locale);
+		[Version (since = "3.46")]
+		public GLib.SList<ECal.ComponentText>? dup_summaries ();
+		[Version (since = "3.46")]
+		public ECal.ComponentText? dup_summary_for_locale (string? locale);
 		[CCode (has_construct_function = false)]
 		[Version (since = "3.34")]
 		public Component.from_icalcomponent (owned ICal.Component icalcomp);
@@ -306,6 +314,8 @@ namespace ECal {
 		public void set_sequence (int sequence);
 		[Version (since = "3.34")]
 		public void set_status (ICal.PropertyStatus status);
+		[Version (since = "3.46")]
+		public void set_summaries (GLib.SList<ECal.ComponentText> text_list);
 		[Version (since = "3.34")]
 		public void set_summary (ECal.ComponentText summary);
 		[Version (since = "3.34")]
@@ -776,12 +786,23 @@ namespace ECal {
 		public ComponentText (string? value, string? altrep);
 		[Version (since = "3.34")]
 		public ECal.ComponentText copy ();
+		[Version (since = "3.46")]
+		public void fill_property (ICal.Property property);
+		[CCode (has_construct_function = false)]
+		[Version (since = "3.46")]
+		public ComponentText.from_property (ICal.Property property);
 		[Version (since = "3.34")]
 		public unowned string get_altrep ();
+		[Version (since = "3.46")]
+		public unowned string get_language ();
 		[Version (since = "3.34")]
 		public unowned string get_value ();
 		[Version (since = "3.34")]
 		public void set_altrep (string? altrep);
+		[Version (since = "3.46")]
+		public void set_from_property (ICal.Property property);
+		[Version (since = "3.46")]
+		public void set_language (string? language);
 		[Version (since = "3.34")]
 		public void set_value (string? value);
 	}
@@ -1198,6 +1219,9 @@ namespace ECal {
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.34")]
 	public static string? util_component_dup_x_property (ICal.Component icalcomp, string x_name);
+	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.46")]
+	public static ICal.Property? util_component_find_property_for_locale (ICal.Component icalcomp, ICal.PropertyKind prop_kind, string? locale);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.34")]
 	public static ICal.Property? util_component_find_x_property (ICal.Component icalcomp, string x_name);

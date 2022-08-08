@@ -18,7 +18,7 @@ namespace Shumate {
 		public Coordinate.full (double latitude, double longitude);
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_data_source_get_type ()")]
-	public class DataSource : GLib.Object {
+	public abstract class DataSource : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected DataSource ();
 		public virtual async GLib.Bytes? get_tile_data_async (int x, int y, int zoom_level, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -76,6 +76,8 @@ namespace Shumate {
 		public unowned Shumate.Viewport get_viewport ();
 		public bool get_zoom_on_double_click ();
 		public void go_to (double latitude, double longitude);
+		public void go_to_full (double latitude, double longitude, double zoom_level);
+		public void go_to_full_with_duration (double latitude, double longitude, double zoom_level, uint duration_ms);
 		public void insert_layer_above (Shumate.Layer layer, Shumate.Layer? next_sibling);
 		public void insert_layer_behind (Shumate.Layer layer, Shumate.Layer? next_sibling);
 		public void remove_layer (Shumate.Layer layer);
@@ -86,6 +88,8 @@ namespace Shumate {
 		[CCode (has_construct_function = false)]
 		public Map.simple ();
 		public void stop_go_to ();
+		public void zoom_in ();
+		public void zoom_out ();
 		public bool animate_zoom { get; set; }
 		public uint go_to_duration { get; set; }
 		public Shumate.State state { get; }
@@ -165,7 +169,6 @@ namespace Shumate {
 		public void set_draggable (bool value);
 		public void set_selectable (bool value);
 		public Gtk.Widget child { get; set; }
-		public bool draggable { get; set; }
 		public bool selectable { get; set; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_marker_layer_get_type ()")]
@@ -173,40 +176,21 @@ namespace Shumate {
 		[CCode (has_construct_function = false)]
 		public MarkerLayer (Shumate.Viewport viewport);
 		public void add_marker (Shumate.Marker marker);
-		public void animate_in_all_markers ();
-		public void animate_out_all_markers ();
 		[CCode (has_construct_function = false)]
 		public MarkerLayer.full (Shumate.Viewport viewport, Gtk.SelectionMode mode);
 		public GLib.List<weak Shumate.Marker> get_markers ();
 		public GLib.List<weak Shumate.Marker> get_selected ();
 		public Gtk.SelectionMode get_selection_mode ();
-		public void hide_all_markers ();
 		public void remove_all ();
 		public void remove_marker (Shumate.Marker marker);
 		public void select_all_markers ();
 		public bool select_marker (Shumate.Marker marker);
-		public void set_all_markers_draggable ();
-		public void set_all_markers_undraggable ();
 		public void set_selection_mode (Gtk.SelectionMode mode);
-		public void show_all_markers ();
 		public void unselect_all_markers ();
 		public void unselect_marker (Shumate.Marker marker);
 		public Gtk.SelectionMode selection_mode { get; set; }
 		public signal void marker_selected (Shumate.Marker marker);
 		public signal void marker_unselected (Shumate.Marker marker);
-	}
-	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_memory_cache_get_type ()")]
-	public class MemoryCache : GLib.Object {
-		[CCode (has_construct_function = false)]
-		protected MemoryCache ();
-		public void clean ();
-		[CCode (has_construct_function = false)]
-		public MemoryCache.full (uint size_limit);
-		public uint get_size_limit ();
-		public void set_size_limit (uint size_limit);
-		public void store_texture (Shumate.Tile tile, Gdk.Texture texture, string source_id);
-		public bool try_fill_tile (Shumate.Tile tile, string source_id);
-		public uint size_limit { get; set construct; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_path_layer_get_type ()")]
 	public class PathLayer : Shumate.Layer, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
@@ -283,6 +267,7 @@ namespace Shumate {
 		public void add_overlay_layer (Shumate.Layer layer);
 		public unowned Shumate.Compass get_compass ();
 		public unowned Shumate.License get_license ();
+		public unowned Shumate.Map get_map ();
 		public unowned Shumate.MapSource get_map_source ();
 		public unowned Shumate.Scale get_scale ();
 		public bool get_show_zoom_buttons ();
@@ -293,13 +278,14 @@ namespace Shumate {
 		public void set_show_zoom_buttons (bool show_zoom_buttons);
 		public Shumate.Compass compass { get; }
 		public Shumate.License license { get; }
+		public Shumate.Map map { get; }
 		public Shumate.MapSource map_source { get; set; }
 		public Shumate.Scale scale { get; }
 		public bool show_zoom_buttons { get; set; }
 		public Shumate.Viewport viewport { get; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_tile_get_type ()")]
-	public class Tile : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
+	public class Tile : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Tile ();
 		[CCode (has_construct_function = false)]
@@ -307,25 +293,25 @@ namespace Shumate {
 		public unowned string get_etag ();
 		public bool get_fade_in ();
 		public GLib.DateTime get_modified_time ();
+		public unowned Gdk.Paintable? get_paintable ();
 		public uint get_size ();
 		public Shumate.State get_state ();
-		public unowned Gdk.Texture? get_texture ();
 		public uint get_x ();
 		public uint get_y ();
 		public uint get_zoom_level ();
 		public void set_etag (string etag);
 		public void set_fade_in (bool fade_in);
 		public void set_modified_time (GLib.DateTime modified_time);
+		public void set_paintable (Gdk.Paintable paintable);
 		public void set_size (uint size);
 		public void set_state (Shumate.State state);
-		public void set_texture (Gdk.Texture texture);
 		public void set_x (uint x);
 		public void set_y (uint y);
 		public void set_zoom_level (uint zoom_level);
 		public bool fade_in { get; set; }
+		public Gdk.Paintable paintable { get; set; }
 		public uint size { get; set; }
 		public Shumate.State state { get; set; }
-		public Gdk.Texture texture { get; set; }
 		public uint x { get; set; }
 		public uint y { get; set; }
 		public uint zoom_level { get; set; }
@@ -340,16 +326,9 @@ namespace Shumate {
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_vector_renderer_get_type ()")]
 	public class VectorRenderer : Shumate.MapSource, GLib.Initable {
 		[CCode (has_construct_function = false)]
-		public VectorRenderer (Shumate.DataSource data_source, string style_json) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		public VectorRenderer.from_url (string url_template, string style_json) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		public VectorRenderer.full (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Shumate.MapProjection projection, Shumate.DataSource data_source, string style_json) throws GLib.Error;
-		[CCode (has_construct_function = false)]
-		public VectorRenderer.full_from_url (string id, string name, string license, string license_uri, uint min_zoom, uint max_zoom, uint tile_size, Shumate.MapProjection projection, string url_template, string style_json) throws GLib.Error;
+		public VectorRenderer (string id, string style_json) throws GLib.Error;
 		public static bool is_supported ();
-		[NoAccessorMethod]
-		public Shumate.DataSource data_source { owned get; construct; }
+		public void set_sprite_sheet_data (Gdk.Pixbuf sprites_pixbuf, string sprites_json) throws GLib.Error;
 		[NoAccessorMethod]
 		public string style_json { owned get; construct; }
 	}
@@ -369,8 +348,6 @@ namespace Shumate {
 		public void set_rotation (double rotation);
 		public void set_zoom_level (double zoom_level);
 		public void widget_coords_to_location (Gtk.Widget widget, double x, double y, out double latitude, out double longitude);
-		public void zoom_in ();
-		public void zoom_out ();
 		public uint max_zoom_level { get; set; }
 		public uint min_zoom_level { get; set; }
 		public Shumate.MapSource reference_map_source { get; set; }
@@ -415,7 +392,8 @@ namespace Shumate {
 		MALFORMED_STYLE,
 		UNSUPPORTED_LAYER,
 		INVALID_EXPRESSION,
-		SUPPORT_OMITTED;
+		SUPPORT_OMITTED,
+		UNSUPPORTED;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", cprefix = "SHUMATE_TILE_DOWNLOADER_ERROR_", type_id = "shumate_tile_downloader_error_get_type ()")]

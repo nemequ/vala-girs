@@ -3303,6 +3303,7 @@ namespace MM {
 		EUTRAN_69,
 		EUTRAN_70,
 		EUTRAN_71,
+		EUTRAN_85,
 		CDMA_BC0,
 		CDMA_BC1,
 		CDMA_BC2,
@@ -3551,7 +3552,9 @@ namespace MM {
 		NONE,
 		UNKNOWN,
 		SIM_MISSING,
-		SIM_ERROR;
+		SIM_ERROR,
+		UNKNOWN_CAPABILITIES,
+		ESIM_WITHOUT_PROFILES;
 		public unowned string get_string ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_OMA_FEATURE_", type_id = "mm_oma_feature_get_type ()")]
@@ -3859,7 +3862,9 @@ namespace MM {
 		[CCode (cname = "MM_CORE_ERROR_NOT_FOUND")]
 		NOTFOUND,
 		RETRY,
-		EXISTS;
+		EXISTS,
+		[CCode (cname = "MM_CORE_ERROR_WRONG_SIM_STATE")]
+		WRONGSIMSTATE;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MESSAGE_ERROR_", type_id = "mm_message_error_get_type ()")]
@@ -4357,6 +4362,8 @@ namespace MM {
 	public const string DBUS_INTERFACE_MODEM_SAR;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_MODEM_SIGNAL")]
 	public const string DBUS_INTERFACE_MODEM_SIGNAL;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_MODEM_SIMPLE")]
+	public const string DBUS_INTERFACE_MODEM_SIMPLE;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_MODEM_TIME")]
 	public const string DBUS_INTERFACE_MODEM_TIME;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_DBUS_INTERFACE_MODEM_VOICE")]
@@ -4666,6 +4673,12 @@ namespace MM {
 	public const string MODEM_SIGNAL_PROPERTY_UMTS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SIGNAL_STATECHANGED")]
 	public const string MODEM_SIGNAL_STATECHANGED;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SIMPLE_METHOD_CONNECT")]
+	public const string MODEM_SIMPLE_METHOD_CONNECT;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SIMPLE_METHOD_DISCONNECT")]
+	public const string MODEM_SIMPLE_METHOD_DISCONNECT;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_SIMPLE_METHOD_GETSTATUS")]
+	public const string MODEM_SIMPLE_METHOD_GETSTATUS;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_TIME_METHOD_GETNETWORKTIME")]
 	public const string MODEM_TIME_METHOD_GETNETWORKTIME;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_TIME_PROPERTY_NETWORKTIMEZONE")]
