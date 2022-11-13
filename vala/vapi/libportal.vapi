@@ -47,6 +47,7 @@ namespace Xdp {
 		public async bool session_monitor_start (Xdp.Parent? parent, Xdp.SessionMonitorFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void session_monitor_stop ();
 		public void session_uninhibit (int id);
+		public async bool set_background_status (string? status_message, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool set_wallpaper (Xdp.Parent? parent, string uri, Xdp.WallpaperFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async int spawn (string cwd, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length_cname = "n_fds", array_length_pos = 4.5)] int[]? fds, [CCode (array_length_cname = "n_fds", array_length_pos = 4.5)] int[]? map_to, [CCode (array_length = false, array_null_terminated = true)] string[]? env, Xdp.SpawnFlags flags, [CCode (array_length = false, array_null_terminated = true)] string[]? sandbox_expose, [CCode (array_length = false, array_null_terminated = true)] string[]? sandbox_expose_ro, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void spawn_signal (int pid, int @signal, bool to_process_group);

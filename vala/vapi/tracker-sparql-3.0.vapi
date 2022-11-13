@@ -85,7 +85,7 @@ namespace Tracker {
 	}
 
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]
-        public abstract class Sparql.Connection : GLib.Object {
+	public abstract class Sparql.Connection : GLib.Object {
 		public extern static new Connection remote_new (string uri_base);
 		public extern static new Connection new (Sparql.ConnectionFlags flags, GLib.File? store, GLib.File? ontology, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.IOError;
 		public extern async static new Connection new_async (Sparql.ConnectionFlags flags, GLib.File? store, GLib.File? ontology, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.IOError;
@@ -114,13 +114,13 @@ namespace Tracker {
 		public virtual Statement? query_statement (string sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error;
 		public virtual Batch? create_batch ();
 
-                public virtual Notifier? create_notifier ();
-                public virtual void close ();
-                public async virtual bool close_async () throws GLib.IOError;
+		public virtual Notifier? create_notifier ();
+		public virtual void close ();
+		public async virtual bool close_async () throws GLib.IOError;
 
-                public async virtual GLib.InputStream serialize_async (SerializeFlags flags, RdfFormat format, string sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
-                public async virtual bool deserialize_async (DeserializeFlags flags, RdfFormat format, string? default_graph, GLib.InputStream istream, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
-                public virtual void map_connection (string handle_name, Sparql.Connection service_connection);
+		public async virtual GLib.InputStream serialize_async (SerializeFlags flags, RdfFormat format, string sparql, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
+		public async virtual bool deserialize_async (DeserializeFlags flags, RdfFormat format, string? default_graph, GLib.InputStream istream, GLib.Cancellable? cancellable = null) throws Sparql.Error, GLib.Error, GLib.IOError, GLib.DBusError;
+		public virtual void map_connection (string handle_name, Sparql.Connection service_connection);
 	}
 
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]
@@ -249,6 +249,8 @@ namespace Tracker {
 			public string get_location ();
 		}
 
+		public Sparql.Connection connection { get; construct set; }
+		public signal void events (string service, string graph, GLib.GenericArray<NotifierEvent> events);
 		public uint signal_subscribe (GLib.DBusConnection dbus_conn, string dbus_name, string? object_path, string? graph);
 		public void signal_unsubscribe (uint handler_id);
 	}

@@ -139,7 +139,7 @@ namespace AppStream {
 		public void add_category (string category);
 		[Version (since = "0.11.0")]
 		public void add_content_rating (AppStream.ContentRating content_rating);
-		[Version (since = "0.7.0")]
+		[Version (since = "0.15.5")]
 		public void add_extends (string cpt_id);
 		public void add_icon (AppStream.Icon icon);
 		[Version (since = "0.7.0")]
@@ -152,6 +152,7 @@ namespace AppStream {
 		[Version (since = "0.12.0")]
 		public void add_relation (AppStream.Relation relation);
 		public void add_release (AppStream.Release release);
+		public void add_replaces (string cid);
 		[Version (since = "0.14.0")]
 		public void add_review (AppStream.Review review);
 		public void add_screenshot (AppStream.Screenshot sshot);
@@ -200,7 +201,7 @@ namespace AppStream {
 		[Version (deprecated = true, deprecated_since = "0.11.0", since = "0.9.8")]
 		public unowned string get_desktop_id ();
 		public unowned string get_developer_name ();
-		[Version (since = "0.7.0")]
+		[Version (since = "0.15.5")]
 		public unowned GLib.GenericArray<string>? get_extends ();
 		public unowned AppStream.Icon? get_icon_by_size (uint width, uint height);
 		public unowned AppStream.Icon? get_icon_stock ();
@@ -238,6 +239,7 @@ namespace AppStream {
 		[Version (since = "0.12.0")]
 		public unowned GLib.GenericArray<AppStream.Relation> get_recommends ();
 		public unowned GLib.GenericArray<AppStream.Release> get_releases ();
+		public unowned GLib.GenericArray<string> get_replaces ();
 		[Version (since = "0.12.0")]
 		public unowned GLib.GenericArray<AppStream.Relation> get_requires ();
 		[Version (since = "0.14.0")]
@@ -269,6 +271,8 @@ namespace AppStream {
 		[Version (since = "0.10.5")]
 		public bool insert_custom_value (string key, string value);
 		public bool is_compulsory_for_desktop (string desktop);
+		[Version (since = "0.15.5")]
+		public bool is_free ();
 		[Version (since = "0.10.2")]
 		public bool is_ignored ();
 		public bool is_member_of_category (AppStream.Category category);
@@ -599,6 +603,10 @@ namespace AppStream {
 		public AppStream.DisplayLengthKind get_value_display_length_kind ();
 		[Version (since = "0.12.0")]
 		public int get_value_int ();
+		[Version (since = "0.15.5")]
+		public uint get_value_internet_bandwidth ();
+		[Version (since = "0.15.5")]
+		public AppStream.InternetKind get_value_internet_kind ();
 		[Version (since = "0.12.12")]
 		public int get_value_px ();
 		[Version (since = "0.12.12")]
@@ -621,6 +629,9 @@ namespace AppStream {
 		public void set_value_display_length_kind (AppStream.DisplayLengthKind kind);
 		[Version (since = "0.12.12")]
 		public void set_value_int (int value);
+		public void set_value_internet_bandwidth (uint bandwidth_mbitps);
+		[Version (since = "0.15.5")]
+		public void set_value_internet_kind (AppStream.InternetKind kind);
 		[Version (since = "0.12.12")]
 		public void set_value_px (int logical_px);
 		[Version (since = "0.12.12")]
@@ -1138,6 +1149,16 @@ namespace AppStream {
 		public static AppStream.ImageKind from_string (string kind);
 		public unowned string to_string ();
 	}
+	[CCode (cheader_filename = "appstream.h", cprefix = "AS_INTERNET_KIND_", type_id = "as_internet_kind_get_type ()")]
+	[Version (since = "0.15.5")]
+	public enum InternetKind {
+		UNKNOWN,
+		ALWAYS,
+		OFFLINE_ONLY,
+		FIRST_RUN;
+		public static AppStream.InternetKind from_string (string kind_str);
+		public unowned string to_string ();
+	}
 	[CCode (cheader_filename = "appstream.h", cprefix = "AS_ISSUE_KIND_", type_id = "as_issue_kind_get_type ()")]
 	public enum IssueKind {
 		UNKNOWN,
@@ -1256,7 +1277,8 @@ namespace AppStream {
 		FIRMWARE,
 		CONTROL,
 		DISPLAY_LENGTH,
-		HARDWARE;
+		HARDWARE,
+		INTERNET;
 		[Version (since = "0.12.0")]
 		public static AppStream.RelationItemKind from_string (string kind_str);
 		[Version (since = "0.12.0")]
@@ -1579,6 +1601,12 @@ namespace AppStream {
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (replacement = "ImageKind.to_string")]
 	public static unowned string image_kind_to_string (AppStream.ImageKind kind);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "InternetKind.from_string", since = "0.15.5")]
+	public static AppStream.InternetKind internet_kind_from_string (string kind_str);
+	[CCode (cheader_filename = "appstream.h")]
+	[Version (replacement = "InternetKind.to_string", since = "0.15.5")]
+	public static unowned string internet_kind_to_string (AppStream.InternetKind kind);
 	[CCode (cheader_filename = "appstream.h")]
 	[Version (since = "0.12.10")]
 	public static bool is_spdx_license_exception_id (string exception_id);

@@ -391,17 +391,29 @@ namespace Adw {
 		public unowned string? get_icon_name ();
 		public bool get_show_enable_switch ();
 		public unowned string get_subtitle ();
+		[Version (since = "1.3")]
+		public bool get_subtitle_lines ();
+		[Version (since = "1.3")]
+		public bool get_title_lines ();
 		public void remove (Gtk.Widget child);
 		public void set_enable_expansion (bool enable_expansion);
 		public void set_expanded (bool expanded);
 		public void set_icon_name (string? icon_name);
 		public void set_show_enable_switch (bool show_enable_switch);
 		public void set_subtitle (string subtitle);
+		[Version (since = "1.3")]
+		public void set_subtitle_lines (int subtitle_lines);
+		[Version (since = "1.3")]
+		public void set_title_lines (int title_lines);
 		public bool enable_expansion { get; set; }
 		public bool expanded { get; set; }
 		public string icon_name { get; set; }
 		public bool show_enable_switch { get; set; }
 		public string subtitle { get; set; }
+		[Version (since = "1.3")]
+		public int subtitle_lines { get; set; }
+		[Version (since = "1.3")]
+		public int title_lines { get; set; }
 	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_flap_get_type ()")]
 	[Version (since = "1.0")]
@@ -625,6 +637,8 @@ namespace Adw {
 		public unowned string get_title ();
 		public bool get_use_underline ();
 		public void remove (Adw.PreferencesGroup group);
+		[Version (since = "1.3")]
+		public void scroll_to_top ();
 		public void set_icon_name (string? icon_name);
 		public void set_name (string? name);
 		public void set_title (string title);
@@ -922,6 +936,55 @@ namespace Adw {
 		public Adw.TabView view { get; set; }
 		public signal bool extra_drag_drop (Adw.TabPage page, GLib.Value value);
 	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_tab_button_get_type ()")]
+	[Version (since = "1.3")]
+	public sealed class TabButton : Gtk.Widget, Gtk.Accessible, Gtk.Actionable, Gtk.Buildable, Gtk.ConstraintTarget {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public TabButton ();
+		public unowned Adw.TabView? get_view ();
+		public void set_view (Adw.TabView? view);
+		public Adw.TabView view { get; set; }
+		public signal void activate ();
+		public signal void clicked ();
+	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_tab_overview_get_type ()")]
+	[Version (since = "1.3")]
+	public sealed class TabOverview : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public TabOverview ();
+		public unowned Gtk.Widget? get_child ();
+		public bool get_enable_new_tab ();
+		public bool get_enable_search ();
+		public bool get_inverted ();
+		public bool get_open ();
+		public bool get_search_active ();
+		public unowned GLib.MenuModel? get_secondary_menu ();
+		public bool get_show_end_title_buttons ();
+		public bool get_show_start_title_buttons ();
+		public unowned Adw.TabView? get_view ();
+		public void set_child (Gtk.Widget? child);
+		public void set_enable_new_tab (bool enable_new_tab);
+		public void set_enable_search (bool enable_search);
+		public void set_inverted (bool inverted);
+		public void set_open (bool open);
+		public void set_secondary_menu (GLib.MenuModel? secondary_menu);
+		public void set_show_end_title_buttons (bool show_end_title_buttons);
+		public void set_show_start_title_buttons (bool show_start_title_buttons);
+		public void set_view (Adw.TabView? view);
+		public void setup_extra_drop_target (Gdk.DragAction actions, [CCode (array_length_cname = "n_types", array_length_pos = 2.1, array_length_type = "gsize")] GLib.Type[]? types);
+		public Gtk.Widget child { get; set; }
+		public bool enable_new_tab { get; set; }
+		public bool enable_search { get; set; }
+		public bool inverted { get; set; }
+		public bool open { get; set; }
+		public bool search_active { get; }
+		public GLib.MenuModel secondary_menu { get; set; }
+		public bool show_end_title_buttons { get; set; }
+		public bool show_start_title_buttons { get; set; }
+		public Adw.TabView view { get; set; }
+		public signal unowned Adw.TabPage create_tab ();
+		public signal bool extra_drag_drop (Adw.TabPage page, GLib.Value value);
+	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_tab_page_get_type ()")]
 	public sealed class TabPage : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -936,6 +999,10 @@ namespace Adw {
 		public unowned GLib.Icon? get_indicator_icon ();
 		[Version (since = "1.2")]
 		public unowned string get_indicator_tooltip ();
+		[Version (since = "1.3")]
+		public unowned string? get_keyword ();
+		[Version (since = "1.3")]
+		public bool get_live_thumbnail ();
 		[Version (since = "1.0")]
 		public bool get_loading ();
 		[Version (since = "1.0")]
@@ -946,10 +1013,16 @@ namespace Adw {
 		public bool get_pinned ();
 		[Version (since = "1.0")]
 		public bool get_selected ();
+		[Version (since = "1.3")]
+		public float get_thumbnail_xalign ();
+		[Version (since = "1.3")]
+		public float get_thumbnail_yalign ();
 		[Version (since = "1.0")]
 		public unowned string get_title ();
 		[Version (since = "1.0")]
 		public unowned string? get_tooltip ();
+		[Version (since = "1.3")]
+		public void invalidate_thumbnail ();
 		[Version (since = "1.0")]
 		public void set_icon (GLib.Icon? icon);
 		[Version (since = "1.0")]
@@ -958,10 +1031,18 @@ namespace Adw {
 		public void set_indicator_icon (GLib.Icon? indicator_icon);
 		[Version (since = "1.2")]
 		public void set_indicator_tooltip (string tooltip);
+		[Version (since = "1.3")]
+		public void set_keyword (string keyword);
+		[Version (since = "1.3")]
+		public void set_live_thumbnail (bool live_thumbnail);
 		[Version (since = "1.0")]
 		public void set_loading (bool loading);
 		[Version (since = "1.0")]
 		public void set_needs_attention (bool needs_attention);
+		[Version (since = "1.3")]
+		public void set_thumbnail_xalign (float xalign);
+		[Version (since = "1.3")]
+		public void set_thumbnail_yalign (float yalign);
 		[Version (since = "1.0")]
 		public void set_title (string title);
 		[Version (since = "1.0")]
@@ -976,6 +1057,10 @@ namespace Adw {
 		public GLib.Icon indicator_icon { get; set; }
 		[Version (since = "1.2")]
 		public string indicator_tooltip { get; set; }
+		[Version (since = "1.3")]
+		public string keyword { get; set; }
+		[Version (since = "1.3")]
+		public bool live_thumbnail { get; set; }
 		[Version (since = "1.0")]
 		public bool loading { get; set; }
 		[Version (since = "1.0")]
@@ -986,6 +1071,10 @@ namespace Adw {
 		public bool pinned { get; }
 		[Version (since = "1.0")]
 		public bool selected { get; }
+		[Version (since = "1.3")]
+		public float thumbnail_xalign { get; set; }
+		[Version (since = "1.3")]
+		public float thumbnail_yalign { get; set; }
 		[Version (since = "1.0")]
 		public string title { get; set; }
 		[Version (since = "1.0")]
@@ -1019,6 +1108,8 @@ namespace Adw {
 		public Adw.TabViewShortcuts get_shortcuts ();
 		public unowned Adw.TabPage insert (Gtk.Widget child, int position);
 		public unowned Adw.TabPage insert_pinned (Gtk.Widget child, int position);
+		[Version (since = "1.3")]
+		public void invalidate_thumbnails ();
 		public unowned Adw.TabPage prepend (Gtk.Widget child);
 		public unowned Adw.TabPage prepend_pinned (Gtk.Widget child);
 		[Version (since = "1.2")]

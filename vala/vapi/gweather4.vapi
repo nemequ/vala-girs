@@ -209,6 +209,7 @@ namespace GWeather {
 		IWIN,
 		MET_NO,
 		OWM,
+		NWS,
 		ALL
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", cprefix = "GWEATHER_SKY_", type_id = "gweather_sky_get_type ()")]

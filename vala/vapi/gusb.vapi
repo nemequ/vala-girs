@@ -2,6 +2,15 @@
 
 [CCode (cprefix = "GUsb", gir_namespace = "GUsb", gir_version = "1.0", lower_case_cprefix = "g_usb_")]
 namespace GUsb {
+	[CCode (cheader_filename = "gusb.h", type_id = "g_usb_bos_descriptor_get_type ()")]
+	public class BosDescriptor : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected BosDescriptor ();
+		[Version (since = "0.4.0")]
+		public uint8 get_capability ();
+		[Version (since = "0.4.0")]
+		public unowned GLib.Bytes get_extra ();
+	}
 	[CCode (cheader_filename = "gusb.h", type_id = "g_usb_context_get_type ()")]
 	public class Context : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
@@ -27,6 +36,14 @@ namespace GUsb {
 		public unowned GLib.MainContext get_main_context ();
 		[Version (since = "0.1.0")]
 		public unowned GUsb.Source get_source (GLib.MainContext main_ctx);
+		[Version (since = "0.4.0")]
+		public bool load (Json.Object json_object) throws GLib.Error;
+		[Version (since = "0.4.1")]
+		public bool load_with_tag (Json.Object json_object, string tag) throws GLib.Error;
+		[Version (since = "0.4.0")]
+		public bool save (Json.Builder json_builder) throws GLib.Error;
+		[Version (since = "0.4.1")]
+		public bool save_with_tag (Json.Builder json_builder, string tag) throws GLib.Error;
 		[Version (since = "0.1.0")]
 		public void set_debug (GLib.LogLevelFlags flags);
 		[Version (since = "0.2.11")]
@@ -48,6 +65,8 @@ namespace GUsb {
 	public class Device : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected Device ();
+		[Version (since = "0.4.1")]
+		public void add_tag (string tag);
 		[Version (since = "0.1.0")]
 		public bool bulk_transfer (uint8 endpoint, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, out size_t actual_length, uint timeout, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "0.1.0")]
@@ -64,6 +83,10 @@ namespace GUsb {
 		public static GLib.Quark error_quark ();
 		[Version (since = "0.1.0")]
 		public uint8 get_address ();
+		[Version (since = "0.4.0")]
+		public GUsb.BosDescriptor get_bos_descriptor (uint8 capability) throws GLib.Error;
+		[Version (since = "0.4.0")]
+		public GLib.GenericArray<weak GUsb.BosDescriptor> get_bos_descriptors () throws GLib.Error;
 		[Version (since = "0.1.0")]
 		public uint8 get_bus ();
 		[Version (since = "0.2.4")]
@@ -80,6 +103,8 @@ namespace GUsb {
 		public uint8 get_device_protocol ();
 		[Version (since = "0.2.4")]
 		public uint8 get_device_subclass ();
+		[Version (since = "0.4.0")]
+		public GLib.GenericArray<weak GUsb.DeviceEvent> get_events ();
 		[Version (since = "0.2.8")]
 		public GUsb.Interface get_interface (uint8 class_id, uint8 subclass_id, uint8 protocol_id) throws GLib.Error;
 		[Version (since = "0.2.8")]
@@ -114,10 +139,14 @@ namespace GUsb {
 		public uint16 get_vid ();
 		[Version (since = "0.2.4")]
 		public unowned string get_vid_as_str ();
+		[Version (since = "0.4.3")]
+		public bool has_tag (string tag);
 		[Version (since = "0.1.0")]
 		public bool interrupt_transfer (uint8 endpoint, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, out size_t actual_length, uint timeout, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "0.1.0")]
 		public async ssize_t interrupt_transfer_async (uint8 endpoint, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, uint timeout, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "0.4.0")]
+		public void invalidate ();
 		[Version (since = "0.1.0")]
 		public bool open () throws GLib.Error;
 		[Version (since = "0.1.0")]
@@ -134,6 +163,19 @@ namespace GUsb {
 		public void* libusb_device { get; construct; }
 		[NoAccessorMethod]
 		public string platform_id { construct; }
+	}
+	[CCode (cheader_filename = "gusb.h", type_id = "g_usb_device_event_get_type ()")]
+	public class DeviceEvent : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected DeviceEvent ();
+		[Version (since = "0.4.0")]
+		public unowned GLib.Bytes get_bytes ();
+		[Version (since = "0.4.0")]
+		public unowned string get_id ();
+		[Version (since = "0.4.0")]
+		public int get_status ();
+		[Version (since = "0.4.0")]
+		public void set_bytes (GLib.Bytes bytes);
 	}
 	[CCode (cheader_filename = "gusb.h", type_id = "g_usb_device_list_get_type ()")]
 	public class DeviceList : GLib.Object {
@@ -218,7 +260,8 @@ namespace GUsb {
 	[Flags]
 	public enum ContextFlags {
 		NONE,
-		AUTO_OPEN_DEVICES
+		AUTO_OPEN_DEVICES,
+		SAVE_EVENTS
 	}
 	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_CLAIM_INTERFACE_", has_type_id = false)]
 	[Flags]

@@ -705,8 +705,8 @@ namespace Ggit {
 		public Ggit.Object? lookup () throws GLib.Error;
 		public Ggit.Ref? rename (string new_name, bool force, string log_message) throws GLib.Error;
 		public Ggit.Ref? resolve () throws GLib.Error;
-		public Ggit.Ref? set_symbolic_target (string target, string log_message) throws GLib.Error;
-		public Ggit.Ref? set_target (Ggit.OId oid, string log_message) throws GLib.Error;
+		public Ggit.Ref? set_symbolic_target (string target, string? log_message) throws GLib.Error;
+		public Ggit.Ref? set_target (Ggit.OId oid, string? log_message) throws GLib.Error;
 		public unowned string? to_string ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", ref_function = "ggit_ref_spec_ref", type_id = "ggit_ref_spec_get_type ()", unref_function = "ggit_ref_spec_unref")]
@@ -803,7 +803,9 @@ namespace Ggit {
 		public Ggit.OId? create_blob_from_path (string path) throws GLib.Error;
 		public Ggit.Branch? create_branch (string branch_name, Ggit.Object target, Ggit.CreateFlags flags) throws GLib.Error;
 		public Ggit.OId? create_commit (string? update_ref, Ggit.Signature author, Ggit.Signature committer, string? message_encoding, string message, Ggit.Tree tree, [CCode (array_length_cname = "parent_count", array_length_pos = 7.1)] Ggit.Commit[] parents) throws GLib.Error;
+		public string? create_commit_buffer (Ggit.Signature author, Ggit.Signature committer, string? message_encoding, string message, Ggit.Tree tree, [CCode (array_length_cname = "parent_count", array_length_pos = 6.1)] Ggit.Commit[] parents) throws GLib.Error;
 		public Ggit.OId? create_commit_from_ids (string? update_ref, Ggit.Signature author, Ggit.Signature committer, string? message_encoding, string message, Ggit.OId tree, [CCode (array_length_cname = "parent_count", array_length_pos = 7.1)] Ggit.OId[] parents) throws GLib.Error;
+		public Ggit.OId? create_commit_with_signature (string commit_content, string? signature, string? signature_field) throws GLib.Error;
 		public Ggit.IndexEntry? create_index_entry_for_file (GLib.File? file, Ggit.OId? id) throws GLib.Error;
 		public Ggit.IndexEntry? create_index_entry_for_path (string? path, Ggit.OId? id) throws GLib.Error;
 		public Ggit.OId? create_note (string? notes_ref, Ggit.Signature author, Ggit.Signature committer, Ggit.OId id, string note, bool force) throws GLib.Error;

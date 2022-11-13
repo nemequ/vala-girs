@@ -103,6 +103,7 @@ namespace Shumate {
 		public MapLayer (Shumate.MapSource map_source, Shumate.Viewport viewport);
 		[NoAccessorMethod]
 		public Shumate.MapSource map_source { owned get; construct; }
+		public signal void symbol_clicked (Shumate.SymbolEvent event);
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_map_source_get_type ()")]
 	public abstract class MapSource : GLib.Object {
@@ -283,6 +284,17 @@ namespace Shumate {
 		public Shumate.Scale scale { get; }
 		public bool show_zoom_buttons { get; set; }
 		public Shumate.Viewport viewport { get; }
+		public signal void symbol_clicked (Shumate.SymbolEvent event);
+	}
+	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_symbol_event_get_type ()")]
+	public sealed class SymbolEvent : GLib.Object, Shumate.Location {
+		[CCode (has_construct_function = false)]
+		protected SymbolEvent ();
+		public unowned string get_feature_id ();
+		public unowned string get_layer ();
+		public unowned string get_tag (string tag_name);
+		public string feature_id { get; }
+		public string layer { get; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_tile_get_type ()")]
 	public class Tile : GLib.Object {
@@ -328,7 +340,7 @@ namespace Shumate {
 		[CCode (has_construct_function = false)]
 		public VectorRenderer (string id, string style_json) throws GLib.Error;
 		public static bool is_supported ();
-		public void set_sprite_sheet_data (Gdk.Pixbuf sprites_pixbuf, string sprites_json) throws GLib.Error;
+		public bool set_sprite_sheet_data (Gdk.Pixbuf sprites_pixbuf, string sprites_json) throws GLib.Error;
 		[NoAccessorMethod]
 		public string style_json { owned get; construct; }
 	}
@@ -429,8 +441,6 @@ namespace Shumate {
 	public const double MAX_LATITUDE;
 	[CCode (cheader_filename = "shumate/shumate.h", cname = "SHUMATE_MAX_LONGITUDE")]
 	public const double MAX_LONGITUDE;
-	[CCode (cheader_filename = "shumate/shumate.h", cname = "SHUMATE_MICRO_VERSION")]
-	public const int MICRO_VERSION;
 	[CCode (cheader_filename = "shumate/shumate.h", cname = "SHUMATE_MINOR_VERSION")]
 	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "shumate/shumate.h", cname = "SHUMATE_MIN_LATITUDE")]

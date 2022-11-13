@@ -106,12 +106,18 @@ namespace GtkSource {
 		public unowned GtkSource.Completion? get_completion ();
 		public bool get_empty ();
 		public unowned GtkSource.Language? get_language ();
+		[Version (since = "5.6")]
+		public unowned GLib.ListModel? get_proposals_for_provider (GtkSource.CompletionProvider provider);
 		public unowned GtkSource.View? get_view ();
 		public string get_word ();
+		[Version (since = "5.6")]
+		public GLib.ListModel list_providers ();
 		public void set_proposals_for_provider (GtkSource.CompletionProvider provider, GLib.ListModel? results);
 		public bool busy { get; }
 		public GtkSource.Completion completion { get; construct; }
 		public bool empty { get; }
+		[Version (since = "5.6")]
+		public signal void provider_model_changed (GtkSource.CompletionProvider provider, GLib.ListModel? model);
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_completion_snippets_get_type ()")]
 	public class CompletionSnippets : GLib.Object, GtkSource.CompletionProvider {
@@ -860,16 +866,18 @@ namespace GtkSource {
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_cname = "GtkSourceCompletionProposalInterface", type_id = "gtk_source_completion_proposal_get_type ()")]
 	public interface CompletionProposal : GLib.Object {
+		[Version (since = "5.6")]
+		public virtual string? get_typed_text ();
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_cname = "GtkSourceCompletionProviderInterface", type_id = "gtk_source_completion_provider_get_type ()")]
 	public interface CompletionProvider : GLib.Object {
 		public abstract void activate (GtkSource.CompletionContext context, GtkSource.CompletionProposal proposal);
 		public abstract void display (GtkSource.CompletionContext context, GtkSource.CompletionProposal proposal, GtkSource.CompletionCell cell);
-		public abstract int get_priority (GtkSource.CompletionContext context);
-		public abstract string? get_title ();
-		public abstract bool is_trigger (Gtk.TextIter iter, unichar ch);
-		public abstract bool key_activates (GtkSource.CompletionContext context, GtkSource.CompletionProposal proposal, uint keyval, Gdk.ModifierType state);
-		public abstract GLib.GenericArray<GtkSource.CompletionProposal>? list_alternates (GtkSource.CompletionContext context, GtkSource.CompletionProposal proposal);
+		public virtual int get_priority (GtkSource.CompletionContext context);
+		public virtual string? get_title ();
+		public virtual bool is_trigger (Gtk.TextIter iter, unichar ch);
+		public virtual bool key_activates (GtkSource.CompletionContext context, GtkSource.CompletionProposal proposal, uint keyval, Gdk.ModifierType state);
+		public virtual GLib.GenericArray<GtkSource.CompletionProposal>? list_alternates (GtkSource.CompletionContext context, GtkSource.CompletionProposal proposal);
 		public abstract async GLib.ListModel populate_async (GtkSource.CompletionContext context, GLib.Cancellable? cancellable) throws GLib.Error;
 		public abstract void refilter (GtkSource.CompletionContext context, GLib.ListModel model);
 	}

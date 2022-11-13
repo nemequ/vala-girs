@@ -10,8 +10,8 @@ namespace Secret {
 		public static Secret.Collection create_sync (Secret.Service? service, string label, string? alias, Secret.CollectionCreateFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool @delete (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool delete_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public static async Secret.Collection for_alias (Secret.Service? service, string alias, Secret.CollectionFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
-		public static Secret.Collection for_alias_sync (Secret.Service? service, string alias, Secret.CollectionFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public static async Secret.Collection? for_alias (Secret.Service? service, string alias, Secret.CollectionFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static Secret.Collection? for_alias_sync (Secret.Service? service, string alias, Secret.CollectionFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (cname = "secret_collection_new_for_dbus_path", has_construct_function = false)]
 		public async Collection.for_dbus_path (Secret.Service? service, string collection_path, Secret.CollectionFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (has_construct_function = false)]

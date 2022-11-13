@@ -10,6 +10,14 @@ namespace E {
 		[NoAccessorMethod]
 		public Gdk.RGBA rgba { owned get; set; }
 	}
+	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", type_id = "e_certificate_widget_get_type ()")]
+	[Version (since = "3.46")]
+	public class CertificateWidget : Gtk.ScrolledWindow, Atk.Implementor, Gtk.Buildable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public CertificateWidget ();
+		public void set_der (void* der_data, uint der_data_len);
+		public void set_pem (string? pem_data);
+	}
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", type_id = "e_credentials_prompter_get_type ()")]
 	[Version (since = "3.16")]
 	public class CredentialsPrompter : GLib.Object, E.Extensible {
