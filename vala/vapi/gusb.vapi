@@ -59,6 +59,7 @@ namespace GUsb {
 		[NoAccessorMethod]
 		public void* libusb_context { get; }
 		public virtual signal void device_added (GUsb.Device device);
+		public virtual signal void device_changed (GUsb.Device device);
 		public virtual signal void device_removed (GUsb.Device device);
 	}
 	[CCode (cheader_filename = "gusb.h", type_id = "g_usb_device_get_type ()")]
@@ -73,6 +74,8 @@ namespace GUsb {
 		public async ssize_t bulk_transfer_async (uint8 endpoint, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, uint timeout, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "0.1.0")]
 		public bool claim_interface (int @interface, GUsb.DeviceClaimInterfaceFlags flags) throws GLib.Error;
+		[Version (since = "0.4.4")]
+		public void clear_events ();
 		[Version (since = "0.1.0")]
 		public bool close () throws GLib.Error;
 		[Version (since = "0.1.0")]
@@ -95,6 +98,8 @@ namespace GUsb {
 		public int get_configuration () throws GLib.Error;
 		[Version (since = "0.3.5")]
 		public uint8 get_configuration_index ();
+		[Version (since = "0.4.5")]
+		public unowned GLib.DateTime get_created ();
 		[Version (since = "0.2.5")]
 		public uint8 get_custom_index (uint8 class_id, uint8 subclass_id, uint8 protocol_id) throws GLib.Error;
 		[Version (since = "0.1.7")]
@@ -135,6 +140,8 @@ namespace GUsb {
 		public GLib.Bytes get_string_descriptor_bytes (uint8 desc_index, uint16 langid) throws GLib.Error;
 		[Version (since = "0.3.8")]
 		public GLib.Bytes get_string_descriptor_bytes_full (uint8 desc_index, uint16 langid, size_t length) throws GLib.Error;
+		[Version (since = "0.4.4")]
+		public GLib.GenericArray<weak string> get_tags ();
 		[Version (since = "0.1.0")]
 		public uint16 get_vid ();
 		[Version (since = "0.2.4")]
@@ -147,10 +154,14 @@ namespace GUsb {
 		public async ssize_t interrupt_transfer_async (uint8 endpoint, [CCode (array_length_cname = "length", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] data, uint timeout, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "0.4.0")]
 		public void invalidate ();
+		[Version (since = "0.4.4")]
+		public bool is_emulated ();
 		[Version (since = "0.1.0")]
 		public bool open () throws GLib.Error;
 		[Version (since = "0.1.0")]
 		public bool release_interface (int @interface, GUsb.DeviceClaimInterfaceFlags flags) throws GLib.Error;
+		[Version (since = "0.4.4")]
+		public void remove_tag (string tag);
 		[Version (since = "0.1.0")]
 		public bool reset () throws GLib.Error;
 		[Version (since = "0.1.0")]
@@ -172,6 +183,8 @@ namespace GUsb {
 		public unowned GLib.Bytes get_bytes ();
 		[Version (since = "0.4.0")]
 		public unowned string get_id ();
+		[Version (since = "0.4.5")]
+		public int get_rc ();
 		[Version (since = "0.4.0")]
 		public int get_status ();
 		[Version (since = "0.4.0")]
@@ -261,7 +274,9 @@ namespace GUsb {
 	public enum ContextFlags {
 		NONE,
 		AUTO_OPEN_DEVICES,
-		SAVE_EVENTS
+		SAVE_EVENTS,
+		SAVE_REMOVED_DEVICES,
+		DEBUG
 	}
 	[CCode (cheader_filename = "gusb.h", cprefix = "G_USB_DEVICE_CLAIM_INTERFACE_", has_type_id = false)]
 	[Flags]

@@ -1018,6 +1018,14 @@ namespace GtkSource {
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", instance_pos = 1.9)]
 	[Version (since = "5.2")]
 	public delegate bool SchedulerCallback (int64 deadline);
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cname = "GTK_SOURCE_MAJOR_VERSION")]
+	public const int MAJOR_VERSION;
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cname = "GTK_SOURCE_MICRO_VERSION")]
+	public const int MICRO_VERSION;
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cname = "GTK_SOURCE_MINOR_VERSION")]
+	public const int MINOR_VERSION;
+	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
+	public static bool check_version (uint major, uint minor, uint micro);
 	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
 	[Version (replacement = "Encoding.get_all")]
 	public static GLib.SList<weak GtkSource.Encoding> encoding_get_all ();
@@ -1041,6 +1049,12 @@ namespace GtkSource {
 	public static GLib.Quark file_saver_error_quark ();
 	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
 	public static void finalize ();
+	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
+	public static uint get_major_version ();
+	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
+	public static uint get_micro_version ();
+	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
+	public static uint get_minor_version ();
 	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
 	public static void init ();
 	[CCode (cheader_filename = "gtksourceview/gtksource.h")]

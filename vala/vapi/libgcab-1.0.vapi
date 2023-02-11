@@ -6,6 +6,8 @@ namespace GCab {
 	public class Cabinet : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Cabinet ();
+		[Version (since = "1.6")]
+		public void add_allowed_compression (GCab.Compression compression);
 		public bool add_folder (GCab.Folder folder) throws GLib.Error;
 		public bool extract (GLib.File? path, [CCode (delegate_target_pos = 3.5)] GCab.FileCallback? file_callback, [CCode (delegate_target_pos = 3.5)] GLib.FileProgressCallback? progress_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool extract_simple (GLib.File path, [CCode (delegate_target_pos = 2.5)] GCab.FileCallback? file_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;

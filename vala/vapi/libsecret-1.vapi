@@ -330,12 +330,9 @@ namespace Secret {
 	public static async string password_lookupv (Secret.Schema? schema, owned GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static string password_lookupv_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, GLib.Cancellable? cancellable = null) throws GLib.Error;
-	[CCode (cheader_filename = "libsecret/secret.h")]
+	[CCode (cheader_filename = "libsecret/secret.h", finish_name = "secret_password_search_finish")]
 	[Version (since = "0.19.0")]
-	public static GLib.List<Secret.Retrievable> password_search_finish (GLib.AsyncResult result) throws GLib.Error;
-	[CCode (cheader_filename = "libsecret/secret.h")]
-	[Version (since = "0.19.0")]
-	public static async void password_searchv (Secret.Schema? schema, owned GLib.HashTable<string,string> attributes, Secret.SearchFlags flags, GLib.Cancellable? cancellable);
+	public static async GLib.List<Secret.Retrievable> password_searchv (Secret.Schema? schema, owned GLib.HashTable<string,string> attributes, Secret.SearchFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	[Version (since = "0.19.0")]
 	public static GLib.List<Secret.Retrievable> password_searchv_sync (Secret.Schema? schema, GLib.HashTable<string,string> attributes, Secret.SearchFlags flags, GLib.Cancellable? cancellable = null) throws GLib.Error;

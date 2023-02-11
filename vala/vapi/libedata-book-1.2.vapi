@@ -204,6 +204,8 @@ namespace E {
 		public bool cursor_set_sexp (E.BookCacheCursor cursor, string sexp) throws GLib.Error;
 		public void cursor_set_target_alphabetic_index (E.BookCacheCursor cursor, int idx);
 		public int cursor_step (E.BookCacheCursor cursor, E.BookCacheCursorStepFlags flags, E.BookCacheCursorOrigin origin, int count, out GLib.SList<E.BookCacheSearchData>? out_results, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.48")]
+		public string? dup_categories ();
 		public string dup_locale ();
 		[CCode (has_construct_function = false)]
 		public BookCache.full (string filename, E.Source? source, E.SourceBackendSummarySetup? setup, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -228,6 +230,7 @@ namespace E {
 		public bool set_locale (string lc_collate, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoAccessorMethod]
 		public string locale { owned get; }
+		public virtual signal void categories_changed (string categories);
 		[HasEmitter]
 		public virtual signal string dup_contact_revision (E.Contact contact);
 		public virtual signal void e164_changed (E.Contact contact, bool is_replace);
@@ -313,6 +316,8 @@ namespace E {
 		public bool add_contact (E.Contact contact, string extra, bool replace, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool add_contacts (GLib.SList<E.Contact> contacts, GLib.SList<string>? extra, bool replace, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static GLib.Quark error_quark ();
+		[Version (since = "3.48")]
+		public bool exec (string sql_stmt, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public BookSqlite.full (string path, E.Source? source, E.SourceBackendSummarySetup? setup, [CCode (delegate_target_pos = 5.33333, scope = "async")] E.bSqlVCardCallback? vcard_callback, [CCode (delegate_target_pos = 5.33333, destroy_notify_pos = 5.66667)] owned E.bSqlChangeCallback? change_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_contact (string uid, bool meta_contact, out E.Contact ret_contact) throws GLib.Error;
@@ -331,6 +336,8 @@ namespace E {
 		public bool search (string? sexp, bool meta_contacts, out GLib.SList<E.bSqlSearchData?> ret_list, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static void search_data_free (E.bSqlSearchData data);
 		public bool search_uids (string? sexp, out GLib.SList<string> ret_list, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.48")]
+		public bool select (string sql_stmt, [CCode (delegate_target_pos = 2.5)] E.BookSqliteSelectFunc func, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool set_contact_extra (string uid, string? extra) throws GLib.Error;
 		public bool set_key_value (string key, string value) throws GLib.Error;
 		public bool set_key_value_int (string key, int value) throws GLib.Error;
@@ -571,6 +578,9 @@ namespace E {
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", instance_pos = 7.9)]
 	[Version (since = "3.26")]
 	public delegate bool BookCacheSearchFunc (E.BookCache book_cache, string uid, string revision, string object, string extra, uint32 custom_flags, E.OfflineState offline_state);
+	[CCode (cheader_filename = "libedata-book/libedata-book.h", instance_pos = 3.9)]
+	[Version (since = "3.48")]
+	public delegate bool BookSqliteSelectFunc (E.BookSqlite ebsql, [CCode (array_length_cname = "ncols", array_length_pos = 1.5)] string[] column_names, [CCode (array_length_cname = "ncols", array_length_pos = 1.5)] string[] column_values);
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", has_target = false)]
 	[Version (since = "3.12")]
 	public delegate int DataBookCursorCompareContactFunc (E.DataBookCursor cursor, E.Contact contact, out bool matches_sexp);

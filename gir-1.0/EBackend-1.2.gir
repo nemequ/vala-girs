@@ -1015,7 +1015,8 @@ Note: The function can return also %E_TRUST_PROMPT_RESPONSE_UNKNOWN,
                 writable="1"
                 transfer-ownership="none"
                 setter="set_online"
-                getter="get_online">
+                getter="get_online"
+                default-value="TRUE">
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="source"
@@ -1396,11 +1397,15 @@ for all backends provided by itself. Otherwise, returns FALSE.</doc>
     </record>
     <record name="BackendFactoryPrivate"
             c:type="EBackendFactoryPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-backend-factory.h"
                        line="51"/>
     </record>
-    <record name="BackendPrivate" c:type="EBackendPrivate" disguised="1">
+    <record name="BackendPrivate"
+            c:type="EBackendPrivate"
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-backend.h" line="53"/>
     </record>
     <function-macro name="CACHE" c:identifier="E_CACHE" introspectable="0">
@@ -1447,6 +1452,33 @@ for all backends provided by itself. Otherwise, returns FALSE.</doc>
                     c:identifier="E_CACHE_GET_CLASS"
                     introspectable="0">
       <source-position filename="src/libebackend/e-cache.h" line="43"/>
+      <parameters>
+        <parameter name="obj">
+        </parameter>
+      </parameters>
+    </function-macro>
+    <function-macro name="CACHE_KEYS"
+                    c:identifier="E_CACHE_KEYS"
+                    introspectable="0">
+      <source-position filename="src/libebackend/e-cache-keys.h" line="31"/>
+      <parameters>
+        <parameter name="obj">
+        </parameter>
+      </parameters>
+    </function-macro>
+    <function-macro name="CACHE_KEYS_CLASS"
+                    c:identifier="E_CACHE_KEYS_CLASS"
+                    introspectable="0">
+      <source-position filename="src/libebackend/e-cache-keys.h" line="34"/>
+      <parameters>
+        <parameter name="cls">
+        </parameter>
+      </parameters>
+    </function-macro>
+    <function-macro name="CACHE_KEYS_GET_CLASS"
+                    c:identifier="E_CACHE_KEYS_GET_CLASS"
+                    introspectable="0">
+      <source-position filename="src/libebackend/e-cache-keys.h" line="43"/>
       <parameters>
         <parameter name="obj">
         </parameter>
@@ -3609,6 +3641,7 @@ or e_cache_column_info_copy().</doc>
     </record>
     <record name="CacheColumnValues"
             c:type="ECacheColumnValues"
+            opaque="1"
             glib:type-name="ECacheColumnValues"
             glib:get-type="e_cache_column_values_get_type"
             c:symbol-prefix="cache_column_values">
@@ -4102,6 +4135,671 @@ takes owner ship of the @value.</doc>
         </parameter>
       </parameters>
     </callback>
+    <class name="CacheKeys"
+           c:symbol-prefix="cache_keys"
+           c:type="ECacheKeys"
+           version="3.48"
+           parent="GObject.Object"
+           glib:type-name="ECacheKeys"
+           glib:get-type="e_cache_keys_get_type"
+           glib:type-struct="CacheKeysClass">
+      <doc xml:space="preserve"
+           filename="src/libebackend/e-cache-keys.h"
+           line="75">Contains only private data that should be read and manipulated using the
+functions below.</doc>
+      <source-position filename="src/libebackend/e-cache-keys.h" line="98"/>
+      <constructor name="new" c:identifier="e_cache_keys_new" version="3.48">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="257">Creates a new #ECacheKeys, which will operate with @table_name,
+using column @key_column_name to store keys and @value_column_name
+to store values.
+
+The created #ECacheKeys doesn't hold a reference to the @cache,
+the caller is supposed to make sure the @cache won't be freed before
+the #ECacheKeys is freed. This is to avoid circular dependency between
+the @cache and the #ECacheKeys, when the #ECacheKey is created
+by the @cache itself (which is the expected use case).</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="102"/>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="274">a new #ECacheKeys</doc>
+          <type name="CacheKeys" c:type="ECacheKeys*"/>
+        </return-value>
+        <parameters>
+          <parameter name="cache" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="259">an #ECache</doc>
+            <type name="Cache" c:type="ECache*"/>
+          </parameter>
+          <parameter name="table_name" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="260">a table name to operate with</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="key_column_name" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="261">column name for the keys</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value_column_name" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="262">column name for the values</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </constructor>
+      <virtual-method name="changed">
+        <source-position filename="src/libebackend/e-cache-keys.h" line="94"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+        </parameters>
+      </virtual-method>
+      <method name="count_keys_sync"
+              c:identifier="e_cache_keys_count_keys_sync"
+              version="3.48"
+              throws="1">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="476">Counts how many keys the @self stores and set it to the @out_n_stored.</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="114"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="485">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="478">an #ECacheKeys</doc>
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+          <parameter name="out_n_stored"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="479">return location to set count of stored keys</doc>
+            <type name="gint64" c:type="gint64*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="480">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="foreach_sync"
+              c:identifier="e_cache_keys_foreach_sync"
+              version="3.48"
+              throws="1">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="711">Calls @func for each stored key in the @self, providing
+information about its value and reference count.</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="134"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="722">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="713">an #ECacheKeys</doc>
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+          <parameter name="func"
+                     transfer-ownership="none"
+                     scope="call"
+                     closure="1">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="714">an #ECacheKeysForeachFunc, which is called for each stored key</doc>
+            <type name="CacheKeysForeachFunc" c:type="ECacheKeysForeachFunc"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="715">user data for the @func</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="716">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_cache"
+              c:identifier="e_cache_keys_get_cache"
+              glib:get-property="cache"
+              version="3.48">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="299">Gets an #ECache, with which the @self had been created.</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="106"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="305">an #ECache</doc>
+          <type name="Cache" c:type="ECache*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="301">an #ECacheKeys</doc>
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_key_column_name"
+              c:identifier="e_cache_keys_get_key_column_name"
+              glib:get-property="key-column-name"
+              version="3.48">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="335">Gets a key column name, with which the @self had been created.</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="108"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="341">a key column name</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="337">an #ECacheKeys</doc>
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_ref_count_sync"
+              c:identifier="e_cache_keys_get_ref_count_sync"
+              version="3.48"
+              throws="1">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="622">Gets currently stored reference count for the @key.
+Note the reference count can be 0, which means the @key
+is stored forever.</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="129"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="634">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="624">an #ECacheKeys</doc>
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="625">a key to get reference count for</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_ref_count"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="626">return location for the stored reference count for the @key</doc>
+            <type name="guint" c:type="guint*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="627">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_sync"
+              c:identifier="e_cache_keys_get_sync"
+              version="3.48"
+              throws="1">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="575">Gets a stored value with given @key, which had been previously put
+into the @self with e_cache_keys_put_sync().
+
+The returned string should be freed with g_free() when no longer needed.</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="124"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="588">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="577">an #ECacheKeys</doc>
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="578">a key to get</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="out_value"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="579">return location for the stored value for the @key</doc>
+            <type name="utf8" c:type="gchar**"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="580">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="get_table_name"
+              c:identifier="e_cache_keys_get_table_name"
+              glib:get-property="table-name"
+              version="3.48">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="317">Gets a table name, with which the @self had been created.</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="107"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="323">a table name</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="319">an #ECacheKeys</doc>
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="get_value_column_name"
+              c:identifier="e_cache_keys_get_value_column_name"
+              glib:get-property="value-column-name"
+              version="3.48">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="353">Get a value column name, with which the @self had been created.</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="109"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="359">a value column name</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="355">an #ECacheKeys</doc>
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+        </parameters>
+      </method>
+      <method name="init_table_sync"
+              c:identifier="e_cache_keys_init_table_sync"
+              version="3.48"
+              throws="1">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="440">Initializes table in the corresponding #ECache.</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="111"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="448">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="442">an #ECacheKeys</doc>
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="443">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="put_sync"
+              c:identifier="e_cache_keys_put_sync"
+              version="3.48"
+              throws="1">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="511">Puts the @key and @value into the @self. The function adds a new or
+replaces an existing @key, if any such already exists in the @self.</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="118"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="523">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="513">an #ECacheKeys</doc>
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="514">a key identifier to put</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="value" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="515">a value to put with the @key</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="inc_ref_counts" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="516">how many refs to add, or 0 to have it stored forever</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="517">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_all_sync"
+              c:identifier="e_cache_keys_remove_all_sync"
+              version="3.48"
+              throws="1">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="830">Removes all stored keys from the @self.</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="144"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="838">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="832">an #ECacheKeys</doc>
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="833">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="remove_sync"
+              c:identifier="e_cache_keys_remove_sync"
+              version="3.48"
+              throws="1">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="757">Dereferences use count of the @key by @dec_ref_counts and removes it
+from the cache when the reference count reaches zero. Special case is
+with @dec_ref_counts is zero, in which case the key is removed regardless
+of the current reference count.
+
+It's not an error when the key doesn't exist in the cache.</doc>
+        <source-position filename="src/libebackend/e-cache-keys.h" line="139"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.c"
+               line="772">Whether succeeded.</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="self" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="759">an #ECacheKeys</doc>
+            <type name="CacheKeys" c:type="ECacheKeys*"/>
+          </instance-parameter>
+          <parameter name="key" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="760">a key to remove/dereference</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="dec_ref_counts" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="761">reference counts to drop, 0 to remove it regardless of the current reference count</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libebackend/e-cache-keys.c"
+                 line="762">optional #GCancellable object, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <property name="cache"
+                version="3.48"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none"
+                getter="get_cache">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="152">The #ECache being used for this keys table.</doc>
+        <type name="Cache"/>
+      </property>
+      <property name="key-column-name"
+                version="3.48"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none"
+                getter="get_key_column_name"
+                default-value="NULL">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="192">The column name for the keys.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="table-name"
+                version="3.48"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none"
+                getter="get_table_name"
+                default-value="NULL">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="172">The table name of this keys table.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <property name="value-column-name"
+                version="3.48"
+                writable="1"
+                construct-only="1"
+                transfer-ownership="none"
+                getter="get_value_column_name"
+                default-value="NULL">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="212">The column name for the values.</doc>
+        <type name="utf8" c:type="gchar*"/>
+      </property>
+      <field name="parent" readable="0" private="1">
+        <type name="GObject.Object" c:type="GObject"/>
+      </field>
+      <field name="priv" readable="0" private="1">
+        <type name="CacheKeysPrivate" c:type="ECacheKeysPrivate*"/>
+      </field>
+      <glib:signal name="changed" when="last" version="3.48">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.c"
+             line="232">A signal emitted when the stored keys changed, aka when a new
+key is added or when an existing key is removed. It's not emitted
+when only a reference count changes for a key.</doc>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+      </glib:signal>
+    </class>
+    <record name="CacheKeysClass"
+            c:type="ECacheKeysClass"
+            glib:is-gtype-struct-for="CacheKeys">
+      <source-position filename="src/libebackend/e-cache-keys.h" line="98"/>
+      <field name="parent_class" readable="0" private="1">
+        <type name="GObject.ObjectClass" c:type="GObjectClass"/>
+      </field>
+      <field name="changed">
+        <callback name="changed">
+          <source-position filename="src/libebackend/e-cache-keys.h"
+                           line="94"/>
+          <return-value transfer-ownership="none">
+            <type name="none" c:type="void"/>
+          </return-value>
+          <parameters>
+            <parameter name="self" transfer-ownership="none">
+              <type name="CacheKeys" c:type="ECacheKeys*"/>
+            </parameter>
+          </parameters>
+        </callback>
+      </field>
+      <field name="reserved" readable="0" private="1">
+        <array zero-terminated="0" fixed-size="10">
+          <type name="gpointer" c:type="gpointer"/>
+        </array>
+      </field>
+    </record>
+    <callback name="CacheKeysForeachFunc"
+              c:type="ECacheKeysForeachFunc"
+              version="3.48">
+      <doc xml:space="preserve"
+           filename="src/libebackend/e-cache-keys.h"
+           line="54">A callback called for each row of the @self table when
+using e_cache_keys_foreach_sync() function.</doc>
+      <source-position filename="src/libebackend/e-cache-keys.h" line="69"/>
+      <return-value transfer-ownership="none">
+        <doc xml:space="preserve"
+             filename="src/libebackend/e-cache-keys.h"
+             line="65">%TRUE to continue, %FALSE to stop walk through.</doc>
+        <type name="gboolean" c:type="gboolean"/>
+      </return-value>
+      <parameters>
+        <parameter name="self" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.h"
+               line="56">an #ECacheKeys</doc>
+          <type name="CacheKeys" c:type="ECacheKeys*"/>
+        </parameter>
+        <parameter name="key" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.h"
+               line="57">the key</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="value" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.h"
+               line="58">the value</doc>
+          <type name="utf8" c:type="const gchar*"/>
+        </parameter>
+        <parameter name="ref_count" transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.h"
+               line="59">the reference count for the @key</doc>
+          <type name="guint" c:type="guint"/>
+        </parameter>
+        <parameter name="user_data"
+                   transfer-ownership="none"
+                   nullable="1"
+                   allow-none="1"
+                   closure="4">
+          <doc xml:space="preserve"
+               filename="src/libebackend/e-cache-keys.h"
+               line="60">user data, as used in e_cache_keys_foreach_sync()</doc>
+          <type name="gpointer" c:type="gpointer"/>
+        </parameter>
+      </parameters>
+    </callback>
+    <record name="CacheKeysPrivate"
+            c:type="ECacheKeysPrivate"
+            disguised="1"
+            opaque="1">
+      <source-position filename="src/libebackend/e-cache-keys.h" line="52"/>
+    </record>
     <enumeration name="CacheLockType" version="3.26" c:type="ECacheLockType">
       <doc xml:space="preserve"
            filename="src/libebackend/e-cache.h"
@@ -4275,7 +4973,10 @@ This influences the offline state of the related objects.</doc>
              line="222">The operation is done in offline</doc>
       </member>
     </enumeration>
-    <record name="CachePrivate" c:type="ECachePrivate" disguised="1">
+    <record name="CachePrivate"
+            c:type="ECachePrivate"
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-cache.h" line="237"/>
     </record>
     <class name="CacheReaper"
@@ -4362,6 +5063,7 @@ Since 3.18</doc>
     <record name="CacheReaperClass"
             c:type="ECacheReaperClass"
             disguised="1"
+            opaque="1"
             glib:is-gtype-struct-for="CacheReaper">
       <source-position filename="src/libebackend/e-cache-reaper.h" line="36"/>
     </record>
@@ -6279,7 +6981,8 @@ user-specific information needs to be filled in.</doc>
     </record>
     <record name="CollectionBackendFactoryPrivate"
             c:type="ECollectionBackendFactoryPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-collection-backend-factory.h"
                        line="50"/>
     </record>
@@ -6339,7 +7042,8 @@ user-specific information needs to be filled in.</doc>
     </bitfield>
     <record name="CollectionBackendPrivate"
             c:type="ECollectionBackendPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-collection-backend.h"
                        line="53"/>
     </record>
@@ -6829,7 +7533,10 @@ e_dbus_server_run().</doc>
   this exit code and stop the #EDBusServer::quit-server emission.</doc>
       </member>
     </enumeration>
-    <record name="DBusServerPrivate" c:type="EDBusServerPrivate" disguised="1">
+    <record name="DBusServerPrivate"
+            c:type="EDBusServerPrivate"
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-dbus-server.h" line="51"/>
     </record>
     <class name="DataFactory"
@@ -7235,7 +7942,8 @@ running, the used object path is returned to the client.</doc>
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none"
-                getter="get_backend_per_process">
+                getter="get_backend_per_process"
+                default-value="-1">
         <type name="gint" c:type="gint"/>
       </property>
       <property name="registry"
@@ -7247,7 +7955,8 @@ running, the used object path is returned to the client.</doc>
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none"
-                getter="get_reload_supported">
+                getter="get_reload_supported"
+                default-value="FALSE">
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <field name="parent" readable="0" private="1">
@@ -7395,7 +8104,8 @@ running, the used object path is returned to the client.</doc>
     </record>
     <record name="DataFactoryPrivate"
             c:type="EDataFactoryPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-data-factory.h" line="51"/>
     </record>
     <constant name="EDS_REGISTRY_MODULES"
@@ -7556,7 +8266,7 @@ to @key already exists in @cache, the function returns %FALSE.</doc>
           <instance-parameter name="cache" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libebackend/e-file-cache.c"
-                 line="546">A %EFileCache object.</doc>
+                 line="546">An #EFileCache object.</doc>
             <type name="FileCache" c:type="EFileCache*"/>
           </instance-parameter>
         </parameters>
@@ -7757,7 +8467,10 @@ Each change to @cache is once again written to disk.</doc>
         <type name="GObject.ObjectClass" c:type="GObjectClass"/>
       </field>
     </record>
-    <record name="FileCachePrivate" c:type="EFileCachePrivate" disguised="1">
+    <record name="FileCachePrivate"
+            c:type="EFileCachePrivate"
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-file-cache.h" line="53"/>
     </record>
     <function-macro name="IS_BACKEND"
@@ -7811,6 +8524,24 @@ Each change to @cache is once again written to disk.</doc>
                     c:identifier="E_IS_CACHE_CLASS"
                     introspectable="0">
       <source-position filename="src/libebackend/e-cache.h" line="40"/>
+      <parameters>
+        <parameter name="cls">
+        </parameter>
+      </parameters>
+    </function-macro>
+    <function-macro name="IS_CACHE_KEYS"
+                    c:identifier="E_IS_CACHE_KEYS"
+                    introspectable="0">
+      <source-position filename="src/libebackend/e-cache-keys.h" line="37"/>
+      <parameters>
+        <parameter name="obj">
+        </parameter>
+      </parameters>
+    </function-macro>
+    <function-macro name="IS_CACHE_KEYS_CLASS"
+                    c:identifier="E_IS_CACHE_KEYS_CLASS"
+                    introspectable="0">
+      <source-position filename="src/libebackend/e-cache-keys.h" line="40"/>
       <parameters>
         <parameter name="cls">
         </parameter>
@@ -9471,7 +10202,8 @@ it creates automatically.</doc>
       </method>
       <property name="exported"
                 transfer-ownership="none"
-                getter="get_exported">
+                getter="get_exported"
+                default-value="FALSE">
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="file"
@@ -9490,19 +10222,22 @@ it creates automatically.</doc>
       <property name="remote-creatable"
                 writable="1"
                 transfer-ownership="none"
-                setter="set_remote_creatable">
+                setter="set_remote_creatable"
+                default-value="FALSE">
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="remote-deletable"
                 writable="1"
                 transfer-ownership="none"
-                setter="set_remote_deletable">
+                setter="set_remote_deletable"
+                default-value="FALSE">
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="removable"
                 writable="1"
                 transfer-ownership="none"
-                setter="set_removable">
+                setter="set_removable"
+                default-value="FALSE">
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="server"
@@ -9515,14 +10250,16 @@ it creates automatically.</doc>
       <property name="writable"
                 writable="1"
                 transfer-ownership="none"
-                setter="set_writable">
+                setter="set_writable"
+                default-value="FALSE">
         <type name="gboolean" c:type="gboolean"/>
       </property>
       <property name="write-directory"
                 writable="1"
                 transfer-ownership="none"
                 setter="set_write_directory"
-                getter="get_write_directory">
+                getter="get_write_directory"
+                default-value="NULL">
         <type name="utf8" c:type="gchar*"/>
       </property>
       <field name="parent" readable="0" private="1">
@@ -9603,13 +10340,15 @@ credential management for #ESource&lt;!-- --&gt;-s.</doc>
     </record>
     <record name="ServerSideSourceCredentialsProviderPrivate"
             c:type="EServerSideSourceCredentialsProviderPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-server-side-source-credentials-provider.h"
                        line="55"/>
     </record>
     <record name="ServerSideSourcePrivate"
             c:type="EServerSideSourcePrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-server-side-source.h"
                        line="51"/>
     </record>
@@ -10495,7 +11234,8 @@ The return value is cumulative.  If any signal handler returns
     </record>
     <record name="SourceRegistryServerPrivate"
             c:type="ESourceRegistryServerPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-source-registry-server.h"
                        line="74"/>
     </record>
@@ -10947,7 +11687,8 @@ shutdown once all client connections are closed.</doc>
     </record>
     <record name="SubprocessFactoryPrivate"
             c:type="ESubprocessFactoryPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-subprocess-factory.h"
                        line="50"/>
     </record>
@@ -11529,7 +12270,8 @@ If an error occurred, the function sets @error and returns -1.</doc>
     </record>
     <record name="UserPrompterPrivate"
             c:type="EUserPrompterPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-user-prompter.h" line="51"/>
     </record>
     <class name="UserPrompterServer"
@@ -12060,13 +12802,15 @@ The only limitation of @values is that the array elements are strings.</doc>
     </record>
     <record name="UserPrompterServerExtensionPrivate"
             c:type="EUserPrompterServerExtensionPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-user-prompter-server-extension.h"
                        line="46"/>
     </record>
     <record name="UserPrompterServerPrivate"
             c:type="EUserPrompterServerPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-user-prompter-server.h"
                        line="57"/>
     </record>
@@ -12411,7 +13155,8 @@ extension defined.</doc>
     </record>
     <record name="WebDAVCollectionBackendPrivate"
             c:type="EWebDAVCollectionBackendPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="src/libebackend/e-webdav-collection-backend.h"
                        line="52"/>
     </record>
@@ -12500,6 +13245,13 @@ storing offline state for the stored objects.
 The API is thread safe, with special considerations to be made
 around e_cache_lock() and e_cache_unlock() for
 the sake of isolating transactions across threads.</doc>
+    </docsection>
+    <docsection name="e-cache-keys">
+      <doc xml:space="preserve"
+           filename="src/libebackend/e-cache-keys.c"
+           line="18">The #ECacheKeys represents a table, which holds key-value data
+with keys being reference-counted, thus the table changes keys
+as they are added and removed.</doc>
     </docsection>
     <docsection name="e-collection-backend">
       <doc xml:space="preserve"

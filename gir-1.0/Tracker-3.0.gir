@@ -31,9 +31,9 @@ and/or use gtk-doc annotations.  -->
               version="3.1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-batch.c"
-             line="189">Adds the RDF represented by @resource to @batch.</doc>
+             line="191">Adds the RDF represented by @resource to @batch.</doc>
         <source-position filename="src/libtracker-sparql/tracker-batch.h"
-                         line="52"/>
+                         line="53"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -41,7 +41,7 @@ and/or use gtk-doc annotations.  -->
           <instance-parameter name="batch" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="191">a #TrackerBatch</doc>
+                 line="193">a #TrackerBatch</doc>
             <type name="Batch" c:type="TrackerBatch*"/>
           </instance-parameter>
           <parameter name="graph"
@@ -50,13 +50,13 @@ and/or use gtk-doc annotations.  -->
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="192">RDF graph to insert the resource to</doc>
+                 line="194">RDF graph to insert the resource to</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="resource" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="193">a #TrackerResource</doc>
+                 line="195">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </parameter>
         </parameters>
@@ -66,9 +66,9 @@ and/or use gtk-doc annotations.  -->
               version="3.1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-batch.c"
-             line="167">Adds an SPARQL update string to @batch.</doc>
+             line="169">Adds an SPARQL update string to @batch.</doc>
         <source-position filename="src/libtracker-sparql/tracker-batch.h"
-                         line="48"/>
+                         line="49"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -76,14 +76,158 @@ and/or use gtk-doc annotations.  -->
           <instance-parameter name="batch" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="169">a #TrackerBatch</doc>
+                 line="171">a #TrackerBatch</doc>
             <type name="Batch" c:type="TrackerBatch*"/>
           </instance-parameter>
           <parameter name="sparql" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="170">a SPARQL update string</doc>
+                 line="172">a SPARQL update string</doc>
             <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_statement"
+              c:identifier="tracker_batch_add_statement"
+              shadowed-by="add_statementv"
+              version="3.5"
+              introspectable="0">
+        <doc xml:space="preserve"
+             filename="src/libtracker-sparql/tracker-batch.c"
+             line="215">Adds a #TrackerSparqlStatement containing an SPARQL update. The statement will
+be executed once in the batch, with the parameters bound as specified in the
+variable arguments.
+
+The variable arguments are a NULL terminated set of variable name, value GType,
+and actual value. For example, for a statement that has a single `~name` parameter,
+it could be given a value for execution with the given code:
+
+```c
+tracker_batch_add_statement (batch, stmt,
+                             "name", G_TYPE_STRING, "John Smith",
+                             NULL);
+```
+
+The #TrackerSparqlStatement may be used on multiple tracker_batch_add_statement()
+calls with the same or different values, on the same or different #TrackerBatch
+objects.
+
+This function should only be called on #TrackerSparqlStatement objects
+obtained through tracker_sparql_connection_update_statement() or
+update statements loaded through tracker_sparql_connection_load_statement_from_gresource().</doc>
+        <source-position filename="src/libtracker-sparql/tracker-batch.h"
+                         line="58"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="batch" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-batch.c"
+                 line="217">a #TrackerBatch</doc>
+            <type name="Batch" c:type="TrackerBatch*"/>
+          </instance-parameter>
+          <parameter name="stmt" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-batch.c"
+                 line="218">a #TrackerSparqlStatement containing a SPARQL update</doc>
+            <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
+          </parameter>
+          <parameter name="..." transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-batch.c"
+                 line="219">parameters bound to @stmt, in triples of name/type/value</doc>
+            <varargs/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="add_statementv"
+              c:identifier="tracker_batch_add_statementv"
+              shadows="add_statement"
+              version="3.5">
+        <doc xml:space="preserve"
+             filename="src/libtracker-sparql/tracker-batch.c"
+             line="296">Adds a #TrackerSparqlStatement containing an SPARQL update. The statement will
+be executed once in the batch, with the values bound as specified by @variable_names
+and @values.
+
+For example, for a statement that has a single `~name` parameter,
+it could be given a value for execution with the given code:
+
+&lt;div class="gi-lang-c"&gt;&lt;pre&gt;&lt;code class="language-c"&gt;
+
+```
+const char *names = { "name" };
+const GValue values[G_N_ELEMENTS (names)] = { 0, };
+
+g_value_init (&amp;values[0], G_TYPE_STRING);
+g_value_set_string (&amp;values[0], "John Smith");
+tracker_batch_add_statementv (batch, stmt,
+                              G_N_ELEMENTS (names),
+                              names, values);
+```
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="gi-lang-python"&gt;&lt;pre&gt;&lt;code class="language-python"&gt;
+
+```
+batch.add_statement(stmt, ['name'], ['John Smith']);
+```
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class="gi-lang-javascript"&gt;&lt;pre&gt;&lt;code class="language-javascript"&gt;
+
+```
+batch.add_statement(stmt, ['name'], ['John Smith']);
+```
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+The #TrackerSparqlStatement may be used on multiple tracker_batch_add_statement()
+calls with the same or different values, on the same or different #TrackerBatch
+objects.
+
+This function should only be called on #TrackerSparqlStatement objects
+obtained through tracker_sparql_connection_update_statement() or
+update statements loaded through tracker_sparql_connection_load_statement_from_gresource().</doc>
+        <source-position filename="src/libtracker-sparql/tracker-batch.h"
+                         line="63"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="batch" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-batch.c"
+                 line="298">a #TrackerBatch</doc>
+            <type name="Batch" c:type="TrackerBatch*"/>
+          </instance-parameter>
+          <parameter name="stmt" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-batch.c"
+                 line="299">a #TrackerSparqlStatement containing a SPARQL update</doc>
+            <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
+          </parameter>
+          <parameter name="n_values" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-batch.c"
+                 line="300">the number of bound parameters</doc>
+            <type name="guint" c:type="guint"/>
+          </parameter>
+          <parameter name="variable_names" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-batch.c"
+                 line="301">the names of each bound parameter</doc>
+            <array length="1" zero-terminated="0" c:type="const gchar**">
+              <type name="utf8" c:type="gchar*"/>
+            </array>
+          </parameter>
+          <parameter name="values" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-batch.c"
+                 line="302">the values of each bound parameter</doc>
+            <array length="1" zero-terminated="0" c:type="const GValue*">
+              <type name="GObject.Value" c:type="GValue"/>
+            </array>
           </parameter>
         </parameters>
       </method>
@@ -93,20 +237,20 @@ and/or use gtk-doc annotations.  -->
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-batch.c"
-             line="213">Executes the batch. This operations happens synchronously.</doc>
+             line="367">Executes the batch. This operations happens synchronously.</doc>
         <source-position filename="src/libtracker-sparql/tracker-batch.h"
-                         line="57"/>
+                         line="70"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-batch.c"
-               line="221">%TRUE of there were no errors, %FALSE otherwise</doc>
+               line="375">%TRUE of there were no errors, %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="batch" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="215">a #TrackerBatch</doc>
+                 line="369">a #TrackerBatch</doc>
             <type name="Batch" c:type="TrackerBatch*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -115,7 +259,7 @@ and/or use gtk-doc annotations.  -->
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="216">a #GCancellable, or %NULL</doc>
+                 line="370">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -125,10 +269,10 @@ and/or use gtk-doc annotations.  -->
               version="3.1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-batch.c"
-             line="241">Executes the batch. This operation happens asynchronously, when
+             line="395">Executes the batch. This operation happens asynchronously, when
 finished @callback will be executed.</doc>
         <source-position filename="src/libtracker-sparql/tracker-batch.h"
-                         line="62"/>
+                         line="75"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -136,7 +280,7 @@ finished @callback will be executed.</doc>
           <instance-parameter name="batch" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="243">a #TrackerBatch</doc>
+                 line="397">a #TrackerBatch</doc>
             <type name="Batch" c:type="TrackerBatch*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -145,7 +289,7 @@ finished @callback will be executed.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="244">a #GCancellable, or %NULL</doc>
+                 line="398">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -156,7 +300,7 @@ finished @callback will be executed.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="245">user-defined #GAsyncReadyCallback to be called when
+                 line="399">user-defined #GAsyncReadyCallback to be called when
            asynchronous operation is finished.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
@@ -166,7 +310,7 @@ finished @callback will be executed.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="247">user-defined data to be passed to @callback</doc>
+                 line="401">user-defined data to be passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -177,26 +321,26 @@ finished @callback will be executed.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-batch.c"
-             line="271">Finishes the operation started with tracker_batch_execute_async().</doc>
+             line="425">Finishes the operation started with tracker_batch_execute_async().</doc>
         <source-position filename="src/libtracker-sparql/tracker-batch.h"
-                         line="68"/>
+                         line="81"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-batch.c"
-               line="279">%TRUE of there were no errors, %FALSE otherwise</doc>
+               line="433">%TRUE of there were no errors, %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="batch" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="273">a #TrackerBatch</doc>
+                 line="427">a #TrackerBatch</doc>
             <type name="Batch" c:type="TrackerBatch*"/>
           </instance-parameter>
           <parameter name="res" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="274">a #GAsyncResult with the result of the operation</doc>
+                 line="428">a #GAsyncResult with the result of the operation</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -206,20 +350,20 @@ finished @callback will be executed.</doc>
               glib:get-property="connection">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-batch.c"
-             line="149">Returns the #TrackerSparqlConnection that this batch was created from.</doc>
+             line="151">Returns the #TrackerSparqlConnection that this batch was created from.</doc>
         <source-position filename="src/libtracker-sparql/tracker-batch.h"
-                         line="45"/>
+                         line="46"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-batch.c"
-               line="155">The SPARQL connection of this batch.</doc>
+               line="157">The SPARQL connection of this batch.</doc>
           <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
         </return-value>
         <parameters>
           <instance-parameter name="batch" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-batch.c"
-                 line="151">a #TrackerBatch</doc>
+                 line="153">a #TrackerBatch</doc>
             <type name="Batch" c:type="TrackerBatch*"/>
           </instance-parameter>
         </parameters>
@@ -231,7 +375,7 @@ finished @callback will be executed.</doc>
                 getter="get_connection">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-batch.c"
-             line="131">The #TrackerSparqlConnection the batch belongs to.</doc>
+             line="133">The #TrackerSparqlConnection the batch belongs to.</doc>
         <type name="SparqlConnection"/>
       </property>
       <field name="parent_instance">
@@ -241,6 +385,7 @@ finished @callback will be executed.</doc>
     <record name="BatchClass"
             c:type="TrackerBatchClass"
             disguised="1"
+            opaque="1"
             glib:is-gtype-struct-for="Batch">
       <source-position filename="src/libtracker-sparql/tracker-batch.h"
                        line="37"/>
@@ -250,7 +395,7 @@ finished @callback will be executed.</doc>
                     introspectable="0">
       <doc xml:space="preserve"
            filename="src/libtracker-sparql/tracker-version.h"
-           line="162">This macro essentially does the same thing as
+           line="182">This macro essentially does the same thing as
 tracker_check_version() but as a pre-processor operation rather
 than a run-time operation. It will evaluate true or false based the
 version passed in and the version available.
@@ -266,22 +411,22 @@ if (!TRACKER_CHECK_VERSION (0, 10, 7)) {
 &lt;/programlisting&gt;
 &lt;/example&gt;</doc>
       <source-position filename="src/libtracker-sparql/tracker-version.h"
-                       line="184"/>
+                       line="204"/>
       <parameters>
         <parameter name="major">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-version.h"
-               line="164">the required major version.</doc>
+               line="184">the required major version.</doc>
         </parameter>
         <parameter name="minor">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-version.h"
-               line="165">the required minor version.</doc>
+               line="185">the required minor version.</doc>
         </parameter>
         <parameter name="micro">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-version.h"
-               line="166">the required micro version.</doc>
+               line="186">the required micro version.</doc>
         </parameter>
       </parameters>
     </function-macro>
@@ -289,7 +434,7 @@ if (!TRACKER_CHECK_VERSION (0, 10, 7)) {
                     c:identifier="TRACKER_DEPRECATED_IN_3_1_FOR"
                     introspectable="0">
       <source-position filename="src/libtracker-sparql/tracker-version.h"
-                       line="63"/>
+                       line="65"/>
       <parameters>
         <parameter name="f">
         </parameter>
@@ -299,7 +444,7 @@ if (!TRACKER_CHECK_VERSION (0, 10, 7)) {
                     c:identifier="TRACKER_DEPRECATED_IN_3_2_FOR"
                     introspectable="0">
       <source-position filename="src/libtracker-sparql/tracker-version.h"
-                       line="77"/>
+                       line="80"/>
       <parameters>
         <parameter name="f">
         </parameter>
@@ -309,7 +454,7 @@ if (!TRACKER_CHECK_VERSION (0, 10, 7)) {
                     c:identifier="TRACKER_DEPRECATED_IN_3_3_FOR"
                     introspectable="0">
       <source-position filename="src/libtracker-sparql/tracker-version.h"
-                       line="91"/>
+                       line="95"/>
       <parameters>
         <parameter name="f">
         </parameter>
@@ -319,7 +464,17 @@ if (!TRACKER_CHECK_VERSION (0, 10, 7)) {
                     c:identifier="TRACKER_DEPRECATED_IN_3_4_FOR"
                     introspectable="0">
       <source-position filename="src/libtracker-sparql/tracker-version.h"
-                       line="105"/>
+                       line="110"/>
+      <parameters>
+        <parameter name="f">
+        </parameter>
+      </parameters>
+    </function-macro>
+    <function-macro name="DEPRECATED_IN_3_5_FOR"
+                    c:identifier="TRACKER_DEPRECATED_IN_3_5_FOR"
+                    introspectable="0">
+      <source-position filename="src/libtracker-sparql/tracker-version.h"
+                       line="125"/>
       <parameters>
         <parameter name="f">
         </parameter>
@@ -450,6 +605,7 @@ connection to a #TrackerSparqlConnection.</doc>
     <record name="EndpointClass"
             c:type="TrackerEndpointClass"
             disguised="1"
+            opaque="1"
             glib:is-gtype-struct-for="Endpoint">
       <source-position filename="src/libtracker-sparql/tracker-endpoint.h"
                        line="43"/>
@@ -470,27 +626,27 @@ connection to a #TrackerSparqlConnection on a DBus object path.</doc>
                    throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-endpoint-dbus.c"
-             line="1195">Registers a Tracker endpoint object at @object_path on @dbus_connection.
+             line="1400">Registers a Tracker endpoint object at @object_path on @dbus_connection.
 The default object path is "/org/freedesktop/Tracker3/Endpoint".</doc>
         <source-position filename="src/libtracker-sparql/tracker-endpoint-dbus.h"
                          line="56"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-endpoint-dbus.c"
-               line="1206">a #TrackerEndpointDBus object.</doc>
+               line="1411">a #TrackerEndpointDBus object.</doc>
           <type name="EndpointDBus" c:type="TrackerEndpointDBus*"/>
         </return-value>
         <parameters>
           <parameter name="sparql_connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-endpoint-dbus.c"
-                 line="1197">a #TrackerSparqlConnection</doc>
+                 line="1402">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </parameter>
           <parameter name="dbus_connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-endpoint-dbus.c"
-                 line="1198">a #GDBusConnection</doc>
+                 line="1403">a #GDBusConnection</doc>
             <type name="Gio.DBusConnection" c:type="GDBusConnection*"/>
           </parameter>
           <parameter name="object_path"
@@ -499,7 +655,7 @@ The default object path is "/org/freedesktop/Tracker3/Endpoint".</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-endpoint-dbus.c"
-                 line="1199">the object path to use, or %NULL for the default</doc>
+                 line="1404">the object path to use, or %NULL for the default</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
@@ -508,7 +664,7 @@ The default object path is "/org/freedesktop/Tracker3/Endpoint".</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-endpoint-dbus.c"
-                 line="1200">a #GCancellable, or %NULL</doc>
+                 line="1405">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -522,7 +678,8 @@ The default object path is "/org/freedesktop/Tracker3/Endpoint".</doc>
       <property name="object-path"
                 writable="1"
                 construct-only="1"
-                transfer-ownership="none">
+                transfer-ownership="none"
+                default-value="NULL">
         <type name="utf8" c:type="gchar*"/>
       </property>
     </class>
@@ -543,7 +700,7 @@ connection to a #TrackerSparqlConnection on a HTTP port.</doc>
                    throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-endpoint-http.c"
-             line="429">Sets up a Tracker endpoint to listen via HTTP, in the given @port.
+             line="430">Sets up a Tracker endpoint to listen via HTTP, in the given @port.
 If @certificate is not %NULL, HTTPS may be used to connect to the
 endpoint.</doc>
         <source-position filename="src/libtracker-sparql/tracker-endpoint-http.h"
@@ -551,20 +708,20 @@ endpoint.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-endpoint-http.c"
-               line="441">a #TrackerEndpointDBus object.</doc>
+               line="442">a #TrackerEndpointDBus object.</doc>
           <type name="EndpointHttp" c:type="TrackerEndpointHttp*"/>
         </return-value>
         <parameters>
           <parameter name="sparql_connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-endpoint-http.c"
-                 line="431">a #TrackerSparqlConnection</doc>
+                 line="432">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </parameter>
           <parameter name="port" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-endpoint-http.c"
-                 line="432">HTTP port to listen to</doc>
+                 line="433">HTTP port to listen to</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
           <parameter name="certificate"
@@ -573,7 +730,7 @@ endpoint.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-endpoint-http.c"
-                 line="433">certificate to use for encription, or %NULL</doc>
+                 line="434">certificate to use for encription, or %NULL</doc>
             <type name="Gio.TlsCertificate" c:type="GTlsCertificate*"/>
           </parameter>
           <parameter name="cancellable"
@@ -582,7 +739,7 @@ endpoint.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-endpoint-http.c"
-                 line="434">a #GCancellable, or %NULL</doc>
+                 line="435">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -596,13 +753,14 @@ endpoint.</doc>
       <property name="http-port"
                 writable="1"
                 construct-only="1"
-                transfer-ownership="none">
+                transfer-ownership="none"
+                default-value="8080">
         <type name="guint" c:type="guint"/>
       </property>
       <glib:signal name="block-remote-address">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-endpoint-http.c"
-             line="388">Allows control over the connections stablished. The given
+             line="389">Allows control over the connections stablished. The given
 address is that of the requesting peer.
 
 Returning %FALSE in this handler allows the connection,
@@ -615,7 +773,7 @@ handlers connected is %FALSE.</doc>
           <parameter name="address" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-endpoint-http.c"
-                 line="391">The socket address of the remote connection</doc>
+                 line="392">The socket address of the remote connection</doc>
             <type name="Gio.SocketAddress"/>
           </parameter>
         </parameters>
@@ -677,13 +835,13 @@ mapping of prefixes and namespaces.</doc>
       <constructor name="new" c:identifier="tracker_namespace_manager_new">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-namespace-manager.c"
-             line="92">Creates a new #TrackerNamespaceManager instance.</doc>
+             line="101">Creates a new #TrackerNamespaceManager instance.</doc>
         <source-position filename="src/libtracker-sparql/tracker-namespace-manager.h"
                          line="44"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-namespace-manager.c"
-               line="97">a new #TrackerNamespaceManager instance</doc>
+               line="106">a new #TrackerNamespaceManager instance</doc>
           <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
         </return-value>
       </constructor>
@@ -693,7 +851,7 @@ mapping of prefixes and namespaces.</doc>
                 deprecated-version="3.3">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-namespace-manager.c"
-             line="109">Returns the global #TrackerNamespaceManager that contains a set of well-known
+             line="118">Returns the global #TrackerNamespaceManager that contains a set of well-known
 namespaces and prefixes, such as rdf:, rdfs:, nie:, tracker:, etc.
 
 Note that the list of prefixes and namespaces is hardcoded in
@@ -705,7 +863,7 @@ ontologies, if they have been modified since they were installed.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-namespace-manager.c"
-               line="119">a global, shared #TrackerNamespaceManager instance</doc>
+               line="128">a global, shared #TrackerNamespaceManager instance</doc>
           <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
         </return-value>
       </function>
@@ -713,7 +871,7 @@ ontologies, if they have been modified since they were installed.</doc>
               c:identifier="tracker_namespace_manager_add_prefix">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-namespace-manager.c"
-             line="201">Adds @prefix as the recognised abbreviaton of @namespace.
+             line="210">Adds @prefix as the recognised abbreviaton of @namespace.
 
 Only one prefix is allowed for a given namespace, and all prefixes must
 be unique.
@@ -730,19 +888,19 @@ tracker_sparql_connection_get_namespace_manager().</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="203">a #TrackerNamespaceManager</doc>
+                 line="212">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
           <parameter name="prefix" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="204">a short, unique prefix to identify @namespace</doc>
+                 line="213">a short, unique prefix to identify @namespace</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="ns" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="205">the URL of the given namespace</doc>
+                 line="214">the URL of the given namespace</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -752,7 +910,7 @@ tracker_sparql_connection_get_namespace_manager().</doc>
               version="3.3">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-namespace-manager.c"
-             line="296">If @uri begins with one of the namespaces known to this
+             line="315">If @uri begins with one of the namespaces known to this
 #TrackerNamespaceManager, then the return value will be the
 compressed URI. Otherwise, %NULL will be returned.</doc>
         <source-position filename="src/libtracker-sparql/tracker-namespace-manager.h"
@@ -760,20 +918,20 @@ compressed URI. Otherwise, %NULL will be returned.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-namespace-manager.c"
-               line="305">(nullable): the compressed URI</doc>
+               line="324">(nullable): the compressed URI</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="298">a #TrackerNamespaceManager</doc>
+                 line="317">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
           <parameter name="uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="299">a URI or compact URI</doc>
+                 line="318">a URI or compact URI</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -782,7 +940,7 @@ compressed URI. Otherwise, %NULL will be returned.</doc>
               c:identifier="tracker_namespace_manager_expand_uri">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-namespace-manager.c"
-             line="252">If @compact_uri begins with one of the prefixes known to this
+             line="271">If @compact_uri begins with one of the prefixes known to this
 #TrackerNamespaceManager, then the return value will be the
 expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
         <source-position filename="src/libtracker-sparql/tracker-namespace-manager.h"
@@ -790,20 +948,20 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-namespace-manager.c"
-               line="261">a newly-allocated string</doc>
+               line="280">a newly-allocated string</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="254">a #TrackerNamespaceManager</doc>
+                 line="273">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
           <parameter name="compact_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="255">a URI or compact URI</doc>
+                 line="274">a URI or compact URI</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -811,7 +969,7 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
       <method name="foreach" c:identifier="tracker_namespace_manager_foreach">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-namespace-manager.c"
-             line="365">Calls @func for each known prefix / URI pair.</doc>
+             line="392">Calls @func for each known prefix / URI pair.</doc>
         <source-position filename="src/libtracker-sparql/tracker-namespace-manager.h"
                          line="66"/>
         <return-value transfer-ownership="none">
@@ -821,7 +979,7 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="367">a #TrackerNamespaceManager</doc>
+                 line="394">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
           <parameter name="func"
@@ -830,7 +988,7 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
                      closure="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="368">the function to call for each prefix / URI pair</doc>
+                 line="395">the function to call for each prefix / URI pair</doc>
             <type name="GLib.HFunc" c:type="GHFunc"/>
           </parameter>
           <parameter name="user_data"
@@ -839,7 +997,7 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="369">user data to pass to the function</doc>
+                 line="396">user data to pass to the function</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -848,26 +1006,26 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
               c:identifier="tracker_namespace_manager_has_prefix">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-namespace-manager.c"
-             line="156">Returns whether @prefix is known.</doc>
+             line="165">Returns whether @prefix is known.</doc>
         <source-position filename="src/libtracker-sparql/tracker-namespace-manager.h"
                          line="55"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-namespace-manager.c"
-               line="163">%TRUE if the #TrackerNamespaceManager knows about @prefix, %FALSE otherwise</doc>
+               line="172">%TRUE if the #TrackerNamespaceManager knows about @prefix, %FALSE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="158">a #TrackerNamespaceManager</doc>
+                 line="167">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
           <parameter name="prefix" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="159">a string</doc>
+                 line="168">a string</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -876,27 +1034,27 @@ expanded URI. Otherwise, a copy of @compact_uri will be returned.</doc>
               c:identifier="tracker_namespace_manager_lookup_prefix">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-namespace-manager.c"
-             line="178">Looks up the namespace URI corresponding to @prefix, or %NULL if the prefix
+             line="187">Looks up the namespace URI corresponding to @prefix, or %NULL if the prefix
 is not known.</doc>
         <source-position filename="src/libtracker-sparql/tracker-namespace-manager.h"
                          line="57"/>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-namespace-manager.c"
-               line="186">a string owned by the #TrackerNamespaceManager, or %NULL</doc>
+               line="195">a string owned by the #TrackerNamespaceManager, or %NULL</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="180">a #TrackerNamespaceManager</doc>
+                 line="189">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
           <parameter name="prefix" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="181">a string</doc>
+                 line="190">a string</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -905,20 +1063,20 @@ is not known.</doc>
               c:identifier="tracker_namespace_manager_print_turtle">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-namespace-manager.c"
-             line="334">Writes out all namespaces as Turtle @prefix statements.</doc>
+             line="361">Writes out all namespaces as Turtle @prefix statements.</doc>
         <source-position filename="src/libtracker-sparql/tracker-namespace-manager.h"
                          line="63"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-namespace-manager.c"
-               line="340">a newly-allocated string</doc>
+               line="367">a newly-allocated string</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-namespace-manager.c"
-                 line="336">a #TrackerNamespaceManager</doc>
+                 line="363">a #TrackerNamespaceManager</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </instance-parameter>
         </parameters>
@@ -1078,12 +1236,14 @@ obtained with a tracker_notifier_signal_subscribe() call.</doc>
     <record name="NotifierClass"
             c:type="TrackerNotifierClass"
             disguised="1"
+            opaque="1"
             glib:is-gtype-struct-for="Notifier">
       <source-position filename="src/libtracker-sparql/tracker-notifier.h"
                        line="42"/>
     </record>
     <record name="NotifierEvent"
             c:type="TrackerNotifierEvent"
+            opaque="1"
             glib:type-name="TrackerNotifierEvent"
             glib:get-type="tracker_notifier_event_get_type"
             c:symbol-prefix="notifier_event">
@@ -1336,29 +1496,32 @@ notified upon, typically of the form "urn:uuid:...".</doc>
            filename="src/libtracker-sparql/tracker-enums.h"
            line="25">Describes a RDF format to be used in data exchange.</doc>
       <source-position filename="src/libtracker-sparql/tracker-enums.h"
-                       line="39"/>
-      <member name="rdf_format_turtle"
-              value="0"
-              c:identifier="TRACKER_RDF_FORMAT_TURTLE">
+                       line="43"/>
+      <member name="turtle" value="0" c:identifier="TRACKER_RDF_FORMAT_TURTLE">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-enums.h"
              line="27">Turtle format
   ([http://www.w3.org/ns/formats/Turtle](http://www.w3.org/ns/formats/Turtle))</doc>
       </member>
-      <member name="rdf_format_trig"
-              value="1"
-              c:identifier="TRACKER_RDF_FORMAT_TRIG">
+      <member name="trig" value="1" c:identifier="TRACKER_RDF_FORMAT_TRIG">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-enums.h"
              line="29">Trig format
   ([http://www.w3.org/ns/formats/Trig](http://www.w3.org/ns/formats/Trig))</doc>
       </member>
-      <member name="n_rdf_formats"
+      <member name="json_ld"
               value="2"
-              c:identifier="TRACKER_N_RDF_FORMATS">
+              c:identifier="TRACKER_RDF_FORMAT_JSON_LD">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-enums.h"
-             line="31">The total number of RDF formats</doc>
+             line="31">JSON-LD format
+  ([http://www.w3.org/ns/formats/JSON-LD](http://www.w3.org/ns/formats/JSON-LD)).
+  This value was added in version 3.5.</doc>
+      </member>
+      <member name="last" value="3" c:identifier="TRACKER_RDF_FORMAT_LAST">
+        <doc xml:space="preserve"
+             filename="src/libtracker-sparql/tracker-enums.h"
+             line="34">The total number of RDF formats</doc>
       </member>
     </enumeration>
     <class name="Resource"
@@ -1401,15 +1564,15 @@ about a given resource.</doc>
       <function name="deserialize" c:identifier="tracker_resource_deserialize">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-resource.c"
-             line="1863">Deserializes a #TrackerResource previously serialized with
+             line="1752">Deserializes a #TrackerResource previously serialized with
 tracker_resource_serialize(). It is implied that both ends
 use a common #TrackerNamespaceManager.</doc>
         <source-position filename="src/libtracker-sparql/tracker-resource.h"
                          line="128"/>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
-               line="1871">A TrackerResource, or %NULL if
+               line="1760">A TrackerResource, or %NULL if
          deserialization fails.</doc>
           <type name="Resource" c:type="TrackerResource*"/>
         </return-value>
@@ -1417,7 +1580,7 @@ use a common #TrackerNamespaceManager.</doc>
           <parameter name="variant" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1865">a #GVariant</doc>
+                 line="1754">a #GVariant</doc>
             <type name="GLib.Variant" c:type="GVariant*"/>
           </parameter>
         </parameters>
@@ -1672,8 +1835,7 @@ set on @resource.</doc>
         </parameters>
       </method>
       <method name="add_take_relation"
-              c:identifier="tracker_resource_add_take_relation"
-              introspectable="0">
+              c:identifier="tracker_resource_add_take_relation">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-resource.c"
              line="649">Adds a resource object to a multi-valued property. This
@@ -1698,7 +1860,7 @@ set on @resource. This function takes ownership of @resource.</doc>
                  line="652">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
-          <parameter name="resource" transfer-ownership="none">
+          <parameter name="resource" transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
                  line="653">the property object</doc>
@@ -1774,7 +1936,7 @@ it requires that the URI is previously known.</doc>
              line="849">Returns the first resource object previously assigned to a property.</doc>
         <source-position filename="src/libtracker-sparql/tracker-resource.h"
                          line="97"/>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
                line="856">the first GDateTime object</doc>
@@ -1886,7 +2048,7 @@ it requires that the URI is previously known.</doc>
              line="816">Returns the first resource object previously assigned to a property.</doc>
         <source-position filename="src/libtracker-sparql/tracker-resource.h"
                          line="91"/>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
                line="823">the first resource object</doc>
@@ -1914,7 +2076,7 @@ it requires that the URI is previously known.</doc>
              line="827">Returns the first string object previously assigned to a property.</doc>
         <source-position filename="src/libtracker-sparql/tracker-resource.h"
                          line="93"/>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
                line="834">the first string object</doc>
@@ -1942,7 +2104,7 @@ it requires that the URI is previously known.</doc>
              line="838">Returns the first resource object previously assigned to a property.</doc>
         <source-position filename="src/libtracker-sparql/tracker-resource.h"
                          line="95"/>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
                line="845">the first resource object as an URI.</doc>
@@ -1974,7 +2136,7 @@ If the identifier was set to NULL, the identifier returned will be a unique
 SPARQL blank node identifier, such as "_:123".</doc>
         <source-position filename="src/libtracker-sparql/tracker-resource.h"
                          line="100"/>
-        <return-value transfer-ownership="none">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
                line="870">a string owned by the resource</doc>
@@ -1994,13 +2156,13 @@ SPARQL blank node identifier, such as "_:123".</doc>
               version="3.0">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-resource.c"
-             line="959">Gets the list of properties defined in @resource</doc>
+             line="960">Gets the list of properties defined in @resource</doc>
         <source-position filename="src/libtracker-sparql/tracker-resource.h"
                          line="107"/>
         <return-value transfer-ownership="container">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
-               line="965">The list of properties.
+               line="966">The list of properties.
          The list should be freed with g_list_free().</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="utf8"/>
@@ -2010,7 +2172,7 @@ SPARQL blank node identifier, such as "_:123".</doc>
           <instance-parameter name="resource" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="961">a #TrackerResource</doc>
+                 line="962">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
         </parameters>
@@ -2020,27 +2182,27 @@ SPARQL blank node identifier, such as "_:123".</doc>
               version="3.1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-resource.c"
-             line="1984">Returns whether the prior values for this property would be deleted
+             line="1873">Returns whether the prior values for this property would be deleted
 in the SPARQL issued by @resource.</doc>
         <source-position filename="src/libtracker-sparql/tracker-resource.h"
                          line="131"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
-               line="1992">#TRUE if the property would be overwritten</doc>
+               line="1881">#TRUE if the property would be overwritten</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="resource" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1986">a #TrackerResource</doc>
+                 line="1875">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="property_uri" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1987">a string identifying the property to query</doc>
+                 line="1876">a string identifying the property to query</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -2051,11 +2213,11 @@ in the SPARQL issued by @resource.</doc>
              line="696">Returns the list of all known values of the given property.</doc>
         <source-position filename="src/libtracker-sparql/tracker-resource.h"
                          line="80"/>
-        <return-value transfer-ownership="container">
+        <return-value transfer-ownership="container" nullable="1">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
-               line="703">a #GList of #GValue
-instances. The list should be freed with g_list_free()</doc>
+               line="703">a #GList of
+#GValue instances. The list should be freed with g_list_free()</doc>
           <type name="GLib.List" c:type="GList*">
             <type name="GObject.Value"/>
           </type>
@@ -2105,10 +2267,13 @@ string.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="print_jsonld" c:identifier="tracker_resource_print_jsonld">
+      <method name="print_jsonld"
+              c:identifier="tracker_resource_print_jsonld"
+              deprecated="1"
+              deprecated-version="3.5">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-resource.c"
-             line="1612">Serialize all the information in @resource as a JSON-LD document.
+             line="1503">Serialize all the information in @resource as a JSON-LD document.
 
 See &lt;http://www.jsonld.org/&gt; for more information on the JSON-LD
 serialization format.
@@ -2116,19 +2281,20 @@ serialization format.
 The @namespaces object is used to expand any compact URI values. In most
 cases you should pass the one returned by tracker_sparql_connection_get_namespace_manager()
 from the connection that is the intended recipient of this data.</doc>
+        <doc-deprecated xml:space="preserve">Use tracker_resource_print_rdf()</doc-deprecated>
         <source-position filename="src/libtracker-sparql/tracker-resource.h"
                          line="116"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
-               line="1627">a newly-allocated string containing JSON-LD data.</doc>
+               line="1518">a newly-allocated string containing JSON-LD data.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1614">a #TrackerResource</doc>
+                 line="1505">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="namespaces"
@@ -2137,7 +2303,7 @@ from the connection that is the intended recipient of this data.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1615">a set of prefixed URLs, or %NULL to use the
+                 line="1506">a set of prefixed URLs, or %NULL to use the
     Nepomuk set</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </parameter>
@@ -2148,7 +2314,7 @@ from the connection that is the intended recipient of this data.</doc>
               version="3.4">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-resource.c"
-             line="1693">Serialize all the information in @resource into the selected RDF format.
+             line="1554">Serialize all the information in @resource into the selected RDF format.
 
 The @namespaces object is used to expand any compact URI values. In most
 cases you should pass the one returned by tracker_sparql_connection_get_namespace_manager()
@@ -2158,32 +2324,36 @@ from the connection that is the intended recipient of this data.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
-               line="1706">a newly-allocated string containing RDF data in the requested format.</doc>
+               line="1568">a newly-allocated string containing RDF data in the requested format.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1695">a #TrackerResource</doc>
+                 line="1556">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="namespaces" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1696">a set of prefixed URLs</doc>
+                 line="1557">a set of prefixed URLs</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </parameter>
           <parameter name="format" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1697">RDF format of the printed string</doc>
+                 line="1558">RDF format of the printed string</doc>
             <type name="RdfFormat" c:type="TrackerRdfFormat"/>
           </parameter>
-          <parameter name="graph" transfer-ownership="none">
+          <parameter name="graph"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1698">target graph of the resource RDF, or %NULL for the default graph</doc>
+                 line="1559">target graph of the resource RDF, or %NULL for the
+default graph</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -2192,7 +2362,7 @@ from the connection that is the intended recipient of this data.</doc>
               c:identifier="tracker_resource_print_sparql_update">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-resource.c"
-             line="1423">Generates a SPARQL command to update a database with the information
+             line="1424">Generates a SPARQL command to update a database with the information
 stored in @resource.
 
 The @namespaces object is used to expand any compact URI values. In most
@@ -2203,14 +2373,14 @@ from the connection that is the intended recipient of this data.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
-               line="1438">a newly-allocated string containing a SPARQL update command.</doc>
+               line="1439">a newly-allocated string containing a SPARQL update command.</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1425">a #TrackerResource</doc>
+                 line="1426">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="namespaces"
@@ -2219,7 +2389,7 @@ from the connection that is the intended recipient of this data.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1426">a set of prefixed URLs, or %NULL to use the
+                 line="1427">a set of prefixed URLs, or %NULL to use the
     Nepomuk set</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </parameter>
@@ -2229,7 +2399,7 @@ from the connection that is the intended recipient of this data.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1428">the URN of the graph the data should be added to,
+                 line="1429">the URN of the graph the data should be added to,
     or %NULL</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
@@ -2241,7 +2411,7 @@ from the connection that is the intended recipient of this data.</doc>
               deprecated-version="3.4">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-resource.c"
-             line="1191">Serialize all the information in @resource as a Turtle document.
+             line="1192">Serialize all the information in @resource as a Turtle document.
 
 The generated Turtle should correspond to this standard:
 &lt;https://www.w3.org/TR/2014/REC-turtle-20140225/&gt;
@@ -2255,14 +2425,14 @@ from the connection that is the intended recipient of this data.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
-               line="1206">a newly-allocated string</doc>
+               line="1207">a newly-allocated string</doc>
           <type name="utf8" c:type="char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1193">a #TrackerResource</doc>
+                 line="1194">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
           <parameter name="namespaces"
@@ -2271,7 +2441,7 @@ from the connection that is the intended recipient of this data.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1194">a set of prefixed URLs, or %NULL to use the
+                 line="1195">a set of prefixed URLs, or %NULL to use the
     Nepomuk set</doc>
             <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
           </parameter>
@@ -2280,15 +2450,15 @@ from the connection that is the intended recipient of this data.</doc>
       <method name="serialize" c:identifier="tracker_resource_serialize">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-resource.c"
-             line="1787">Serializes a #TrackerResource to a #GVariant in a lossless way.
+             line="1676">Serializes a #TrackerResource to a #GVariant in a lossless way.
 All child resources are subsequently serialized. It is implied
 that both ends use a common #TrackerNamespaceManager.</doc>
         <source-position filename="src/libtracker-sparql/tracker-resource.h"
                          line="125"/>
-        <return-value transfer-ownership="full">
+        <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-resource.c"
-               line="1795">A variant describing the resource,
+               line="1684">A variant describing the resource,
          the reference is floating.</doc>
           <type name="GLib.Variant" c:type="GVariant*"/>
         </return-value>
@@ -2296,7 +2466,7 @@ that both ends use a common #TrackerNamespaceManager.</doc>
           <instance-parameter name="resource" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
-                 line="1789">A #TrackerResource</doc>
+                 line="1678">A #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </instance-parameter>
         </parameters>
@@ -2442,7 +2612,7 @@ URI or compact URI, but this is not necessarily enforced. Invalid
 identifiers may cause errors when serializing the resource or trying to
 insert the results in a database.
 
-If the identifier is set to NULL, a SPARQL blank node identifier such as
+If the identifier is set to %NULL, a SPARQL blank node identifier such as
 "_:123" is assigned to the resource.</doc>
         <source-position filename="src/libtracker-sparql/tracker-resource.h"
                          line="102"/>
@@ -2591,8 +2761,7 @@ set on @resource.</doc>
         </parameters>
       </method>
       <method name="set_take_relation"
-              c:identifier="tracker_resource_set_take_relation"
-              introspectable="0">
+              c:identifier="tracker_resource_set_take_relation">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-resource.c"
              line="436">Sets a single-valued resource object as a #TrackerResource. This
@@ -2617,7 +2786,7 @@ set on @resource. This function takes ownership of @resource.</doc>
                  line="439">a string identifying the property to modify</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
-          <parameter name="resource" transfer-ownership="none">
+          <parameter name="resource" transfer-ownership="full">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-resource.c"
                  line="440">the property object</doc>
@@ -2661,7 +2830,8 @@ it requires that the URI is previously known.</doc>
                 writable="1"
                 transfer-ownership="none"
                 setter="set_identifier"
-                getter="get_identifier">
+                getter="get_identifier"
+                default-value="NULL">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-resource.c"
              line="144">The URI identifier for this class, or %NULL for a
@@ -2675,6 +2845,7 @@ blank node.</doc>
     <record name="ResourceClass"
             c:type="TrackerResourceClass"
             disguised="1"
+            opaque="1"
             glib:is-gtype-struct-for="Resource">
       <source-position filename="src/libtracker-sparql/tracker-resource.h"
                        line="32"/>
@@ -2707,14 +2878,14 @@ SPARQL connection.</doc>
                    throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="1101">Connects to a database owned by another process on the
+             line="1152">Connects to a database owned by another process on the
 local machine.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="111"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="1111">a new #TrackerSparqlConnection. Call g_object_unref() on the
+               line="1162">a new #TrackerSparqlConnection. Call g_object_unref() on the
 object when no longer used.</doc>
           <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
         </return-value>
@@ -2722,7 +2893,7 @@ object when no longer used.</doc>
           <parameter name="service_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1103">The name of the D-Bus service to connect to.</doc>
+                 line="1154">The name of the D-Bus service to connect to.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="object_path"
@@ -2731,7 +2902,7 @@ object when no longer used.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1104">The path to the object, or %NULL to use the default.</doc>
+                 line="1155">The path to the object, or %NULL to use the default.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="dbus_connection"
@@ -2740,7 +2911,7 @@ object when no longer used.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1105">The #GDBusConnection to use, or %NULL to use the session bus</doc>
+                 line="1156">The #GDBusConnection to use, or %NULL to use the session bus</doc>
             <type name="Gio.DBusConnection" c:type="GDBusConnection*"/>
           </parameter>
         </parameters>
@@ -2751,13 +2922,13 @@ object when no longer used.</doc>
                    throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="1190">Completion function for tracker_sparql_connection_bus_new_async().</doc>
+             line="1241">Completion function for tracker_sparql_connection_bus_new_async().</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="123"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="1197">a new #TrackerSparqlConnection. Call g_object_unref() on the
+               line="1248">a new #TrackerSparqlConnection. Call g_object_unref() on the
 object when no longer used.</doc>
           <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
         </return-value>
@@ -2765,7 +2936,7 @@ object when no longer used.</doc>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1192">the #GAsyncResult</doc>
+                 line="1243">the #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -2776,7 +2947,7 @@ object when no longer used.</doc>
                    throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="977">Creates or opens a database.
+             line="1028">Creates or opens a database.
 
 This method should only be used for databases owned by the current process.
 To connect to databases managed by other processes, use
@@ -2803,7 +2974,7 @@ exist.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="1008">a new #TrackerSparqlConnection. Call
+               line="1059">a new #TrackerSparqlConnection. Call
 g_object_unref() on the object when no longer used.</doc>
           <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
         </return-value>
@@ -2811,7 +2982,7 @@ g_object_unref() on the object when no longer used.</doc>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="979">values from #TrackerSparqlConnectionFlags</doc>
+                 line="1030">values from #TrackerSparqlConnectionFlags</doc>
             <type name="SparqlConnectionFlags"
                   c:type="TrackerSparqlConnectionFlags"/>
           </parameter>
@@ -2821,7 +2992,7 @@ g_object_unref() on the object when no longer used.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="980">the directory that contains the database as a #GFile, or %NULL</doc>
+                 line="1031">the directory that contains the database as a #GFile, or %NULL</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
           <parameter name="ontology"
@@ -2830,7 +3001,7 @@ g_object_unref() on the object when no longer used.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="981">the directory that contains the database schemas as a #GFile, or %NULL</doc>
+                 line="1032">the directory that contains the database schemas as a #GFile, or %NULL</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
           <parameter name="cancellable"
@@ -2839,7 +3010,7 @@ g_object_unref() on the object when no longer used.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="982">a #GCancellable, or %NULL</doc>
+                 line="1033">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -2850,7 +3021,7 @@ g_object_unref() on the object when no longer used.</doc>
                    throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="1080">Completion function for tracker_sparql_connection_new_async().</doc>
+             line="1131">Completion function for tracker_sparql_connection_new_async().</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="107"/>
         <return-value transfer-ownership="full">
@@ -2860,7 +3031,7 @@ g_object_unref() on the object when no longer used.</doc>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1082">the #GAsyncResult</doc>
+                 line="1133">the #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -2869,14 +3040,14 @@ g_object_unref() on the object when no longer used.</doc>
                    c:identifier="tracker_sparql_connection_remote_new">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="961">Connects to a remote SPARQL endpoint. The connection is made using the libsoup
+             line="1012">Connects to a remote SPARQL endpoint. The connection is made using the libsoup
 HTTP library. The connection will normally use the http:// or https:// protocol.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="127"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="968">a new remote #TrackerSparqlConnection. Call
+               line="1019">a new remote #TrackerSparqlConnection. Call
 g_object_unref() on the object when no longer used.</doc>
           <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
         </return-value>
@@ -2884,7 +3055,7 @@ g_object_unref() on the object when no longer used.</doc>
           <parameter name="uri_base" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="963">Base URI of the remote connection</doc>
+                 line="1014">Base URI of the remote connection</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
         </parameters>
@@ -2894,7 +3065,7 @@ g_object_unref() on the object when no longer used.</doc>
                 version="3.1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="1151">Connects to a database owned by another process on the
+             line="1202">Connects to a database owned by another process on the
 local machine. This is an asynchronous operation.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="116"/>
@@ -2905,7 +3076,7 @@ local machine. This is an asynchronous operation.</doc>
           <parameter name="service_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1153">The name of the D-Bus service to connect to.</doc>
+                 line="1204">The name of the D-Bus service to connect to.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="object_path"
@@ -2914,7 +3085,7 @@ local machine. This is an asynchronous operation.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1154">The path to the object, or %NULL to use the default.</doc>
+                 line="1205">The path to the object, or %NULL to use the default.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="dbus_connection"
@@ -2923,7 +3094,7 @@ local machine. This is an asynchronous operation.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1155">The #GDBusConnection to use, or %NULL to use the session bus</doc>
+                 line="1206">The #GDBusConnection to use, or %NULL to use the session bus</doc>
             <type name="Gio.DBusConnection" c:type="GDBusConnection*"/>
           </parameter>
           <parameter name="cancellable"
@@ -2932,7 +3103,7 @@ local machine. This is an asynchronous operation.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1156">a #GCancellable, or %NULL</doc>
+                 line="1207">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -2943,7 +3114,7 @@ local machine. This is an asynchronous operation.</doc>
                      closure="5">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1157">the #GAsyncReadyCallback called when the operation completes</doc>
+                 line="1208">the #GAsyncReadyCallback called when the operation completes</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -2952,7 +3123,7 @@ local machine. This is an asynchronous operation.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1158">data passed to @callback</doc>
+                 line="1209">data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -2962,7 +3133,7 @@ local machine. This is an asynchronous operation.</doc>
                 version="3.0">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="1045">Asynchronous version of tracker_sparql_connection_new().</doc>
+             line="1096">Asynchronous version of tracker_sparql_connection_new().</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="100"/>
         <return-value transfer-ownership="none">
@@ -2972,7 +3143,7 @@ local machine. This is an asynchronous operation.</doc>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1047">values from #TrackerSparqlConnectionFlags</doc>
+                 line="1098">values from #TrackerSparqlConnectionFlags</doc>
             <type name="SparqlConnectionFlags"
                   c:type="TrackerSparqlConnectionFlags"/>
           </parameter>
@@ -2982,7 +3153,7 @@ local machine. This is an asynchronous operation.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1048">the directory that contains the database as a #GFile, or %NULL</doc>
+                 line="1099">the directory that contains the database as a #GFile, or %NULL</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
           <parameter name="ontology"
@@ -2991,7 +3162,7 @@ local machine. This is an asynchronous operation.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1049">the directory that contains the database schemas as a #GFile, or %NULL</doc>
+                 line="1100">the directory that contains the database schemas as a #GFile, or %NULL</doc>
             <type name="Gio.File" c:type="GFile*"/>
           </parameter>
           <parameter name="cancellable"
@@ -3000,7 +3171,7 @@ local machine. This is an asynchronous operation.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1050">a #GCancellable, or %NULL</doc>
+                 line="1101">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -3011,7 +3182,7 @@ local machine. This is an asynchronous operation.</doc>
                      closure="5">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1051">the #GAsyncReadyCallback called when the operation completes</doc>
+                 line="1102">the #GAsyncReadyCallback called when the operation completes</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -3020,7 +3191,7 @@ local machine. This is an asynchronous operation.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="1052">data passed to @callback</doc>
+                 line="1103">data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -3030,14 +3201,14 @@ local machine. This is an asynchronous operation.</doc>
               version="3.0">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="627">Closes a SPARQL connection. No other API calls than g_object_unref()
+             line="678">Closes a SPARQL connection. No other API calls than g_object_unref()
 should happen after this call.
 
 This call is blocking. All pending updates will be flushed, and the
 store databases will be closed orderly. All ongoing SELECT queries
 will be cancelled. Notifiers will no longer emit events.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
-                         line="220"/>
+                         line="227"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3045,7 +3216,7 @@ will be cancelled. Notifiers will no longer emit events.</doc>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="629">a #TrackerSparqlConnection</doc>
+                 line="680">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
         </parameters>
@@ -3055,11 +3226,11 @@ will be cancelled. Notifiers will no longer emit events.</doc>
               version="3.0">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="648">Closes a connection asynchronously. No other API calls than g_object_unref()
+             line="699">Closes a connection asynchronously. No other API calls than g_object_unref()
 should happen after this call. See tracker_sparql_connection_close() for more
 information.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
-                         line="250"/>
+                         line="257"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3067,7 +3238,7 @@ information.</doc>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="650">a #TrackerSparqlConnection</doc>
+                 line="701">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -3076,7 +3247,7 @@ information.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="651">a #GCancellable, or %NULL</doc>
+                 line="702">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -3087,7 +3258,7 @@ information.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="652">user-defined #GAsyncReadyCallback to be called when
+                 line="703">user-defined #GAsyncReadyCallback to be called when
            asynchronous operation is finished.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
@@ -3097,7 +3268,7 @@ information.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="654">user-defined data to be passed to @callback</doc>
+                 line="705">user-defined data to be passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -3108,26 +3279,26 @@ information.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="676">Finishes the asynchronous connection close.</doc>
+             line="727">Finishes the asynchronous connection close.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
-                         line="256"/>
+                         line="263"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="684">%FALSE if some error occurred, %TRUE otherwise</doc>
+               line="735">%FALSE if some error occurred, %TRUE otherwise</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="678">a #TrackerSparqlConnection</doc>
+                 line="729">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="res" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="679">the #GAsyncResult</doc>
+                 line="730">the #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -3136,21 +3307,21 @@ information.</doc>
               c:identifier="tracker_sparql_connection_create_batch">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="699">Creates a new batch to store and execute update commands. If the connection
+             line="750">Creates a new batch to store and execute update commands. If the connection
 is readonly or cannot issue SPARQL updates, %NULL will be returned.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="190"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="706">(nullable): A new #TrackerBatch</doc>
+               line="757">(nullable): A new #TrackerBatch</doc>
           <type name="Batch" c:type="TrackerBatch*"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="701">a #TrackerSparqlConnection</doc>
+                 line="752">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
         </parameters>
@@ -3159,15 +3330,15 @@ is readonly or cannot issue SPARQL updates, %NULL will be returned.</doc>
               c:identifier="tracker_sparql_connection_create_notifier">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="608">Creates a new #TrackerNotifier to notify about changes in @connection.
+             line="659">Creates a new #TrackerNotifier to notify about changes in @connection.
 See #TrackerNotifier documentation for information about how to use this
 object.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
-                         line="217"/>
+                         line="224"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="616">a newly created notifier. Free with g_object_unref()
+               line="667">a newly created notifier. Free with g_object_unref()
          when no longer needed.</doc>
           <type name="Notifier" c:type="TrackerNotifier*"/>
         </return-value>
@@ -3175,7 +3346,7 @@ object.</doc>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="610">a #TrackerSparqlConnection</doc>
+                 line="661">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
         </parameters>
@@ -3185,7 +3356,7 @@ object.</doc>
               version="3.4">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="837">Incorporates the contents of the RDF data contained in @stream into the
+             line="888">Incorporates the contents of the RDF data contained in @stream into the
 data stored by @connection. This is an asynchronous operation,
 @callback will be invoked when the data has been fully inserted to
 @connection.
@@ -3198,7 +3369,7 @@ be inserted in the specified graph instead of @default_graph.
 The @flags argument is reserved for future expansions, currently
 %TRACKER_DESERIALIZE_FLAGS_NONE must be passed.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
-                         line="236"/>
+                         line="243"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3206,31 +3377,31 @@ The @flags argument is reserved for future expansions, currently
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="839">a #TrackerSparqlConnection</doc>
+                 line="890">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="840">deserialization flags</doc>
+                 line="891">deserialization flags</doc>
             <type name="DeserializeFlags" c:type="TrackerDeserializeFlags"/>
           </parameter>
           <parameter name="format" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="841">RDF format of data in stream</doc>
+                 line="892">RDF format of data in stream</doc>
             <type name="RdfFormat" c:type="TrackerRdfFormat"/>
           </parameter>
           <parameter name="default_graph" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="842">default graph that will receive the RDF data</doc>
+                 line="893">default graph that will receive the RDF data</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="stream" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="843">input stream with RDF data</doc>
+                 line="894">input stream with RDF data</doc>
             <type name="Gio.InputStream" c:type="GInputStream*"/>
           </parameter>
           <parameter name="cancellable"
@@ -3239,7 +3410,7 @@ The @flags argument is reserved for future expansions, currently
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="844">a #GCancellable</doc>
+                 line="895">a #GCancellable</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -3250,7 +3421,7 @@ The @flags argument is reserved for future expansions, currently
                      closure="6">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="845">the #GAsyncReadyCallback called when the operation completes</doc>
+                 line="896">the #GAsyncReadyCallback called when the operation completes</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -3259,7 +3430,7 @@ The @flags argument is reserved for future expansions, currently
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="846">data passed to @callback</doc>
+                 line="897">data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -3270,27 +3441,27 @@ The @flags argument is reserved for future expansions, currently
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="890">Finishes a tracker_sparql_connection_deserialize_async() operation.
+             line="941">Finishes a tracker_sparql_connection_deserialize_async() operation.
 In case of error, %NULL will be returned and @error will be set.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
-                         line="245"/>
+                         line="252"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="899">%TRUE if all data was inserted successfully.</doc>
+               line="950">%TRUE if all data was inserted successfully.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="892">a #TrackerSparqlConnection</doc>
+                 line="943">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="893">the #GAsyncResult</doc>
+                 line="944">the #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -3299,14 +3470,14 @@ In case of error, %NULL will be returned and @error will be set.</doc>
               c:identifier="tracker_sparql_connection_get_namespace_manager">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="557">Retrieves a #TrackerNamespaceManager that contains all
+             line="571">Retrieves a #TrackerNamespaceManager that contains all
 prefixes in the ontology of @connection.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="209"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="564">a #TrackerNamespaceManager for this
+               line="578">a #TrackerNamespaceManager for this
 connection. This object is owned by @connection and must not be freed.</doc>
           <type name="NamespaceManager" c:type="TrackerNamespaceManager*"/>
         </return-value>
@@ -3314,7 +3485,7 @@ connection. This object is owned by @connection and must not be freed.</doc>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="559">a #TrackerSparqlConnection</doc>
+                 line="573">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
         </parameters>
@@ -3325,27 +3496,27 @@ connection. This object is owned by @connection and must not be freed.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="719">Prepares a #TrackerSparqlStatement for the SPARQL query contained as a resource
+             line="770">Prepares a #TrackerSparqlStatement for the SPARQL query contained as a resource
 file at @resource_path. SPARQL Query files typically have the .rq extension.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
-                         line="261"/>
+                         line="268"/>
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="729">a prepared statement</doc>
+               line="780">a prepared statement</doc>
           <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="721">a #TrackerSparqlConnection</doc>
+                 line="772">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="resource_path" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="722">the resource path of the file to parse.</doc>
+                 line="773">the resource path of the file to parse.</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
@@ -3354,7 +3525,7 @@ file at @resource_path. SPARQL Query files typically have the .rq extension.</do
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="723">a #GCancellable, or %NULL</doc>
+                 line="774">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -3364,7 +3535,7 @@ file at @resource_path. SPARQL Query files typically have the .rq extension.</do
               version="3.3">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="917">Maps @service_connection so it is available as a "private:@handle_name" URI
+             line="968">Maps @service_connection so it is available as a "private:@handle_name" URI
 in @connection. This can be accessed via the SERVICE SPARQL syntax in
 queries from @connection. E.g.:
 
@@ -3383,7 +3554,7 @@ without creating a public endpoint for @service_connection.
 @connection may only be a #TrackerSparqlConnection created via
 tracker_sparql_connection_new() and tracker_sparql_connection_new_async().</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
-                         line="267"/>
+                         line="274"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3391,19 +3562,19 @@ tracker_sparql_connection_new() and tracker_sparql_connection_new_async().</doc>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="919">a #TrackerSparqlConnection</doc>
+                 line="970">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="handle_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="920">handle name for @service_connection</doc>
+                 line="971">handle name for @service_connection</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="service_connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="921">a #TrackerSparqlConnection to use from @connection</doc>
+                 line="972">a #TrackerSparqlConnection to use from @connection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </parameter>
         </parameters>
@@ -3544,26 +3715,28 @@ Call g_object_unref() on the returned cursor when no longer needed.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="580">Prepares the given @sparql as a #TrackerSparqlStatement.</doc>
+             line="594">Prepares the given SELECT/DESCRIBE/CONSTRUCT @sparql as a #TrackerSparqlStatement.
+This prepared statement can be executed through tracker_sparql_statement_execute()
+or tracker_sparql_statement_serialize_async() families of functions.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="212"/>
         <return-value transfer-ownership="full" nullable="1">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="589">a prepared statement</doc>
+               line="605">a prepared statement</doc>
           <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="582">a #TrackerSparqlConnection</doc>
+                 line="596">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="sparql" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="583">the SPARQL query</doc>
+                 line="597">the SPARQL query</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
@@ -3572,7 +3745,7 @@ Call g_object_unref() on the returned cursor when no longer needed.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="584">a #GCancellable used to cancel the operation, or %NULL</doc>
+                 line="598">a #GCancellable used to cancel the operation, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -3582,7 +3755,7 @@ Call g_object_unref() on the returned cursor when no longer needed.</doc>
               version="3.3">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="763">Serializes data into the specified RDF format. @query must be either a
+             line="814">Serializes data into the specified RDF format. @query must be either a
 `DESCRIBE` or `CONSTRUCT` query. This is an asynchronous operation,
 @callback will be invoked when the data is available for reading.
 
@@ -3592,7 +3765,7 @@ an error will be raised.
 The @flags argument is reserved for future expansions, currently
 %TRACKER_SERIALIZE_FLAGS_NONE must be passed.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
-                         line="223"/>
+                         line="230"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
         </return-value>
@@ -3600,25 +3773,25 @@ The @flags argument is reserved for future expansions, currently
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="765">a #TrackerSparqlConnection</doc>
+                 line="816">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="766">serialization flags</doc>
+                 line="817">serialization flags</doc>
             <type name="SerializeFlags" c:type="TrackerSerializeFlags"/>
           </parameter>
           <parameter name="format" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="767">output RDF format</doc>
+                 line="818">output RDF format</doc>
             <type name="RdfFormat" c:type="TrackerRdfFormat"/>
           </parameter>
           <parameter name="query" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="768">SPARQL query</doc>
+                 line="819">SPARQL query</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
@@ -3627,7 +3800,7 @@ The @flags argument is reserved for future expansions, currently
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="769">a #GCancellable</doc>
+                 line="820">a #GCancellable</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -3638,7 +3811,7 @@ The @flags argument is reserved for future expansions, currently
                      closure="5">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="770">the #GAsyncReadyCallback called when the operation completes</doc>
+                 line="821">the #GAsyncReadyCallback called when the operation completes</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -3647,7 +3820,7 @@ The @flags argument is reserved for future expansions, currently
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="771">data passed to @callback</doc>
+                 line="822">data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -3658,27 +3831,27 @@ The @flags argument is reserved for future expansions, currently
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="810">Finishes a tracker_sparql_connection_serialize_async() operation.
+             line="861">Finishes a tracker_sparql_connection_serialize_async() operation.
 In case of error, %NULL will be returned and @error will be set.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
-                         line="231"/>
+                         line="238"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="819">a #GInputStream to read RDF content.</doc>
+               line="870">a #GInputStream to read RDF content.</doc>
           <type name="Gio.InputStream" c:type="GInputStream*"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="812">a #TrackerSparqlConnection</doc>
+                 line="863">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="813">the #GAsyncResult</doc>
+                 line="864">the #GAsyncResult</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -3871,6 +4044,8 @@ array are handled within a single transaction.</doc>
       </method>
       <method name="update_blank"
               c:identifier="tracker_sparql_connection_update_blank"
+              deprecated="1"
+              deprecated-version="3.5"
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
@@ -3887,6 +4062,15 @@ the SPARQL string. The second array represents each new node for a given
 WHERE clause. The last array holds a string pair with the blank node name
 (e.g. `foo` for the blank node `_:foo`) and the URN that was generated for
 it. For most updates the first two outer arrays will only contain one item.</doc>
+        <doc-deprecated xml:space="preserve">This function makes the expectation that blank nodes have
+a durable name that persist. The SPARQL and RDF specs define a much more
+reduced scope for blank node labels. This function advises a behavior that
+goes against that reduced scope, and will directly make the returned values
+meaningless if the %TRACKER_SPARQL_CONNECTION_FLAGS_ANONYMOUS_BNODES flag
+is defined in the connection.
+
+Users that want names generated for them, should look for other methods
+(e.g. IRIs containing UUIDv4 strings).</doc-deprecated>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="193"/>
         <return-value transfer-ownership="full">
@@ -3921,12 +4105,15 @@ g_variant_unref() when no longer used.</doc>
         </parameters>
       </method>
       <method name="update_blank_async"
-              c:identifier="tracker_sparql_connection_update_blank_async">
+              c:identifier="tracker_sparql_connection_update_blank_async"
+              deprecated="1"
+              deprecated-version="3.5">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="402">Executes asynchronously a SPARQL update with blank nodes. See
+             line="412">Executes asynchronously a SPARQL update with blank nodes. See
 the tracker_sparql_connection_update_blank() documentation to
 see the differences with tracker_sparql_connection_update().</doc>
+        <doc-deprecated xml:space="preserve">See tracker_sparql_connection_update_blank().</doc-deprecated>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="198"/>
         <return-value transfer-ownership="none">
@@ -3936,13 +4123,13 @@ see the differences with tracker_sparql_connection_update().</doc>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="404">a #TrackerSparqlConnection</doc>
+                 line="414">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="sparql" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="405">string containing the SPARQL update query</doc>
+                 line="415">string containing the SPARQL update query</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="cancellable"
@@ -3951,7 +4138,7 @@ see the differences with tracker_sparql_connection_update().</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="406">a #GCancellable used to cancel the operation</doc>
+                 line="416">a #GCancellable used to cancel the operation</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -3962,7 +4149,7 @@ see the differences with tracker_sparql_connection_update().</doc>
                      closure="3">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="407">user-defined #GAsyncReadyCallback to be called when
+                 line="417">user-defined #GAsyncReadyCallback to be called when
            asynchronous operation is finished.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
@@ -3972,26 +4159,29 @@ see the differences with tracker_sparql_connection_update().</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="409">user-defined data to be passed to @callback</doc>
+                 line="419">user-defined data to be passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
       </method>
       <method name="update_blank_finish"
               c:identifier="tracker_sparql_connection_update_blank_finish"
+              deprecated="1"
+              deprecated-version="3.5"
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="433">Finishes the asynchronous SPARQL update operation, and returns
+             line="445">Finishes the asynchronous SPARQL update operation, and returns
 the URNs of the generated nodes, if any. See the
 tracker_sparql_connection_update_blank() documentation for the interpretation
 of the returned #GVariant.</doc>
+        <doc-deprecated xml:space="preserve">See tracker_sparql_connection_update_blank().</doc-deprecated>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="204"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="444">a #GVariant with the generated URNs, which should be freed with
+               line="456">a #GVariant with the generated URNs, which should be freed with
 g_variant_unref() when no longer used.</doc>
           <type name="GLib.Variant" c:type="GVariant*"/>
         </return-value>
@@ -3999,13 +4189,13 @@ g_variant_unref() when no longer used.</doc>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="435">a #TrackerSparqlConnection</doc>
+                 line="447">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="res" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="436">a #GAsyncResult with the result of the operation</doc>
+                 line="448">a #GAsyncResult with the result of the operation</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -4042,21 +4232,21 @@ g_variant_unref() when no longer used.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="461">Inserts a resource as described by @resource, on the graph described by @graph.
+             line="475">Inserts a resource as described by @resource, on the graph described by @graph.
 This operation blocks until done.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="173"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="472">#TRUE if there were no errors.</doc>
+               line="486">#TRUE if there were no errors.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="463">a #TrackerSparqlConnection</doc>
+                 line="477">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="graph"
@@ -4065,13 +4255,13 @@ This operation blocks until done.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="464">RDF graph where the resource should be inserted/updated, or %NULL for the default graph</doc>
+                 line="478">RDF graph where the resource should be inserted/updated, or %NULL for the default graph</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="resource" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="465">a #TrackerResource</doc>
+                 line="479">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </parameter>
           <parameter name="cancellable"
@@ -4080,7 +4270,7 @@ This operation blocks until done.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="466">a #GCancellable, or %NULL</doc>
+                 line="480">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
@@ -4090,7 +4280,7 @@ This operation blocks until done.</doc>
               version="3.1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="495">Inserts a resource as described by @resource, on the graph described by @graph.
+             line="509">Inserts a resource as described by @resource, on the graph described by @graph.
 This operation is executed asynchronously, when finished @callback will be
 executed.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
@@ -4102,7 +4292,7 @@ executed.</doc>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="497">a #TrackerSparqlConnection</doc>
+                 line="511">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="graph"
@@ -4111,13 +4301,13 @@ executed.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="498">RDF graph where the resource should be inserted/updated, or %NULL for the default graph</doc>
+                 line="512">RDF graph where the resource should be inserted/updated, or %NULL for the default graph</doc>
             <type name="utf8" c:type="const gchar*"/>
           </parameter>
           <parameter name="resource" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="499">a #TrackerResource</doc>
+                 line="513">a #TrackerResource</doc>
             <type name="Resource" c:type="TrackerResource*"/>
           </parameter>
           <parameter name="cancellable"
@@ -4126,7 +4316,7 @@ executed.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="500">a #GCancellable, or %NULL</doc>
+                 line="514">a #GCancellable, or %NULL</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -4137,7 +4327,7 @@ executed.</doc>
                      closure="4">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="501">the #GAsyncReadyCallback called when the operation completes</doc>
+                 line="515">the #GAsyncReadyCallback called when the operation completes</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
           <parameter name="user_data"
@@ -4146,7 +4336,7 @@ executed.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="502">data passed to @callback</doc>
+                 line="516">data passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -4157,27 +4347,68 @@ executed.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-connection.c"
-             line="531">Finishes a tracker_sparql_connection_update_resource_async() operation.</doc>
+             line="545">Finishes a tracker_sparql_connection_update_resource_async() operation.</doc>
         <source-position filename="src/libtracker-sparql/tracker-connection.h"
                          line="186"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-connection.c"
-               line="539">#TRUE if there were no errors.</doc>
+               line="553">#TRUE if there were no errors.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="connection" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="533">a #TrackerSparqlConnection</doc>
+                 line="547">a #TrackerSparqlConnection</doc>
             <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
           </instance-parameter>
           <parameter name="res" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-connection.c"
-                 line="534">a #GAsyncResult with the result of the operation</doc>
+                 line="548">a #GAsyncResult with the result of the operation</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update_statement"
+              c:identifier="tracker_sparql_connection_update_statement"
+              version="3.5"
+              throws="1">
+        <doc xml:space="preserve"
+             filename="src/libtracker-sparql/tracker-connection.c"
+             line="624">Prepares the given INSERT/DELETE/LOAD/CLEAR/DROP/ADD/MOVE/COPY/CREATE @sparql
+as a #TrackerSparqlStatement. This prepared statement can be executed through
+the tracker_sparql_statement_update() family of functions.</doc>
+        <source-position filename="src/libtracker-sparql/tracker-connection.h"
+                         line="218"/>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve"
+               filename="src/libtracker-sparql/tracker-connection.c"
+               line="635">a prepared statement</doc>
+          <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="connection" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-connection.c"
+                 line="626">a #TrackerSparqlConnection</doc>
+            <type name="SparqlConnection" c:type="TrackerSparqlConnection*"/>
+          </instance-parameter>
+          <parameter name="sparql" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-connection.c"
+                 line="627">the SPARQL update</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-connection.c"
+                 line="628">a #GCancellable used to cancel the operation, or %NULL</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
         </parameters>
       </method>
@@ -4188,6 +4419,7 @@ executed.</doc>
     <record name="SparqlConnectionClass"
             c:type="TrackerSparqlConnectionClass"
             disguised="1"
+            opaque="1"
             glib:is-gtype-struct-for="SparqlConnection">
       <source-position filename="src/libtracker-sparql/tracker-connection.h"
                        line="82"/>
@@ -4678,10 +4910,17 @@ it may block.</doc>
           </parameter>
         </parameters>
       </method>
-      <method name="rewind" c:identifier="tracker_sparql_cursor_rewind">
+      <method name="rewind"
+              c:identifier="tracker_sparql_cursor_rewind"
+              deprecated="1"
+              deprecated-version="3.5">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-cursor.c"
              line="530">Resets the iterator to point back to the first result.</doc>
+        <doc-deprecated xml:space="preserve">This function only works on cursors
+from direct #TrackerSparqlConnection objects and cannot work
+reliably across all cursor types. Issue a different query to
+obtain a new cursor.</doc-deprecated>
         <source-position filename="src/libtracker-sparql/tracker-cursor.h"
                          line="120"/>
         <return-value transfer-ownership="none">
@@ -4708,7 +4947,8 @@ it may block.</doc>
       </property>
       <property name="n-columns"
                 transfer-ownership="none"
-                getter="get_n_columns">
+                getter="get_n_columns"
+                default-value="0">
         <type name="gint" c:type="gint"/>
       </property>
       <field name="parent_instance">
@@ -4718,6 +4958,7 @@ it may block.</doc>
     <record name="SparqlCursorClass"
             c:type="TrackerSparqlCursorClass"
             disguised="1"
+            opaque="1"
             glib:is-gtype-struct-for="SparqlCursor">
       <source-position filename="src/libtracker-sparql/tracker-cursor.h"
                        line="40"/>
@@ -4731,8 +4972,8 @@ it may block.</doc>
 #TrackerSparqlError enumeration. See #GError for more information on error
 domains.</doc>
       <source-position filename="src/libtracker-sparql/tracker-error.h"
-                       line="77"/>
-      <member name="error_constraint"
+                       line="79"/>
+      <member name="constraint"
               value="0"
               c:identifier="TRACKER_SPARQL_ERROR_CONSTRAINT">
         <doc xml:space="preserve"
@@ -4741,103 +4982,104 @@ domains.</doc>
                             trying to set multiple values for a single valued
                             property.</doc>
       </member>
-      <member name="error_internal"
+      <member name="internal"
               value="1"
               c:identifier="TRACKER_SPARQL_ERROR_INTERNAL">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
              line="42">Internal error.</doc>
       </member>
-      <member name="error_no_space"
+      <member name="no_space"
               value="2"
               c:identifier="TRACKER_SPARQL_ERROR_NO_SPACE">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
              line="43">There was no disk space available to perform the request.</doc>
       </member>
-      <member name="error_ontology_not_found"
+      <member name="ontology_not_found"
               value="3"
               c:identifier="TRACKER_SPARQL_ERROR_ONTOLOGY_NOT_FOUND">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
              line="44">The specified ontology wasn't found.</doc>
       </member>
-      <member name="error_open_error"
+      <member name="open_error"
               value="4"
               c:identifier="TRACKER_SPARQL_ERROR_OPEN_ERROR">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
-             line="45">Problem encounted while opening the database.</doc>
+             line="45">Problem encountered while opening the database.</doc>
       </member>
-      <member name="error_parse"
-              value="5"
-              c:identifier="TRACKER_SPARQL_ERROR_PARSE">
+      <member name="parse" value="5" c:identifier="TRACKER_SPARQL_ERROR_PARSE">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
              line="46">Error parsing the SPARQL string.</doc>
       </member>
-      <member name="error_query_failed"
+      <member name="query_failed"
               value="6"
               c:identifier="TRACKER_SPARQL_ERROR_QUERY_FAILED">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
              line="47">Problem while executing the query.</doc>
       </member>
-      <member name="error_type"
-              value="7"
-              c:identifier="TRACKER_SPARQL_ERROR_TYPE">
+      <member name="type" value="7" c:identifier="TRACKER_SPARQL_ERROR_TYPE">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
              line="48">Type constraint failed when trying to insert data.</doc>
       </member>
-      <member name="error_unknown_class"
+      <member name="unknown_class"
               value="8"
               c:identifier="TRACKER_SPARQL_ERROR_UNKNOWN_CLASS">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
              line="49">Unknown class.</doc>
       </member>
-      <member name="error_unknown_graph"
+      <member name="unknown_graph"
               value="9"
               c:identifier="TRACKER_SPARQL_ERROR_UNKNOWN_GRAPH">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
              line="50">Unknown graph.</doc>
       </member>
-      <member name="error_unknown_property"
+      <member name="unknown_property"
               value="10"
               c:identifier="TRACKER_SPARQL_ERROR_UNKNOWN_PROPERTY">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
              line="51">Unknown property.</doc>
       </member>
-      <member name="error_unsupported"
+      <member name="unsupported"
               value="11"
               c:identifier="TRACKER_SPARQL_ERROR_UNSUPPORTED">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
              line="52">Unsupported feature or method.</doc>
       </member>
-      <member name="error_missing_last_modified_header"
+      <member name="missing_last_modified_header"
               value="12"
               c:identifier="TRACKER_SPARQL_ERROR_MISSING_LAST_MODIFIED_HEADER">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
              line="53">The ontology doesn't contain nrl:lastModified header</doc>
       </member>
-      <member name="error_incomplete_property_definition"
+      <member name="incomplete_property_definition"
               value="13"
               c:identifier="TRACKER_SPARQL_ERROR_INCOMPLETE_PROPERTY_DEFINITION">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
              line="54">The property is not completely defined.</doc>
       </member>
-      <member name="n_errors"
+      <member name="corrupt"
               value="14"
-              c:identifier="TRACKER_SPARQL_N_ERRORS">
+              c:identifier="TRACKER_SPARQL_ERROR_CORRUPT">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.h"
-             line="55">The total number of error codes.</doc>
+             line="55">A soft/hard corruption was found in the database during operation.</doc>
+      </member>
+      <member name="last" value="15" c:identifier="TRACKER_SPARQL_ERROR_LAST">
+        <doc xml:space="preserve"
+             filename="src/libtracker-sparql/tracker-error.h"
+             line="56">The total number of error codes.</doc>
       </member>
     </enumeration>
     <class name="SparqlStatement"
@@ -5014,7 +5256,7 @@ a prepared query statement.</doc>
               version="3.0">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-statement.c"
-             line="402">Clears all boolean/string/integer/double bindings.</doc>
+             line="501">Clears all boolean/string/integer/double bindings.</doc>
         <source-position filename="src/libtracker-sparql/tracker-statement.h"
                          line="108"/>
         <return-value transfer-ownership="none">
@@ -5024,7 +5266,7 @@ a prepared query statement.</doc>
           <instance-parameter name="stmt" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="404">a #TrackerSparqlStatement</doc>
+                 line="503">a #TrackerSparqlStatement</doc>
             <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
           </instance-parameter>
         </parameters>
@@ -5034,13 +5276,18 @@ a prepared query statement.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-statement.c"
-             line="312">Executes the SPARQL query with the currently bound values.</doc>
+             line="312">Executes the SPARQL query with the currently bound values.
+
+This function should only be called on #TrackerSparqlStatement objects
+obtained through tracker_sparql_connection_query_statement() or
+SELECT/CONSTRUCT/DESCRIBE statements loaded through
+tracker_sparql_connection_load_statement_from_gresource().</doc>
         <source-position filename="src/libtracker-sparql/tracker-statement.h"
                          line="79"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-statement.c"
-               line="320">A #TrackerSparqlCursor</doc>
+               line="325">A #TrackerSparqlCursor</doc>
           <type name="SparqlCursor" c:type="TrackerSparqlCursor*"/>
         </return-value>
         <parameters>
@@ -5065,7 +5312,12 @@ a prepared query statement.</doc>
               c:identifier="tracker_sparql_statement_execute_async">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-statement.c"
-             line="344">Asynchronously executes the SPARQL query with the currently bound values.</doc>
+             line="349">Asynchronously executes the SPARQL query with the currently bound values.
+
+This function should only be called on #TrackerSparqlStatement objects
+obtained through tracker_sparql_connection_query_statement() or
+SELECT/CONSTRUCT/DESCRIBE statements loaded through
+tracker_sparql_connection_load_statement_from_gresource().</doc>
         <source-position filename="src/libtracker-sparql/tracker-statement.h"
                          line="84"/>
         <return-value transfer-ownership="none">
@@ -5075,7 +5327,7 @@ a prepared query statement.</doc>
           <instance-parameter name="stmt" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="346">a #TrackerSparqlStatement</doc>
+                 line="351">a #TrackerSparqlStatement</doc>
             <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
           </instance-parameter>
           <parameter name="cancellable"
@@ -5084,7 +5336,7 @@ a prepared query statement.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="347">a #GCancellable used to cancel the operation</doc>
+                 line="352">a #GCancellable used to cancel the operation</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -5095,7 +5347,7 @@ a prepared query statement.</doc>
                      closure="2">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="348">user-defined #GAsyncReadyCallback to be called when
+                 line="353">user-defined #GAsyncReadyCallback to be called when
            asynchronous operation is finished.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
@@ -5105,7 +5357,7 @@ a prepared query statement.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="350">user-defined data to be passed to @callback</doc>
+                 line="355">user-defined data to be passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -5115,27 +5367,27 @@ a prepared query statement.</doc>
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-statement.c"
-             line="369">Finishes the asynchronous operation started through
+             line="379">Finishes the asynchronous operation started through
 tracker_sparql_statement_execute_async().</doc>
         <source-position filename="src/libtracker-sparql/tracker-statement.h"
                          line="90"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-statement.c"
-               line="378">A #TrackerSparqlCursor</doc>
+               line="388">A #TrackerSparqlCursor</doc>
           <type name="SparqlCursor" c:type="TrackerSparqlCursor*"/>
         </return-value>
         <parameters>
           <instance-parameter name="stmt" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="371">a #TrackerSparqlStatement</doc>
+                 line="381">a #TrackerSparqlStatement</doc>
             <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
           </instance-parameter>
           <parameter name="res" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="372">The #GAsyncResult from the callback used to return the #TrackerSparqlCursor</doc>
+                 line="382">The #GAsyncResult from the callback used to return the #TrackerSparqlCursor</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -5191,7 +5443,7 @@ tracker_sparql_statement_execute_async().</doc>
               version="3.3">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-statement.c"
-             line="418">Serializes data into the specified RDF format. The query @stmt was
+             line="517">Serializes data into the specified RDF format. The query @stmt was
 created from must be either a `DESCRIBE` or `CONSTRUCT` query, an
 error will be raised otherwise.
 
@@ -5212,19 +5464,19 @@ The @flags argument is reserved for future expansions, currently
           <instance-parameter name="stmt" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="420">a #TrackerSparqlStatement</doc>
+                 line="519">a #TrackerSparqlStatement</doc>
             <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
           </instance-parameter>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="421">serialization flags</doc>
+                 line="520">serialization flags</doc>
             <type name="SerializeFlags" c:type="TrackerSerializeFlags"/>
           </parameter>
           <parameter name="format" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="422">RDF format of the serialized data</doc>
+                 line="521">RDF format of the serialized data</doc>
             <type name="RdfFormat" c:type="TrackerRdfFormat"/>
           </parameter>
           <parameter name="cancellable"
@@ -5233,7 +5485,7 @@ The @flags argument is reserved for future expansions, currently
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="423">a #GCancellable used to cancel the operation</doc>
+                 line="522">a #GCancellable used to cancel the operation</doc>
             <type name="Gio.Cancellable" c:type="GCancellable*"/>
           </parameter>
           <parameter name="callback"
@@ -5244,7 +5496,7 @@ The @flags argument is reserved for future expansions, currently
                      closure="4">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="424">user-defined #GAsyncReadyCallback to be called when
+                 line="523">user-defined #GAsyncReadyCallback to be called when
            asynchronous operation is finished.</doc>
             <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
           </parameter>
@@ -5254,7 +5506,7 @@ The @flags argument is reserved for future expansions, currently
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="426">user-defined data to be passed to @callback</doc>
+                 line="525">user-defined data to be passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
         </parameters>
@@ -5265,27 +5517,149 @@ The @flags argument is reserved for future expansions, currently
               throws="1">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-statement.c"
-             line="464">Finishes a tracker_sparql_statement_serialize_async() operation.
+             line="563">Finishes a tracker_sparql_statement_serialize_async() operation.
 In case of error, %NULL will be returned and @error will be set.</doc>
         <source-position filename="src/libtracker-sparql/tracker-statement.h"
                          line="103"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/libtracker-sparql/tracker-statement.c"
-               line="473">a #GInputStream to read RDF content.</doc>
+               line="572">a #GInputStream to read RDF content.</doc>
           <type name="Gio.InputStream" c:type="GInputStream*"/>
         </return-value>
         <parameters>
           <instance-parameter name="stmt" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="466">a #TrackerSparqlStatement</doc>
+                 line="565">a #TrackerSparqlStatement</doc>
             <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
           </instance-parameter>
           <parameter name="result" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/libtracker-sparql/tracker-statement.c"
-                 line="467">the #GAsyncResult</doc>
+                 line="566">the #GAsyncResult</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update"
+              c:identifier="tracker_sparql_statement_update"
+              version="3.5"
+              throws="1">
+        <doc xml:space="preserve"
+             filename="src/libtracker-sparql/tracker-statement.c"
+             line="412">Executes the SPARQL update with the currently bound values.
+
+This function should only be called on #TrackerSparqlStatement objects
+obtained through tracker_sparql_connection_update_statement() or
+update statements loaded through tracker_sparql_connection_load_statement_from_gresource().</doc>
+        <source-position filename="src/libtracker-sparql/tracker-statement.h"
+                         line="111"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libtracker-sparql/tracker-statement.c"
+               line="424">%TRUE if the update finished with no errors, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stmt" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-statement.c"
+                 line="414">a #TrackerSparqlStatement</doc>
+            <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-statement.c"
+                 line="415">a #GCancellable used to cancel the operation</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update_async"
+              c:identifier="tracker_sparql_statement_update_async"
+              version="3.5">
+        <doc xml:space="preserve"
+             filename="src/libtracker-sparql/tracker-statement.c"
+             line="442">Asynchronously executes the SPARQL update query with the currently bound values.
+
+This function should only be called on #TrackerSparqlStatement objects
+obtained through tracker_sparql_connection_update_statement() or
+update statements loaded through tracker_sparql_connection_load_statement_from_gresource().</doc>
+        <source-position filename="src/libtracker-sparql/tracker-statement.h"
+                         line="116"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stmt" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-statement.c"
+                 line="444">a #TrackerSparqlStatement</doc>
+            <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
+          </instance-parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-statement.c"
+                 line="445">a #GCancellable used to cancel the operation</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="2">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-statement.c"
+                 line="446">user-defined #GAsyncReadyCallback to be called when
+           asynchronous operation is finished.</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-statement.c"
+                 line="448">user-defined data to be passed to @callback</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="update_finish"
+              c:identifier="tracker_sparql_statement_update_finish"
+              version="3.5"
+              throws="1">
+        <doc xml:space="preserve"
+             filename="src/libtracker-sparql/tracker-statement.c"
+             line="473">Finishes the asynchronous update started through
+tracker_sparql_statement_update_async().</doc>
+        <source-position filename="src/libtracker-sparql/tracker-statement.h"
+                         line="122"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/libtracker-sparql/tracker-statement.c"
+               line="482">%TRUE if the update finished with no errors, %FALSE otherwise</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="stmt" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-statement.c"
+                 line="475">a #TrackerSparqlStatement</doc>
+            <type name="SparqlStatement" c:type="TrackerSparqlStatement*"/>
+          </instance-parameter>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/libtracker-sparql/tracker-statement.c"
+                 line="476">The #GAsyncResult from the callback used to return the #TrackerSparqlCursor</doc>
             <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
           </parameter>
         </parameters>
@@ -5304,7 +5678,8 @@ In case of error, %NULL will be returned and @error will be set.</doc>
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none"
-                getter="get_sparql">
+                getter="get_sparql"
+                default-value="NULL">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-statement.c"
              line="149">SPARQL query stored in this statement.</doc>
@@ -5317,6 +5692,7 @@ In case of error, %NULL will be returned and @error will be set.</doc>
     <record name="SparqlStatementClass"
             c:type="TrackerSparqlStatementClass"
             disguised="1"
+            opaque="1"
             glib:is-gtype-struct-for="SparqlStatement">
       <source-position filename="src/libtracker-sparql/tracker-statement.h"
                        line="40"/>
@@ -5402,7 +5778,7 @@ the running library must be binary compatible with the
 version @required_major.required_minor.@required_micro
 (same major version.)</doc>
       <source-position filename="src/libtracker-sparql/tracker-version.h"
-                       line="191"/>
+                       line="211"/>
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-version.c"
@@ -5438,7 +5814,7 @@ version @required_major.required_minor.@required_micro
       <return-value transfer-ownership="none">
         <doc xml:space="preserve"
              filename="src/libtracker-sparql/tracker-error.c"
-             line="48">The error domain quark used for Tracker errors.</doc>
+             line="49">The error domain quark used for Tracker errors.</doc>
         <type name="GLib.Quark" c:type="GQuark"/>
       </return-value>
     </function>
@@ -5667,7 +6043,7 @@ context than the one creating the #TrackerSparqlConnection.</doc>
     <docsection name="tracker-namespace-manager">
       <doc xml:space="preserve"
            filename="src/libtracker-sparql/tracker-namespace-manager.c"
-           line="42">#TrackerNamespaceManager keeps track of namespaces. It allows you to assign
+           line="49">#TrackerNamespaceManager keeps track of namespaces. It allows you to assign
 short prefixes for them to avoid typing full URLs all the time.
 
 The syntax used is that of Compact URIs (CURIEs) as defined here:

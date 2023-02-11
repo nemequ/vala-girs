@@ -873,6 +873,9 @@ namespace E {
 		[Version (replacement = "PhoneNumber.error_quark")]
 		public static GLib.Quark quark ();
 	}
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "E_BOOK_BACKEND_PROPERTY_CATEGORIES")]
+	[Version (since = "3.48")]
+	public const string BOOK_BACKEND_PROPERTY_CATEGORIES;
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cname = "E_BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS")]
 	[Version (since = "3.2")]
 	public const string BOOK_BACKEND_PROPERTY_REQUIRED_FIELDS;
@@ -1071,6 +1074,9 @@ namespace E {
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
 	[Version (since = "3.34")]
 	public static uint32 book_util_conflict_resolution_to_operation_flags (E.ConflictResolution conflict_resolution);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (since = "3.48")]
+	public static void book_util_diff_categories (E.Contact? old_contact, E.Contact? new_contact, out GLib.HashTable<weak string,int> out_added, out GLib.HashTable<weak string,int> out_removed);
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
 	[Version (since = "3.44")]
 	public static void book_util_foreach_address (string email_address, GLib.HRFunc func);

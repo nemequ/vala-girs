@@ -167,6 +167,29 @@ namespace E {
 		[Version (since = "3.26")]
 		public void take_value (string name, owned string? value);
 	}
+	[CCode (cheader_filename = "libebackend/libebackend.h", type_id = "e_cache_keys_get_type ()")]
+	[Version (since = "3.48")]
+	public class CacheKeys : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public CacheKeys (E.Cache cache, string table_name, string key_column_name, string value_column_name);
+		public bool count_keys_sync (out int64 out_n_stored, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool foreach_sync ([CCode (delegate_target_pos = 1.5)] E.CacheKeysForeachFunc func, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public unowned E.Cache get_cache ();
+		public unowned string get_key_column_name ();
+		public bool get_ref_count_sync (string key, out uint out_ref_count, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_sync (string key, out string out_value, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public unowned string get_table_name ();
+		public unowned string get_value_column_name ();
+		public bool init_table_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool put_sync (string key, string value, uint inc_ref_counts, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool remove_all_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool remove_sync (string key, uint dec_ref_counts, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public E.Cache cache { get; construct; }
+		public string key_column_name { get; construct; }
+		public string table_name { get; construct; }
+		public string value_column_name { get; construct; }
+		public virtual signal void changed ();
+	}
 	[CCode (cheader_filename = "libebackend/libebackend.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_cache_offline_change_get_type ()")]
 	[Compact]
 	[Version (since = "3.26")]
@@ -519,6 +542,9 @@ namespace E {
 	[CCode (cheader_filename = "libebackend/libebackend.h", instance_pos = 7.9)]
 	[Version (since = "3.26")]
 	public delegate bool CacheForeachFunc (E.Cache cache, string uid, string revision, string object, E.OfflineState offline_state, [CCode (array_length_cname = "ncols", array_length_pos = 5.5)] string[] column_names, [CCode (array_length_cname = "ncols", array_length_pos = 5.5)] string[] column_values);
+	[CCode (cheader_filename = "libebackend/libebackend.h", instance_pos = 4.9)]
+	[Version (since = "3.48")]
+	public delegate bool CacheKeysForeachFunc (E.CacheKeys self, string key, string value, uint ref_count);
 	[CCode (cheader_filename = "libebackend/libebackend.h", instance_pos = 3.9)]
 	[Version (since = "3.26")]
 	public delegate bool CacheSelectFunc (E.Cache cache, [CCode (array_length_cname = "ncols", array_length_pos = 1.5)] string[] column_names, [CCode (array_length_cname = "ncols", array_length_pos = 1.5)] string[] column_values);

@@ -1324,13 +1324,19 @@ found.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <property name="length" transfer-ownership="none" getter="get_length">
+      <property name="length"
+                transfer-ownership="none"
+                getter="get_length"
+                default-value="0">
         <doc xml:space="preserve"
              filename="gcr/gcr-certificate-chain.c"
              line="458">The length of the certificate chain.</doc>
         <type name="guint" c:type="guint"/>
       </property>
-      <property name="status" introspectable="0" transfer-ownership="none">
+      <property name="status"
+                introspectable="0"
+                transfer-ownership="none"
+                default-value="GCR_CERTIFICATE_CHAIN_UNKNOWN">
         <doc xml:space="preserve"
              filename="gcr/gcr-certificate-chain.c"
              line="447">The certificate chain status. See #GcrCertificateChainStatus</doc>
@@ -1381,7 +1387,8 @@ authorities are looked up in PKCS#11.</doc>
     </bitfield>
     <record name="CertificateChainPrivate"
             c:type="GcrCertificateChainPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="gcr/gcr-certificate-chain.h" line="59"/>
     </record>
     <enumeration name="CertificateChainStatus"
@@ -1557,7 +1564,8 @@ provided in.</doc>
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none"
-                getter="get_label">
+                getter="get_label"
+                default-value="NULL">
         <type name="utf8" c:type="gchar*"/>
       </property>
       <property name="section"
@@ -2019,7 +2027,8 @@ this is done using the OpenSSL style PEM encoding.</doc>
                 introspectable="0"
                 writable="1"
                 construct-only="1"
-                transfer-ownership="none">
+                transfer-ownership="none"
+                default-value="GCR_CERTIFICATE_REQUEST_PKCS10">
         <doc xml:space="preserve"
              filename="gcr/gcr-certificate-request.c"
              line="193">The format of the certificate request.</doc>
@@ -2140,14 +2149,16 @@ this is done using the OpenSSL style PEM encoding.</doc>
                 introspectable="0"
                 writable="1"
                 construct-only="1"
-                transfer-ownership="none">
+                transfer-ownership="none"
+                default-value="GCR_CERTIFICATE_SECTION_NONE">
         <type/>
       </property>
       <property name="label"
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none"
-                getter="get_label">
+                getter="get_label"
+                default-value="NULL">
         <type name="utf8" c:type="gchar*"/>
       </property>
     </class>
@@ -3432,7 +3443,7 @@ importer.</doc>
              line="82">The label for the importer.</doc>
         <type name="utf8" c:type="gchar*"/>
       </property>
-      <property name="uri" transfer-ownership="none">
+      <property name="uri" transfer-ownership="none" default-value="NULL">
         <doc xml:space="preserve"
              filename="gcr/gcr-importer.c"
              line="103">The URI of the location imported to.</doc>
@@ -3683,6 +3694,7 @@ is the most common purpose in use.</doc>
     </constant>
     <record name="Parsed"
             c:type="GcrParsed"
+            opaque="1"
             glib:type-name="GcrParsed"
             glib:get-type="gcr_parsed_get_type"
             c:symbol-prefix="parsed">
@@ -4580,7 +4592,10 @@ functions.</doc>
         </callback>
       </field>
     </record>
-    <record name="ParserPrivate" c:type="GcrParserPrivate" disguised="1">
+    <record name="ParserPrivate"
+            c:type="GcrParserPrivate"
+            disguised="1"
+            opaque="1">
       <source-position filename="gcr/gcr-parser.h" line="43"/>
     </record>
     <class name="Pkcs11Certificate"
@@ -4720,6 +4735,120 @@ if an error occurred.</doc>
           </parameter>
         </parameters>
       </function>
+      <function name="new_from_uri"
+                c:identifier="gcr_pkcs11_certificate_new_from_uri"
+                throws="1">
+        <doc xml:space="preserve"
+             filename="gcr/gcr-pkcs11-certificate.c"
+             line="413">Lookup a certificate in the PKCS#11 storage by the given URI.
+
+This call may block, see gcr_pkcs11_certificate_new_from_uri_async() for the
+non-blocking version.
+
+Will return %NULL if no certificate is found. Use @error to determine
+if an error occurred.</doc>
+        <source-position filename="gcr/gcr-pkcs11-certificate.h" line="75"/>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve"
+               filename="gcr/gcr-pkcs11-certificate.c"
+               line="427">a new #GcrCertificate, or %NULL</doc>
+          <type name="Certificate" c:type="GcrCertificate*"/>
+        </return-value>
+        <parameters>
+          <parameter name="pkcs11_uri" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="gcr/gcr-pkcs11-certificate.c"
+                 line="415">a A PKCS \#11 URI</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="gcr/gcr-pkcs11-certificate.c"
+                 line="416">a #GCancellable</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="new_from_uri_async"
+                c:identifier="gcr_pkcs11_certificate_new_from_uri_async">
+        <doc xml:space="preserve"
+             filename="gcr/gcr-pkcs11-certificate.c"
+             line="450">Lookup a certificate in the PKCS#11 storage by the given URI.
+
+When the operation is finished, callback will be called. You can then call
+gcr_pkcs11_certificate_new_from_uri_finish() to get the result of the
+operation.</doc>
+        <source-position filename="gcr/gcr-pkcs11-certificate.h" line="79"/>
+        <return-value transfer-ownership="none">
+          <type name="none" c:type="void"/>
+        </return-value>
+        <parameters>
+          <parameter name="pkcs11_uri" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="gcr/gcr-pkcs11-certificate.c"
+                 line="452">a A PKCS \#11 URI</doc>
+            <type name="utf8" c:type="const gchar*"/>
+          </parameter>
+          <parameter name="cancellable"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="gcr/gcr-pkcs11-certificate.c"
+                 line="453">a #GCancellable</doc>
+            <type name="Gio.Cancellable" c:type="GCancellable*"/>
+          </parameter>
+          <parameter name="callback"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1"
+                     scope="async"
+                     closure="3">
+            <doc xml:space="preserve"
+                 filename="gcr/gcr-pkcs11-certificate.c"
+                 line="454">a #GAsyncReadyCallback to call when the operation completes</doc>
+            <type name="Gio.AsyncReadyCallback" c:type="GAsyncReadyCallback"/>
+          </parameter>
+          <parameter name="user_data"
+                     transfer-ownership="none"
+                     nullable="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="gcr/gcr-pkcs11-certificate.c"
+                 line="455">the data to pass to callback function</doc>
+            <type name="gpointer" c:type="gpointer"/>
+          </parameter>
+        </parameters>
+      </function>
+      <function name="new_from_uri_finish"
+                c:identifier="gcr_pkcs11_certificate_new_from_uri_finish"
+                throws="1">
+        <doc xml:space="preserve"
+             filename="gcr/gcr-pkcs11-certificate.c"
+             line="493">Finishes an asynchronous operation started by
+gcr_pkcs11_certificate_new_from_uri_async().
+
+Will return %NULL if no certificate is found. Use @error to determine
+if an error occurred.</doc>
+        <source-position filename="gcr/gcr-pkcs11-certificate.h" line="84"/>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve"
+               filename="gcr/gcr-pkcs11-certificate.c"
+               line="504">a new #GcrCertificate, or %NULL</doc>
+          <type name="Certificate" c:type="GcrCertificate*"/>
+        </return-value>
+        <parameters>
+          <parameter name="result" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="gcr/gcr-pkcs11-certificate.c"
+                 line="495">the #GAsyncResult passed to the callback</doc>
+            <type name="Gio.AsyncResult" c:type="GAsyncResult*"/>
+          </parameter>
+        </parameters>
+      </function>
       <method name="get_attributes"
               c:identifier="gcr_pkcs11_certificate_get_attributes"
               glib:get-property="attributes">
@@ -4770,7 +4899,8 @@ if an error occurred.</doc>
     </record>
     <record name="Pkcs11CertificatePrivate"
             c:type="GcrPkcs11CertificatePrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="gcr/gcr-pkcs11-certificate.h" line="45"/>
     </record>
     <interface name="Prompt"
@@ -5928,7 +6058,8 @@ If this string is %NULL then no warning is displayed.</doc>
                 construct="1"
                 transfer-ownership="none"
                 setter="set_caller_window"
-                getter="get_caller_window">
+                getter="get_caller_window"
+                default-value="NULL">
         <doc xml:space="preserve"
              filename="gcr/gcr-prompt.c"
              line="196">The string handle of the caller's window.
@@ -5947,7 +6078,8 @@ protocol.</doc>
                 construct="1"
                 transfer-ownership="none"
                 setter="set_cancel_label"
-                getter="get_cancel_label">
+                getter="get_cancel_label"
+                default-value="Cancel">
         <doc xml:space="preserve"
              filename="gcr/gcr-prompt.c"
              line="222">The label for the cancel button in the prompt.</doc>
@@ -5957,7 +6089,8 @@ protocol.</doc>
                 writable="1"
                 transfer-ownership="none"
                 setter="set_choice_chosen"
-                getter="get_choice_chosen">
+                getter="get_choice_chosen"
+                default-value="FALSE">
         <doc xml:space="preserve"
              filename="gcr/gcr-prompt.c"
              line="185">Whether the additional choice is chosen or not.
@@ -5970,7 +6103,8 @@ The additional choice would have been setup using #GcrPrompt:choice-label.</doc>
                 construct="1"
                 transfer-ownership="none"
                 setter="set_choice_label"
-                getter="get_choice_label">
+                getter="get_choice_label"
+                default-value="NULL">
         <doc xml:space="preserve"
              filename="gcr/gcr-prompt.c"
              line="169">The label for the additional choice.
@@ -5988,7 +6122,8 @@ The initial value of the choice can be set with #GcrPrompt:choice-chosen.</doc>
                 construct="1"
                 transfer-ownership="none"
                 setter="set_continue_label"
-                getter="get_continue_label">
+                getter="get_continue_label"
+                default-value="Continue">
         <doc xml:space="preserve"
              filename="gcr/gcr-prompt.c"
              line="213">The label for the continue button in the prompt.</doc>
@@ -5999,7 +6134,8 @@ The initial value of the choice can be set with #GcrPrompt:choice-chosen.</doc>
                 construct="1"
                 transfer-ownership="none"
                 setter="set_description"
-                getter="get_description">
+                getter="get_description"
+                default-value="NULL">
         <doc xml:space="preserve"
              filename="gcr/gcr-prompt.c"
              line="118">The detailed description of the prompt.
@@ -6013,7 +6149,8 @@ The prompt message should contain relevant information.</doc>
                 construct="1"
                 transfer-ownership="none"
                 setter="set_message"
-                getter="get_message">
+                getter="get_message"
+                default-value="NULL">
         <doc xml:space="preserve"
              filename="gcr/gcr-prompt.c"
              line="107">The prompt message for the user.
@@ -6025,7 +6162,8 @@ A prompt implementation should always display this message.</doc>
                 writable="1"
                 transfer-ownership="none"
                 setter="set_password_new"
-                getter="get_password_new">
+                getter="get_password_new"
+                default-value="FALSE">
         <doc xml:space="preserve"
              filename="gcr/gcr-prompt.c"
              line="142">Whether the prompt will prompt for a new password.
@@ -6037,7 +6175,8 @@ password.</doc>
       </property>
       <property name="password-strength"
                 transfer-ownership="none"
-                getter="get_password_strength">
+                getter="get_password_strength"
+                default-value="0">
         <doc xml:space="preserve"
              filename="gcr/gcr-prompt.c"
              line="155">Indication of the password strength.
@@ -6053,7 +6192,8 @@ This is only valid after a successful prompt for a password.</doc>
                 construct="1"
                 transfer-ownership="none"
                 setter="set_title"
-                getter="get_title">
+                getter="get_title"
+                default-value="NULL">
         <doc xml:space="preserve"
              filename="gcr/gcr-prompt.c"
              line="95">The title of the prompt.
@@ -6067,7 +6207,8 @@ A prompt implementation may choose not to display the prompt title. The
                 construct="1"
                 transfer-ownership="none"
                 setter="set_warning"
-                getter="get_warning">
+                getter="get_warning"
+                default-value="NULL">
         <doc xml:space="preserve"
              filename="gcr/gcr-prompt.c"
              line="130">A prompt warning displayed on the prompt, or %NULL for no warning.
@@ -6723,7 +6864,8 @@ from the other side of the secret exchange, before we can send a secret.</doc>
                 writable="1"
                 construct-only="1"
                 transfer-ownership="none"
-                getter="get_protocol">
+                getter="get_protocol"
+                default-value="sx-aes-1">
         <doc xml:space="preserve"
              filename="gcr/gcr-secret-exchange.c"
              line="849">The protocol being used for the exchange.
@@ -6864,7 +7006,8 @@ have not been called successfully.</doc>
     </record>
     <record name="SecretExchangePrivate"
             c:type="GcrSecretExchangePrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="gcr/gcr-secret-exchange.h" line="46"/>
     </record>
     <class name="SimpleCertificate"
@@ -6962,7 +7105,8 @@ destroyed.</doc>
     </record>
     <record name="SimpleCertificatePrivate"
             c:type="GcrSimpleCertificatePrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="gcr/gcr-simple-certificate.h" line="42"/>
     </record>
     <class name="SshAskpass"
@@ -7463,7 +7607,8 @@ still closed and may not be further used.</doc>
       <property name="bus-name"
                 writable="1"
                 construct-only="1"
-                transfer-ownership="none">
+                transfer-ownership="none"
+                default-value="NULL">
         <doc xml:space="preserve"
              filename="gcr/gcr-system-prompt.c"
              line="541">The DBus bus name of the prompter to use for prompting, or %NULL
@@ -7484,7 +7629,8 @@ secret exchange will be used if this is not set.</doc>
                 readable="0"
                 writable="1"
                 construct-only="1"
-                transfer-ownership="none">
+                transfer-ownership="none"
+                default-value="-1">
         <doc xml:space="preserve"
              filename="gcr/gcr-system-prompt.c"
              line="552">The timeout in seconds to wait when opening the prompt.</doc>
@@ -7525,7 +7671,8 @@ prompt expires, then %GCR_SYSTEM_PROMPT_IN_PROGRESS is returned.</doc>
     </enumeration>
     <record name="SystemPromptPrivate"
             c:type="GcrSystemPromptPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="gcr/gcr-system-prompt.h" line="53"/>
     </record>
     <class name="SystemPrompter"
@@ -7720,7 +7867,8 @@ or cancelled. This is usually only used by tests.</doc>
                 introspectable="0"
                 writable="1"
                 construct-only="1"
-                transfer-ownership="none">
+                transfer-ownership="none"
+                default-value="GCR_SYSTEM_PROMPTER_SINGLE">
         <doc xml:space="preserve"
              filename="gcr/gcr-system-prompter.c"
              line="374">The mode for this prompter.
@@ -7742,7 +7890,8 @@ return %GCR_SYSTEM_PROMPTER_SINGLE.</doc>
       </property>
       <property name="prompting"
                 transfer-ownership="none"
-                getter="get_prompting">
+                getter="get_prompting"
+                default-value="FALSE">
         <doc xml:space="preserve"
              filename="gcr/gcr-system-prompter.c"
              line="398">Whether the prompter is prompting or not.</doc>
@@ -7824,7 +7973,8 @@ one prompt at a time and would use the %GCR_SYSTEM_PROMPTER_SINGLE mode.</doc>
     </enumeration>
     <record name="SystemPrompterPrivate"
             c:type="GcrSystemPrompterPrivate"
-            disguised="1">
+            disguised="1"
+            opaque="1">
       <source-position filename="gcr/gcr-system-prompter.h" line="51"/>
     </record>
     <constant name="UNLOCK_OPTION_ALWAYS"

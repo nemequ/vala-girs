@@ -21,7 +21,13 @@ namespace Shumate {
 	public abstract class DataSource : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected DataSource ();
+		public uint get_max_zoom_level ();
+		public uint get_min_zoom_level ();
 		public virtual async GLib.Bytes? get_tile_data_async (int x, int y, int zoom_level, GLib.Cancellable? cancellable) throws GLib.Error;
+		public void set_max_zoom_level (uint zoom_level);
+		public void set_min_zoom_level (uint zoom_level);
+		public uint max_zoom_level { get; set construct; }
+		public uint min_zoom_level { get; set construct; }
 		public signal void received_data (int x, int y, int zoom_level, GLib.Bytes bytes);
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_file_cache_get_type ()")]

@@ -104,6 +104,8 @@ namespace Gcr {
 		public unowned Gck.Attributes get_attributes ();
 		public static Gcr.Certificate lookup_issuer (Gcr.Certificate certificate, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static async Gcr.Certificate lookup_issuer_async (Gcr.Certificate certificate, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static Gcr.Certificate? new_from_uri (string pkcs11_uri, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public static async Gcr.Certificate? new_from_uri_async (string pkcs11_uri, GLib.Cancellable? cancellable) throws GLib.Error;
 		public Gck.Attributes attributes { get; construct; }
 	}
 	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_secret_exchange_get_type ()")]

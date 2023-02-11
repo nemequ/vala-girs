@@ -2,6 +2,86 @@
 
 [CCode (cprefix = "E", gir_namespace = "EDataServer", gir_version = "1.2", lower_case_cprefix = "e_")]
 namespace E {
+	namespace GData {
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static void task_add_completed (Json.Builder builder, int64 value);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static void task_add_due (Json.Builder builder, int64 value);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static void task_add_id (Json.Builder builder, string value);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static void task_add_notes (Json.Builder builder, string? value);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static void task_add_status (Json.Builder builder, E.GDataTaskStatus value);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static void task_add_title (Json.Builder builder, string value);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static int64 task_get_completed (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static bool task_get_deleted (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static int64 task_get_due (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static unowned string? task_get_etag (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static bool task_get_hidden (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static unowned string? task_get_id (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static unowned string? task_get_notes (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static unowned string? task_get_parent (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static unowned string? task_get_position (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static unowned string? task_get_self_link (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static E.GDataTaskStatus task_get_status (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static unowned string? task_get_title (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static int64 task_get_updated (Json.Object task);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static void tasklist_add_id (Json.Builder builder, string value);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static void tasklist_add_title (Json.Builder builder, string value);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static unowned string? tasklist_get_etag (Json.Object tasklist);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static unowned string? tasklist_get_id (Json.Object tasklist);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static unowned string? tasklist_get_self_link (Json.Object tasklist);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static unowned string? tasklist_get_title (Json.Object tasklist);
+		[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+		[Version (since = "3.46")]
+		public static int64 tasklist_get_updated (Json.Object tasklist);
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Compact]
 	[Version (since = "3.6")]
@@ -151,6 +231,26 @@ namespace E {
 		public string? to_string ();
 		public void unref ();
 	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_gdata_session_get_type ()")]
+	[Version (since = "3.46")]
+	public class GDataSession : E.SoupSession {
+		[CCode (has_construct_function = false)]
+		public GDataSession (E.Source source);
+		public bool tasklists_delete_sync (string tasklist_id, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasklists_get_sync (string tasklist_id, out Json.Object out_tasklist, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasklists_insert_sync (string title, out Json.Object out_inserted_tasklist, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasklists_list_sync (E.GDataQuery? query, [CCode (delegate_target_pos = 2.5)] E.GDataObjectCallback? cb, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasklists_patch_sync (string tasklist_id, Json.Builder tasklist_properties, out Json.Object out_patched_tasklist, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasklists_update_sync (string tasklist_id, Json.Builder tasklist, out Json.Object out_updated_tasklist, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasks_clear_sync (string tasklist_id, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasks_delete_sync (string tasklist_id, string task_id, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasks_get_sync (string tasklist_id, string task_id, out Json.Object out_task, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasks_insert_sync (string tasklist_id, Json.Builder task, string? parent_task_id, string? previous_task_id, out Json.Object out_inserted_task, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasks_list_sync (string tasklist_id, E.GDataQuery? query, [CCode (delegate_target_pos = 3.5)] E.GDataObjectCallback? cb, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasks_move_sync (string tasklist_id, string task_id, string? parent_task_id, string? previous_task_id, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasks_patch_sync (string tasklist_id, string task_id, Json.Builder task_properties, out Json.Object out_patched_task, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool tasks_update_sync (string tasklist_id, string task_id, Json.Builder task, out Json.Object out_updated_task, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_type_id = false)]
 	[Compact]
 	public class MemChunk {
@@ -274,6 +374,8 @@ namespace E {
 		public static GLib.Quark error_quark ();
 		[Version (since = "3.28")]
 		public bool get_authentication_requires_credentials ();
+		[Version (since = "3.48")]
+		public bool get_force_http1 ();
 		public Soup.LoggerLogLevel get_log_level ();
 		public unowned E.Source? get_source ();
 		public bool get_ssl_error_details (out string out_certificate_pem, out GLib.TlsCertificateFlags out_certificate_errors);
@@ -289,7 +391,11 @@ namespace E {
 		public GLib.ByteArray send_message_simple_sync (Soup.Message message, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public GLib.InputStream send_message_sync (Soup.Message message, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void set_credentials (E.NamedParameters? credentials);
+		[Version (since = "3.48")]
+		public void set_force_http1 (bool force_http1);
 		public void setup_logging (string? logging_level);
+		[Version (since = "3.48")]
+		public static bool util_get_force_http1_supported ();
 		[Version (since = "3.46")]
 		public static unowned GLib.ByteArray? util_get_message_bytes (Soup.Message message);
 		[Version (since = "3.46")]
@@ -303,6 +409,8 @@ namespace E {
 		public static unowned string util_status_to_string (uint status_code, string? reason_phrase);
 		[NoAccessorMethod]
 		public E.NamedParameters credentials { owned get; set; }
+		[Version (since = "3.48")]
+		public bool force_http1 { get; set; }
 		public E.Source source { get; construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_get_type ()")]
@@ -1488,21 +1596,21 @@ namespace E {
 	[Compact]
 	public class XmlHash {
 		[CCode (cname = "e_xmlhash_add")]
-		public void xmlhash_add (string key, string data);
+		public void add (string key, string data);
 		[CCode (cname = "e_xmlhash_compare")]
-		public E.XmlHashStatus xmlhash_compare (string key, string compare_data);
+		public E.XmlHashStatus compare (string key, string compare_data);
 		[CCode (cname = "e_xmlhash_destroy")]
-		public void xmlhash_destroy ();
+		public void destroy ();
 		[CCode (cname = "e_xmlhash_foreach_key")]
-		public void xmlhash_foreach_key ([CCode (scope = "async")] E.XmlHashFunc func);
+		public void foreach_key ([CCode (scope = "async")] E.XmlHashFunc func);
 		[CCode (cname = "e_xmlhash_foreach_key_remove")]
-		public void xmlhash_foreach_key_remove ([CCode (scope = "async")] E.XmlHashRemoveFunc func);
+		public void foreach_key_remove ([CCode (scope = "async")] E.XmlHashRemoveFunc func);
 		[CCode (cname = "e_xmlhash_new")]
-		public static E.XmlHash xmlhash_new (string filename);
+		public static E.XmlHash @new (string filename);
 		[CCode (cname = "e_xmlhash_remove")]
-		public void xmlhash_remove (string key);
+		public void remove (string key);
 		[CCode (cname = "e_xmlhash_write")]
-		public void xmlhash_write ();
+		public void write ();
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_cname = "EExtensibleInterface", type_id = "e_extensible_get_type ()")]
 	public interface Extensible : GLib.Object {
@@ -1519,6 +1627,8 @@ namespace E {
 		public abstract bool can_process (E.Source source);
 		public bool delete_token_sync (E.Source source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public abstract bool extract_authorization_code (E.Source source, string page_title, string page_uri, string? page_content, out string out_authorization_code);
+		[Version (since = "3.48")]
+		public abstract bool extract_error_message (E.Source source, string page_title, string page_uri, string? page_content, out string out_error_message);
 		public bool get_access_token_sync (E.Source source, [CCode (delegate_target_pos = 2.5)] E.OAuth2ServiceRefSourceFunc ref_source, out string out_access_token, out int out_expires_in, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public abstract E.OAuth2ServiceNavigationPolicy get_authentication_policy (E.Source source, string uri);
 		public abstract unowned string get_authentication_uri (E.Source source);
@@ -1539,6 +1649,8 @@ namespace E {
 		public bool refresh_and_store_token_sync (E.Source source, string refresh_token, [CCode (delegate_target_pos = 3.5)] E.OAuth2ServiceRefSourceFunc ref_source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.46")]
 		public static unowned string util_compile_value (string compile_value, out unowned string out_glob_buff, size_t out_glob_buff_size);
+		[Version (since = "3.48")]
+		public static bool util_extract_from_uri (string in_uri, out string? out_authorization_code, out string? out_error_code, out string? out_error_description);
 		public static void util_set_to_form (GLib.HashTable<string,string> form, string name, string? value);
 		public static void util_take_to_form (GLib.HashTable<string,string> form, string name, owned string? value);
 	}
@@ -1586,6 +1698,13 @@ namespace E {
 		KEEP_SERVER,
 		KEEP_LOCAL,
 		WRITE_COPY
+	}
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_GDATA_TASK_STATUS_", has_type_id = false)]
+	[Version (since = "3.46")]
+	public enum GDataTaskStatus {
+		UNKNOWN,
+		NEEDS_ACTION,
+		COMPLETED
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", cprefix = "E_MDN_RESPONSE_POLICY_", type_id = "e_mdn_response_policy_get_type ()")]
 	[Version (since = "3.6")]
@@ -1840,6 +1959,9 @@ namespace E {
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", has_target = false)]
 	public delegate string FreeFormExpBuildSexpFunc (string word, string options, string hint);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 2.9)]
+	[Version (since = "3.46")]
+	public delegate bool GDataObjectCallback (E.GDataSession gdata, Json.Object object);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", instance_pos = 0.9)]
 	[Version (since = "3.28")]
 	public delegate E.Source? OAuth2ServiceRefSourceFunc (string uid);
@@ -2187,6 +2309,9 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (replacement = "OAuth2Service.util_compile_value", since = "3.46")]
 	public static unowned string oauth2_service_util_compile_value (string compile_value, out unowned string out_glob_buff, size_t out_glob_buff_size);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (replacement = "OAuth2Service.util_extract_from_uri", since = "3.48")]
+	public static bool oauth2_service_util_extract_from_uri (string in_uri, out string? out_authorization_code, out string? out_error_code, out string? out_error_description);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (replacement = "OAuth2Service.util_set_to_form", since = "3.28")]
 	public static void oauth2_service_util_set_to_form (GLib.HashTable<string,string> form, string name, string? value);

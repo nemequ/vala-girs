@@ -546,6 +546,8 @@ namespace NM {
 		public const string STATE;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_VERSION")]
 		public const string VERSION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_VERSION_INFO")]
+		public const string VERSION_INFO;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_WIMAX_ENABLED")]
 		public const string WIMAX_ENABLED;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_WIMAX_HARDWARE_ENABLED")]
@@ -642,6 +644,9 @@ namespace NM {
 		public bool get_startup ();
 		public NM.State get_state ();
 		public unowned string get_version ();
+		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
+		[Version (since = "1.42")]
+		public unowned uint32[] get_version_info ();
 		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool load_connections ([CCode (array_length = false, array_null_terminated = true)] string[] filenames, out string failures, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (async_result_pos = 2.1)]
@@ -724,6 +729,8 @@ namespace NM {
 		public bool startup { get; }
 		public NM.State state { get; }
 		public string version { get; }
+		[Version (since = "1.42")]
+		public GLib.Array<uint32> version_info { get; }
 		[NoAccessorMethod]
 		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool wimax_enabled { get; set; }
@@ -1215,6 +1222,12 @@ namespace NM {
 		protected DeviceInfiniband ();
 		public bool get_carrier ();
 		public bool carrier { get; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_loopback_get_type ()")]
+	[Version (since = "1.42")]
+	public class DeviceLoopback : NM.Device {
+		[CCode (has_construct_function = false)]
+		protected DeviceLoopback ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_macsec_get_type ()")]
 	[Version (since = "1.6")]
@@ -1880,6 +1893,25 @@ namespace NM {
 		public NM.Client client { get; }
 		public string path { get; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_range_ref", type_id = "nm_range_get_type ()", unref_function = "nm_range_unref")]
+	[Compact]
+	public class Range {
+		[CCode (has_construct_function = false)]
+		[Version (since = "1.42")]
+		public Range (uint64 start, uint64 end);
+		[Version (since = "1.42")]
+		public int cmp (NM.Range b);
+		[Version (since = "1.42")]
+		public static NM.Range from_str (string str) throws GLib.Error;
+		[Version (since = "1.42")]
+		public bool get_range (out uint64 start, out uint64 end);
+		[Version (since = "1.42")]
+		public NM.Range @ref ();
+		[Version (since = "1.42")]
+		public string to_str ();
+		[Version (since = "1.42")]
+		public void unref ();
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_remote_connection_get_type ()")]
 	public class RemoteConnection : NM.Object, NM.Connection {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_DBUS_CONNECTION")]
@@ -2499,7 +2531,7 @@ namespace NM {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_valid_options ();
 		public bool remove_option (string name);
-		public static bool validate_option (string name, string value);
+		public static bool validate_option (string name, string? value);
 		[NoAccessorMethod]
 		public GLib.HashTable<string,string> options { owned get; set; }
 	}
@@ -3296,6 +3328,8 @@ namespace NM {
 	public abstract class SettingIPConfig : NM.Setting {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ADDRESSES")]
 		public const string ADDRESSES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_AUTO_ROUTE_EXT_GW")]
+		public const string AUTO_ROUTE_EXT_GW;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DAD_TIMEOUT")]
 		public const string DAD_TIMEOUT;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DAD_TIMEOUT_MAX")]
@@ -3365,6 +3399,8 @@ namespace NM {
 		[Version (since = "1.18")]
 		public void clear_routing_rules ();
 		public unowned NM.IPAddress get_address (int idx);
+		[Version (since = "1.42")]
+		public NM.Ternary get_auto_route_ext_gw ();
 		[Version (since = "1.2")]
 		public int get_dad_timeout ();
 		public unowned string get_dhcp_hostname ();
@@ -3426,6 +3462,9 @@ namespace NM {
 		public void remove_routing_rule (uint idx);
 		[NoAccessorMethod]
 		public GLib.GenericArray<NM.IPAddress> addresses { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.42")]
+		public NM.Ternary auto_route_ext_gw { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public int dad_timeout { get; set; }
@@ -3489,6 +3528,8 @@ namespace NM {
 		public const string FLAGS;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_FLOW_LABEL")]
 		public const string FLOW_LABEL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_FWMARK")]
+		public const string FWMARK;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_INPUT_KEY")]
 		public const string INPUT_KEY;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_LOCAL")]
@@ -3520,6 +3561,8 @@ namespace NM {
 		public NM.IPTunnelFlags get_flags ();
 		[Version (since = "1.42")]
 		public uint get_flow_label ();
+		[Version (since = "1.42")]
+		public uint32 get_fwmark ();
 		[Version (since = "1.2")]
 		public unowned string get_input_key ();
 		[Version (since = "1.2")]
@@ -3549,6 +3592,9 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public uint flow_label { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.42")]
+		public uint fwmark { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
 		public string input_key { owned get; set; }
@@ -3612,6 +3658,15 @@ namespace NM {
 		public string parent { owned get; set; }
 		[NoAccessorMethod]
 		public string transport_mode { owned get; set; }
+	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_loopback_get_type ()")]
+	[Version (since = "1.42")]
+	public class SettingLoopback : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		public SettingLoopback ();
+		public uint32 get_mtu ();
+		[NoAccessorMethod]
+		public uint mtu { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_macsec_get_type ()")]
 	public class SettingMacsec : NM.Setting {
@@ -3837,12 +3892,22 @@ namespace NM {
 		public unowned string get_devargs ();
 		[Version (since = "1.36")]
 		public uint32 get_n_rxq ();
+		[Version (since = "1.42")]
+		public uint32 get_n_rxq_desc ();
+		[Version (since = "1.42")]
+		public uint32 get_n_txq_desc ();
 		[NoAccessorMethod]
 		[Version (since = "1.20")]
 		public string devargs { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.36")]
 		public uint n_rxq { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.42")]
+		public uint n_rxq_desc { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.42")]
+		public uint n_txq_desc { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_external_ids_get_type ()")]
 	public class SettingOvsExternalIDs : NM.Setting {
@@ -3880,6 +3945,18 @@ namespace NM {
 		[Version (since = "1.10")]
 		public string type { owned get; set; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_other_config_get_type ()")]
+	[Version (since = "1.42")]
+	public class SettingOvsOtherConfig : NM.Setting {
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		public SettingOvsOtherConfig ();
+		public unowned string get_data (string key);
+		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
+		public unowned string[] get_data_keys ();
+		public void set_data (string key, string? val);
+		[NoAccessorMethod]
+		public GLib.HashTable<string,string> data { owned get; set; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_patch_get_type ()")]
 	public class SettingOvsPatch : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
@@ -3896,6 +3973,10 @@ namespace NM {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.10")]
 		public SettingOvsPort ();
+		[Version (since = "1.42")]
+		public void add_trunk (NM.Range trunk);
+		[Version (since = "1.42")]
+		public void clear_trunks ();
 		[Version (since = "1.10")]
 		public uint get_bond_downdelay ();
 		[Version (since = "1.10")]
@@ -3904,10 +3985,18 @@ namespace NM {
 		public uint get_bond_updelay ();
 		[Version (since = "1.10")]
 		public unowned string get_lacp ();
+		[Version (since = "1.42")]
+		public uint get_num_trunks ();
 		[Version (since = "1.10")]
 		public uint get_tag ();
+		[Version (since = "1.42")]
+		public unowned NM.Range get_trunk (uint idx);
 		[Version (since = "1.10")]
 		public unowned string get_vlan_mode ();
+		[Version (since = "1.42")]
+		public void remove_trunk (uint idx);
+		[Version (since = "1.42")]
+		public bool remove_trunk_by_value (uint start, uint end);
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
 		public uint bond_downdelay { get; set; }
@@ -3923,6 +4012,9 @@ namespace NM {
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
 		public uint tag { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.42")]
+		public GLib.GenericArray<NM.Range> trunks { owned get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.10")]
 		public string vlan_mode { owned get; set; }
@@ -4495,6 +4587,8 @@ namespace NM {
 		public const string INGRESS_PRIORITY_MAP;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VLAN_PARENT")]
 		public const string PARENT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VLAN_PROTOCOL")]
+		public const string PROTOCOL;
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VLAN_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
@@ -4507,6 +4601,8 @@ namespace NM {
 		public int32 get_num_priorities (NM.VlanPriorityMap map);
 		public unowned string get_parent ();
 		public bool get_priority (NM.VlanPriorityMap map, uint32 idx, out uint32 out_from, out uint32 out_to);
+		[Version (since = "1.42")]
+		public unowned string get_protocol ();
 		public void remove_priority (NM.VlanPriorityMap map, uint32 idx);
 		public bool remove_priority_by_value (NM.VlanPriorityMap map, uint32 from, uint32 to);
 		public bool remove_priority_str_by_value (NM.VlanPriorityMap map, string str);
@@ -4522,6 +4618,9 @@ namespace NM {
 		public string[] ingress_priority_map { owned get; set; }
 		[NoAccessorMethod]
 		public string parent { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.42")]
+		public string protocol { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_vpn_get_type ()")]
 	public class SettingVpn : NM.Setting {
@@ -5947,6 +6046,13 @@ namespace NM {
 		LTE,
 		@5GNR
 	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_REAPPLY_FLAGS_", type_id = "nm_device_reapply_flags_get_type ()")]
+	[Flags]
+	[Version (since = "1.42")]
+	public enum DeviceReapplyFlags {
+		NONE,
+		PRESERVE_EXTERNAL_IP
+	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_DEVICE_STATE_", type_id = "nm_device_state_get_type ()")]
 	public enum DeviceState {
 		UNKNOWN,
@@ -6067,7 +6173,8 @@ namespace NM {
 		@6LOWPAN,
 		WIREGUARD,
 		WIFI_P2P,
-		VRF
+		VRF,
+		LOOPBACK
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_WIFI_DEVICE_CAP_", type_id = "nm_device_wifi_capabilities_get_type ()")]
 	[Flags]
@@ -6528,6 +6635,11 @@ namespace NM {
 		DEFAULT,
 		FALSE,
 		TRUE
+	}
+	[CCode (cheader_filename = "NetworkManager.h", cprefix = "_NM_VERSION_INFO_CAPABILITY_", type_id = "nm_version_info_capability_get_type ()")]
+	[Version (since = "1.42")]
+	public enum VersionInfoCapability {
+		UNUSED
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_VLAN_FLAG_", type_id = "nm_vlan_flags_get_type ()")]
 	[Flags]
@@ -7104,6 +7216,8 @@ namespace NM {
 	public const string IP_ROUTE_ATTRIBUTE_TOS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TYPE")]
 	public const string IP_ROUTE_ATTRIBUTE_TYPE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_WEIGHT")]
+	public const string IP_ROUTE_ATTRIBUTE_WEIGHT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_WINDOW")]
 	public const string IP_ROUTE_ATTRIBUTE_WINDOW;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_CHASSIS_ID")]
@@ -7224,6 +7338,10 @@ namespace NM {
 	public const string SETTING_HOSTNAME_PRIORITY;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_HOSTNAME_SETTING_NAME")]
 	public const string SETTING_HOSTNAME_SETTING_NAME;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_LOOPBACK_MTU")]
+	public const string SETTING_LOOPBACK_MTU;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_LOOPBACK_SETTING_NAME")]
+	public const string SETTING_LOOPBACK_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_ENCRYPT")]
 	public const string SETTING_MACSEC_ENCRYPT;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CAK")]
@@ -7276,6 +7394,10 @@ namespace NM {
 	public const string SETTING_OVS_DPDK_DEVARGS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_N_RXQ")]
 	public const string SETTING_OVS_DPDK_N_RXQ;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_N_RXQ_DESC")]
+	public const string SETTING_OVS_DPDK_N_RXQ_DESC;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_N_TXQ_DESC")]
+	public const string SETTING_OVS_DPDK_N_TXQ_DESC;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_SETTING_NAME")]
 	public const string SETTING_OVS_DPDK_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_EXTERNAL_IDS_DATA")]
@@ -7288,6 +7410,10 @@ namespace NM {
 	public const string SETTING_OVS_INTERFACE_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_INTERFACE_TYPE")]
 	public const string SETTING_OVS_INTERFACE_TYPE;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_OTHER_CONFIG_DATA")]
+	public const string SETTING_OVS_OTHER_CONFIG_DATA;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_OTHER_CONFIG_SETTING_NAME")]
+	public const string SETTING_OVS_OTHER_CONFIG_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PATCH_PEER")]
 	public const string SETTING_OVS_PATCH_PEER;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PATCH_SETTING_NAME")]
@@ -7304,6 +7430,8 @@ namespace NM {
 	public const string SETTING_OVS_PORT_SETTING_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_TAG")]
 	public const string SETTING_OVS_PORT_TAG;
+	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_TRUNKS")]
+	public const string SETTING_OVS_PORT_TRUNKS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_VLAN_MODE")]
 	public const string SETTING_OVS_PORT_VLAN_MODE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SRIOV_AUTOPROBE_DRIVERS")]
@@ -7450,6 +7578,9 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (replacement = "ManagerError.quark")]
 	public static GLib.Quark manager_error_quark ();
+	[CCode (cheader_filename = "NetworkManager.h")]
+	[Version (replacement = "Range.from_str", since = "1.42")]
+	public static NM.Range range_from_str (string str) throws GLib.Error;
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (replacement = "SecretAgentError.quark")]
 	public static GLib.Quark secret_agent_error_quark ();

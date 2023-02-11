@@ -1024,6 +1024,9 @@ namespace ECal {
 	[CCode (cheader_filename = "libecal/libecal.h", instance_pos = 1.9)]
 	[Version (since = "3.34")]
 	public delegate unowned ICal.Timezone? RecurResolveTimezoneCb (string tzid, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "libecal/libecal.h", instance_pos = 2.9)]
+	[Version (since = "3.48")]
+	public delegate bool UtilForeachCategoryFunc (ICal.Component comp, ref string inout_category);
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_BACKEND_PROPERTY_ALARM_EMAIL_ADDRESS")]
 	[Version (since = "3.2")]
 	public const string BACKEND_PROPERTY_ALARM_EMAIL_ADDRESS;
@@ -1265,6 +1268,12 @@ namespace ECal {
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.34")]
 	public static ICal.Timezone util_copy_timezone (ICal.Timezone zone);
+	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.48")]
+	public static void util_diff_categories (ICal.Component? old_comp, ICal.Component? new_comp, out GLib.HashTable<weak string,int> out_added, out GLib.HashTable<weak string,int> out_removed);
+	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.48")]
+	public static void util_foreach_category (ICal.Component comp, ECal.UtilForeachCategoryFunc func);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	public static ECal.ComponentAlarms? util_generate_alarms_for_comp (ECal.Component comp, long start, long end, ECal.ComponentAlarmAction omit, [CCode (delegate_target_pos = 5.5)] ECal.RecurResolveTimezoneCb resolve_tzid, ICal.Timezone default_timezone);
 	[CCode (cheader_filename = "libecal/libecal.h")]

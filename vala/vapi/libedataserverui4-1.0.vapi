@@ -2,4 +2,149 @@
 
 [CCode (cprefix = "E", gir_namespace = "EDataServerUI4", gir_version = "1.0", lower_case_cprefix = "e_")]
 namespace E {
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h", type_id = "e_cell_renderer_color_get_type ()")]
+	[Version (since = "2.22")]
+	public class CellRendererColor : Gtk.CellRenderer {
+		[CCode (has_construct_function = false, type = "GtkCellRenderer*")]
+		public CellRendererColor ();
+		[NoAccessorMethod]
+		public Gdk.RGBA rgba { owned get; set; }
+	}
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h", type_id = "e_certificate_widget_get_type ()")]
+	[Version (since = "3.46")]
+	public class CertificateWidget : Gtk.Box, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		public CertificateWidget ();
+		public void set_der (void* der_data, uint der_data_len);
+		public void set_pem (string? pem_data);
+	}
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h", type_id = "e_credentials_prompter_get_type ()")]
+	[Version (since = "3.16")]
+	public class CredentialsPrompter : GLib.Object, E.Extensible {
+		[CCode (has_construct_function = false)]
+		public CredentialsPrompter (E.SourceRegistry registry);
+		public void complete_prompt_call (GLib.SimpleAsyncResult async_result, E.Source source, E.NamedParameters? credentials, GLib.Error error);
+		public bool get_auto_prompt ();
+		public bool get_auto_prompt_disabled_for (E.Source source);
+		public unowned E.SourceCredentialsProvider get_provider ();
+		public unowned E.SourceRegistry get_registry ();
+		public bool loop_prompt_sync (E.Source source, E.CredentialsPrompterPromptFlags flags, [CCode (delegate_target_pos = 3.5)] E.CredentialsPrompterLoopPromptFunc func, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public void process_awaiting_credentials ();
+		public bool process_source (E.Source source);
+		public async bool prompt (E.Source source, string? error_text, E.CredentialsPrompterPromptFlags flags, out E.Source? out_source, out E.NamedParameters? out_credentials) throws GLib.Error;
+		public bool register_impl (string? authentication_method, E.CredentialsPrompterImpl prompter_impl);
+		public void set_auto_prompt (bool auto_prompt);
+		public void set_auto_prompt_disabled_for (E.Source source, bool is_disabled);
+		public void unregister_impl (string? authentication_method, E.CredentialsPrompterImpl prompter_impl);
+		public bool auto_prompt { get; set construct; }
+		public E.SourceCredentialsProvider provider { get; }
+		public E.SourceRegistry registry { get; construct; }
+		[HasEmitter]
+		public virtual signal unowned Gtk.Window? get_dialog_parent ();
+		[HasEmitter]
+		[Version (since = "3.42")]
+		public signal unowned Gtk.Window? get_dialog_parent_full (E.Source? auth_source);
+	}
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h", type_id = "e_credentials_prompter_impl_get_type ()")]
+	[Version (since = "3.16")]
+	public abstract class CredentialsPrompterImpl : E.Extension {
+		[CCode (has_construct_function = false)]
+		protected CredentialsPrompterImpl ();
+		public virtual void cancel_prompt (void* prompt_id);
+		public void* get_credentials_prompter ();
+		[NoWrapper]
+		public virtual void process_prompt (void* prompt_id, E.Source auth_source, E.Source cred_source, string error_text, E.NamedParameters credentials);
+		public void prompt (void* prompt_id, E.Source auth_source, E.Source cred_source, string? error_text, E.NamedParameters credentials);
+		public void prompt_finish (void* prompt_id, E.NamedParameters? credentials);
+		public virtual signal void prompt_finished (void* prompt_id, E.NamedParameters? credentials);
+	}
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h", type_id = "e_credentials_prompter_impl_oauth2_get_type ()")]
+	[Version (since = "3.28")]
+	public class CredentialsPrompterImplOAuth2 : E.CredentialsPrompterImpl {
+		[CCode (has_construct_function = false, type = "ECredentialsPrompterImpl*")]
+		public CredentialsPrompterImplOAuth2 ();
+	}
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h", type_id = "e_credentials_prompter_impl_password_get_type ()")]
+	[Version (since = "3.16")]
+	public class CredentialsPrompterImplPassword : E.CredentialsPrompterImpl {
+		[CCode (has_construct_function = false, type = "ECredentialsPrompterImpl*")]
+		public CredentialsPrompterImplPassword ();
+	}
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h", type_id = "e_reminders_widget_get_type ()")]
+	[Version (since = "3.30")]
+	public class RemindersWidget : Gtk.Grid, E.Extensible, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Orientable {
+		[CCode (has_construct_function = false)]
+		public RemindersWidget (ECal.ReminderWatcher watcher);
+		[Version (since = "3.38")]
+		public unowned Gtk.Paned get_paned ();
+		public unowned GLib.Settings get_settings ();
+		public unowned Gtk.TreeView get_tree_view ();
+		public unowned ECal.ReminderWatcher get_watcher ();
+		public bool is_empty ();
+		public void report_error (string? prefix, GLib.Error? error);
+		[NoAccessorMethod]
+		public bool empty { get; }
+		public ECal.ReminderWatcher watcher { get; construct; }
+		public virtual signal bool activated (ECal.ReminderData rd);
+		public virtual signal void changed ();
+	}
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h", lower_case_csuffix = "webdav_discover_content", type_id = "e_webdav_discover_content_get_type ()")]
+	public class WebDAVDiscoverContent : Gtk.Grid, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Orientable {
+		[CCode (has_construct_function = false, type = "GtkWidget*")]
+		[Version (since = "3.18")]
+		public WebDAVDiscoverContent (E.CredentialsPrompter credentials_prompter, E.Source? source, string? base_url, uint supports_filter);
+		[Version (since = "3.18")]
+		public unowned string get_base_url ();
+		[Version (since = "3.18")]
+		public bool get_multiselect ();
+		[Version (since = "3.18")]
+		public bool get_selected (int index, out string out_href, out uint out_supports, out string out_display_name, out string out_color, out uint out_order);
+		[Version (since = "3.18")]
+		public unowned Gtk.TreeSelection get_tree_selection ();
+		[Version (since = "3.18")]
+		public string? get_user_address ();
+		[Version (since = "3.18")]
+		public async bool refresh (string? display_name, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "3.18")]
+		public void set_base_url (string base_url);
+		[Version (since = "3.18")]
+		public void set_multiselect (bool multiselect);
+		[Version (since = "3.18")]
+		public void show_error (GLib.Error error);
+	}
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h", lower_case_csuffix = "webdav_discover_dialog", type_id = "e_webdav_discover_dialog_get_type ()")]
+	public class WebDAVDiscoverDialog : Gtk.Dialog, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Native, Gtk.Root, Gtk.ShortcutManager {
+		[CCode (has_construct_function = false, type = "GtkDialog*")]
+		[Version (since = "3.18")]
+		public WebDAVDiscoverDialog (Gtk.Window parent, string title, E.CredentialsPrompter credentials_prompter, E.Source source, string? base_url, uint supports_filter);
+		[Version (since = "3.18")]
+		public unowned E.WebDAVDiscoverContent get_content ();
+		[Version (since = "3.18")]
+		public void refresh ();
+	}
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h", cprefix = "E_CREDENTIALS_PROMPTER_PROMPT_FLAG_", has_type_id = false)]
+	[Flags]
+	[Version (since = "3.16")]
+	public enum CredentialsPrompterPromptFlags {
+		NONE,
+		ALLOW_SOURCE_SAVE,
+		ALLOW_STORED_CREDENTIALS
+	}
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h", instance_pos = 4.9)]
+	public delegate bool CredentialsPrompterLoopPromptFunc (E.CredentialsPrompter prompter, E.Source source, E.NamedParameters credentials, out bool out_authenticated, GLib.Cancellable? cancellable = null) throws GLib.Error;
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h")]
+	public static void buffer_tagger_connect (Gtk.TextView textview);
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h")]
+	public static void buffer_tagger_disconnect (Gtk.TextView textview);
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h")]
+	public static void buffer_tagger_update_tags (Gtk.TextView textview);
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h")]
+	[Version (since = "3.16")]
+	public static string trust_prompt_describe_certificate_errors (GLib.TlsCertificateFlags flags);
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h")]
+	[Version (since = "3.16")]
+	public static async bool trust_prompt_run_for_source (Gtk.Window parent, E.Source source, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, string? error_text, bool allow_source_save, GLib.Cancellable? cancellable) throws GLib.Error;
+	[CCode (cheader_filename = "libedataserverui4/libedataserverui4.h")]
+	[Version (since = "3.16")]
+	public static E.TrustPromptResponse trust_prompt_run_modal (Gtk.Window parent, string? source_extension, string? source_display_name, string host, string certificate_pem, GLib.TlsCertificateFlags certificate_errors, string? error_text);
 }
