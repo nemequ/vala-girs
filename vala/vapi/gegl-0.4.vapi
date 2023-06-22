@@ -24,7 +24,7 @@ namespace Gegl {
 		public global::string string { owned get; set; }
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_buffer_get_type ()")]
-	public class Buffer : Gegl.TileHandler {
+	public sealed class Buffer : Gegl.TileHandler {
 		[CCode (has_construct_function = false)]
 		protected Buffer ();
 		public void add_handler (void* handler);
@@ -119,7 +119,7 @@ namespace Gegl {
 		public global::string string { owned get; set; }
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_config_get_type ()")]
-	public class Config : GLib.Object {
+	public sealed class Config : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Config ();
 		[NoAccessorMethod]
@@ -186,7 +186,7 @@ namespace Gegl {
 		public void transform_point (double x, double y);
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_metadata_hash_get_type ()")]
-	public class MetadataHash : Gegl.MetadataStore, Gegl.Metadata {
+	public sealed class MetadataHash : Gegl.MetadataStore, Gegl.Metadata {
 		[CCode (has_construct_function = false, type = "GeglMetadataStore*")]
 		public MetadataHash ();
 	}
@@ -257,11 +257,12 @@ namespace Gegl {
 		public signal void unmapped (string file_module, string local_name);
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_node_get_type ()")]
-	public class Node : GLib.Object {
+	public sealed class Node : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Node ();
 		public unowned Gegl.Node add_child (Gegl.Node child);
 		public void blit_buffer (Gegl.Buffer? buffer, Gegl.Rectangle? roi, int level, Gegl.AbyssPolicy abyss_policy);
+		public bool connect (string a_pad_name, Gegl.Node b, string b_pad_name);
 		public bool connect_from (string input_pad_name, Gegl.Node source, string output_pad_name);
 		public bool connect_to (string output_pad_name, Gegl.Node sink, string input_pad_name);
 		public unowned Gegl.Node create_child (string operation);
@@ -297,6 +298,7 @@ namespace Gegl {
 		public Gegl.Processor new_processor (Gegl.Rectangle rectangle);
 		public void process ();
 		public unowned Gegl.Node remove_child (Gegl.Node child);
+		public void set_enum_as_string (string key, string value);
 		public void set_passthrough (bool passthrough);
 		public void set_property (string property_name, GLib.Value value);
 		public void set_time (double time);
@@ -321,7 +323,7 @@ namespace Gegl {
 		public signal void progress (double progress);
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_operation_get_type ()")]
-	public class Operation : GLib.Object {
+	public sealed class Operation : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Operation ();
 		public static unowned GLib.ParamSpec find_property (string operation_type, string property_name);
@@ -340,57 +342,57 @@ namespace Gegl {
 	public class OperationContext {
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_audio_fragment_get_type ()")]
-	public class ParamAudioFragment : GLib.ParamSpec {
+	public sealed class ParamAudioFragment : GLib.ParamSpec {
 		[CCode (has_construct_function = false)]
 		protected ParamAudioFragment ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_color_get_type ()")]
-	public class ParamColor : GLib.ParamSpec {
+	public sealed class ParamColor : GLib.ParamSpec {
 		[CCode (has_construct_function = false)]
 		protected ParamColor ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_curve_get_type ()")]
-	public class ParamCurve : GLib.ParamSpec {
+	public sealed class ParamCurve : GLib.ParamSpec {
 		[CCode (has_construct_function = false)]
 		protected ParamCurve ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_double_get_type ()")]
-	public class ParamDouble : GLib.ParamSpecDouble {
+	public sealed class ParamDouble : GLib.ParamSpecDouble {
 		[CCode (has_construct_function = false)]
 		protected ParamDouble ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_enum_get_type ()")]
-	public class ParamEnum : GLib.ParamSpecEnum {
+	public sealed class ParamEnum : GLib.ParamSpecEnum {
 		[CCode (has_construct_function = false)]
 		protected ParamEnum ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_file_path_get_type ()")]
-	public class ParamFilePath : GLib.ParamSpecString {
+	public sealed class ParamFilePath : GLib.ParamSpecString {
 		[CCode (has_construct_function = false)]
 		protected ParamFilePath ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_int_get_type ()")]
-	public class ParamInt : GLib.ParamSpecInt {
+	public sealed class ParamInt : GLib.ParamSpecInt {
 		[CCode (has_construct_function = false)]
 		protected ParamInt ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_path_get_type ()")]
-	public class ParamPath : GLib.ParamSpec {
+	public sealed class ParamPath : GLib.ParamSpec {
 		[CCode (has_construct_function = false)]
 		protected ParamPath ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_seed_get_type ()")]
-	public class ParamSeed : GLib.ParamSpecUInt {
+	public sealed class ParamSeed : GLib.ParamSpecUInt {
 		[CCode (has_construct_function = false)]
 		protected ParamSeed ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_string_get_type ()")]
-	public class ParamString : GLib.ParamSpecString {
+	public sealed class ParamString : GLib.ParamSpecString {
 		[CCode (has_construct_function = false)]
 		protected ParamString ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_param_uri_get_type ()")]
-	public class ParamUri : GLib.ParamSpecString {
+	public sealed class ParamUri : GLib.ParamSpecString {
 		[CCode (has_construct_function = false)]
 		protected ParamUri ();
 	}
@@ -425,7 +427,7 @@ namespace Gegl {
 		public signal void changed (void* object);
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_processor_get_type ()")]
-	public class Processor : GLib.Object {
+	public sealed class Processor : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Processor ();
 		public Gegl.Buffer get_buffer ();
@@ -491,7 +493,7 @@ namespace Gegl {
 		public unowned Gegl.Rectangle get_context_rect ();
 	}
 	[CCode (cheader_filename = "gegl.h", type_id = "gegl_stats_get_type ()")]
-	public class Stats : GLib.Object {
+	public sealed class Stats : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Stats ();
 		[NoAccessorMethod]

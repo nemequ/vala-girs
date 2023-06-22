@@ -122,7 +122,8 @@ namespace Vnc {
 	public enum DisplayCredential {
 		PASSWORD,
 		USERNAME,
-		CLIENTNAME
+		CLIENTNAME,
+		CA_CERT_DATA
 	}
 	[CCode (cheader_filename = "gtk-vnc.h", cprefix = "VNC_DISPLAY_DEPTH_COLOR_", type_id = "vnc_display_depth_color_get_type ()")]
 	public enum DisplayDepthColor {

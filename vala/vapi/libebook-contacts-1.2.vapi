@@ -54,12 +54,12 @@ namespace E {
 		[Version (since = "3.4")]
 		public Contact.from_vcard_with_uid (string vcard, string uid);
 		[CCode (simple_generics = true)]
-		public T @get<T> (E.ContactField field_id);
+		public T? @get<T> (E.ContactField field_id);
 		public GLib.List<E.VCardAttribute> get_attributes (E.ContactField field_id);
 		[Version (since = "3.16")]
 		public GLib.List<E.VCardAttribute> get_attributes_set ([CCode (array_length_cname = "size", array_length_pos = 1.1)] E.ContactField[] field_ids);
 		[CCode (simple_generics = true)]
-		public unowned T get_const<T> (E.ContactField field_id);
+		public unowned T? get_const<T> (E.ContactField field_id);
 		[Version (since = "3.4")]
 		public bool inline_local_photos () throws GLib.Error;
 		public static unowned string pretty_name (E.ContactField field_id);

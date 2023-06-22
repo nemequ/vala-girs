@@ -132,7 +132,7 @@ namespace Camel {
 		public void free ();
 		[Version (since = "3.22")]
 		public void* get_certinfo_property (Camel.CipherValidityMode mode, int info_index, string name);
-		public string get_description ();
+		public unowned string get_description ();
 		public bool get_valid ();
 		public void init ();
 		[Version (since = "3.22")]
@@ -3735,6 +3735,9 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static int file_util_decode_fixed_string (void* @in, string str, size_t len);
 	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.50")]
+	public static int file_util_decode_gint64 (void* @in, int64 dest);
+	[CCode (cheader_filename = "camel/camel.h")]
 	public static int file_util_decode_gsize (void* @in, size_t dest);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static int file_util_decode_off_t (void* @in, size_t dest);
@@ -3748,6 +3751,9 @@ namespace Camel {
 	public static int file_util_encode_fixed_int32 (void* @out, int32 value);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static int file_util_encode_fixed_string (void* @out, string str, size_t len);
+	[CCode (cheader_filename = "camel/camel.h")]
+	[Version (since = "3.50")]
+	public static int file_util_encode_gint64 (void* @out, int64 value);
 	[CCode (cheader_filename = "camel/camel.h")]
 	public static int file_util_encode_gsize (void* @out, size_t value);
 	[CCode (cheader_filename = "camel/camel.h")]

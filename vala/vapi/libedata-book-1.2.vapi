@@ -286,6 +286,8 @@ namespace E {
 		public void set_cache (E.BookCache cache);
 		public void set_connected_writable (bool value);
 		public void set_ever_connected (bool value);
+		[Version (since = "3.50")]
+		public void set_sync_tag (string? sync_tag);
 		public bool split_changes_sync (ref GLib.SList<E.BookMetaBackendInfo> objects, out GLib.SList<E.BookMetaBackendInfo> out_created_objects, out GLib.SList<E.BookMetaBackendInfo> out_modified_objects, out GLib.SList<E.BookMetaBackendInfo>? out_removed_objects, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool store_inline_photos_sync (E.Contact contact, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoAccessorMethod]

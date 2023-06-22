@@ -97,7 +97,7 @@ namespace GSound {
 		public const string WINDOW_Y;
 	}
 	[CCode (cheader_filename = "gsound.h", type_id = "gsound_context_get_type ()")]
-	public class Context : GLib.Object, GLib.Initable {
+	public sealed class Context : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		public Context (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool cache (...) throws GLib.Error;

@@ -67,7 +67,7 @@ namespace Hdy {
 		public uint duration { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_column_get_type ()")]
-	public class Column : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class Column : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public Column ();
 		public int get_linear_growth_width ();
@@ -180,7 +180,7 @@ namespace Hdy {
 		public bool narrow { get; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_enum_value_object_get_type ()")]
-	public class EnumValueObject : GLib.Object {
+	public sealed class EnumValueObject : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public EnumValueObject (GLib.EnumValue enum_value);
 		public unowned string get_name ();
@@ -368,7 +368,7 @@ namespace Hdy {
 		public string visible_child_name { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_paginator_get_type ()")]
-	public class Paginator : Gtk.EventBox, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
+	public sealed class Paginator : Gtk.EventBox, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.0.11")]
 		public Paginator ();
@@ -544,7 +544,7 @@ namespace Hdy {
 		public Gtk.Widget visible_child { get; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_swipe_group_get_type ()")]
-	public class SwipeGroup : GLib.Object, Gtk.Buildable {
+	public sealed class SwipeGroup : GLib.Object, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.0.12")]
 		public SwipeGroup ();
@@ -556,7 +556,7 @@ namespace Hdy {
 		public void remove_swipeable (Hdy.Swipeable swipeable);
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_title_bar_get_type ()")]
-	public class TitleBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class TitleBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public TitleBar ();
 		public bool get_selection_mode ();
@@ -564,7 +564,7 @@ namespace Hdy {
 		public bool selection_mode { get; set; }
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_value_object_get_type ()")]
-	public class ValueObject : GLib.Object {
+	public sealed class ValueObject : GLib.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.0.8")]
 		public ValueObject (GLib.Value value);

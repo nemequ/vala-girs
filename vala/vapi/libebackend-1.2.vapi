@@ -204,7 +204,7 @@ namespace E {
 		public static void free (void* change);
 	}
 	[CCode (cheader_filename = "libebackend/libebackend.h", type_id = "e_cache_reaper_get_type ()")]
-	public class CacheReaper : E.Extension, E.Extensible {
+	public sealed class CacheReaper : E.Extension, E.Extensible {
 		[CCode (has_construct_function = false)]
 		protected CacheReaper ();
 		public void add_private_directory (string name);

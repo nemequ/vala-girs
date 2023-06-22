@@ -3,7 +3,7 @@
 [CCode (cprefix = "NMA", gir_namespace = "NMA", gir_version = "1.0", lower_case_cprefix = "nma_")]
 namespace NMA {
 	[CCode (cheader_filename = "NMA-1.0.h", type_id = "nma_bar_code_get_type ()")]
-	public class BarCode : GLib.Object {
+	public sealed class BarCode : GLib.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.8.22")]
 		public BarCode (string text);
@@ -17,14 +17,14 @@ namespace NMA {
 		public string text { set; }
 	}
 	[CCode (cheader_filename = "NMA-1.0.h", type_id = "nma_bar_code_widget_get_type ()")]
-	public class BarCodeWidget : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class BarCodeWidget : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false)]
 		protected BarCodeWidget ();
 		[NoAccessorMethod]
 		public NM.Connection connection { owned get; set; }
 	}
 	[CCode (cheader_filename = "NMA-1.0.h", type_id = "nma_cert_chooser_get_type ()")]
-	public class CertChooser : Gtk.Grid, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class CertChooser : Gtk.Grid, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "1.8.0")]
 		public CertChooser (string title, NMA.CertChooserFlags flags);
@@ -135,7 +135,7 @@ namespace NMA {
 		public string service_providers { owned get; construct; }
 	}
 	[CCode (cheader_filename = "NMA-1.0.h", type_id = "nma_mobile_wizard_get_type ()")]
-	public class MobileWizard : GLib.Object {
+	public sealed class MobileWizard : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected MobileWizard ();
 		public void destroy ();

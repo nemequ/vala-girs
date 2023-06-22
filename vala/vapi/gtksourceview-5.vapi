@@ -44,7 +44,7 @@ namespace GtkSource {
 		public signal void source_mark_updated (Gtk.TextMark mark);
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_completion_get_type ()")]
-	public class Completion : GLib.Object {
+	public sealed class Completion : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Completion ();
 		public void add_provider (GtkSource.CompletionProvider provider);
@@ -74,7 +74,7 @@ namespace GtkSource {
 		public signal void show ();
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_completion_cell_get_type ()")]
-	public class CompletionCell : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
+	public sealed class CompletionCell : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
 		[CCode (has_construct_function = false)]
 		protected CompletionCell ();
 		public GtkSource.CompletionColumn get_column ();
@@ -96,7 +96,7 @@ namespace GtkSource {
 		public Gtk.Widget widget { get; set; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_completion_context_get_type ()")]
-	public class CompletionContext : GLib.Object, GLib.ListModel {
+	public sealed class CompletionContext : GLib.Object, GLib.ListModel {
 		[CCode (has_construct_function = false)]
 		protected CompletionContext ();
 		public GtkSource.CompletionActivation get_activation ();
@@ -181,7 +181,7 @@ namespace GtkSource {
 		public bool read_only { get; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_file_loader_get_type ()")]
-	public class FileLoader : GLib.Object {
+	public sealed class FileLoader : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public FileLoader (GtkSource.Buffer buffer, GtkSource.File file);
 		[CCode (has_construct_function = false)]
@@ -201,7 +201,7 @@ namespace GtkSource {
 		public GLib.File location { get; construct; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_file_saver_get_type ()")]
-	public class FileSaver : GLib.Object {
+	public sealed class FileSaver : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public FileSaver (GtkSource.Buffer buffer, GtkSource.File file);
 		public unowned GtkSource.Buffer get_buffer ();
@@ -227,7 +227,7 @@ namespace GtkSource {
 		public GtkSource.NewlineType newline_type { get; set construct; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_gutter_get_type ()")]
-	public class Gutter : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
+	public sealed class Gutter : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
 		[CCode (has_construct_function = false)]
 		protected Gutter ();
 		public unowned GtkSource.View get_view ();
@@ -239,7 +239,7 @@ namespace GtkSource {
 		public Gtk.TextWindowType window_type { get; construct; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_gutter_lines_get_type ()")]
-	public class GutterLines : GLib.Object {
+	public sealed class GutterLines : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected GutterLines ();
 		public void add_class (uint line, string name);
@@ -333,7 +333,7 @@ namespace GtkSource {
 		public string text { owned get; set construct; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_hover_get_type ()")]
-	public class Hover : GLib.Object {
+	public sealed class Hover : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Hover ();
 		public void add_provider (GtkSource.HoverProvider provider);
@@ -342,7 +342,7 @@ namespace GtkSource {
 		public uint hover_delay { get; set; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_hover_context_get_type ()")]
-	public class HoverContext : GLib.Object {
+	public sealed class HoverContext : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected HoverContext ();
 		public bool get_bounds (out Gtk.TextIter begin, out Gtk.TextIter end);
@@ -351,7 +351,7 @@ namespace GtkSource {
 		public unowned GtkSource.View get_view ();
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_hover_display_get_type ()")]
-	public class HoverDisplay : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
+	public sealed class HoverDisplay : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
 		[CCode (has_construct_function = false)]
 		protected HoverDisplay ();
 		public void append (Gtk.Widget child);
@@ -360,7 +360,7 @@ namespace GtkSource {
 		public void remove (Gtk.Widget child);
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_language_get_type ()")]
-	public class Language : GLib.Object {
+	public sealed class Language : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Language ();
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -382,7 +382,7 @@ namespace GtkSource {
 		public string section { get; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_language_manager_get_type ()")]
-	public class LanguageManager : GLib.Object {
+	public sealed class LanguageManager : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public LanguageManager ();
 		[Version (since = "5.4")]
@@ -418,11 +418,11 @@ namespace GtkSource {
 		public Mark (string? name, string category);
 		public unowned string get_category ();
 		public unowned GtkSource.Mark? next (string? category);
-		public unowned GtkSource.Mark? prev (string category);
+		public unowned GtkSource.Mark? prev (string? category);
 		public string category { get; construct; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_mark_attributes_get_type ()")]
-	public class MarkAttributes : GLib.Object {
+	public sealed class MarkAttributes : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public MarkAttributes ();
 		public bool get_background (out Gdk.RGBA background);
@@ -518,7 +518,7 @@ namespace GtkSource {
 		public Gtk.TextBuffer buffer { get; construct; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_search_context_get_type ()")]
-	public class SearchContext : GLib.Object {
+	public sealed class SearchContext : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SearchContext (GtkSource.Buffer buffer, GtkSource.SearchSettings? settings);
 		public bool backward (Gtk.TextIter iter, out Gtk.TextIter match_start, out Gtk.TextIter match_end, out bool has_wrapped_around);
@@ -564,7 +564,7 @@ namespace GtkSource {
 		public bool wrap_around { get; set construct; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_snippet_get_type ()")]
-	public class Snippet : GLib.Object {
+	public sealed class Snippet : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Snippet (string? trigger, string? language_id);
 		public void add_chunk (GtkSource.SnippetChunk chunk);
@@ -593,7 +593,7 @@ namespace GtkSource {
 		public string trigger { get; set; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_snippet_chunk_get_type ()")]
-	public class SnippetChunk : GLib.InitiallyUnowned {
+	public sealed class SnippetChunk : GLib.InitiallyUnowned {
 		[CCode (has_construct_function = false)]
 		public SnippetChunk ();
 		public GtkSource.SnippetChunk copy ();
@@ -617,7 +617,7 @@ namespace GtkSource {
 		public string tooltip_text { get; set; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_snippet_context_get_type ()")]
-	public class SnippetContext : GLib.Object {
+	public sealed class SnippetContext : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SnippetContext ();
 		public void clear_variables ();
@@ -631,7 +631,7 @@ namespace GtkSource {
 		public signal void changed ();
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_snippet_manager_get_type ()")]
-	public class SnippetManager : GLib.Object {
+	public sealed class SnippetManager : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected SnippetManager ();
 		public static unowned GtkSource.SnippetManager get_default ();
@@ -648,7 +648,7 @@ namespace GtkSource {
 		public string[] search_path { get; set; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_space_drawer_get_type ()")]
-	public class SpaceDrawer : GLib.Object {
+	public sealed class SpaceDrawer : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SpaceDrawer ();
 		public void bind_matrix_setting (GLib.Settings settings, string key, GLib.SettingsBindFlags flags);
@@ -662,7 +662,7 @@ namespace GtkSource {
 		public GLib.Variant matrix { owned get; set construct; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_get_type ()")]
-	public class Style : GLib.Object {
+	public sealed class Style : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Style ();
 		public void apply (Gtk.TextTag tag);
@@ -709,7 +709,7 @@ namespace GtkSource {
 		public bool weight_set { get; construct; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_scheme_get_type ()")]
-	public class StyleScheme : GLib.Object {
+	public sealed class StyleScheme : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected StyleScheme ();
 		[CCode (array_length = false, array_null_terminated = true)]
@@ -737,7 +737,7 @@ namespace GtkSource {
 		public StyleSchemeChooserWidget ();
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_scheme_manager_get_type ()")]
-	public class StyleSchemeManager : GLib.Object {
+	public sealed class StyleSchemeManager : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public StyleSchemeManager ();
 		public void append_search_path (string path);
@@ -757,7 +757,7 @@ namespace GtkSource {
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_scheme_preview_get_type ()")]
 	[Version (since = "5.4")]
-	public class StyleSchemePreview : Gtk.Widget, Gtk.Accessible, Gtk.Actionable, Gtk.Buildable, Gtk.ConstraintTarget {
+	public sealed class StyleSchemePreview : Gtk.Widget, Gtk.Accessible, Gtk.Actionable, Gtk.Buildable, Gtk.ConstraintTarget {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public StyleSchemePreview (GtkSource.StyleScheme scheme);
 		public unowned GtkSource.StyleScheme get_scheme ();
@@ -851,7 +851,7 @@ namespace GtkSource {
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_vim_im_context_get_type ()")]
 	[Version (since = "5.4")]
-	public class VimIMContext : Gtk.IMContext {
+	public sealed class VimIMContext : Gtk.IMContext {
 		[CCode (has_construct_function = false, type = "GtkIMContext*")]
 		public VimIMContext ();
 		public unowned string get_command_bar_text ();

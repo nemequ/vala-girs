@@ -3,7 +3,7 @@
 [CCode (cprefix = "Manette", gir_namespace = "Manette", gir_version = "0.2", lower_case_cprefix = "manette_")]
 namespace Manette {
 	[CCode (cheader_filename = "libmanette.h", type_id = "manette_device_get_type ()")]
-	public class Device : GLib.Object {
+	public sealed class Device : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Device ();
 		public unowned string get_name ();
@@ -35,7 +35,7 @@ namespace Manette {
 		public uint32 get_time ();
 	}
 	[CCode (cheader_filename = "libmanette.h", type_id = "manette_monitor_get_type ()")]
-	public class Monitor : GLib.Object {
+	public sealed class Monitor : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Monitor ();
 		public Manette.MonitorIter iterate ();

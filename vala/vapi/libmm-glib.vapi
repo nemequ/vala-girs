@@ -406,6 +406,8 @@ namespace MM {
 	public class CellInfoLte : MM.CellInfo {
 		[CCode (has_construct_function = false)]
 		protected CellInfoLte ();
+		[Version (since = "1.22")]
+		public uint get_bandwidth ();
 		[Version (since = "1.20")]
 		public unowned string get_ci ();
 		[Version (since = "1.20")]
@@ -418,6 +420,8 @@ namespace MM {
 		public double get_rsrp ();
 		[Version (since = "1.20")]
 		public double get_rsrq ();
+		[Version (since = "1.22")]
+		public MM.ServingCellType get_serving_cell_type ();
 		[Version (since = "1.20")]
 		public unowned string get_tac ();
 		[Version (since = "1.20")]
@@ -427,6 +431,8 @@ namespace MM {
 	public class CellInfoNr5g : MM.CellInfo {
 		[CCode (has_construct_function = false)]
 		protected CellInfoNr5g ();
+		[Version (since = "1.22")]
+		public uint get_bandwidth ();
 		[Version (since = "1.20")]
 		public unowned string get_ci ();
 		[Version (since = "1.20")]
@@ -439,6 +445,8 @@ namespace MM {
 		public double get_rsrp ();
 		[Version (since = "1.20")]
 		public double get_rsrq ();
+		[Version (since = "1.22")]
+		public MM.ServingCellType get_serving_cell_type ();
 		[Version (since = "1.20")]
 		public double get_sinr ();
 		[Version (since = "1.20")]
@@ -1245,6 +1253,10 @@ namespace MM {
 		public async GLib.List<MM.Modem3gppNetwork> scan (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.0")]
 		public GLib.List<MM.Modem3gppNetwork> scan_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.22")]
+		public async bool set_carrier_lock ([CCode (array_length_cname = "data_size", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] data, GLib.Cancellable? cancellable) throws GLib.Error;
+		[Version (since = "1.22")]
+		public bool set_carrier_lock_sync ([CCode (array_length_cname = "data_size", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] data, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.8")]
 		public async bool set_eps_ue_mode_operation (MM.Modem3gppEpsUeModeOperation mode, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.8")]
@@ -2371,6 +2383,8 @@ namespace MM {
 		[CCode (async_result_pos = 2.1)]
 		public async bool call_scan (GLib.Cancellable? cancellable, out GLib.Variant out_results) throws GLib.Error;
 		public bool call_scan_sync (out GLib.Variant out_results, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public async bool call_set_carrier_lock (GLib.Variant arg_data, GLib.Cancellable? cancellable) throws GLib.Error;
+		public bool call_set_carrier_lock_sync (GLib.Variant arg_data, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_set_eps_ue_mode_operation (uint arg_mode, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool call_set_eps_ue_mode_operation_sync (uint arg_mode, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async bool call_set_initial_eps_bearer_settings (GLib.Variant arg_settings, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -2382,6 +2396,7 @@ namespace MM {
 		public void complete_disable_facility_lock (owned GLib.DBusMethodInvocation invocation);
 		public void complete_register (owned GLib.DBusMethodInvocation invocation);
 		public void complete_scan (owned GLib.DBusMethodInvocation invocation, GLib.Variant results);
+		public void complete_set_carrier_lock (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_eps_ue_mode_operation (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_initial_eps_bearer_settings (owned GLib.DBusMethodInvocation invocation);
 		public void complete_set_nr5g_registration_settings (owned GLib.DBusMethodInvocation invocation);
@@ -2415,6 +2430,7 @@ namespace MM {
 		public virtual signal bool handle_disable_facility_lock (GLib.DBusMethodInvocation invocation, GLib.Variant arg_properties);
 		public virtual signal bool handle_register (GLib.DBusMethodInvocation invocation, string arg_operator_id);
 		public virtual signal bool handle_scan (GLib.DBusMethodInvocation invocation);
+		public virtual signal bool handle_set_carrier_lock (GLib.DBusMethodInvocation invocation, GLib.Variant arg_data);
 		public virtual signal bool handle_set_eps_ue_mode_operation (GLib.DBusMethodInvocation invocation, uint arg_mode);
 		public virtual signal bool handle_set_initial_eps_bearer_settings (GLib.DBusMethodInvocation invocation, GLib.Variant arg_settings);
 		public virtual signal bool handle_set_nr5g_registration_settings (GLib.DBusMethodInvocation invocation, GLib.Variant arg_properties);
@@ -3626,6 +3642,16 @@ namespace MM {
 		DEVICE_INITIATED_HANDS_FREE_ACTIVATION;
 		public unowned string get_string ();
 	}
+	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SERVING_CELL_TYPE_", type_id = "mm_serving_cell_type_get_type ()")]
+	public enum ServingCellType {
+		UNKNOWN,
+		PCELL,
+		SCELL,
+		PSCELL,
+		SSCELL,
+		INVALID;
+		public unowned string get_string ();
+	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_SIM_ESIM_STATUS_", type_id = "mm_sim_esim_status_get_type ()")]
 	public enum SimEsimStatus {
 		UNKNOWN,
@@ -3886,7 +3912,9 @@ namespace MM {
 		RETRY,
 		EXISTS,
 		[CCode (cname = "MM_CORE_ERROR_WRONG_SIM_STATE")]
-		WRONGSIMSTATE;
+		WRONGSIMSTATE,
+		[CCode (cname = "MM_CORE_ERROR_RESET_AND_RETRY")]
+		RESETRETRY;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "libmm-glib.h", cprefix = "MM_MESSAGE_ERROR_", type_id = "mm_message_error_get_type ()")]
@@ -4501,6 +4529,8 @@ namespace MM {
 	public const string MODEM_MODEM3GPP_METHOD_REGISTER;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_SCAN")]
 	public const string MODEM_MODEM3GPP_METHOD_SCAN;
+	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_SETCARRIERLOCK")]
+	public const string MODEM_MODEM3GPP_METHOD_SETCARRIERLOCK;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_SETEPSUEMODEOPERATION")]
 	public const string MODEM_MODEM3GPP_METHOD_SETEPSUEMODEOPERATION;
 	[CCode (cheader_filename = "libmm-glib.h", cname = "MM_MODEM_MODEM3GPP_METHOD_SETINITIALEPSBEARERSETTINGS")]
@@ -5069,6 +5099,9 @@ namespace MM {
 	[CCode (cheader_filename = "libmm-glib.h")]
 	[Version (replacement = "SerialError.quark")]
 	public static GLib.Quark serial_error_quark ();
+	[CCode (cheader_filename = "libmm-glib.h")]
+	[Version (replacement = "ServingCellType.get_string")]
+	public static unowned string serving_cell_type_get_string (MM.ServingCellType val);
 	[CCode (cheader_filename = "libmm-glib.h")]
 	[Version (replacement = "SimEsimStatus.get_string")]
 	public static unowned string sim_esim_status_get_string (MM.SimEsimStatus val);

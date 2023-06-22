@@ -3,7 +3,7 @@
 [CCode (cprefix = "GCab", gir_namespace = "GCab", gir_version = "1.0", lower_case_cprefix = "gcab_")]
 namespace GCab {
 	[CCode (cheader_filename = "libgcab.h", type_id = "gcab_cabinet_get_type ()")]
-	public class Cabinet : GLib.Object {
+	public sealed class Cabinet : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Cabinet ();
 		[Version (since = "1.6")]
@@ -25,7 +25,7 @@ namespace GCab {
 		public GLib.ByteArray signature { owned get; set; }
 	}
 	[CCode (cheader_filename = "libgcab.h", type_id = "gcab_file_get_type ()")]
-	public class File : GLib.Object {
+	public sealed class File : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected File ();
 		[Version (since = "0.6")]
@@ -62,7 +62,7 @@ namespace GCab {
 		public string name { owned get; set; }
 	}
 	[CCode (cheader_filename = "libgcab.h", type_id = "gcab_folder_get_type ()")]
-	public class Folder : GLib.Object {
+	public sealed class Folder : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Folder (int comptype);
 		public bool add_file (GCab.File cabfile, bool recurse, GLib.Cancellable? cancellable = null) throws GLib.Error;

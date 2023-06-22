@@ -3,7 +3,7 @@
 [CCode (cprefix = "GWeather", gir_namespace = "GWeather", gir_version = "4.0", lower_case_cprefix = "gweather_")]
 namespace GWeather {
 	[CCode (cheader_filename = "libgweather/gweather.h", type_id = "gweather_info_get_type ()")]
-	public class Info : GLib.Object {
+	public sealed class Info : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Info (GWeather.Location? location);
 		public void abort ();
@@ -64,7 +64,7 @@ namespace GWeather {
 		public signal void updated ();
 	}
 	[CCode (cheader_filename = "libgweather/gweather.h", type_id = "gweather_location_get_type ()")]
-	public class Location : GLib.Object {
+	public sealed class Location : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Location ();
 		public GWeather.Location deserialize (GLib.Variant serialized);

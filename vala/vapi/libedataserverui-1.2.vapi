@@ -89,7 +89,7 @@ namespace E {
 		public virtual signal void changed ();
 	}
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", lower_case_csuffix = "webdav_discover_content", type_id = "e_webdav_discover_content_get_type ()")]
-	public class WebDAVDiscoverContent : Gtk.Grid, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class WebDAVDiscoverContent : Gtk.Grid, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		[Version (since = "3.18")]
 		public WebDAVDiscoverContent (E.CredentialsPrompter credentials_prompter, E.Source? source, string? base_url, uint supports_filter);
@@ -113,7 +113,7 @@ namespace E {
 		public void show_error (GLib.Error error);
 	}
 	[CCode (cheader_filename = "libedataserverui/libedataserverui.h", lower_case_csuffix = "webdav_discover_dialog", type_id = "e_webdav_discover_dialog_get_type ()")]
-	public class WebDAVDiscoverDialog : Gtk.Dialog, Atk.Implementor, Gtk.Buildable {
+	public sealed class WebDAVDiscoverDialog : Gtk.Dialog, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkDialog*")]
 		[Version (since = "3.18")]
 		public WebDAVDiscoverDialog (Gtk.Window parent, string title, E.CredentialsPrompter credentials_prompter, E.Source source, string? base_url, uint supports_filter);

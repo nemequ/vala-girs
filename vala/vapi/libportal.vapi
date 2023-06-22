@@ -9,7 +9,7 @@ namespace Xdp {
 		public void free ();
 	}
 	[CCode (cheader_filename = "libportal/portal.h", type_id = "xdp_portal_get_type ()")]
-	public class Portal : GLib.Object {
+	public sealed class Portal : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		public Portal ();
 		public async bool access_camera (Xdp.Parent? parent, Xdp.CameraFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -25,6 +25,8 @@ namespace Xdp {
 		public string dynamic_launcher_request_install_token (string name, GLib.Variant icon_v) throws GLib.Error;
 		public bool dynamic_launcher_uninstall (string desktop_file_id) throws GLib.Error;
 		public async GLib.Variant get_user_information (Xdp.Parent? parent, string? reason, Xdp.UserInformationFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		[CCode (cname = "xdp_portal_initable_new", has_construct_function = false)]
+		public Portal.initable_new () throws GLib.Error;
 		public bool is_camera_present ();
 		public async bool location_monitor_start (Xdp.Parent? parent, uint distance_threshold, uint time_threshold, Xdp.LocationAccuracy accuracy, Xdp.LocationMonitorFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void location_monitor_stop ();
@@ -64,7 +66,7 @@ namespace Xdp {
 		public signal void update_progress (uint n_ops, uint op, uint progress, Xdp.UpdateStatus status, string error, string error_message);
 	}
 	[CCode (cheader_filename = "libportal/portal.h", type_id = "xdp_session_get_type ()")]
-	public class Session : GLib.Object {
+	public sealed class Session : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Session ();
 		public void close ();

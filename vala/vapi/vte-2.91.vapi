@@ -3,7 +3,7 @@
 [CCode (cprefix = "Vte", gir_namespace = "Vte", gir_version = "2.91", lower_case_cprefix = "vte_")]
 namespace Vte {
 	[CCode (cheader_filename = "vte/vte.h", type_id = "vte_pty_get_type ()")]
-	public class Pty : GLib.Object, GLib.Initable {
+	public sealed class Pty : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected Pty ();
 		public void child_setup ();
@@ -88,6 +88,8 @@ namespace Vte {
 		[Version (deprecated = true, deprecated_since = "0.54")]
 		public unowned string? get_encoding ();
 		public unowned Pango.FontDescription get_font ();
+		[Version (since = "0.74")]
+		public unowned Cairo.FontOptions? get_font_options ();
 		public double get_font_scale ();
 		[Version (deprecated = true, deprecated_since = "0.52")]
 		public void get_geometry_hints (out Gdk.Geometry hints, int min_rows, int min_columns);
@@ -112,18 +114,24 @@ namespace Vte {
 		[Version (since = "0.52")]
 		public Vte.TextBlinkMode get_text_blink_mode ();
 		[Version (deprecated = true, deprecated_since = "0.56")]
-		public string get_text_include_trailing_spaces ([CCode (delegate_target_pos = 1.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes?> attributes);
+		public string get_text_include_trailing_spaces ([CCode (delegate_target_pos = 1.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes?>? attributes);
 		public string? get_text_range (long start_row, long start_col, long end_row, long end_col, [CCode (delegate_target_pos = 5.5)] Vte.SelectionFunc? is_selected, out GLib.Array<Vte.CharAttributes?>? attributes);
+		[Version (since = "0.72")]
+		public string? get_text_range_format (Vte.Format format, long start_row, long start_col, long end_row, long end_col, out size_t length);
+		[Version (since = "0.70")]
+		public string? get_text_selected (Vte.Format format);
+		[Version (since = "0.72")]
+		public string? get_text_selected_full (Vte.Format format, out size_t length);
 		public unowned string? get_window_title ();
 		[Version (since = "0.40")]
 		public unowned string? get_word_char_exceptions ();
-		[Version (since = "0.70")]
+		[Version (since = "0.74")]
 		public Vte.Align get_xalign ();
-		[Version (since = "0.70")]
+		[Version (since = "0.74")]
 		public bool get_xfill ();
-		[Version (since = "0.70")]
+		[Version (since = "0.74")]
 		public Vte.Align get_yalign ();
-		[Version (since = "0.70")]
+		[Version (since = "0.74")]
 		public bool get_yfill ();
 		[Version (since = "0.50")]
 		public string? hyperlink_check_event (Gdk.Event event);
@@ -198,6 +206,8 @@ namespace Vte {
 		[Version (deprecated = true, deprecated_since = "0.54")]
 		public bool set_encoding (string? codeset) throws GLib.Error;
 		public void set_font (Pango.FontDescription? font_desc);
+		[Version (since = "0.74")]
+		public void set_font_options (Cairo.FontOptions? font_options);
 		public void set_font_scale (double scale);
 		[Version (deprecated = true, deprecated_since = "0.52")]
 		public void set_geometry_hints_for_window (Gtk.Window window);
@@ -216,13 +226,13 @@ namespace Vte {
 		public void set_text_blink_mode (Vte.TextBlinkMode text_blink_mode);
 		[Version (since = "0.40")]
 		public void set_word_char_exceptions (string exceptions);
-		[Version (since = "0.70")]
+		[Version (since = "0.74")]
 		public void set_xalign (Vte.Align align);
-		[Version (since = "0.70")]
+		[Version (since = "0.74")]
 		public void set_xfill (bool fill);
-		[Version (since = "0.70")]
+		[Version (since = "0.74")]
 		public void set_yalign (Vte.Align align);
-		[Version (since = "0.70")]
+		[Version (since = "0.74")]
 		public void set_yfill (bool fill);
 		[Version (since = "0.48")]
 		public void spawn_async (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 6.33333, destroy_notify_pos = 6.66667)] owned GLib.SpawnChildSetupFunc? child_setup, int timeout, GLib.Cancellable? cancellable, [CCode (scope = "async")] Vte.TerminalSpawnAsyncCallback? callback);
@@ -265,6 +275,8 @@ namespace Vte {
 		public string encoding { owned get; set; }
 		[NoAccessorMethod]
 		public Pango.FontDescription font_desc { owned get; set; }
+		[Version (since = "0.74")]
+		public Cairo.FontOptions font_options { get; set; }
 		public double font_scale { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "0.50")]
@@ -287,13 +299,13 @@ namespace Vte {
 		public string window_title { get; }
 		[Version (since = "0.40")]
 		public string word_char_exceptions { get; }
-		[Version (since = "0.70")]
+		[Version (since = "0.74")]
 		public Vte.Align xalign { get; set; }
-		[Version (since = "0.70")]
+		[Version (since = "0.74")]
 		public bool xfill { get; set; }
-		[Version (since = "0.70")]
+		[Version (since = "0.74")]
 		public Vte.Align yalign { get; set; }
-		[Version (since = "0.70")]
+		[Version (since = "0.74")]
 		public bool yfill { get; set; }
 		public virtual signal void bell ();
 		public virtual signal void char_size_changed (uint char_width, uint char_height);

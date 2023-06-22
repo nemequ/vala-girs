@@ -3,7 +3,7 @@
 [CCode (cprefix = "GrlNet", gir_namespace = "GrlNet", gir_version = "0.3", lower_case_cprefix = "grl_net_")]
 namespace GrlNet {
 	[CCode (cheader_filename = "net/grl-net.h", type_id = "grl_net_wc_get_type ()")]
-	public class Wc : GLib.Object {
+	public sealed class Wc : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Wc ();
 		public static GLib.Quark error_quark ();

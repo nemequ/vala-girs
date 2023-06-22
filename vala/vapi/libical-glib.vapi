@@ -32,7 +32,7 @@ namespace ICal {
 		public static string tmp_copy (string str);
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_array_get_type ()")]
-	public class Array : ICal.Object {
+	public sealed class Array : ICal.Object {
 		[CCode (has_construct_function = false)]
 		protected Array ();
 		[CCode (cname = "i_cal_timezone_array_append_from_vtimezone")]
@@ -52,7 +52,7 @@ namespace ICal {
 		public ICal.Timezone timezone_element_at (uint index);
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_attach_get_type ()")]
-	public class Attach : ICal.Object {
+	public sealed class Attach : ICal.Object {
 		[CCode (has_construct_function = false)]
 		protected Attach ();
 		[CCode (has_construct_function = false)]
@@ -72,7 +72,7 @@ namespace ICal {
 		public unowned string? get_url ();
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_comp_iter_get_type ()")]
-	public class CompIter : ICal.Object {
+	public sealed class CompIter : ICal.Object {
 		[CCode (has_construct_function = false)]
 		protected CompIter ();
 		[Version (since = "1.0")]
@@ -83,7 +83,7 @@ namespace ICal {
 		public ICal.Component prior ();
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_component_get_type ()")]
-	public class Component : ICal.Object {
+	public sealed class Component : ICal.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Component (ICal.ComponentKind kind);
@@ -267,7 +267,7 @@ namespace ICal {
 		public Component.xvote ();
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_datetimeperiod_get_type ()")]
-	public class Datetimeperiod : ICal.Object {
+	public sealed class Datetimeperiod : ICal.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Datetimeperiod ();
@@ -281,7 +281,7 @@ namespace ICal {
 		public void set_time (ICal.Time time);
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_duration_get_type ()")]
-	public class Duration : ICal.Object {
+	public sealed class Duration : ICal.Object {
 		[CCode (has_construct_function = false)]
 		protected Duration ();
 		[Version (since = "1.0")]
@@ -330,7 +330,7 @@ namespace ICal {
 		public void set_weeks (uint weeks);
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_geo_get_type ()")]
-	public class Geo : ICal.Object {
+	public sealed class Geo : ICal.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Geo (double lat, double lon);
@@ -382,7 +382,7 @@ namespace ICal {
 		public GLib.Object owner { owned get; set; }
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_parameter_get_type ()")]
-	public class Parameter : ICal.Object {
+	public sealed class Parameter : ICal.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Parameter (ICal.ParameterKind v);
@@ -774,7 +774,7 @@ namespace ICal {
 		public Parameter.xlicerrortype (ICal.ParameterXlicerrortype v);
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_parser_get_type ()")]
-	public class Parser : ICal.Object {
+	public sealed class Parser : ICal.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Parser ();
@@ -795,7 +795,7 @@ namespace ICal {
 		public static ICal.Component parse_string (string str);
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_period_get_type ()")]
-	public class Period : ICal.Object {
+	public sealed class Period : ICal.Object {
 		[CCode (has_construct_function = false)]
 		protected Period ();
 		[Version (since = "1.0")]
@@ -824,7 +824,7 @@ namespace ICal {
 		public void set_start (ICal.Time start);
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_property_get_type ()")]
-	public class Property : ICal.Object {
+	public sealed class Property : ICal.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Property (ICal.PropertyKind kind);
@@ -1685,7 +1685,7 @@ namespace ICal {
 		public Property.xlicmimeoptinfo (string v);
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_recur_iterator_get_type ()")]
-	public class RecurIterator : ICal.Object {
+	public sealed class RecurIterator : ICal.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public RecurIterator (ICal.Recurrence rule, ICal.Time dtstart);
@@ -1695,7 +1695,7 @@ namespace ICal {
 		public int set_start (ICal.Time start);
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_recurrence_get_type ()")]
-	public class Recurrence : ICal.Object {
+	public sealed class Recurrence : ICal.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Recurrence ();
@@ -1812,7 +1812,7 @@ namespace ICal {
 		public string to_string ();
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_reqstat_get_type ()")]
-	public class Reqstat : ICal.Object {
+	public sealed class Reqstat : ICal.Object {
 		[CCode (has_construct_function = false)]
 		protected Reqstat ();
 		[CCode (has_construct_function = false)]
@@ -1830,7 +1830,7 @@ namespace ICal {
 		public string to_string ();
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_time_get_type ()")]
-	public class Time : ICal.Object {
+	public sealed class Time : ICal.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Time ();
@@ -1955,7 +1955,7 @@ namespace ICal {
 		public int week_number ();
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_time_span_get_type ()")]
-	public class TimeSpan : ICal.Object {
+	public sealed class TimeSpan : ICal.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public TimeSpan (ICal.Time dtstart, ICal.Time dtend, int is_busy);
@@ -1982,7 +1982,7 @@ namespace ICal {
 		public TimeSpan.timet (long start, long end, bool is_busy);
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_timezone_get_type ()")]
-	public class Timezone : ICal.Object {
+	public sealed class Timezone : ICal.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Timezone ();
@@ -2028,6 +2028,8 @@ namespace ICal {
 		public int get_utc_offset_of_utc_time (ICal.Time tt, out int is_daylight);
 		[Version (since = "1.0")]
 		public static unowned ICal.Timezone get_utc_timezone ();
+		[Version (since = "3.0.17")]
+		public static unowned string get_zone_directory ();
 		[Version (since = "1.0")]
 		public static void release_zone_tab ();
 		[Version (since = "2.0")]
@@ -2040,7 +2042,7 @@ namespace ICal {
 		public static void set_zone_directory (string path);
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_trigger_get_type ()")]
-	public class Trigger : ICal.Object {
+	public sealed class Trigger : ICal.Object {
 		[CCode (has_construct_function = false)]
 		protected Trigger ();
 		[CCode (has_construct_function = false)]
@@ -2063,7 +2065,7 @@ namespace ICal {
 		public void set_time (ICal.Time time);
 	}
 	[CCode (cheader_filename = "libical-glib/libical-glib.h", type_id = "i_cal_value_get_type ()")]
-	public class Value : ICal.Object {
+	public sealed class Value : ICal.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.0")]
 		public Value (ICal.ValueKind kind);

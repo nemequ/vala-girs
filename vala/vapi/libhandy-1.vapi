@@ -43,7 +43,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_avatar_get_type ()")]
 	[Version (since = "1.0")]
-	public class Avatar : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
+	public sealed class Avatar : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Avatar (int size, string? text, bool show_initials);
 		[Version (since = "1.2")]
@@ -73,7 +73,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_carousel_get_type ()")]
 	[Version (since = "1.0")]
-	public class Carousel : Gtk.EventBox, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
+	public sealed class Carousel : Gtk.EventBox, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Carousel ();
 		[Version (since = "1.2")]
@@ -116,7 +116,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_carousel_indicator_dots_get_type ()")]
 	[Version (since = "1.0")]
-	public class CarouselIndicatorDots : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class CarouselIndicatorDots : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public CarouselIndicatorDots ();
 		public unowned Hdy.Carousel? get_carousel ();
@@ -125,7 +125,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_carousel_indicator_lines_get_type ()")]
 	[Version (since = "1.0")]
-	public class CarouselIndicatorLines : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class CarouselIndicatorLines : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public CarouselIndicatorLines ();
 		public unowned Hdy.Carousel? get_carousel ();
@@ -134,7 +134,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_clamp_get_type ()")]
 	[Version (since = "1.0")]
-	public class Clamp : Gtk.Bin, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class Clamp : Gtk.Bin, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Clamp ();
 		public int get_maximum_size ();
@@ -207,7 +207,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_enum_value_object_get_type ()")]
 	[Version (since = "1.0")]
-	public class EnumValueObject : GLib.Object {
+	public sealed class EnumValueObject : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public EnumValueObject (GLib.EnumValue enum_value);
 		public unowned string get_name ();
@@ -242,7 +242,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_flap_get_type ()")]
 	[Version (since = "1.2")]
-	public class Flap : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
+	public sealed class Flap : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable, Hdy.Swipeable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Flap ();
 		public unowned Gtk.Widget? get_content ();
@@ -332,7 +332,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_header_group_get_type ()")]
 	[Version (since = "1.0")]
-	public class HeaderGroup : GLib.Object, Gtk.Buildable {
+	public sealed class HeaderGroup : GLib.Object, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public HeaderGroup ();
 		public void add_gtk_header_bar (Gtk.HeaderBar header_bar);
@@ -350,7 +350,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_header_group_child_get_type ()")]
 	[Version (since = "1.0")]
-	public class HeaderGroupChild : GLib.Object {
+	public sealed class HeaderGroupChild : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected HeaderGroupChild ();
 		public Hdy.HeaderGroupChildType get_child_type ();
@@ -511,7 +511,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_squeezer_get_type ()")]
 	[Version (since = "1.0")]
-	public class Squeezer : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class Squeezer : Gtk.Container, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Squeezer ();
 		public bool get_child_enabled (Gtk.Widget child);
@@ -541,7 +541,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_status_page_get_type ()")]
 	[Version (since = "1.2")]
-	public class StatusPage : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class StatusPage : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public StatusPage ();
 		public unowned string? get_description ();
@@ -556,7 +556,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_style_manager_get_type ()")]
 	[Version (since = "1.6")]
-	public class StyleManager : GLib.Object {
+	public sealed class StyleManager : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected StyleManager ();
 		public Hdy.ColorScheme get_color_scheme ();
@@ -575,7 +575,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_swipe_group_get_type ()")]
 	[Version (deprecated = true, deprecated_since = "1.4", since = "1.0")]
-	public class SwipeGroup : GLib.Object, Gtk.Buildable {
+	public sealed class SwipeGroup : GLib.Object, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public SwipeGroup ();
 		public void add_swipeable (Hdy.Swipeable swipeable);
@@ -584,7 +584,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_swipe_tracker_get_type ()")]
 	[Version (since = "1.0")]
-	public class SwipeTracker : GLib.Object, Gtk.Orientable {
+	public sealed class SwipeTracker : GLib.Object, Gtk.Orientable {
 		[CCode (has_construct_function = false)]
 		public SwipeTracker (Hdy.Swipeable swipeable);
 		[Version (since = "1.2")]
@@ -611,7 +611,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_tab_bar_get_type ()")]
 	[Version (since = "1.2")]
-	public class TabBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class TabBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public TabBar ();
 		public bool get_autohide ();
@@ -643,7 +643,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_tab_page_get_type ()")]
 	[Version (since = "1.2")]
-	public class TabPage : GLib.Object {
+	public sealed class TabPage : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected TabPage ();
 		public unowned Gtk.Widget get_child ();
@@ -678,7 +678,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_tab_view_get_type ()")]
 	[Version (since = "1.2")]
-	public class TabView : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class TabView : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public TabView ();
 		public unowned Hdy.TabPage add_page (Gtk.Widget child, Hdy.TabPage? parent);
@@ -734,7 +734,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_title_bar_get_type ()")]
 	[Version (deprecated = true, deprecated_since = "1.4", since = "1.0")]
-	public class TitleBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class TitleBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public TitleBar ();
 		public bool get_selection_mode ();
@@ -743,7 +743,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_value_object_get_type ()")]
 	[Version (since = "1.0")]
-	public class ValueObject : GLib.Object {
+	public sealed class ValueObject : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public ValueObject (GLib.Value value);
 		public void copy_value (GLib.Value dest);
@@ -754,7 +754,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_view_switcher_get_type ()")]
 	[Version (since = "1.0")]
-	public class ViewSwitcher : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class ViewSwitcher : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ViewSwitcher ();
 		public Pango.EllipsizeMode get_narrow_ellipsize ();
@@ -769,7 +769,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_view_switcher_bar_get_type ()")]
 	[Version (since = "1.0")]
-	public class ViewSwitcherBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class ViewSwitcherBar : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ViewSwitcherBar ();
 		public Hdy.ViewSwitcherPolicy get_policy ();
@@ -784,7 +784,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_view_switcher_title_get_type ()")]
 	[Version (since = "1.0")]
-	public class ViewSwitcherTitle : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class ViewSwitcherTitle : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public ViewSwitcherTitle ();
 		public Hdy.ViewSwitcherPolicy get_policy ();
@@ -813,7 +813,7 @@ namespace Hdy {
 	}
 	[CCode (cheader_filename = "handy.h", type_id = "hdy_window_handle_get_type ()")]
 	[Version (since = "1.0")]
-	public class WindowHandle : Gtk.EventBox, Atk.Implementor, Gtk.Buildable {
+	public sealed class WindowHandle : Gtk.EventBox, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public WindowHandle ();
 	}

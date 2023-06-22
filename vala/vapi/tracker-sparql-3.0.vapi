@@ -38,16 +38,13 @@ namespace Tracker {
 		public abstract class Connection : GLib.Object {
 			[CCode (has_construct_function = false)]
 			protected Connection ();
-			[Version (since = "3.0")]
 			public static Tracker.Sparql.Connection bus_new (string service_name, string? object_path, GLib.DBusConnection? dbus_connection = null) throws GLib.Error;
 			[Version (since = "3.1")]
 			public static async Tracker.Sparql.Connection bus_new_async (string service_name, string? object_path, GLib.DBusConnection? dbus_connection = null, GLib.Cancellable? cancellable = null) throws GLib.Error;
-			[Version (since = "3.0")]
 			public void close ();
-			[Version (since = "3.0")]
 			public async bool close_async (GLib.Cancellable? cancellable = null) throws GLib.Error;
 			public Tracker.Batch create_batch ();
-			public Tracker.Notifier create_notifier ();
+			public Tracker.Notifier? create_notifier ();
 			[Version (since = "3.4")]
 			public async bool deserialize_async (Tracker.DeserializeFlags flags, Tracker.RdfFormat format, string default_graph, GLib.InputStream stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
 			public unowned Tracker.NamespaceManager get_namespace_manager ();
@@ -55,9 +52,7 @@ namespace Tracker {
 			public Tracker.Sparql.Statement? load_statement_from_gresource (string resource_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 			[Version (since = "3.3")]
 			public void map_connection (string handle_name, Tracker.Sparql.Connection service_connection);
-			[Version (since = "3.0")]
 			public static Tracker.Sparql.Connection @new (Tracker.Sparql.ConnectionFlags flags, GLib.File? store, GLib.File? ontology, GLib.Cancellable? cancellable = null) throws GLib.Error;
-			[Version (since = "3.0")]
 			public static async Tracker.Sparql.Connection new_async (Tracker.Sparql.ConnectionFlags flags, GLib.File? store, GLib.File? ontology, GLib.Cancellable? cancellable = null) throws GLib.Error;
 			public Tracker.Sparql.Cursor query (string sparql, GLib.Cancellable? cancellable = null) throws GLib.Error;
 			public async Tracker.Sparql.Cursor query_async (string sparql, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -94,7 +89,7 @@ namespace Tracker {
 			public int get_n_columns ();
 			public unowned string? get_string (int column, out long length = null);
 			public Tracker.Sparql.ValueType get_value_type (int column);
-			public unowned string get_variable_name (int column);
+			public unowned string? get_variable_name (int column);
 			public bool is_bound (int column);
 			public bool next (GLib.Cancellable? cancellable = null) throws GLib.Error;
 			public async bool next_async (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -114,7 +109,6 @@ namespace Tracker {
 			public void bind_double (string name, double value);
 			public void bind_int (string name, int64 value);
 			public void bind_string (string name, string value);
-			[Version (since = "3.0")]
 			public void clear_bindings ();
 			public Tracker.Sparql.Cursor execute (GLib.Cancellable? cancellable = null) throws GLib.Error;
 			public async Tracker.Sparql.Cursor execute_async (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -129,7 +123,7 @@ namespace Tracker {
 			public Tracker.Sparql.Connection connection { get; construct; }
 			public string sparql { get; construct; }
 		}
-		[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_SPARQL_CONNECTION_FLAGS_", has_type_id = false)]
+		[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_SPARQL_CONNECTION_FLAGS_", type_id = "tracker_sparql_connection_flags_get_type ()")]
 		[Flags]
 		[GIR (name = "SparqlConnectionFlags")]
 		public enum ConnectionFlags {
@@ -153,7 +147,7 @@ namespace Tracker {
 			BLANK_NODE,
 			BOOLEAN
 		}
-		[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_SPARQL_ERROR_", has_type_id = false)]
+		[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_SPARQL_ERROR_", type_id = "tracker_sparql_error_get_type ()")]
 		[GIR (name = "SparqlError")]
 		public errordomain Error {
 			CONSTRAINT,
@@ -188,18 +182,15 @@ namespace Tracker {
 		public static string get_uuid_urn ();
 	}
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", type_id = "tracker_batch_get_type ()")]
+	[Version (since = "3.1")]
 	public abstract class Batch : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Batch ();
-		[Version (since = "3.1")]
 		public void add_resource (string? graph, Tracker.Resource resource);
-		[Version (since = "3.1")]
 		public void add_sparql (string sparql);
 		[Version (since = "3.5")]
 		public void add_statementv (Tracker.Sparql.Statement stmt, [CCode (array_length_cname = "n_values", array_length_pos = 1.5, array_length_type = "guint")] string[] variable_names, [CCode (array_length_cname = "n_values", array_length_pos = 1.5, array_length_type = "guint")] GLib.Value[] values);
-		[Version (since = "3.1")]
 		public bool execute (GLib.Cancellable? cancellable = null) throws GLib.Error;
-		[Version (since = "3.1")]
 		public async bool execute_async (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public unowned Tracker.Sparql.Connection get_connection ();
 		public Tracker.Sparql.Connection connection { get; construct; }
@@ -212,7 +203,7 @@ namespace Tracker {
 		public Tracker.Sparql.Connection sparql_connection { get; construct; }
 	}
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", type_id = "tracker_endpoint_dbus_get_type ()")]
-	public class EndpointDBus : Tracker.Endpoint, GLib.Initable {
+	public sealed class EndpointDBus : Tracker.Endpoint, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		public EndpointDBus (Tracker.Sparql.Connection sparql_connection, GLib.DBusConnection dbus_connection, string? object_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoAccessorMethod]
@@ -221,9 +212,9 @@ namespace Tracker {
 		public string object_path { owned get; construct; }
 	}
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", type_id = "tracker_endpoint_http_get_type ()")]
-	public class EndpointHttp : Tracker.Endpoint, GLib.Initable {
+	[Version (since = "3.1")]
+	public sealed class EndpointHttp : Tracker.Endpoint, GLib.Initable {
 		[CCode (has_construct_function = false)]
-		[Version (since = "3.1")]
 		public EndpointHttp (Tracker.Sparql.Connection sparql_connection, uint port, GLib.TlsCertificate? certificate, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoAccessorMethod]
 		public GLib.TlsCertificate http_certificate { owned get; construct; }
@@ -232,7 +223,7 @@ namespace Tracker {
 		public signal bool block_remote_address (GLib.SocketAddress address);
 	}
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", type_id = "tracker_namespace_manager_get_type ()")]
-	public class NamespaceManager : GLib.Object {
+	public sealed class NamespaceManager : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public NamespaceManager ();
 		public void add_prefix (string prefix, string ns);
@@ -250,9 +241,7 @@ namespace Tracker {
 	public class Notifier : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Notifier ();
-		[Version (since = "3.0")]
 		public uint signal_subscribe (GLib.DBusConnection connection, string service, string? object_path, string? graph);
-		[Version (since = "3.0")]
 		public void signal_unsubscribe (uint handler_id);
 		[NoAccessorMethod]
 		public Tracker.Sparql.Connection connection { owned get; construct; }
@@ -291,7 +280,6 @@ namespace Tracker {
 		public unowned string? get_first_string (string property_uri);
 		public unowned string? get_first_uri (string property_uri);
 		public unowned string? get_identifier ();
-		[Version (since = "3.0")]
 		public GLib.List<weak string> get_properties ();
 		[Version (since = "3.1")]
 		public bool get_property_overwrite (string property_uri);
@@ -319,27 +307,36 @@ namespace Tracker {
 		public void set_uri (string property_uri, string value);
 		public string identifier { get; set; }
 	}
-	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_DESERIALIZE_FLAGS_", has_type_id = false)]
+	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_DESERIALIZE_FLAGS_", type_id = "tracker_deserialize_flags_get_type ()")]
 	public enum DeserializeFlags {
 		NONE
 	}
-	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_NOTIFIER_EVENT_", has_type_id = false)]
+	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_NOTIFIER_EVENT_", type_id = "tracker_notifier_event_type_get_type ()")]
 	public enum NotifierEventType {
 		CREATE,
 		DELETE,
 		UPDATE
 	}
-	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_RDF_FORMAT_", has_type_id = false)]
+	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_RDF_FORMAT_", type_id = "tracker_rdf_format_get_type ()")]
 	public enum RdfFormat {
 		TURTLE,
 		TRIG,
 		JSON_LD,
 		LAST
 	}
-	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_SERIALIZE_FLAGS_", has_type_id = false)]
+	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_SERIALIZE_FLAGS_", type_id = "tracker_serialize_flags_get_type ()")]
 	public enum SerializeFlags {
 		NONE
 	}
+	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cname = "TRACKER_MAJOR_VERSION")]
+	public const int MAJOR_VERSION;
+	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cname = "TRACKER_MICRO_VERSION")]
+	public const int MICRO_VERSION;
+	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cname = "TRACKER_MINOR_VERSION")]
+	public const int MINOR_VERSION;
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]
 	public static unowned string check_version (uint required_major, uint required_minor, uint required_micro);
+	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h")]
+	[Version (replacement = "SparqlError.quark")]
+	public static GLib.Quark sparql_error_quark ();
 }

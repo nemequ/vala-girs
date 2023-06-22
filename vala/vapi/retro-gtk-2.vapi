@@ -3,13 +3,13 @@
 [CCode (cprefix = "Retro", gir_namespace = "Retro", gir_version = "2", lower_case_cprefix = "retro_")]
 namespace Retro {
 	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_controller_iterator_get_type ()")]
-	public class ControllerIterator : GLib.Object {
+	public sealed class ControllerIterator : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected ControllerIterator ();
 		public bool next (out uint port, out unowned Retro.Controller controller);
 	}
 	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_core_get_type ()")]
-	public class Core : GLib.Object {
+	public sealed class Core : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Core (string filename);
 		public void boot () throws GLib.Error;
@@ -70,7 +70,7 @@ namespace Retro {
 		public signal void video_output (Retro.Pixdata pixdata);
 	}
 	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_core_descriptor_get_type ()")]
-	public class CoreDescriptor : GLib.Object {
+	public sealed class CoreDescriptor : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public CoreDescriptor (string filename) throws GLib.Error;
 		public string? get_firmware_md5 (string firmware) throws GLib.Error;
@@ -97,7 +97,7 @@ namespace Retro {
 		public bool has_platform (string platform);
 	}
 	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_core_view_get_type ()")]
-	public class CoreView : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
+	public sealed class CoreView : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
 		[CCode (has_construct_function = false)]
 		public CoreView ();
 		public Retro.Controller as_controller (Retro.ControllerType controller_type);
@@ -133,7 +133,7 @@ namespace Retro {
 		public bool get_pointer (out Retro.PointerId id);
 	}
 	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_key_joypad_mapping_get_type ()")]
-	public class KeyJoypadMapping : GLib.Object {
+	public sealed class KeyJoypadMapping : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public KeyJoypadMapping ();
 		[CCode (has_construct_function = false)]
@@ -142,20 +142,20 @@ namespace Retro {
 		public void set_button_key (Retro.JoypadId button, uint16 hardware_keycode);
 	}
 	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_module_iterator_get_type ()")]
-	public class ModuleIterator : GLib.Object {
+	public sealed class ModuleIterator : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public ModuleIterator ([CCode (array_length = false, array_null_terminated = true)] string[] lookup_paths, bool recursive);
 		public Retro.CoreDescriptor? @get ();
 		public bool next ();
 	}
 	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_module_query_get_type ()")]
-	public class ModuleQuery : GLib.Object {
+	public sealed class ModuleQuery : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public ModuleQuery (bool recursive);
 		public Retro.ModuleIterator iterator ();
 	}
 	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_option_get_type ()")]
-	public class Option : GLib.Object {
+	public sealed class Option : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Option ();
 		public unowned string get_description ();
@@ -167,7 +167,7 @@ namespace Retro {
 		public signal void value_changed ();
 	}
 	[CCode (cheader_filename = "retro-gtk.h", type_id = "retro_option_iterator_get_type ()")]
-	public class OptionIterator : GLib.Object {
+	public sealed class OptionIterator : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected OptionIterator ();
 		public bool next (out uint key, out unowned Retro.Option? option);

@@ -3,7 +3,7 @@
 [CCode (cprefix = "Dzl", gir_namespace = "Dazzle", gir_version = "1.0", lower_case_cprefix = "dzl_")]
 namespace Dazzle {
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_animation_get_type ()")]
-	public class Animation : GLib.InitiallyUnowned {
+	public sealed class Animation : GLib.InitiallyUnowned {
 		[CCode (has_construct_function = false)]
 		protected Animation ();
 		public void add_property (GLib.ParamSpec pspec, GLib.Value value);
@@ -56,7 +56,7 @@ namespace Dazzle {
 		public Bin ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_binding_group_get_type ()")]
-	public class BindingGroup : GLib.Object {
+	public sealed class BindingGroup : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public BindingGroup ();
 		public void bind (string source_property, GLib.Object target, string target_property, GLib.BindingFlags flags);
@@ -67,7 +67,7 @@ namespace Dazzle {
 		public GLib.Object source { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_bolding_label_get_type ()")]
-	public class BoldingLabel : Gtk.Label, Atk.Implementor, Gtk.Buildable {
+	public sealed class BoldingLabel : Gtk.Label, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public BoldingLabel (string str, bool bold);
 		public void set_bold (bool bold);
@@ -86,7 +86,7 @@ namespace Dazzle {
 		public int max_width_request { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_box_theatric_get_type ()")]
-	public class BoxTheatric : GLib.Object {
+	public sealed class BoxTheatric : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected BoxTheatric ();
 		[NoAccessorMethod]
@@ -116,7 +116,7 @@ namespace Dazzle {
 		public int max_width_request { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_child_property_action_get_type ()")]
-	public class ChildPropertyAction : GLib.Object, GLib.Action {
+	public sealed class ChildPropertyAction : GLib.Object, GLib.Action {
 		[CCode (has_construct_function = false)]
 		protected ChildPropertyAction ();
 		public static GLib.Action @new (string name, Gtk.Container container, Gtk.Widget child, string child_property_name);
@@ -163,7 +163,7 @@ namespace Dazzle {
 		public void set_arena (Dazzle.CounterArena arena);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_cpu_graph_get_type ()")]
-	public class CpuGraph : Dazzle.GraphView, Atk.Implementor, Gtk.Buildable {
+	public sealed class CpuGraph : Dazzle.GraphView, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected CpuGraph ();
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
@@ -174,19 +174,19 @@ namespace Dazzle {
 		public int64 timespan { get; construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_cpu_model_get_type ()")]
-	public class CpuModel : Dazzle.GraphModel {
+	public sealed class CpuModel : Dazzle.GraphModel {
 		[CCode (has_construct_function = false, type = "DzlGraphModel*")]
 		public CpuModel ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_css_provider_get_type ()")]
-	public class CssProvider : Gtk.CssProvider, Gtk.StyleProvider {
+	public sealed class CssProvider : Gtk.CssProvider, Gtk.StyleProvider {
 		[CCode (has_construct_function = false, type = "GtkCssProvider*")]
 		public CssProvider (string base_path);
 		[NoAccessorMethod]
 		public string base_path { owned get; construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_directory_model_get_type ()")]
-	public class DirectoryModel : GLib.Object, GLib.ListModel {
+	public sealed class DirectoryModel : GLib.Object, GLib.ListModel {
 		[CCode (has_construct_function = false)]
 		protected DirectoryModel ();
 		public unowned GLib.File get_directory ();
@@ -196,7 +196,7 @@ namespace Dazzle {
 		public GLib.File directory { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_directory_reaper_get_type ()")]
-	public class DirectoryReaper : GLib.Object {
+	public sealed class DirectoryReaper : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public DirectoryReaper ();
 		public void add_directory (GLib.File directory, GLib.TimeSpan min_age);
@@ -257,7 +257,7 @@ namespace Dazzle {
 		public virtual signal void hide_edges ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_dock_overlay_edge_get_type ()")]
-	public class DockOverlayEdge : Dazzle.Bin, Atk.Implementor, Dazzle.DockItem, Gtk.Buildable {
+	public sealed class DockOverlayEdge : Dazzle.Bin, Atk.Implementor, Dazzle.DockItem, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected DockOverlayEdge ();
 		public Gtk.PositionType get_edge ();
@@ -311,7 +311,7 @@ namespace Dazzle {
 		public Dazzle.TabStyle style { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_dock_transient_grab_get_type ()")]
-	public class DockTransientGrab : GLib.Object {
+	public sealed class DockTransientGrab : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public DockTransientGrab ();
 		public void acquire ();
@@ -373,7 +373,7 @@ namespace Dazzle {
 		public string title { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_entry_box_get_type ()")]
-	public class EntryBox : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class EntryBox : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public EntryBox ();
 		[NoAccessorMethod]
@@ -421,7 +421,7 @@ namespace Dazzle {
 		public double progress { get; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_fuzzy_index_get_type ()")]
-	public class FuzzyIndex : GLib.Object {
+	public sealed class FuzzyIndex : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public FuzzyIndex ();
 		public GLib.Variant? get_metadata (string key);
@@ -433,7 +433,7 @@ namespace Dazzle {
 		public async GLib.ListModel query_async (string query, uint max_matches, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_fuzzy_index_builder_get_type ()")]
-	public class FuzzyIndexBuilder : GLib.Object {
+	public sealed class FuzzyIndexBuilder : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public FuzzyIndexBuilder ();
 		public bool get_case_sensitive ();
@@ -449,7 +449,7 @@ namespace Dazzle {
 		public bool case_sensitive { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_fuzzy_index_cursor_get_type ()")]
-	public class FuzzyIndexCursor : GLib.Object, GLib.AsyncInitable, GLib.ListModel {
+	public sealed class FuzzyIndexCursor : GLib.Object, GLib.AsyncInitable, GLib.ListModel {
 		[CCode (has_construct_function = false)]
 		protected FuzzyIndexCursor ();
 		public unowned Dazzle.FuzzyIndex get_index ();
@@ -465,7 +465,7 @@ namespace Dazzle {
 		public GLib.VariantDict tables { construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_fuzzy_index_match_get_type ()")]
-	public class FuzzyIndexMatch : GLib.Object {
+	public sealed class FuzzyIndexMatch : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected FuzzyIndexMatch ();
 		public unowned GLib.Variant get_document ();
@@ -495,7 +495,7 @@ namespace Dazzle {
 		public FuzzyMutableIndex.with_free_func (bool case_sensitive, GLib.DestroyNotify free_func);
 	}
 	[CCode (cheader_filename = "dazzle.h", lower_case_csuffix = "graph_view_column", type_id = "dzl_graph_view_column_get_type ()")]
-	public class GraphColumn : GLib.Object {
+	public sealed class GraphColumn : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public GraphColumn (string name, GLib.Type value_type);
 		public unowned string get_name ();
@@ -505,7 +505,7 @@ namespace Dazzle {
 		public GLib.Type value_type { get; construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", lower_case_csuffix = "graph_view_line_renderer", type_id = "dzl_graph_view_line_renderer_get_type ()")]
-	public class GraphLineRenderer : GLib.Object, Dazzle.GraphRenderer {
+	public sealed class GraphLineRenderer : GLib.Object, Dazzle.GraphRenderer {
 		[CCode (has_construct_function = false)]
 		public GraphLineRenderer ();
 		public unowned Gdk.RGBA? get_stroke_color_rgba ();
@@ -570,7 +570,7 @@ namespace Dazzle {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_joined_menu_get_type ()")]
-	public class JoinedMenu : GLib.MenuModel {
+	public sealed class JoinedMenu : GLib.MenuModel {
 		[CCode (has_construct_function = false)]
 		public JoinedMenu ();
 		public void append_menu (GLib.MenuModel model);
@@ -600,7 +600,7 @@ namespace Dazzle {
 		protected ListBoxRow ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_list_model_filter_get_type ()")]
-	public class ListModelFilter : GLib.Object, GLib.ListModel {
+	public sealed class ListModelFilter : GLib.Object, GLib.ListModel {
 		[CCode (has_construct_function = false)]
 		public ListModelFilter (GLib.ListModel child_model);
 		public unowned GLib.ListModel get_child_model ();
@@ -649,7 +649,7 @@ namespace Dazzle {
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_menu_manager_get_type ()")]
 	[Version (since = "3.26")]
-	public class MenuManager : GLib.Object {
+	public sealed class MenuManager : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public MenuManager ();
 		public uint add_filename (string filename) throws GLib.Error;
@@ -672,7 +672,7 @@ namespace Dazzle {
 		public virtual signal void resize_drag_end (Gtk.Widget child);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_path_get_type ()")]
-	public class Path : GLib.Object {
+	public sealed class Path : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Path ();
 		public void append (Dazzle.PathElement element);
@@ -685,7 +685,7 @@ namespace Dazzle {
 		public string printf ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_path_bar_get_type ()")]
-	public class PathBar : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class PathBar : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public PathBar ();
 		public unowned Dazzle.Path get_path ();
@@ -696,7 +696,7 @@ namespace Dazzle {
 		public signal void populate_menu (Dazzle.Path object, Dazzle.PathElement p0, GLib.Menu p1);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_path_element_get_type ()")]
-	public class PathElement : GLib.Object {
+	public sealed class PathElement : GLib.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "3.26")]
 		public PathElement (string? id, string? icon_name, string title);
@@ -724,7 +724,7 @@ namespace Dazzle {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_pill_box_get_type ()")]
-	public class PillBox : Gtk.EventBox, Atk.Implementor, Gtk.Buildable {
+	public sealed class PillBox : Gtk.EventBox, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public PillBox (string label);
 		public unowned string get_label ();
@@ -765,7 +765,7 @@ namespace Dazzle {
 		public signal void changed (string object);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_preferences_file_chooser_button_get_type ()")]
-	public class PreferencesFileChooserButton : Dazzle.PreferencesBin, Atk.Implementor, Gtk.Buildable {
+	public sealed class PreferencesFileChooserButton : Dazzle.PreferencesBin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected PreferencesFileChooserButton ();
 		[NoAccessorMethod]
@@ -778,12 +778,12 @@ namespace Dazzle {
 		public string title { owned get; construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_preferences_flow_box_get_type ()")]
-	public class PreferencesFlowBox : Dazzle.ColumnLayout, Atk.Implementor, Gtk.Buildable {
+	public sealed class PreferencesFlowBox : Dazzle.ColumnLayout, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public PreferencesFlowBox ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_preferences_font_button_get_type ()")]
-	public class PreferencesFontButton : Dazzle.PreferencesBin, Atk.Implementor, Gtk.Buildable {
+	public sealed class PreferencesFontButton : Dazzle.PreferencesBin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected PreferencesFontButton ();
 		[NoAccessorMethod]
@@ -793,7 +793,7 @@ namespace Dazzle {
 		public signal void activate ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_preferences_group_get_type ()")]
-	public class PreferencesGroup : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class PreferencesGroup : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected PreferencesGroup ();
 		public void add (Gtk.Widget widget);
@@ -810,7 +810,7 @@ namespace Dazzle {
 		public string title { get; construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_preferences_page_get_type ()")]
-	public class PreferencesPage : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class PreferencesPage : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected PreferencesPage ();
 		public void add_group (Dazzle.PreferencesGroup group);
@@ -821,7 +821,7 @@ namespace Dazzle {
 		public int priority { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_preferences_spin_button_get_type ()")]
-	public class PreferencesSpinButton : Dazzle.PreferencesBin, Atk.Implementor, Gtk.Buildable {
+	public sealed class PreferencesSpinButton : Dazzle.PreferencesBin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected PreferencesSpinButton ();
 		public unowned Gtk.Widget get_spin_button ();
@@ -834,7 +834,7 @@ namespace Dazzle {
 		public signal void activate ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_preferences_switch_get_type ()")]
-	public class PreferencesSwitch : Dazzle.PreferencesBin, Atk.Implementor, Gtk.Buildable {
+	public sealed class PreferencesSwitch : Dazzle.PreferencesBin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected PreferencesSwitch ();
 		[NoAccessorMethod]
@@ -878,7 +878,7 @@ namespace Dazzle {
 		public bool show_progress { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_progress_icon_get_type ()")]
-	public class ProgressIcon : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
+	public sealed class ProgressIcon : Gtk.DrawingArea, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ProgressIcon ();
 		public double get_progress ();
@@ -905,7 +905,7 @@ namespace Dazzle {
 		public uint transition_duration { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_properties_group_get_type ()")]
-	public class PropertiesGroup : GLib.Object, GLib.ActionGroup {
+	public sealed class PropertiesGroup : GLib.Object, GLib.ActionGroup {
 		[CCode (has_construct_function = false)]
 		[Version (since = "3.26")]
 		public PropertiesGroup (GLib.Object object);
@@ -940,7 +940,7 @@ namespace Dazzle {
 		public signal void changed ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_read_only_list_model_get_type ()")]
-	public class ReadOnlyListModel : GLib.Object, GLib.ListModel {
+	public sealed class ReadOnlyListModel : GLib.Object, GLib.ListModel {
 		[CCode (has_construct_function = false)]
 		protected ReadOnlyListModel ();
 		[Version (since = "3.30")]
@@ -950,7 +950,7 @@ namespace Dazzle {
 		public GLib.ListModel base_model { construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_recursive_file_monitor_get_type ()")]
-	public class RecursiveFileMonitor : GLib.Object {
+	public sealed class RecursiveFileMonitor : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public RecursiveFileMonitor (GLib.File root);
 		[Version (since = "3.28")]
@@ -978,7 +978,7 @@ namespace Dazzle {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_scrolled_window_get_type ()")]
-	public class ScrolledWindow : Gtk.ScrolledWindow, Atk.Implementor, Gtk.Buildable {
+	public sealed class ScrolledWindow : Gtk.ScrolledWindow, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected ScrolledWindow ();
 	}
@@ -997,7 +997,7 @@ namespace Dazzle {
 		public signal void reveal ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_settings_flag_action_get_type ()")]
-	public class SettingsFlagAction : GLib.Object, GLib.Action {
+	public sealed class SettingsFlagAction : GLib.Object, GLib.Action {
 		[CCode (has_construct_function = false)]
 		protected SettingsFlagAction ();
 		public static GLib.Action @new (string schema_id, string schema_key, string flag_nick);
@@ -1009,7 +1009,7 @@ namespace Dazzle {
 		public string schema_key { owned get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_settings_sandwich_get_type ()")]
-	public class SettingsSandwich : GLib.Object {
+	public sealed class SettingsSandwich : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SettingsSandwich (string schema_id, string path);
 		public void append (GLib.Settings settings);
@@ -1036,7 +1036,7 @@ namespace Dazzle {
 		public string schema_id { owned get; construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcut_accel_dialog_get_type ()")]
-	public class ShortcutAccelDialog : Gtk.Dialog, Atk.Implementor, Gtk.Buildable {
+	public sealed class ShortcutAccelDialog : Gtk.Dialog, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ShortcutAccelDialog ();
 		public string get_accelerator ();
@@ -1083,7 +1083,7 @@ namespace Dazzle {
 		public uint size ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcut_context_get_type ()")]
-	public class ShortcutContext : GLib.Object {
+	public sealed class ShortcutContext : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public ShortcutContext (string name);
 		public Dazzle.ShortcutMatch activate (Gtk.Widget widget, Dazzle.ShortcutChord chord);
@@ -1099,7 +1099,7 @@ namespace Dazzle {
 		public bool use_binding_sets { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcut_controller_get_type ()")]
-	public class ShortcutController : GLib.Object {
+	public sealed class ShortcutController : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public ShortcutController (Gtk.Widget widget);
 		public void add_command_action (string command_id, string default_accel, Dazzle.ShortcutPhase phase, string action);
@@ -1127,7 +1127,7 @@ namespace Dazzle {
 		public signal void set_context_named (string name);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcut_label_get_type ()")]
-	public class ShortcutLabel : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class ShortcutLabel : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ShortcutLabel ();
 		public string get_accelerator ();
@@ -1165,7 +1165,7 @@ namespace Dazzle {
 		public signal void changed ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcut_model_get_type ()")]
-	public class ShortcutModel : Gtk.TreeStore, Gtk.Buildable, Gtk.TreeDragDest, Gtk.TreeDragSource, Gtk.TreeModel, Gtk.TreeSortable {
+	public sealed class ShortcutModel : Gtk.TreeStore, Gtk.Buildable, Gtk.TreeDragDest, Gtk.TreeDragSource, Gtk.TreeModel, Gtk.TreeSortable {
 		[CCode (has_construct_function = false)]
 		protected ShortcutModel ();
 		public unowned Dazzle.ShortcutManager get_manager ();
@@ -1179,7 +1179,7 @@ namespace Dazzle {
 		public Dazzle.ShortcutTheme theme { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcut_simple_label_get_type ()")]
-	public class ShortcutSimpleLabel : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class ShortcutSimpleLabel : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ShortcutSimpleLabel ();
 		public unowned string get_accel ();
@@ -1242,7 +1242,7 @@ namespace Dazzle {
 		public signal void changed ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcut_tooltip_get_type ()")]
-	public class ShortcutTooltip : GLib.Object {
+	public sealed class ShortcutTooltip : GLib.Object {
 		[CCode (has_construct_function = false)]
 		[Version (since = "3.32")]
 		public ShortcutTooltip ();
@@ -1269,7 +1269,7 @@ namespace Dazzle {
 		public Gtk.Widget widget { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcuts_group_get_type ()")]
-	public class ShortcutsGroup : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class ShortcutsGroup : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false)]
 		protected ShortcutsGroup ();
 		[NoAccessorMethod]
@@ -1284,7 +1284,7 @@ namespace Dazzle {
 		public string view { owned get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcuts_section_get_type ()")]
-	public class ShortcutsSection : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class ShortcutsSection : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false)]
 		protected ShortcutsSection ();
 		[NoAccessorMethod]
@@ -1298,7 +1298,7 @@ namespace Dazzle {
 		public signal bool change_current_page (int object);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_shortcuts_shortcut_get_type ()")]
-	public class ShortcutsShortcut : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class ShortcutsShortcut : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false)]
 		protected ShortcutsShortcut ();
 		[NoAccessorMethod]
@@ -1337,7 +1337,7 @@ namespace Dazzle {
 		public virtual signal void search ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_signal_group_get_type ()")]
-	public class SignalGroup : GLib.Object {
+	public sealed class SignalGroup : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SignalGroup (GLib.Type target_type);
 		public void block ();
@@ -1353,7 +1353,7 @@ namespace Dazzle {
 		public signal void unbind ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_simple_label_get_type ()")]
-	public class SimpleLabel : Gtk.Widget, Atk.Implementor, Gtk.Buildable {
+	public sealed class SimpleLabel : Gtk.Widget, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public SimpleLabel (string label);
 		public unowned string get_label ();
@@ -1522,7 +1522,7 @@ namespace Dazzle {
 		public Dazzle.Suggestion suggestion { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_suggestion_popover_get_type ()")]
-	public class SuggestionPopover : Gtk.Window, Atk.Implementor, Gtk.Buildable {
+	public sealed class SuggestionPopover : Gtk.Window, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public SuggestionPopover ();
 		public void activate_selected ();
@@ -1555,7 +1555,7 @@ namespace Dazzle {
 		public Dazzle.Suggestion suggestion { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_tab_get_type ()")]
-	public class Tab : Dazzle.Bin, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
+	public sealed class Tab : Dazzle.Bin, Atk.Implementor, Gtk.Actionable, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		protected Tab ();
 		public bool get_active ();
@@ -1597,7 +1597,7 @@ namespace Dazzle {
 		public Dazzle.TabStyle style { get; set; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_task_cache_get_type ()")]
-	public class TaskCache : GLib.Object {
+	public sealed class TaskCache : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected TaskCache ();
 		public bool evict (void* key);
@@ -1627,7 +1627,7 @@ namespace Dazzle {
 		public void* value_destroy_func { construct; }
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_theme_manager_get_type ()")]
-	public class ThemeManager : GLib.Object {
+	public sealed class ThemeManager : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public ThemeManager ();
 		public void add_resources (string resource_path);
@@ -1699,7 +1699,7 @@ namespace Dazzle {
 		public virtual signal void removed (Dazzle.Tree tree);
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_tree_node_get_type ()")]
-	public class TreeNode : GLib.InitiallyUnowned {
+	public sealed class TreeNode : GLib.InitiallyUnowned {
 		[CCode (has_construct_function = false)]
 		public TreeNode ();
 		public void add_emblem (string emblem_name);
@@ -1778,7 +1778,7 @@ namespace Dazzle {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "dazzle.h", type_id = "dzl_widget_action_group_get_type ()")]
-	public class WidgetActionGroup : GLib.Object, GLib.ActionGroup {
+	public sealed class WidgetActionGroup : GLib.Object, GLib.ActionGroup {
 		[CCode (has_construct_function = false)]
 		protected WidgetActionGroup ();
 		public static void attach (Gtk.Widget widget, string group_name);

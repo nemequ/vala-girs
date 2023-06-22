@@ -291,7 +291,7 @@ namespace GUPnP {
 		public GLib.Uri url_base { get; construct; }
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_service_introspection_get_type ()")]
-	public class ServiceIntrospection : GLib.Object, GLib.Initable {
+	public sealed class ServiceIntrospection : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected ServiceIntrospection ();
 		public unowned GUPnP.ServiceActionInfo? get_action (string action_name);
@@ -317,6 +317,8 @@ namespace GUPnP {
 		public bool get_subscribed ();
 		public bool remove_notify (string variable, GUPnP.ServiceProxyNotifyCallback callback);
 		public bool remove_raw_notify (GUPnP.ServiceProxyNotifyCallback callback);
+		[Version (since = "1.6.4")]
+		public void set_credentials (string user, string password);
 		public void set_subscribed (bool subscribed);
 		public bool subscribed { get; set; }
 		public virtual signal void subscription_lost (GLib.Error reason);
@@ -371,7 +373,7 @@ namespace GUPnP {
 	}
 	[CCode (cheader_filename = "libgupnp/gupnp.h", type_id = "gupnp_xml_doc_get_type ()")]
 	[Version (since = "0.14.0")]
-	public class XMLDoc : GLib.Object, GLib.Initable {
+	public sealed class XMLDoc : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		public XMLDoc (owned Xml.Doc xml_doc);
 		[CCode (has_construct_function = false)]

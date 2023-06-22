@@ -3,7 +3,7 @@
 [CCode (cprefix = "Act", gir_namespace = "AccountsService", gir_version = "1.0", lower_case_cprefix = "act_")]
 namespace Act {
 	[CCode (cheader_filename = "act/act.h", type_id = "act_user_get_type ()")]
-	public class User : GLib.Object {
+	public sealed class User : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected User ();
 		public int collate (Act.User user2);

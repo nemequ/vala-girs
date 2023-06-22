@@ -378,7 +378,7 @@ namespace GMime {
 		public void set_param_encoding_method (GMime.ParamEncodingMethod method);
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_gpg_context_get_type ()")]
-	public class GpgContext : GMime.CryptoContext {
+	public sealed class GpgContext : GMime.CryptoContext {
 		[CCode (has_construct_function = false, type = "GMimeCryptoContext*")]
 		public GpgContext ();
 	}
@@ -779,7 +779,7 @@ namespace GMime {
 		public void reset ();
 	}
 	[CCode (cheader_filename = "gmime/gmime.h", type_id = "g_mime_pkcs7_context_get_type ()")]
-	public class Pkcs7Context : GMime.CryptoContext {
+	public sealed class Pkcs7Context : GMime.CryptoContext {
 		[CCode (has_construct_function = false, type = "GMimeCryptoContext*")]
 		public Pkcs7Context ();
 	}

@@ -544,7 +544,7 @@ namespace Gtk {
 		[Version (since = "2.2")]
 		public unowned Gtk.SourceMark? next (string? category);
 		[Version (since = "2.2")]
-		public unowned Gtk.SourceMark? prev (string category);
+		public unowned Gtk.SourceMark? prev (string? category);
 		public string category { get; construct; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_mark_attributes_get_type ()")]
@@ -818,7 +818,7 @@ namespace Gtk {
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_style_get_type ()")]
 	[GIR (name = "Style")]
-	public class SourceStyle : GLib.Object {
+	public sealed class SourceStyle : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected SourceStyle ();
 		[Version (since = "3.22")]

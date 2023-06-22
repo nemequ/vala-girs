@@ -27,7 +27,7 @@ namespace Gspell {
 		public Gspell.Navigator spell_navigator { get; construct; }
 	}
 	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_entry_get_type ()")]
-	public class Entry : GLib.Object {
+	public sealed class Entry : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Entry ();
 		[Version (since = "1.4")]
@@ -46,7 +46,7 @@ namespace Gspell {
 		public bool inline_spell_checking { get; set; }
 	}
 	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_entry_buffer_get_type ()")]
-	public class EntryBuffer : GLib.Object {
+	public sealed class EntryBuffer : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected EntryBuffer ();
 		[Version (since = "1.4")]
@@ -93,7 +93,7 @@ namespace Gspell {
 		public Gtk.TextView view { get; construct; }
 	}
 	[CCode (cheader_filename = "gspell/gspell.h", type_id = "gspell_text_buffer_get_type ()")]
-	public class TextBuffer : GLib.Object {
+	public sealed class TextBuffer : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected TextBuffer ();
 		public unowned Gtk.TextBuffer get_buffer ();

@@ -246,7 +246,8 @@ namespace Vnc {
 	public enum ConnectionCredential {
 		PASSWORD,
 		USERNAME,
-		CLIENTNAME
+		CLIENTNAME,
+		CA_CERT_DATA
 	}
 	[CCode (cheader_filename = "gvnc.h", cprefix = "VNC_CONNECTION_ENCODING_", type_id = "vnc_connection_encoding_get_type ()")]
 	public enum ConnectionEncoding {

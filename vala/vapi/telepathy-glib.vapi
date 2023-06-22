@@ -213,7 +213,7 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_account_channel_request_get_type ()")]
 	[Version (since = "0.11.12")]
-	public class AccountChannelRequest : GLib.Object {
+	public sealed class AccountChannelRequest : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public AccountChannelRequest (TelepathyGLib.Account account, GLib.HashTable<string,GLib.Value?> request, int64 user_action_time);
 		[CCode (has_construct_function = false)]
@@ -403,7 +403,7 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_add_dispatch_operation_context_get_type ()")]
 	[Version (since = "0.11.5")]
-	public class AddDispatchOperationContext : GLib.Object {
+	public sealed class AddDispatchOperationContext : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected AddDispatchOperationContext ();
 		public void accept ();
@@ -700,7 +700,7 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_capabilities_get_type ()")]
 	[Version (since = "0.11.3")]
-	public class Capabilities : GLib.Object {
+	public sealed class Capabilities : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Capabilities ();
 		[Version (since = "0.19.0")]
@@ -946,7 +946,7 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_client_message_get_type ()")]
 	[Version (since = "0.13.9")]
-	public class ClientMessage : TelepathyGLib.Message {
+	public sealed class ClientMessage : TelepathyGLib.Message {
 		[CCode (has_construct_function = false, type = "TpMessage*")]
 		public ClientMessage ();
 		[CCode (has_construct_function = false, type = "TpMessage*")]
@@ -1233,7 +1233,7 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_contact_get_type ()")]
 	[Version (since = "0.7.18")]
-	public class Contact : GLib.Object {
+	public sealed class Contact : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Contact ();
 		[Version (since = "0.15.5")]
@@ -1402,7 +1402,7 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_dbus_daemon_get_type ()")]
 	[Version (since = "0.7.1")]
-	public class DBusDaemon : TelepathyGLib.Proxy {
+	public sealed class DBusDaemon : TelepathyGLib.Proxy {
 		[CCode (has_construct_function = false)]
 		protected DBusDaemon ();
 		[Version (since = "0.7.26")]
@@ -1443,7 +1443,7 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_debug_client_get_type ()")]
 	[Version (since = "0.19.0")]
-	public class DebugClient : TelepathyGLib.Proxy {
+	public sealed class DebugClient : TelepathyGLib.Proxy {
 		[CCode (has_construct_function = false)]
 		public DebugClient (TelepathyGLib.DBusDaemon dbus, string unique_name) throws GLib.Error;
 		public static GLib.Quark get_feature_quark_core ();
@@ -1517,7 +1517,7 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_handle_channels_context_get_type ()")]
 	[Version (since = "0.11.6")]
-	public class HandleChannelsContext : GLib.Object {
+	public sealed class HandleChannelsContext : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected HandleChannelsContext ();
 		public void accept ();
@@ -1583,7 +1583,7 @@ namespace TelepathyGLib {
 		public void union_update (TelepathyGLib.Intset other);
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_message_get_type ()")]
-	public class Message : GLib.Object {
+	public sealed class Message : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Message ();
 		[Version (since = "0.7.21")]
@@ -1651,7 +1651,7 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_observe_channels_context_get_type ()")]
 	[Version (since = "0.11.5")]
-	public class ObserveChannelsContext : GLib.Object {
+	public sealed class ObserveChannelsContext : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected ObserveChannelsContext ();
 		public void accept ();
@@ -1850,7 +1850,7 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_signalled_message_get_type ()")]
 	[Version (since = "0.13.9")]
-	public class SignalledMessage : TelepathyGLib.Message {
+	public sealed class SignalledMessage : TelepathyGLib.Message {
 		[CCode (has_construct_function = false)]
 		protected SignalledMessage ();
 		public static unowned TelepathyGLib.Contact get_sender (TelepathyGLib.Message message);
@@ -1963,7 +1963,7 @@ namespace TelepathyGLib {
 	}
 	[CCode (cheader_filename = "telepathy-glib/telepathy-glib.h", type_id = "tp_stream_tube_connection_get_type ()")]
 	[Version (since = "0.13.2")]
-	public class StreamTubeConnection : GLib.Object {
+	public sealed class StreamTubeConnection : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected StreamTubeConnection ();
 		public unowned TelepathyGLib.StreamTubeChannel get_channel ();

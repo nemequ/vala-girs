@@ -3,7 +3,7 @@
 [CCode (cprefix = "Autoar", gir_namespace = "GnomeAutoar", gir_version = "0.1", lower_case_cprefix = "autoar_")]
 namespace Autoar {
 	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h", type_id = "autoar_compressor_get_type ()")]
-	public class Compressor : GLib.Object {
+	public sealed class Compressor : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Compressor (GLib.List<GLib.File> source_files, GLib.File output_file, Autoar.Format format, Autoar.Filter filter, bool create_top_level_directory);
 		public uint get_completed_files ();
@@ -40,7 +40,7 @@ namespace Autoar {
 		public signal void progress (uint64 completed_size, uint completed_files);
 	}
 	[CCode (cheader_filename = "gnome-autoar/gnome-autoar.h", type_id = "autoar_extractor_get_type ()")]
-	public class Extractor : GLib.Object {
+	public sealed class Extractor : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Extractor (GLib.File source_file, GLib.File output_file);
 		public uint get_completed_files ();

@@ -51,7 +51,7 @@ namespace Goa {
 		public ChatSkeleton ();
 	}
 	[CCode (cheader_filename = "goa/goa.h", type_id = "goa_client_get_type ()")]
-	public class Client : GLib.Object, GLib.AsyncInitable, GLib.Initable {
+	public sealed class Client : GLib.Object, GLib.AsyncInitable, GLib.Initable {
 		[CCode (cname = "goa_client_new", has_construct_function = false)]
 		public async Client (GLib.Cancellable? cancellable) throws GLib.Error;
 		public GLib.List<Goa.Object> get_accounts ();

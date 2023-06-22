@@ -3,7 +3,7 @@
 [CCode (cprefix = "Libmsi", gir_namespace = "Libmsi", gir_version = "1.0", lower_case_cprefix = "libmsi_")]
 namespace Libmsi {
 	[CCode (cheader_filename = "libmsi.h", type_id = "libmsi_database_get_type ()")]
-	public class Database : GLib.Object {
+	public sealed class Database : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Database (string path, uint flags, string? persist) throws GLib.Error;
 		public bool apply_transform (string file) throws GLib.Error;
@@ -22,7 +22,7 @@ namespace Libmsi {
 		public string path { owned get; construct; }
 	}
 	[CCode (cheader_filename = "libmsi.h", type_id = "libmsi_query_get_type ()")]
-	public class Query : GLib.Object {
+	public sealed class Query : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Query (Libmsi.Database database, string query) throws GLib.Error;
 		public bool close () throws GLib.Error;
@@ -36,7 +36,7 @@ namespace Libmsi {
 		public string query { owned get; construct; }
 	}
 	[CCode (cheader_filename = "libmsi.h", type_id = "libmsi_record_get_type ()")]
-	public class Record : GLib.Object {
+	public sealed class Record : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public Record (uint count);
 		public bool clear ();
@@ -53,7 +53,7 @@ namespace Libmsi {
 		public uint count { get; construct; }
 	}
 	[CCode (cheader_filename = "libmsi.h", type_id = "libmsi_summary_info_get_type ()")]
-	public class SummaryInfo : GLib.Object {
+	public sealed class SummaryInfo : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SummaryInfo (Libmsi.Database? database, uint update_count) throws GLib.Error;
 		public uint64 get_filetime (Libmsi.Property prop) throws GLib.Error;

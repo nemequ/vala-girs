@@ -2,6 +2,336 @@
 
 [CCode (cprefix = "NM", gir_namespace = "NM", gir_version = "1.0", lower_case_cprefix = "nm_")]
 namespace NM {
+	namespace EthtoolOptname {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_ADAPTIVE_RX")]
+		public const string COALESCE_ADAPTIVE_RX;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_ADAPTIVE_TX")]
+		public const string COALESCE_ADAPTIVE_TX;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_PKT_RATE_HIGH")]
+		public const string COALESCE_PKT_RATE_HIGH;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_PKT_RATE_LOW")]
+		public const string COALESCE_PKT_RATE_LOW;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_FRAMES")]
+		public const string COALESCE_RX_FRAMES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_HIGH")]
+		public const string COALESCE_RX_FRAMES_HIGH;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_IRQ")]
+		public const string COALESCE_RX_FRAMES_IRQ;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_LOW")]
+		public const string COALESCE_RX_FRAMES_LOW;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_USECS")]
+		public const string COALESCE_RX_USECS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_USECS_HIGH")]
+		public const string COALESCE_RX_USECS_HIGH;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_USECS_IRQ")]
+		public const string COALESCE_RX_USECS_IRQ;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_USECS_LOW")]
+		public const string COALESCE_RX_USECS_LOW;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_SAMPLE_INTERVAL")]
+		public const string COALESCE_SAMPLE_INTERVAL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_STATS_BLOCK_USECS")]
+		public const string COALESCE_STATS_BLOCK_USECS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_FRAMES")]
+		public const string COALESCE_TX_FRAMES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_HIGH")]
+		public const string COALESCE_TX_FRAMES_HIGH;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_IRQ")]
+		public const string COALESCE_TX_FRAMES_IRQ;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_LOW")]
+		public const string COALESCE_TX_FRAMES_LOW;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_USECS")]
+		public const string COALESCE_TX_USECS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_USECS_HIGH")]
+		public const string COALESCE_TX_USECS_HIGH;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_USECS_IRQ")]
+		public const string COALESCE_TX_USECS_IRQ;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_USECS_LOW")]
+		public const string COALESCE_TX_USECS_LOW;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_ESP_HW_OFFLOAD")]
+		public const string FEATURE_ESP_HW_OFFLOAD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_ESP_TX_CSUM_HW_OFFLOAD")]
+		public const string FEATURE_ESP_TX_CSUM_HW_OFFLOAD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_FCOE_MTU")]
+		public const string FEATURE_FCOE_MTU;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_GRO")]
+		public const string FEATURE_GRO;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_GSO")]
+		public const string FEATURE_GSO;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_HIGHDMA")]
+		public const string FEATURE_HIGHDMA;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_HW_TC_OFFLOAD")]
+		public const string FEATURE_HW_TC_OFFLOAD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_L2_FWD_OFFLOAD")]
+		public const string FEATURE_L2_FWD_OFFLOAD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_LOOPBACK")]
+		public const string FEATURE_LOOPBACK;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_LRO")]
+		public const string FEATURE_LRO;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_MACSEC_HW_OFFLOAD")]
+		public const string FEATURE_MACSEC_HW_OFFLOAD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_NTUPLE")]
+		public const string FEATURE_NTUPLE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX")]
+		public const string FEATURE_RX;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RXHASH")]
+		public const string FEATURE_RXHASH;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RXVLAN")]
+		public const string FEATURE_RXVLAN;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_ALL")]
+		public const string FEATURE_RX_ALL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_FCS")]
+		public const string FEATURE_RX_FCS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_GRO_HW")]
+		public const string FEATURE_RX_GRO_HW;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_GRO_LIST")]
+		public const string FEATURE_RX_GRO_LIST;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_UDP_GRO_FORWARDING")]
+		public const string FEATURE_RX_UDP_GRO_FORWARDING;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_UDP_TUNNEL_PORT_OFFLOAD")]
+		public const string FEATURE_RX_UDP_TUNNEL_PORT_OFFLOAD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_VLAN_FILTER")]
+		public const string FEATURE_RX_VLAN_FILTER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_VLAN_STAG_FILTER")]
+		public const string FEATURE_RX_VLAN_STAG_FILTER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_VLAN_STAG_HW_PARSE")]
+		public const string FEATURE_RX_VLAN_STAG_HW_PARSE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_SG")]
+		public const string FEATURE_SG;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TLS_HW_RECORD")]
+		public const string FEATURE_TLS_HW_RECORD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TLS_HW_RX_OFFLOAD")]
+		public const string FEATURE_TLS_HW_RX_OFFLOAD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TLS_HW_TX_OFFLOAD")]
+		public const string FEATURE_TLS_HW_TX_OFFLOAD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TSO")]
+		public const string FEATURE_TSO;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX")]
+		public const string FEATURE_TX;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TXVLAN")]
+		public const string FEATURE_TXVLAN;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_FCOE_CRC")]
+		public const string FEATURE_TX_CHECKSUM_FCOE_CRC;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IPV4")]
+		public const string FEATURE_TX_CHECKSUM_IPV4;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IPV6")]
+		public const string FEATURE_TX_CHECKSUM_IPV6;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IP_GENERIC")]
+		public const string FEATURE_TX_CHECKSUM_IP_GENERIC;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_SCTP")]
+		public const string FEATURE_TX_CHECKSUM_SCTP;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_ESP_SEGMENTATION")]
+		public const string FEATURE_TX_ESP_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_FCOE_SEGMENTATION")]
+		public const string FEATURE_TX_FCOE_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GRE_CSUM_SEGMENTATION")]
+		public const string FEATURE_TX_GRE_CSUM_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GRE_SEGMENTATION")]
+		public const string FEATURE_TX_GRE_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GSO_LIST")]
+		public const string FEATURE_TX_GSO_LIST;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GSO_PARTIAL")]
+		public const string FEATURE_TX_GSO_PARTIAL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GSO_ROBUST")]
+		public const string FEATURE_TX_GSO_ROBUST;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_IPXIP4_SEGMENTATION")]
+		public const string FEATURE_TX_IPXIP4_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_IPXIP6_SEGMENTATION")]
+		public const string FEATURE_TX_IPXIP6_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_NOCACHE_COPY")]
+		public const string FEATURE_TX_NOCACHE_COPY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_SCATTER_GATHER")]
+		public const string FEATURE_TX_SCATTER_GATHER;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_SCATTER_GATHER_FRAGLIST")]
+		public const string FEATURE_TX_SCATTER_GATHER_FRAGLIST;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_SCTP_SEGMENTATION")]
+		public const string FEATURE_TX_SCTP_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP6_SEGMENTATION")]
+		public const string FEATURE_TX_TCP6_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP_ECN_SEGMENTATION")]
+		public const string FEATURE_TX_TCP_ECN_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP_MANGLEID_SEGMENTATION")]
+		public const string FEATURE_TX_TCP_MANGLEID_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP_SEGMENTATION")]
+		public const string FEATURE_TX_TCP_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TUNNEL_REMCSUM_SEGMENTATION")]
+		public const string FEATURE_TX_TUNNEL_REMCSUM_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_UDP_SEGMENTATION")]
+		public const string FEATURE_TX_UDP_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_CSUM_SEGMENTATION")]
+		public const string FEATURE_TX_UDP_TNL_CSUM_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_SEGMENTATION")]
+		public const string FEATURE_TX_UDP_TNL_SEGMENTATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_VLAN_STAG_HW_INSERT")]
+		public const string FEATURE_TX_VLAN_STAG_HW_INSERT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_PAUSE_AUTONEG")]
+		public const string PAUSE_AUTONEG;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_PAUSE_RX")]
+		public const string PAUSE_RX;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_PAUSE_TX")]
+		public const string PAUSE_TX;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_RX")]
+		public const string RING_RX;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_RX_JUMBO")]
+		public const string RING_RX_JUMBO;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_RX_MINI")]
+		public const string RING_RX_MINI;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_TX")]
+		public const string RING_TX;
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.26")]
+		public static bool is_coalesce (string? optname);
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.20")]
+		public static bool is_feature (string? optname);
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.32")]
+		public static bool is_pause (string? optname);
+		[CCode (cheader_filename = "NetworkManager.h")]
+		[Version (since = "1.26")]
+		public static bool is_ring (string? optname);
+	}
+	namespace IpRouteAttributes {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_ADVMSS")]
+		public const string ADVMSS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_CWND")]
+		public const string CWND;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_FROM")]
+		public const string FROM;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_INITCWND")]
+		public const string INITCWND;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_INITRWND")]
+		public const string INITRWND;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_ADVMSS")]
+		public const string LOCK_ADVMSS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_CWND")]
+		public const string LOCK_CWND;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_INITCWND")]
+		public const string LOCK_INITCWND;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_INITRWND")]
+		public const string LOCK_INITRWND;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_MTU")]
+		public const string LOCK_MTU;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_WINDOW")]
+		public const string LOCK_WINDOW;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_MTU")]
+		public const string MTU;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_ONLINK")]
+		public const string ONLINK;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_QUICKACK")]
+		public const string QUICKACK;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_RTO_MIN")]
+		public const string RTO_MIN;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_SCOPE")]
+		public const string SCOPE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_SRC")]
+		public const string SRC;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TABLE")]
+		public const string TABLE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TOS")]
+		public const string TOS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TYPE")]
+		public const string TYPE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_WEIGHT")]
+		public const string WEIGHT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_WINDOW")]
+		public const string WINDOW;
+	}
+	namespace LldpAttributes {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_CHASSIS_ID")]
+		public const string CHASSIS_ID;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_CHASSIS_ID_TYPE")]
+		public const string CHASSIS_ID_TYPE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_DESTINATION")]
+		public const string DESTINATION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_PPVID")]
+		public const string IEEE_802_1_PPVID;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_PPVIDS")]
+		public const string IEEE_802_1_PPVIDS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_PPVID_FLAGS")]
+		public const string IEEE_802_1_PPVID_FLAGS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_PVID")]
+		public const string IEEE_802_1_PVID;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_VID")]
+		public const string IEEE_802_1_VID;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_VLANS")]
+		public const string IEEE_802_1_VLANS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_VLAN_NAME")]
+		public const string IEEE_802_1_VLAN_NAME;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_3_MAC_PHY_CONF")]
+		public const string IEEE_802_3_MAC_PHY_CONF;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_3_MAX_FRAME_SIZE")]
+		public const string IEEE_802_3_MAX_FRAME_SIZE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_3_POWER_VIA_MDI")]
+		public const string IEEE_802_3_POWER_VIA_MDI;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_MANAGEMENT_ADDRESSES")]
+		public const string MANAGEMENT_ADDRESSES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_MUD_URL")]
+		public const string MUD_URL;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_PORT_DESCRIPTION")]
+		public const string PORT_DESCRIPTION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_PORT_ID")]
+		public const string PORT_ID;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_PORT_ID_TYPE")]
+		public const string PORT_ID_TYPE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_RAW")]
+		public const string RAW;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_SYSTEM_CAPABILITIES")]
+		public const string SYSTEM_CAPABILITIES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_SYSTEM_DESCRIPTION")]
+		public const string SYSTEM_DESCRIPTION;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_SYSTEM_NAME")]
+		public const string SYSTEM_NAME;
+	}
+	namespace SettingDnsOption {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_ATTEMPTS")]
+		public const string ATTEMPTS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_DEBUG")]
+		public const string DEBUG;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_EDNS0")]
+		public const string EDNS0;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_INET6")]
+		public const string INET6;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_IP6_BYTESTRING")]
+		public const string IP6_BYTESTRING;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_IP6_DOTINT")]
+		public const string IP6_DOTINT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NDOTS")]
+		public const string NDOTS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NO_AAAA")]
+		public const string NO_AAAA;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NO_CHECK_NAMES")]
+		public const string NO_CHECK_NAMES;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NO_IP6_DOTINT")]
+		public const string NO_IP6_DOTINT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NO_RELOAD")]
+		public const string NO_RELOAD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NO_TLD_QUERY")]
+		public const string NO_TLD_QUERY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_ROTATE")]
+		public const string ROTATE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_SINGLE_REQUEST")]
+		public const string SINGLE_REQUEST;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_SINGLE_REQUEST_REOPEN")]
+		public const string SINGLE_REQUEST_REOPEN;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_TIMEOUT")]
+		public const string TIMEOUT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_TRUST_AD")]
+		public const string TRUST_AD;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_USE_VC")]
+		public const string USE_VC;
+	}
+	namespace SriovVfAttributes {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_MAC")]
+		public const string MAC;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_MAX_TX_RATE")]
+		public const string MAX_TX_RATE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_MIN_TX_RATE")]
+		public const string MIN_TX_RATE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_SPOOF_CHECK")]
+		public const string SPOOF_CHECK;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_TRUST")]
+		public const string TRUST;
+	}
 	namespace Utils {
 		[CCode (cheader_filename = "NetworkManager.h", cprefix = "NMU_SEC_", type_id = "nm_utils_security_type_get_type ()")]
 		[GIR (name = "UtilsSecurityType")]
@@ -25,7 +355,7 @@ namespace NM {
 		public static bool ap_mode_security_valid (NM.Utils.SecurityType type, NM.DeviceWifiCapabilities wifi_caps);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.16")]
-		public static bool base64secret_decode (string base64_key, size_t required_key_len, uint8? out_key);
+		public static bool base64secret_decode (string base64_key, size_t required_key_len, out uint8 out_key);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static string bin2hexstr ([CCode (array_length_cname = "len", array_length_pos = 1.5, array_length_type = "gsize")] uint8[] src, int final_len);
 		[CCode (cheader_filename = "NetworkManager.h")]
@@ -41,7 +371,7 @@ namespace NM {
 		public static void ensure_gtypes ();
 		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.2")]
-		public static bool enum_from_str (GLib.Type type, string str, out int out_value, out string err_token);
+		public static bool enum_from_str (GLib.Type type, string str, out int out_value, out string? err_token);
 		[CCode (array_length = false, array_null_terminated = true, cheader_filename = "NetworkManager.h")]
 		[Version (since = "1.2")]
 		public static (unowned string)[] enum_get_values (GLib.Type type, int from, int to);
@@ -84,7 +414,7 @@ namespace NM {
 		[Version (deprecated = true, deprecated_since = "1.6")]
 		public static bool iface_valid_name (string? name);
 		[CCode (cheader_filename = "NetworkManager.h")]
-		public static GLib.GenericArray<NM.IPAddress> ip4_addresses_from_variant (GLib.Variant value, out string out_gateway);
+		public static GLib.GenericArray<NM.IPAddress> ip4_addresses_from_variant (GLib.Variant value, out string? out_gateway);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static unowned GLib.Variant ip4_addresses_to_variant (GLib.GenericArray<NM.IPAddress> addresses, string? gateway);
 		[CCode (cheader_filename = "NetworkManager.h")]
@@ -102,7 +432,7 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static unowned GLib.Variant ip4_routes_to_variant (GLib.GenericArray<NM.IPRoute> routes);
 		[CCode (cheader_filename = "NetworkManager.h")]
-		public static GLib.GenericArray<NM.IPAddress> ip6_addresses_from_variant (GLib.Variant value, out string out_gateway);
+		public static GLib.GenericArray<NM.IPAddress> ip6_addresses_from_variant (GLib.Variant value, out string? out_gateway);
 		[CCode (cheader_filename = "NetworkManager.h")]
 		public static unowned GLib.Variant ip6_addresses_to_variant (GLib.GenericArray<NM.IPAddress> addresses, string? gateway);
 		[CCode (cheader_filename = "NetworkManager.h")]
@@ -296,29 +626,43 @@ namespace NM {
 		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VPN_SERVICE_PLUGIN_STATE")]
 		public const string SERVICE_PLUGIN_STATE;
 	}
+	namespace WireguardPeerAttributes {
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_ALLOWED_IPS")]
+		public const string ALLOWED_IPS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_ENDPOINT")]
+		public const string ENDPOINT;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_PERSISTENT_KEEPALIVE")]
+		public const string PERSISTENT_KEEPALIVE;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_PRESHARED_KEY")]
+		public const string PRESHARED_KEY;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_PRESHARED_KEY_FLAGS")]
+		public const string PRESHARED_KEY_FLAGS;
+		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_PUBLIC_KEY")]
+		public const string PUBLIC_KEY;
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_access_point_get_type ()")]
-	public class AccessPoint : NM.Object {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_BSSID")]
+	public sealed class AccessPoint : NM.Object {
+		[CCode (cname = "NM_ACCESS_POINT_BSSID")]
 		public const string BSSID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_FLAGS")]
+		[CCode (cname = "NM_ACCESS_POINT_FLAGS")]
 		public const string FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_FREQUENCY")]
+		[CCode (cname = "NM_ACCESS_POINT_FREQUENCY")]
 		public const string FREQUENCY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_HW_ADDRESS")]
+		[CCode (cname = "NM_ACCESS_POINT_HW_ADDRESS")]
 		public const string HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_LAST_SEEN")]
+		[CCode (cname = "NM_ACCESS_POINT_LAST_SEEN")]
 		public const string LAST_SEEN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_MAX_BITRATE")]
+		[CCode (cname = "NM_ACCESS_POINT_MAX_BITRATE")]
 		public const string MAX_BITRATE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_MODE")]
+		[CCode (cname = "NM_ACCESS_POINT_MODE")]
 		public const string MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_RSN_FLAGS")]
+		[CCode (cname = "NM_ACCESS_POINT_RSN_FLAGS")]
 		public const string RSN_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_SSID")]
+		[CCode (cname = "NM_ACCESS_POINT_SSID")]
 		public const string SSID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_STRENGTH")]
+		[CCode (cname = "NM_ACCESS_POINT_STRENGTH")]
 		public const string STRENGTH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACCESS_POINT_WPA_FLAGS")]
+		[CCode (cname = "NM_ACCESS_POINT_WPA_FLAGS")]
 		public const string WPA_FLAGS;
 		[CCode (has_construct_function = false)]
 		protected AccessPoint ();
@@ -351,43 +695,47 @@ namespace NM {
 		public NM.80211ApSecurityFlags wpa_flags { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_active_connection_get_type ()")]
-	public class ActiveConnection : NM.Object {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_CONNECTION")]
+	public sealed class ActiveConnection : NM.Object {
+		[CCode (cname = "NM_ACTIVE_CONNECTION_CONNECTION")]
 		public const string CONNECTION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_DEFAULT")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_CONTROLLER")]
+		public const string CONTROLLER;
+		[CCode (cname = "NM_ACTIVE_CONNECTION_DEFAULT")]
 		public const string DEFAULT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_DEFAULT6")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_DEFAULT6")]
 		public const string DEFAULT6;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_DEVICES")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_DEVICES")]
 		public const string DEVICES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_DHCP4_CONFIG")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_DHCP4_CONFIG")]
 		public const string DHCP4_CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_DHCP6_CONFIG")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_DHCP6_CONFIG")]
 		public const string DHCP6_CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_ID")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_ID")]
 		public const string ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_IP4_CONFIG")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_IP4_CONFIG")]
 		public const string IP4_CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_IP6_CONFIG")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_IP6_CONFIG")]
 		public const string IP6_CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_MASTER")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_MASTER")]
 		public const string MASTER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_SPECIFIC_OBJECT_PATH")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_SPECIFIC_OBJECT_PATH")]
 		public const string SPECIFIC_OBJECT_PATH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_STATE")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_STATE")]
 		public const string STATE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_STATE_FLAGS")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_STATE_FLAGS")]
 		public const string STATE_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_TYPE")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_TYPE")]
 		public const string TYPE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_UUID")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_UUID")]
 		public const string UUID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ACTIVE_CONNECTION_VPN")]
+		[CCode (cname = "NM_ACTIVE_CONNECTION_VPN")]
 		public const string VPN;
 		[CCode (has_construct_function = false)]
 		protected ActiveConnection ();
 		public unowned NM.RemoteConnection get_connection ();
 		public unowned string get_connection_type ();
+		[Version (since = "1.44")]
+		public void* get_controller ();
 		public bool get_default ();
 		public bool get_default6 ();
 		public unowned GLib.GenericArray<NM.Device> get_devices ();
@@ -396,6 +744,7 @@ namespace NM {
 		public unowned string get_id ();
 		public unowned NM.IPConfig get_ip4_config ();
 		public unowned NM.IPConfig get_ip6_config ();
+		[Version (deprecated = true, deprecated_since = "1.44")]
 		public void* get_master ();
 		public unowned string get_specific_object_path ();
 		public NM.ActiveConnectionState get_state ();
@@ -406,6 +755,8 @@ namespace NM {
 		public unowned string get_uuid ();
 		public bool get_vpn ();
 		public NM.RemoteConnection connection { get; }
+		[Version (since = "1.44")]
+		public NM.Device controller { get; }
 		public bool @default { get; }
 		public bool default6 { get; }
 		public GLib.GenericArray<NM.Device> devices { get; }
@@ -414,6 +765,7 @@ namespace NM {
 		public string id { get; }
 		public NM.IPConfig ip4_config { get; }
 		public NM.IPConfig ip6_config { get; }
+		[Version (deprecated = true, deprecated_since = "1.44")]
 		public NM.Device master { get; }
 		public string specific_object_path { get; }
 		public NM.ActiveConnectionState state { get; }
@@ -428,6 +780,10 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_bridge_vlan_ref", type_id = "nm_bridge_vlan_get_type ()", unref_function = "nm_bridge_vlan_unref")]
 	[Compact]
 	public class BridgeVlan {
+		[CCode (cname = "NM_BRIDGE_VLAN_VID_MAX")]
+		public const int VID_MAX;
+		[CCode (cname = "NM_BRIDGE_VLAN_VID_MIN")]
+		public const int VID_MIN;
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.18")]
 		public BridgeVlan (uint16 vid_start, uint16 vid_end);
@@ -460,7 +816,13 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_checkpoint_get_type ()")]
 	[Version (since = "1.12")]
-	public class Checkpoint : NM.Object {
+	public sealed class Checkpoint : NM.Object {
+		[CCode (cname = "NM_CHECKPOINT_CREATED")]
+		public const string CREATED;
+		[CCode (cname = "NM_CHECKPOINT_DEVICES")]
+		public const string DEVICES;
+		[CCode (cname = "NM_CHECKPOINT_ROLLBACK_TIMEOUT")]
+		public const string ROLLBACK_TIMEOUT;
 		[CCode (has_construct_function = false)]
 		protected Checkpoint ();
 		public int64 get_created ();
@@ -471,103 +833,105 @@ namespace NM {
 		public uint rollback_timeout { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_client_get_type ()")]
-	public class Client : GLib.Object, GLib.AsyncInitable, GLib.Initable {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_ACTIVATING_CONNECTION")]
+	public sealed class Client : GLib.Object, GLib.AsyncInitable, GLib.Initable {
+		[CCode (cname = "NM_CLIENT_ACTIVATING_CONNECTION")]
 		public const string ACTIVATING_CONNECTION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_ACTIVE_CONNECTIONS")]
+		[CCode (cname = "NM_CLIENT_ACTIVE_CONNECTIONS")]
 		public const string ACTIVE_CONNECTIONS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_ACTIVE_CONNECTION_ADDED")]
+		[CCode (cname = "NM_CLIENT_ACTIVE_CONNECTION_ADDED")]
 		public const string ACTIVE_CONNECTION_ADDED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_ACTIVE_CONNECTION_REMOVED")]
+		[CCode (cname = "NM_CLIENT_ACTIVE_CONNECTION_REMOVED")]
 		public const string ACTIVE_CONNECTION_REMOVED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_ALL_DEVICES")]
+		[CCode (cname = "NM_CLIENT_ALL_DEVICES")]
 		public const string ALL_DEVICES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_ANY_DEVICE_ADDED")]
+		[CCode (cname = "NM_CLIENT_ANY_DEVICE_ADDED")]
 		public const string ANY_DEVICE_ADDED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_ANY_DEVICE_REMOVED")]
+		[CCode (cname = "NM_CLIENT_ANY_DEVICE_REMOVED")]
 		public const string ANY_DEVICE_REMOVED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CAN_MODIFY")]
+		[CCode (cname = "NM_CLIENT_CAN_MODIFY")]
 		public const string CAN_MODIFY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CAPABILITIES")]
+		[CCode (cname = "NM_CLIENT_CAPABILITIES")]
 		public const string CAPABILITIES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CHECKPOINTS")]
+		[CCode (cname = "NM_CLIENT_CHECKPOINTS")]
 		public const string CHECKPOINTS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIONS")]
+		[CCode (cname = "NM_CLIENT_CONNECTIONS")]
 		public const string CONNECTIONS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTION_ADDED")]
+		[CCode (cname = "NM_CLIENT_CONNECTION_ADDED")]
 		public const string CONNECTION_ADDED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTION_REMOVED")]
+		[CCode (cname = "NM_CLIENT_CONNECTION_REMOVED")]
 		public const string CONNECTION_REMOVED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIVITY")]
+		[CCode (cname = "NM_CLIENT_CONNECTIVITY")]
 		public const string CONNECTIVITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIVITY_CHECK_AVAILABLE")]
+		[CCode (cname = "NM_CLIENT_CONNECTIVITY_CHECK_AVAILABLE")]
 		public const string CONNECTIVITY_CHECK_AVAILABLE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIVITY_CHECK_ENABLED")]
+		[CCode (cname = "NM_CLIENT_CONNECTIVITY_CHECK_ENABLED")]
 		public const string CONNECTIVITY_CHECK_ENABLED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_CONNECTIVITY_CHECK_URI")]
+		[CCode (cname = "NM_CLIENT_CONNECTIVITY_CHECK_URI")]
 		public const string CONNECTIVITY_CHECK_URI;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DBUS_CONNECTION")]
+		[CCode (cname = "NM_CLIENT_DBUS_CONNECTION")]
 		public const string DBUS_CONNECTION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DBUS_NAME_OWNER")]
+		[CCode (cname = "NM_CLIENT_DBUS_NAME_OWNER")]
 		public const string DBUS_NAME_OWNER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DEVICES")]
+		[CCode (cname = "NM_CLIENT_DEVICES")]
 		public const string DEVICES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DEVICE_ADDED")]
+		[CCode (cname = "NM_CLIENT_DEVICE_ADDED")]
 		public const string DEVICE_ADDED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DEVICE_REMOVED")]
+		[CCode (cname = "NM_CLIENT_DEVICE_REMOVED")]
 		public const string DEVICE_REMOVED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DNS_CONFIGURATION")]
+		[CCode (cname = "NM_CLIENT_DNS_CONFIGURATION")]
 		public const string DNS_CONFIGURATION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DNS_MODE")]
+		[CCode (cname = "NM_CLIENT_DNS_MODE")]
 		public const string DNS_MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_DNS_RC_MANAGER")]
+		[CCode (cname = "NM_CLIENT_DNS_RC_MANAGER")]
 		public const string DNS_RC_MANAGER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_HOSTNAME")]
+		[CCode (cname = "NM_CLIENT_HOSTNAME")]
 		public const string HOSTNAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_INSTANCE_FLAGS")]
+		[CCode (cname = "NM_CLIENT_INSTANCE_FLAGS")]
 		public const string INSTANCE_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_METERED")]
+		[CCode (cname = "NM_CLIENT_METERED")]
 		public const string METERED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_NETWORKING_ENABLED")]
+		[CCode (cname = "NM_CLIENT_NETWORKING_ENABLED")]
 		public const string NETWORKING_ENABLED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_NM_RUNNING")]
+		[CCode (cname = "NM_CLIENT_NM_RUNNING")]
 		public const string NM_RUNNING;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_PERMISSIONS_STATE")]
+		[CCode (cname = "NM_CLIENT_PERMISSIONS_STATE")]
 		public const string PERMISSIONS_STATE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_PERMISSION_CHANGED")]
+		[CCode (cname = "NM_CLIENT_PERMISSION_CHANGED")]
 		public const string PERMISSION_CHANGED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_PRIMARY_CONNECTION")]
+		[CCode (cname = "NM_CLIENT_PRIMARY_CONNECTION")]
 		public const string PRIMARY_CONNECTION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_RADIO_FLAGS")]
+		[CCode (cname = "NM_CLIENT_RADIO_FLAGS")]
 		public const string RADIO_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_STARTUP")]
+		[CCode (cname = "NM_CLIENT_STARTUP")]
 		public const string STARTUP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_STATE")]
+		[CCode (cname = "NM_CLIENT_STATE")]
 		public const string STATE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_VERSION")]
+		[CCode (cname = "NM_CLIENT_VERSION")]
 		public const string VERSION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_VERSION_INFO")]
+		[CCode (cname = "NM_CLIENT_VERSION_INFO")]
 		public const string VERSION_INFO;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_WIMAX_ENABLED")]
+		[CCode (cname = "NM_CLIENT_WIMAX_ENABLED")]
 		public const string WIMAX_ENABLED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_WIMAX_HARDWARE_ENABLED")]
+		[CCode (cname = "NM_CLIENT_WIMAX_HARDWARE_ENABLED")]
 		public const string WIMAX_HARDWARE_ENABLED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_WIRELESS_ENABLED")]
+		[CCode (cname = "NM_CLIENT_WIRELESS_ENABLED")]
 		public const string WIRELESS_ENABLED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_WIRELESS_HARDWARE_ENABLED")]
+		[CCode (cname = "NM_CLIENT_WIRELESS_HARDWARE_ENABLED")]
 		public const string WIRELESS_HARDWARE_ENABLED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_WWAN_ENABLED")]
+		[CCode (cname = "NM_CLIENT_WWAN_ENABLED")]
 		public const string WWAN_ENABLED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CLIENT_WWAN_HARDWARE_ENABLED")]
+		[CCode (cname = "NM_CLIENT_WWAN_HARDWARE_ENABLED")]
 		public const string WWAN_HARDWARE_ENABLED;
 		[CCode (has_construct_function = false)]
 		public Client (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[CCode (cname = "nm_client_new_async", has_construct_function = false)]
+		public async Client.@async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public async NM.ActiveConnection activate_connection_async (NM.Connection? connection, NM.Device? device, string? specific_object, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.16")]
-		public async NM.ActiveConnection add_and_activate_connection2 (NM.Connection? @partial, NM.Device? device, string? specific_object, GLib.Variant options, GLib.Cancellable? cancellable, out GLib.Variant out_result) throws GLib.Error;
+		public async NM.ActiveConnection add_and_activate_connection2 (NM.Connection? @partial, NM.Device? device, string? specific_object, GLib.Variant options, GLib.Cancellable? cancellable, out GLib.Variant? out_result) throws GLib.Error;
 		public async NM.ActiveConnection add_and_activate_connection_async (NM.Connection? @partial, NM.Device? device, string? specific_object, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.20")]
-		public async NM.RemoteConnection add_connection2 (GLib.Variant settings, NM.SettingsAddConnection2Flags flags, GLib.Variant? args, bool ignore_out_result, GLib.Cancellable? cancellable, out GLib.Variant out_result) throws GLib.Error;
+		public async NM.RemoteConnection add_connection2 (GLib.Variant settings, NM.SettingsAddConnection2Flags flags, GLib.Variant? args, bool ignore_out_result, GLib.Cancellable? cancellable, out GLib.Variant? out_result) throws GLib.Error;
 		public async NM.RemoteConnection add_connection_async (NM.Connection connection, bool save_to_disk, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (deprecated = true, deprecated_since = "1.22")]
 		public NM.ConnectivityState check_connectivity (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -627,7 +991,7 @@ namespace NM {
 		[Version (since = "1.24")]
 		public NM.ClientInstanceFlags get_instance_flags ();
 		[Version (deprecated = true, deprecated_since = "1.22")]
-		public bool get_logging (string? level, string? domains) throws GLib.Error;
+		public bool get_logging (out string? level, out string? domains) throws GLib.Error;
 		[Version (since = "1.22")]
 		public unowned GLib.MainContext get_main_context ();
 		[Version (since = "1.22")]
@@ -654,7 +1018,6 @@ namespace NM {
 		public bool networking_get_enabled ();
 		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool networking_set_enabled (bool enabled) throws GLib.Error;
-		public static async NM.Client new_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "1.22")]
 		public async bool reload (NM.ManagerReloadFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (deprecated = true, deprecated_since = "1.22")]
@@ -757,199 +1120,313 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_get_type ()")]
 	public abstract class Device : NM.Object {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_6LOWPAN_HW_ADDRESS")]
+		[CCode (cname = "NM_DEVICE_6LOWPAN_HW_ADDRESS")]
 		public const string @6LOWPAN_HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_6LOWPAN_PARENT")]
+		[CCode (cname = "NM_DEVICE_6LOWPAN_PARENT")]
 		public const string @6LOWPAN_PARENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_ACTIVE_CONNECTION")]
+		[CCode (cname = "NM_DEVICE_ACTIVE_CONNECTION")]
 		public const string ACTIVE_CONNECTION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_AUTOCONNECT")]
+		[CCode (cname = "NM_DEVICE_ADSL_CARRIER")]
+		public const string ADSL_CARRIER;
+		[CCode (cname = "NM_DEVICE_AUTOCONNECT")]
 		public const string AUTOCONNECT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_AVAILABLE_CONNECTIONS")]
+		[CCode (cname = "NM_DEVICE_AVAILABLE_CONNECTIONS")]
 		public const string AVAILABLE_CONNECTIONS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_CAPABILITIES")]
+		[CCode (cname = "NM_DEVICE_BOND_CARRIER")]
+		public const string BOND_CARRIER;
+		[CCode (cname = "NM_DEVICE_BOND_HW_ADDRESS")]
+		public const string BOND_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_BOND_SLAVES")]
+		public const string BOND_SLAVES;
+		[CCode (cname = "NM_DEVICE_BRIDGE_CARRIER")]
+		public const string BRIDGE_CARRIER;
+		[CCode (cname = "NM_DEVICE_BRIDGE_HW_ADDRESS")]
+		public const string BRIDGE_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_BRIDGE_SLAVES")]
+		public const string BRIDGE_SLAVES;
+		[CCode (cname = "NM_DEVICE_BT_CAPABILITIES")]
+		public const string BT_CAPABILITIES;
+		[CCode (cname = "NM_DEVICE_BT_HW_ADDRESS")]
+		public const string BT_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_BT_NAME")]
+		public const string BT_NAME;
+		[CCode (cname = "NM_DEVICE_CAPABILITIES")]
 		public const string CAPABILITIES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_DEVICE_TYPE")]
+		[CCode (cname = "NM_DEVICE_DEVICE_TYPE")]
 		public const string DEVICE_TYPE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_DHCP4_CONFIG")]
+		[CCode (cname = "NM_DEVICE_DHCP4_CONFIG")]
 		public const string DHCP4_CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_DHCP6_CONFIG")]
+		[CCode (cname = "NM_DEVICE_DHCP6_CONFIG")]
 		public const string DHCP6_CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_DRIVER")]
+		[CCode (cname = "NM_DEVICE_DRIVER")]
 		public const string DRIVER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_DRIVER_VERSION")]
+		[CCode (cname = "NM_DEVICE_DRIVER_VERSION")]
 		public const string DRIVER_VERSION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_DUMMY_HW_ADDRESS")]
+		[CCode (cname = "NM_DEVICE_DUMMY_HW_ADDRESS")]
 		public const string DUMMY_HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_FIRMWARE_MISSING")]
+		[CCode (cname = "NM_DEVICE_ETHERNET_CARRIER")]
+		public const string ETHERNET_CARRIER;
+		[CCode (cname = "NM_DEVICE_ETHERNET_HW_ADDRESS")]
+		public const string ETHERNET_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_ETHERNET_PERMANENT_HW_ADDRESS")]
+		public const string ETHERNET_PERMANENT_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_ETHERNET_S390_SUBCHANNELS")]
+		public const string ETHERNET_S390_SUBCHANNELS;
+		[CCode (cname = "NM_DEVICE_ETHERNET_SPEED")]
+		public const string ETHERNET_SPEED;
+		[CCode (cname = "NM_DEVICE_FIRMWARE_MISSING")]
 		public const string FIRMWARE_MISSING;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_FIRMWARE_VERSION")]
+		[CCode (cname = "NM_DEVICE_FIRMWARE_VERSION")]
 		public const string FIRMWARE_VERSION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_HW_ADDRESS")]
+		[CCode (cname = "NM_DEVICE_GENERIC_HW_ADDRESS")]
+		public const string GENERIC_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_GENERIC_TYPE_DESCRIPTION")]
+		public const string GENERIC_TYPE_DESCRIPTION;
+		[CCode (cname = "NM_DEVICE_HW_ADDRESS")]
 		public const string HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_INTERFACE")]
+		[CCode (cname = "NM_DEVICE_INFINIBAND_CARRIER")]
+		public const string INFINIBAND_CARRIER;
+		[CCode (cname = "NM_DEVICE_INFINIBAND_HW_ADDRESS")]
+		public const string INFINIBAND_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_INTERFACE")]
 		public const string INTERFACE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_INTERFACE_FLAGS")]
+		[CCode (cname = "NM_DEVICE_INTERFACE_FLAGS")]
 		public const string INTERFACE_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP4_CONFIG")]
+		[CCode (cname = "NM_DEVICE_IP4_CONFIG")]
 		public const string IP4_CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP4_CONNECTIVITY")]
+		[CCode (cname = "NM_DEVICE_IP4_CONNECTIVITY")]
 		public const string IP4_CONNECTIVITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP6_CONFIG")]
+		[CCode (cname = "NM_DEVICE_IP6_CONFIG")]
 		public const string IP6_CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP6_CONNECTIVITY")]
+		[CCode (cname = "NM_DEVICE_IP6_CONNECTIVITY")]
 		public const string IP6_CONNECTIVITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_INTERFACE")]
+		[CCode (cname = "NM_DEVICE_IP_INTERFACE")]
 		public const string IP_INTERFACE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_ENCAPSULATION_LIMIT")]
+		[CCode (cname = "NM_DEVICE_IP_TUNNEL_ENCAPSULATION_LIMIT")]
 		public const string IP_TUNNEL_ENCAPSULATION_LIMIT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_FLAGS")]
+		[CCode (cname = "NM_DEVICE_IP_TUNNEL_FLAGS")]
 		public const string IP_TUNNEL_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_FLOW_LABEL")]
+		[CCode (cname = "NM_DEVICE_IP_TUNNEL_FLOW_LABEL")]
 		public const string IP_TUNNEL_FLOW_LABEL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_INPUT_KEY")]
+		[CCode (cname = "NM_DEVICE_IP_TUNNEL_INPUT_KEY")]
 		public const string IP_TUNNEL_INPUT_KEY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_LOCAL")]
+		[CCode (cname = "NM_DEVICE_IP_TUNNEL_LOCAL")]
 		public const string IP_TUNNEL_LOCAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_MODE")]
+		[CCode (cname = "NM_DEVICE_IP_TUNNEL_MODE")]
 		public const string IP_TUNNEL_MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_OUTPUT_KEY")]
+		[CCode (cname = "NM_DEVICE_IP_TUNNEL_OUTPUT_KEY")]
 		public const string IP_TUNNEL_OUTPUT_KEY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_PARENT")]
+		[CCode (cname = "NM_DEVICE_IP_TUNNEL_PARENT")]
 		public const string IP_TUNNEL_PARENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_PATH_MTU_DISCOVERY")]
+		[CCode (cname = "NM_DEVICE_IP_TUNNEL_PATH_MTU_DISCOVERY")]
 		public const string IP_TUNNEL_PATH_MTU_DISCOVERY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_REMOTE")]
+		[CCode (cname = "NM_DEVICE_IP_TUNNEL_REMOTE")]
 		public const string IP_TUNNEL_REMOTE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_TOS")]
+		[CCode (cname = "NM_DEVICE_IP_TUNNEL_TOS")]
 		public const string IP_TUNNEL_TOS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_IP_TUNNEL_TTL")]
+		[CCode (cname = "NM_DEVICE_IP_TUNNEL_TTL")]
 		public const string IP_TUNNEL_TTL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_LLDP_NEIGHBORS")]
+		[CCode (cname = "NM_DEVICE_LLDP_NEIGHBORS")]
 		public const string LLDP_NEIGHBORS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_CIPHER_SUITE")]
+		[CCode (cname = "NM_DEVICE_MACSEC_CIPHER_SUITE")]
 		public const string MACSEC_CIPHER_SUITE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_ENCODING_SA")]
+		[CCode (cname = "NM_DEVICE_MACSEC_ENCODING_SA")]
 		public const string MACSEC_ENCODING_SA;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_ENCRYPT")]
+		[CCode (cname = "NM_DEVICE_MACSEC_ENCRYPT")]
 		public const string MACSEC_ENCRYPT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_ES")]
+		[CCode (cname = "NM_DEVICE_MACSEC_ES")]
 		public const string MACSEC_ES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_HW_ADDRESS")]
+		[CCode (cname = "NM_DEVICE_MACSEC_HW_ADDRESS")]
 		public const string MACSEC_HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_ICV_LENGTH")]
+		[CCode (cname = "NM_DEVICE_MACSEC_ICV_LENGTH")]
 		public const string MACSEC_ICV_LENGTH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_INCLUDE_SCI")]
+		[CCode (cname = "NM_DEVICE_MACSEC_INCLUDE_SCI")]
 		public const string MACSEC_INCLUDE_SCI;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_PARENT")]
+		[CCode (cname = "NM_DEVICE_MACSEC_PARENT")]
 		public const string MACSEC_PARENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_PROTECT")]
+		[CCode (cname = "NM_DEVICE_MACSEC_PROTECT")]
 		public const string MACSEC_PROTECT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_REPLAY_PROTECT")]
+		[CCode (cname = "NM_DEVICE_MACSEC_REPLAY_PROTECT")]
 		public const string MACSEC_REPLAY_PROTECT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_SCB")]
+		[CCode (cname = "NM_DEVICE_MACSEC_SCB")]
 		public const string MACSEC_SCB;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_SCI")]
+		[CCode (cname = "NM_DEVICE_MACSEC_SCI")]
 		public const string MACSEC_SCI;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_VALIDATION")]
+		[CCode (cname = "NM_DEVICE_MACSEC_VALIDATION")]
 		public const string MACSEC_VALIDATION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACSEC_WINDOW")]
+		[CCode (cname = "NM_DEVICE_MACSEC_WINDOW")]
 		public const string MACSEC_WINDOW;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACVLAN_HW_ADDRESS")]
+		[CCode (cname = "NM_DEVICE_MACVLAN_HW_ADDRESS")]
 		public const string MACVLAN_HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACVLAN_MODE")]
+		[CCode (cname = "NM_DEVICE_MACVLAN_MODE")]
 		public const string MACVLAN_MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACVLAN_NO_PROMISC")]
+		[CCode (cname = "NM_DEVICE_MACVLAN_NO_PROMISC")]
 		public const string MACVLAN_NO_PROMISC;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACVLAN_PARENT")]
+		[CCode (cname = "NM_DEVICE_MACVLAN_PARENT")]
 		public const string MACVLAN_PARENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MACVLAN_TAP")]
+		[CCode (cname = "NM_DEVICE_MACVLAN_TAP")]
 		public const string MACVLAN_TAP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MANAGED")]
+		[CCode (cname = "NM_DEVICE_MANAGED")]
 		public const string MANAGED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_METERED")]
+		[CCode (cname = "NM_DEVICE_METERED")]
 		public const string METERED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MTU")]
+		[CCode (cname = "NM_DEVICE_MODEM_APN")]
+		public const string MODEM_APN;
+		[CCode (cname = "NM_DEVICE_MODEM_CURRENT_CAPABILITIES")]
+		public const string MODEM_CURRENT_CAPABILITIES;
+		[CCode (cname = "NM_DEVICE_MODEM_DEVICE_ID")]
+		public const string MODEM_DEVICE_ID;
+		[CCode (cname = "NM_DEVICE_MODEM_MODEM_CAPABILITIES")]
+		public const string MODEM_MODEM_CAPABILITIES;
+		[CCode (cname = "NM_DEVICE_MODEM_OPERATOR_CODE")]
+		public const string MODEM_OPERATOR_CODE;
+		[CCode (cname = "NM_DEVICE_MTU")]
 		public const string MTU;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_NM_PLUGIN_MISSING")]
+		[CCode (cname = "NM_DEVICE_NM_PLUGIN_MISSING")]
 		public const string NM_PLUGIN_MISSING;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_OVS_BRIDGE_SLAVES")]
+		[CCode (cname = "NM_DEVICE_OLPC_MESH_ACTIVE_CHANNEL")]
+		public const string OLPC_MESH_ACTIVE_CHANNEL;
+		[CCode (cname = "NM_DEVICE_OLPC_MESH_COMPANION")]
+		public const string OLPC_MESH_COMPANION;
+		[CCode (cname = "NM_DEVICE_OLPC_MESH_HW_ADDRESS")]
+		public const string OLPC_MESH_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_OVS_BRIDGE_SLAVES")]
 		public const string OVS_BRIDGE_SLAVES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_OVS_PORT_SLAVES")]
+		[CCode (cname = "NM_DEVICE_OVS_PORT_SLAVES")]
 		public const string OVS_PORT_SLAVES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PATH")]
+		[CCode (cname = "NM_DEVICE_PATH")]
 		public const string PATH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PHYSICAL_PORT_ID")]
+		[CCode (cname = "NM_DEVICE_PHYSICAL_PORT_ID")]
 		public const string PHYSICAL_PORT_ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PORTS")]
+		[CCode (cname = "NM_DEVICE_PORTS")]
 		public const string PORTS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_PRODUCT")]
+		[CCode (cname = "NM_DEVICE_PRODUCT")]
 		public const string PRODUCT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_REAL")]
+		[CCode (cname = "NM_DEVICE_REAL")]
 		public const string REAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_STATE")]
+		[CCode (cname = "NM_DEVICE_STATE")]
 		public const string STATE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_STATE_REASON")]
+		[CCode (cname = "NM_DEVICE_STATE_REASON")]
 		public const string STATE_REASON;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TUN_GROUP")]
+		[CCode (cname = "NM_DEVICE_TEAM_CARRIER")]
+		public const string TEAM_CARRIER;
+		[CCode (cname = "NM_DEVICE_TEAM_CONFIG")]
+		public const string TEAM_CONFIG;
+		[CCode (cname = "NM_DEVICE_TEAM_HW_ADDRESS")]
+		public const string TEAM_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_TEAM_SLAVES")]
+		public const string TEAM_SLAVES;
+		[CCode (cname = "NM_DEVICE_TUN_GROUP")]
 		public const string TUN_GROUP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TUN_HW_ADDRESS")]
+		[CCode (cname = "NM_DEVICE_TUN_HW_ADDRESS")]
 		public const string TUN_HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TUN_MODE")]
+		[CCode (cname = "NM_DEVICE_TUN_MODE")]
 		public const string TUN_MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TUN_MULTI_QUEUE")]
+		[CCode (cname = "NM_DEVICE_TUN_MULTI_QUEUE")]
 		public const string TUN_MULTI_QUEUE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TUN_NO_PI")]
+		[CCode (cname = "NM_DEVICE_TUN_NO_PI")]
 		public const string TUN_NO_PI;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TUN_OWNER")]
+		[CCode (cname = "NM_DEVICE_TUN_OWNER")]
 		public const string TUN_OWNER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TUN_VNET_HDR")]
+		[CCode (cname = "NM_DEVICE_TUN_VNET_HDR")]
 		public const string TUN_VNET_HDR;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_UDI")]
+		[CCode (cname = "NM_DEVICE_UDI")]
 		public const string UDI;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VENDOR")]
+		[CCode (cname = "NM_DEVICE_VENDOR")]
 		public const string VENDOR;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VETH_PEER")]
+		[CCode (cname = "NM_DEVICE_VETH_PEER")]
 		public const string VETH_PEER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VRF_TABLE")]
+		[CCode (cname = "NM_DEVICE_VLAN_CARRIER")]
+		public const string VLAN_CARRIER;
+		[CCode (cname = "NM_DEVICE_VLAN_HW_ADDRESS")]
+		public const string VLAN_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_VLAN_PARENT")]
+		public const string VLAN_PARENT;
+		[CCode (cname = "NM_DEVICE_VLAN_VLAN_ID")]
+		public const string VLAN_VLAN_ID;
+		[CCode (cname = "NM_DEVICE_VRF_TABLE")]
 		public const string VRF_TABLE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_AGEING")]
+		[CCode (cname = "NM_DEVICE_VXLAN_AGEING")]
 		public const string VXLAN_AGEING;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_CARRIER")]
+		[CCode (cname = "NM_DEVICE_VXLAN_CARRIER")]
 		public const string VXLAN_CARRIER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_DST_PORT")]
+		[CCode (cname = "NM_DEVICE_VXLAN_DST_PORT")]
 		public const string VXLAN_DST_PORT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_GROUP")]
+		[CCode (cname = "NM_DEVICE_VXLAN_GROUP")]
 		public const string VXLAN_GROUP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_HW_ADDRESS")]
+		[CCode (cname = "NM_DEVICE_VXLAN_HW_ADDRESS")]
 		public const string VXLAN_HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_ID")]
+		[CCode (cname = "NM_DEVICE_VXLAN_ID")]
 		public const string VXLAN_ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_L2MISS")]
+		[CCode (cname = "NM_DEVICE_VXLAN_L2MISS")]
 		public const string VXLAN_L2MISS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_L3MISS")]
+		[CCode (cname = "NM_DEVICE_VXLAN_L3MISS")]
 		public const string VXLAN_L3MISS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_LEARNING")]
+		[CCode (cname = "NM_DEVICE_VXLAN_LEARNING")]
 		public const string VXLAN_LEARNING;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_LIMIT")]
+		[CCode (cname = "NM_DEVICE_VXLAN_LIMIT")]
 		public const string VXLAN_LIMIT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_LOCAL")]
+		[CCode (cname = "NM_DEVICE_VXLAN_LOCAL")]
 		public const string VXLAN_LOCAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_PARENT")]
+		[CCode (cname = "NM_DEVICE_VXLAN_PARENT")]
 		public const string VXLAN_PARENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_PROXY")]
+		[CCode (cname = "NM_DEVICE_VXLAN_PROXY")]
 		public const string VXLAN_PROXY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_RSC")]
+		[CCode (cname = "NM_DEVICE_VXLAN_RSC")]
 		public const string VXLAN_RSC;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_SRC_PORT_MAX")]
+		[CCode (cname = "NM_DEVICE_VXLAN_SRC_PORT_MAX")]
 		public const string VXLAN_SRC_PORT_MAX;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_SRC_PORT_MIN")]
+		[CCode (cname = "NM_DEVICE_VXLAN_SRC_PORT_MIN")]
 		public const string VXLAN_SRC_PORT_MIN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_TOS")]
+		[CCode (cname = "NM_DEVICE_VXLAN_TOS")]
 		public const string VXLAN_TOS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VXLAN_TTL")]
+		[CCode (cname = "NM_DEVICE_VXLAN_TTL")]
 		public const string VXLAN_TTL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WPAN_HW_ADDRESS")]
+		[CCode (cname = "NM_DEVICE_WIFI_ACCESS_POINTS")]
+		public const string WIFI_ACCESS_POINTS;
+		[CCode (cname = "NM_DEVICE_WIFI_ACTIVE_ACCESS_POINT")]
+		public const string WIFI_ACTIVE_ACCESS_POINT;
+		[CCode (cname = "NM_DEVICE_WIFI_BITRATE")]
+		public const string WIFI_BITRATE;
+		[CCode (cname = "NM_DEVICE_WIFI_CAPABILITIES")]
+		public const string WIFI_CAPABILITIES;
+		[CCode (cname = "NM_DEVICE_WIFI_HW_ADDRESS")]
+		public const string WIFI_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_WIFI_LAST_SCAN")]
+		public const string WIFI_LAST_SCAN;
+		[CCode (cname = "NM_DEVICE_WIFI_MODE")]
+		public const string WIFI_MODE;
+		[CCode (cname = "NM_DEVICE_WIFI_P2P_HW_ADDRESS")]
+		public const string WIFI_P2P_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_WIFI_P2P_PEERS")]
+		public const string WIFI_P2P_PEERS;
+		[CCode (cname = "NM_DEVICE_WIFI_P2P_WFDIES")]
+		public const string WIFI_P2P_WFDIES;
+		[CCode (cname = "NM_DEVICE_WIFI_PERMANENT_HW_ADDRESS")]
+		public const string WIFI_PERMANENT_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_WIMAX_ACTIVE_NSP")]
+		public const string WIMAX_ACTIVE_NSP;
+		[CCode (cname = "NM_DEVICE_WIMAX_BSID")]
+		public const string WIMAX_BSID;
+		[CCode (cname = "NM_DEVICE_WIMAX_CENTER_FREQUENCY")]
+		public const string WIMAX_CENTER_FREQUENCY;
+		[CCode (cname = "NM_DEVICE_WIMAX_CINR")]
+		public const string WIMAX_CINR;
+		[CCode (cname = "NM_DEVICE_WIMAX_HW_ADDRESS")]
+		public const string WIMAX_HW_ADDRESS;
+		[CCode (cname = "NM_DEVICE_WIMAX_NSPS")]
+		public const string WIMAX_NSPS;
+		[CCode (cname = "NM_DEVICE_WIMAX_RSSI")]
+		public const string WIMAX_RSSI;
+		[CCode (cname = "NM_DEVICE_WIMAX_TX_POWER")]
+		public const string WIMAX_TX_POWER;
+		[CCode (cname = "NM_DEVICE_WIREGUARD_FWMARK")]
+		public const string WIREGUARD_FWMARK;
+		[CCode (cname = "NM_DEVICE_WIREGUARD_LISTEN_PORT")]
+		public const string WIREGUARD_LISTEN_PORT;
+		[CCode (cname = "NM_DEVICE_WIREGUARD_PUBLIC_KEY")]
+		public const string WIREGUARD_PUBLIC_KEY;
+		[CCode (cname = "NM_DEVICE_WPAN_HW_ADDRESS")]
 		public const string WPAN_HW_ADDRESS;
 		[CCode (has_construct_function = false)]
 		protected Device ();
@@ -1047,7 +1524,7 @@ namespace NM {
 		public NM.ConnectivityState ip6_connectivity { get; }
 		[NoAccessorMethod]
 		public string ip_interface { owned get; }
-		public GLib.GenericArray<void*> lldp_neighbors { get; }
+		public GLib.GenericArray<NM.LldpNeighbor> lldp_neighbors { get; }
 		public bool managed { get; }
 		[Version (since = "1.2")]
 		public uint metered { get; }
@@ -1058,7 +1535,7 @@ namespace NM {
 		public string path { get; }
 		public string physical_port_id { get; }
 		[Version (since = "1.34")]
-		public GLib.GenericArray<void*> ports { get; }
+		public GLib.GenericArray<NM.Device> ports { get; }
 		public string product { get; }
 		[NoAccessorMethod]
 		[Version (since = "1.2")]
@@ -1071,7 +1548,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_6lowpan", type_id = "nm_device_6lowpan_get_type ()")]
 	[Version (since = "1.14")]
-	public class Device6Lowpan : NM.Device {
+	public sealed class Device6Lowpan : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected Device6Lowpan ();
 		[Version (since = "1.42")]
@@ -1079,22 +1556,14 @@ namespace NM {
 		public NM.Device parent { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_adsl_get_type ()")]
-	public class DeviceAdsl : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_ADSL_CARRIER")]
-		public const string CARRIER;
+	public sealed class DeviceAdsl : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceAdsl ();
 		public bool get_carrier ();
 		public bool carrier { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_bond_get_type ()")]
-	public class DeviceBond : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BOND_CARRIER")]
-		public const string CARRIER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BOND_HW_ADDRESS")]
-		public const string HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BOND_SLAVES")]
-		public const string SLAVES;
+	public sealed class DeviceBond : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceBond ();
 		public bool get_carrier ();
@@ -1104,13 +1573,7 @@ namespace NM {
 		public GLib.GenericArray<NM.Device> slaves { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_bridge_get_type ()")]
-	public class DeviceBridge : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BRIDGE_CARRIER")]
-		public const string CARRIER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BRIDGE_HW_ADDRESS")]
-		public const string HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BRIDGE_SLAVES")]
-		public const string SLAVES;
+	public sealed class DeviceBridge : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceBridge ();
 		public bool get_carrier ();
@@ -1120,13 +1583,7 @@ namespace NM {
 		public GLib.GenericArray<NM.Device> slaves { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_bt_get_type ()")]
-	public class DeviceBt : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BT_CAPABILITIES")]
-		public const string CAPABILITIES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BT_HW_ADDRESS")]
-		public const string HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_BT_NAME")]
-		public const string NAME;
+	public sealed class DeviceBt : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceBt ();
 		public NM.BluetoothCapabilities get_capabilities ();
@@ -1137,22 +1594,12 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_dummy_get_type ()")]
 	[Version (since = "1.8")]
-	public class DeviceDummy : NM.Device {
+	public sealed class DeviceDummy : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceDummy ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ethernet_get_type ()")]
-	public class DeviceEthernet : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_ETHERNET_CARRIER")]
-		public const string CARRIER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_ETHERNET_HW_ADDRESS")]
-		public const string HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_ETHERNET_PERMANENT_HW_ADDRESS")]
-		public const string PERMANENT_HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_ETHERNET_S390_SUBCHANNELS")]
-		public const string S390_SUBCHANNELS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_ETHERNET_SPEED")]
-		public const string SPEED;
+	public sealed class DeviceEthernet : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceEthernet ();
 		public bool get_carrier ();
@@ -1170,11 +1617,7 @@ namespace NM {
 		public uint speed { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_generic_get_type ()")]
-	public class DeviceGeneric : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_GENERIC_HW_ADDRESS")]
-		public const string HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_GENERIC_TYPE_DESCRIPTION")]
-		public const string TYPE_DESCRIPTION;
+	public sealed class DeviceGeneric : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceGeneric ();
 		[NoAccessorMethod]
@@ -1182,7 +1625,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ip_tunnel_get_type ()")]
 	[Version (since = "1.2")]
-	public class DeviceIPTunnel : NM.Device {
+	public sealed class DeviceIPTunnel : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceIPTunnel ();
 		public uint8 get_encapsulation_limit ();
@@ -1213,11 +1656,7 @@ namespace NM {
 		public uint8 ttl { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_infiniband_get_type ()")]
-	public class DeviceInfiniband : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_INFINIBAND_CARRIER")]
-		public const string CARRIER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_INFINIBAND_HW_ADDRESS")]
-		public const string HW_ADDRESS;
+	public sealed class DeviceInfiniband : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceInfiniband ();
 		public bool get_carrier ();
@@ -1225,13 +1664,13 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_loopback_get_type ()")]
 	[Version (since = "1.42")]
-	public class DeviceLoopback : NM.Device {
+	public sealed class DeviceLoopback : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceLoopback ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_macsec_get_type ()")]
 	[Version (since = "1.6")]
-	public class DeviceMacsec : NM.Device {
+	public sealed class DeviceMacsec : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceMacsec ();
 		public uint64 get_cipher_suite ();
@@ -1264,7 +1703,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_macvlan_get_type ()")]
 	[Version (since = "1.2")]
-	public class DeviceMacvlan : NM.Device {
+	public sealed class DeviceMacvlan : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceMacvlan ();
 		public unowned string get_mode ();
@@ -1277,17 +1716,7 @@ namespace NM {
 		public bool tap { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_modem_get_type ()")]
-	public class DeviceModem : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MODEM_APN")]
-		public const string APN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MODEM_CURRENT_CAPABILITIES")]
-		public const string CURRENT_CAPABILITIES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MODEM_DEVICE_ID")]
-		public const string DEVICE_ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MODEM_MODEM_CAPABILITIES")]
-		public const string MODEM_CAPABILITIES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_MODEM_OPERATOR_CODE")]
-		public const string OPERATOR_CODE;
+	public sealed class DeviceModem : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceModem ();
 		[Version (since = "1.20")]
@@ -1308,13 +1737,7 @@ namespace NM {
 		public string operator_code { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_olpc_mesh_get_type ()")]
-	public class DeviceOlpcMesh : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_OLPC_MESH_ACTIVE_CHANNEL")]
-		public const string MESH_ACTIVE_CHANNEL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_OLPC_MESH_COMPANION")]
-		public const string MESH_COMPANION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_OLPC_MESH_HW_ADDRESS")]
-		public const string MESH_HW_ADDRESS;
+	public sealed class DeviceOlpcMesh : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceOlpcMesh ();
 		public uint32 get_active_channel ();
@@ -1324,7 +1747,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ovs_bridge_get_type ()")]
 	[Version (since = "1.10")]
-	public class DeviceOvsBridge : NM.Device {
+	public sealed class DeviceOvsBridge : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceOvsBridge ();
 		[Version (deprecated = true, deprecated_since = "1.34", since = "1.14")]
@@ -1334,13 +1757,13 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ovs_interface_get_type ()")]
 	[Version (since = "1.10")]
-	public class DeviceOvsInterface : NM.Device {
+	public sealed class DeviceOvsInterface : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceOvsInterface ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ovs_port_get_type ()")]
 	[Version (since = "1.10")]
-	public class DeviceOvsPort : NM.Device {
+	public sealed class DeviceOvsPort : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceOvsPort ();
 		[Version (deprecated = true, deprecated_since = "1.34", since = "1.14")]
@@ -1350,20 +1773,12 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_ppp_get_type ()")]
 	[Version (since = "1.10")]
-	public class DevicePpp : NM.Device {
+	public sealed class DevicePpp : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DevicePpp ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_team_get_type ()")]
-	public class DeviceTeam : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TEAM_CARRIER")]
-		public const string CARRIER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TEAM_CONFIG")]
-		public const string CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TEAM_HW_ADDRESS")]
-		public const string HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_TEAM_SLAVES")]
-		public const string SLAVES;
+	public sealed class DeviceTeam : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceTeam ();
 		public bool get_carrier ();
@@ -1378,7 +1793,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_tun_get_type ()")]
 	[Version (since = "1.2")]
-	public class DeviceTun : NM.Device {
+	public sealed class DeviceTun : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceTun ();
 		public int64 get_group ();
@@ -1396,7 +1811,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_veth_get_type ()")]
 	[Version (since = "1.30")]
-	public class DeviceVeth : NM.DeviceEthernet {
+	public sealed class DeviceVeth : NM.DeviceEthernet {
 		[CCode (has_construct_function = false)]
 		protected DeviceVeth ();
 		[Version (since = "1.42")]
@@ -1404,15 +1819,7 @@ namespace NM {
 		public NM.Device peer { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_vlan_get_type ()")]
-	public class DeviceVlan : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VLAN_CARRIER")]
-		public const string CARRIER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VLAN_HW_ADDRESS")]
-		public const string HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VLAN_PARENT")]
-		public const string PARENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_VLAN_VLAN_ID")]
-		public const string VLAN_ID;
+	public sealed class DeviceVlan : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceVlan ();
 		public bool get_carrier ();
@@ -1424,7 +1831,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_vrf_get_type ()")]
 	[Version (since = "1.24")]
-	public class DeviceVrf : NM.Device {
+	public sealed class DeviceVrf : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceVrf ();
 		public uint32 get_table ();
@@ -1432,7 +1839,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_vxlan_get_type ()")]
 	[Version (since = "1.2")]
-	public class DeviceVxlan : NM.Device {
+	public sealed class DeviceVxlan : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceVxlan ();
 		public uint get_ageing ();
@@ -1473,29 +1880,7 @@ namespace NM {
 		public uint8 ttl { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_wifi_get_type ()")]
-	public class DeviceWifi : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_ACCESS_POINTS")]
-		public const string ACCESS_POINTS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_ACTIVE_ACCESS_POINT")]
-		public const string ACTIVE_ACCESS_POINT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_BITRATE")]
-		public const string BITRATE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_CAPABILITIES")]
-		public const string CAPABILITIES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_HW_ADDRESS")]
-		public const string HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_LAST_SCAN")]
-		public const string LAST_SCAN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_MODE")]
-		public const string MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_P2P_HW_ADDRESS")]
-		public const string P2P_HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_P2P_PEERS")]
-		public const string P2P_PEERS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_P2P_WFDIES")]
-		public const string P2P_WFDIES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIFI_PERMANENT_HW_ADDRESS")]
-		public const string PERMANENT_HW_ADDRESS;
+	public sealed class DeviceWifi : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceWifi ();
 		public unowned NM.AccessPoint get_access_point_by_path (string path);
@@ -1530,7 +1915,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_wifi_p2p", type_id = "nm_device_wifi_p2p_get_type ()")]
 	[Version (since = "1.16")]
-	public class DeviceWifiP2P : NM.Device {
+	public sealed class DeviceWifiP2P : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceWifiP2P ();
 		[Version (since = "1.42")]
@@ -1544,23 +1929,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_wimax_get_type ()")]
 	[Version (deprecated = true, deprecated_since = "1.22")]
-	public class DeviceWimax : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIMAX_ACTIVE_NSP")]
-		public const string ACTIVE_NSP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIMAX_BSID")]
-		public const string BSID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIMAX_CENTER_FREQUENCY")]
-		public const string CENTER_FREQUENCY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIMAX_CINR")]
-		public const string CINR;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIMAX_HW_ADDRESS")]
-		public const string HW_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIMAX_NSPS")]
-		public const string NSPS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIMAX_RSSI")]
-		public const string RSSI;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIMAX_TX_POWER")]
-		public const string TX_POWER;
+	public sealed class DeviceWimax : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceWimax ();
 		[Version (deprecated = true, deprecated_since = "1.2")]
@@ -1603,13 +1972,7 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "device_wireguard", type_id = "nm_device_wireguard_get_type ()")]
 	[Version (since = "1.14")]
-	public class DeviceWireGuard : NM.Device {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIREGUARD_FWMARK")]
-		public const string FWMARK;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIREGUARD_LISTEN_PORT")]
-		public const string LISTEN_PORT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DEVICE_WIREGUARD_PUBLIC_KEY")]
-		public const string PUBLIC_KEY;
+	public sealed class DeviceWireGuard : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceWireGuard ();
 		public uint32 get_fwmark ();
@@ -1621,13 +1984,15 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_device_wpan_get_type ()")]
 	[Version (since = "1.14")]
-	public class DeviceWpan : NM.Device {
+	public sealed class DeviceWpan : NM.Device {
 		[CCode (has_construct_function = false)]
 		protected DeviceWpan ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_dhcp_config_get_type ()")]
 	public abstract class DhcpConfig : NM.Object {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DHCP_CONFIG_OPTIONS")]
+		[CCode (cname = "NM_DHCP_CONFIG_FAMILY")]
+		public const string FAMILY;
+		[CCode (cname = "NM_DHCP_CONFIG_OPTIONS")]
 		public const string OPTIONS;
 		[CCode (has_construct_function = false)]
 		protected DhcpConfig ();
@@ -1653,6 +2018,8 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_ip_address_ref", type_id = "nm_ip_address_get_type ()", unref_function = "nm_ip_address_unref")]
 	[Compact]
 	public class IPAddress {
+		[CCode (cname = "NM_IP_ADDRESS_ATTRIBUTE_LABEL")]
+		public const string ATTRIBUTE_LABEL;
 		[CCode (has_construct_function = false)]
 		public IPAddress (int family, string addr, uint prefix) throws GLib.Error;
 		[CCode (has_construct_function = false)]
@@ -1676,21 +2043,21 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_ip_config_get_type ()")]
 	public abstract class IPConfig : NM.Object {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_CONFIG_ADDRESSES")]
+		[CCode (cname = "NM_IP_CONFIG_ADDRESSES")]
 		public const string ADDRESSES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_CONFIG_DOMAINS")]
+		[CCode (cname = "NM_IP_CONFIG_DOMAINS")]
 		public const string DOMAINS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_CONFIG_FAMILY")]
+		[CCode (cname = "NM_IP_CONFIG_FAMILY")]
 		public const string FAMILY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_CONFIG_GATEWAY")]
+		[CCode (cname = "NM_IP_CONFIG_GATEWAY")]
 		public const string GATEWAY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_CONFIG_NAMESERVERS")]
+		[CCode (cname = "NM_IP_CONFIG_NAMESERVERS")]
 		public const string NAMESERVERS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_CONFIG_ROUTES")]
+		[CCode (cname = "NM_IP_CONFIG_ROUTES")]
 		public const string ROUTES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_CONFIG_SEARCHES")]
+		[CCode (cname = "NM_IP_CONFIG_SEARCHES")]
 		public const string SEARCHES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_CONFIG_WINS_SERVERS")]
+		[CCode (cname = "NM_IP_CONFIG_WINS_SERVERS")]
 		public const string WINS_SERVERS;
 		[CCode (has_construct_function = false)]
 		protected IPConfig ();
@@ -1706,7 +2073,7 @@ namespace NM {
 		public unowned string[] get_searches ();
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_wins_servers ();
-		public GLib.GenericArray<void*> addresses { get; }
+		public GLib.GenericArray<NM.IPAddress> addresses { get; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[] domains { get; }
 		public int family { get; }
@@ -1853,7 +2220,7 @@ namespace NM {
 	[Version (since = "1.30")]
 	public class KeyfileHandlerData {
 		public void fail_with_error (owned GLib.Error src);
-		public void get_context (out unowned string out_kf_group_name, out unowned string out_kf_key_name, out unowned NM.Setting out_cur_setting, out unowned string out_cur_property_name);
+		public void get_context (out unowned string? out_kf_group_name, out unowned string? out_kf_key_name, out unowned NM.Setting? out_cur_setting, out unowned string? out_cur_property_name);
 		public void warn_get (out unowned string out_message, out NM.KeyfileWarnSeverity out_severity);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_lldp_neighbor_ref", type_id = "nm_lldp_neighbor_get_type ()", unref_function = "nm_lldp_neighbor_unref")]
@@ -1866,7 +2233,7 @@ namespace NM {
 		[Version (since = "1.2")]
 		public string[] get_attr_names ();
 		[Version (since = "1.2")]
-		public bool get_attr_string_value (string name, out unowned string out_value);
+		public bool get_attr_string_value (string name, out unowned string? out_value);
 		[Version (since = "1.2")]
 		public unowned GLib.VariantType get_attr_type (string name);
 		[Version (since = "1.2")]
@@ -1880,9 +2247,9 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_object_get_type ()")]
 	public abstract class Object : GLib.Object {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_OBJECT_CLIENT")]
+		[CCode (cname = "NM_OBJECT_CLIENT")]
 		public const string CLIENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_OBJECT_PATH")]
+		[CCode (cname = "NM_OBJECT_PATH")]
 		public const string PATH;
 		[CCode (has_construct_function = false)]
 		protected Object ();
@@ -1913,18 +2280,18 @@ namespace NM {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_remote_connection_get_type ()")]
-	public class RemoteConnection : NM.Object, NM.Connection {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_DBUS_CONNECTION")]
+	public sealed class RemoteConnection : NM.Object, NM.Connection {
+		[CCode (cname = "NM_REMOTE_CONNECTION_DBUS_CONNECTION")]
 		public const string DBUS_CONNECTION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_FILENAME")]
+		[CCode (cname = "NM_REMOTE_CONNECTION_FILENAME")]
 		public const string FILENAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_FLAGS")]
+		[CCode (cname = "NM_REMOTE_CONNECTION_FLAGS")]
 		public const string FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_PATH")]
+		[CCode (cname = "NM_REMOTE_CONNECTION_PATH")]
 		public const string PATH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_UNSAVED")]
+		[CCode (cname = "NM_REMOTE_CONNECTION_UNSAVED")]
 		public const string UNSAVED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_REMOTE_CONNECTION_VISIBLE")]
+		[CCode (cname = "NM_REMOTE_CONNECTION_VISIBLE")]
 		public const string VISIBLE;
 		[CCode (has_construct_function = false)]
 		protected RemoteConnection ();
@@ -1956,6 +2323,16 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_secret_agent_old_get_type ()")]
 	public abstract class SecretAgentOld : GLib.Object, GLib.AsyncInitable, GLib.Initable {
+		[CCode (cname = "NM_SECRET_AGENT_OLD_AUTO_REGISTER")]
+		public const string AUTO_REGISTER;
+		[CCode (cname = "NM_SECRET_AGENT_OLD_CAPABILITIES")]
+		public const string CAPABILITIES;
+		[CCode (cname = "NM_SECRET_AGENT_OLD_DBUS_CONNECTION")]
+		public const string DBUS_CONNECTION;
+		[CCode (cname = "NM_SECRET_AGENT_OLD_IDENTIFIER")]
+		public const string IDENTIFIER;
+		[CCode (cname = "NM_SECRET_AGENT_OLD_REGISTERED")]
+		public const string REGISTERED;
 		[CCode (has_construct_function = false)]
 		protected SecretAgentOld ();
 		[NoWrapper]
@@ -1995,12 +2372,14 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_get_type ()")]
 	public abstract class Setting : GLib.Object {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PARAM_FUZZY_IGNORE")]
+		[CCode (cname = "NM_SETTING_PARAM_FUZZY_IGNORE")]
 		public const int FUZZY_IGNORE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PARAM_REQUIRED")]
+		[CCode (cname = "NM_SETTING_PARAM_REQUIRED")]
 		public const int REQUIRED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PARAM_SECRET")]
+		[CCode (cname = "NM_SETTING_PARAM_SECRET")]
 		public const int SECRET;
+		[CCode (cname = "NM_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false)]
 		protected Setting ();
 		public bool compare (NM.Setting b, NM.SettingCompareFlags flags);
@@ -2017,7 +2396,7 @@ namespace NM {
 		public unowned GLib.Variant option_get (string opt_name);
 		[CCode (array_length = true, array_length_pos = 0.1, array_length_type = "guint", array_null_terminated = true)]
 		[Version (since = "1.26")]
-		public unowned string[] option_get_all_names ();
+		public unowned string[]? option_get_all_names ();
 		[Version (since = "1.26")]
 		public bool option_get_boolean (string opt_name, out bool out_value);
 		[Version (since = "1.26")]
@@ -2037,7 +2416,11 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_6lowpan", type_id = "nm_setting_6lowpan_get_type ()")]
 	[Version (since = "1.14")]
-	public class Setting6Lowpan : NM.Setting {
+	public sealed class Setting6Lowpan : NM.Setting {
+		[CCode (cname = "NM_SETTING_6LOWPAN_PARENT")]
+		public const string PARENT;
+		[CCode (cname = "NM_SETTING_6LOWPAN_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.42")]
 		public Setting6Lowpan ();
@@ -2047,106 +2430,106 @@ namespace NM {
 		public string parent { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_802_1x", type_id = "nm_setting_802_1x_get_type ()")]
-	public class Setting8021x : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_ALTSUBJECT_MATCHES")]
+	public sealed class Setting8021x : NM.Setting {
+		[CCode (cname = "NM_SETTING_802_1X_ALTSUBJECT_MATCHES")]
 		public const string ALTSUBJECT_MATCHES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_ANONYMOUS_IDENTITY")]
+		[CCode (cname = "NM_SETTING_802_1X_ANONYMOUS_IDENTITY")]
 		public const string ANONYMOUS_IDENTITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_AUTH_TIMEOUT")]
+		[CCode (cname = "NM_SETTING_802_1X_AUTH_TIMEOUT")]
 		public const string AUTH_TIMEOUT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CA_CERT")]
+		[CCode (cname = "NM_SETTING_802_1X_CA_CERT")]
 		public const string CA_CERT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CA_CERT_PASSWORD")]
+		[CCode (cname = "NM_SETTING_802_1X_CA_CERT_PASSWORD")]
 		public const string CA_CERT_PASSWORD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CA_CERT_PASSWORD_FLAGS")]
+		[CCode (cname = "NM_SETTING_802_1X_CA_CERT_PASSWORD_FLAGS")]
 		public const string CA_CERT_PASSWORD_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CA_PATH")]
+		[CCode (cname = "NM_SETTING_802_1X_CA_PATH")]
 		public const string CA_PATH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CERT_SCHEME_PREFIX_PATH")]
+		[CCode (cname = "NM_SETTING_802_1X_CERT_SCHEME_PREFIX_PATH")]
 		public const string CERT_SCHEME_PREFIX_PATH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CERT_SCHEME_PREFIX_PKCS11")]
+		[CCode (cname = "NM_SETTING_802_1X_CERT_SCHEME_PREFIX_PKCS11")]
 		public const string CERT_SCHEME_PREFIX_PKCS11;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CLIENT_CERT")]
+		[CCode (cname = "NM_SETTING_802_1X_CLIENT_CERT")]
 		public const string CLIENT_CERT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CLIENT_CERT_PASSWORD")]
+		[CCode (cname = "NM_SETTING_802_1X_CLIENT_CERT_PASSWORD")]
 		public const string CLIENT_CERT_PASSWORD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_CLIENT_CERT_PASSWORD_FLAGS")]
+		[CCode (cname = "NM_SETTING_802_1X_CLIENT_CERT_PASSWORD_FLAGS")]
 		public const string CLIENT_CERT_PASSWORD_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_DOMAIN_MATCH")]
+		[CCode (cname = "NM_SETTING_802_1X_DOMAIN_MATCH")]
 		public const string DOMAIN_MATCH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_DOMAIN_SUFFIX_MATCH")]
+		[CCode (cname = "NM_SETTING_802_1X_DOMAIN_SUFFIX_MATCH")]
 		public const string DOMAIN_SUFFIX_MATCH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_EAP")]
+		[CCode (cname = "NM_SETTING_802_1X_EAP")]
 		public const string EAP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_IDENTITY")]
+		[CCode (cname = "NM_SETTING_802_1X_IDENTITY")]
 		public const string IDENTITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_OPTIONAL")]
+		[CCode (cname = "NM_SETTING_802_1X_OPTIONAL")]
 		public const string OPTIONAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PAC_FILE")]
+		[CCode (cname = "NM_SETTING_802_1X_PAC_FILE")]
 		public const string PAC_FILE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PASSWORD")]
+		[CCode (cname = "NM_SETTING_802_1X_PASSWORD")]
 		public const string PASSWORD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PASSWORD_FLAGS")]
+		[CCode (cname = "NM_SETTING_802_1X_PASSWORD_FLAGS")]
 		public const string PASSWORD_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PASSWORD_RAW")]
+		[CCode (cname = "NM_SETTING_802_1X_PASSWORD_RAW")]
 		public const string PASSWORD_RAW;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PASSWORD_RAW_FLAGS")]
+		[CCode (cname = "NM_SETTING_802_1X_PASSWORD_RAW_FLAGS")]
 		public const string PASSWORD_RAW_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE1_AUTH_FLAGS")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE1_AUTH_FLAGS")]
 		public const string PHASE1_AUTH_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE1_FAST_PROVISIONING")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE1_FAST_PROVISIONING")]
 		public const string PHASE1_FAST_PROVISIONING;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE1_PEAPLABEL")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE1_PEAPLABEL")]
 		public const string PHASE1_PEAPLABEL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE1_PEAPVER")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE1_PEAPVER")]
 		public const string PHASE1_PEAPVER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_ALTSUBJECT_MATCHES")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_ALTSUBJECT_MATCHES")]
 		public const string PHASE2_ALTSUBJECT_MATCHES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_AUTH")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_AUTH")]
 		public const string PHASE2_AUTH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_AUTHEAP")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_AUTHEAP")]
 		public const string PHASE2_AUTHEAP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CA_CERT")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_CA_CERT")]
 		public const string PHASE2_CA_CERT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CA_CERT_PASSWORD")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_CA_CERT_PASSWORD")]
 		public const string PHASE2_CA_CERT_PASSWORD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CA_CERT_PASSWORD_FLAGS")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_CA_CERT_PASSWORD_FLAGS")]
 		public const string PHASE2_CA_CERT_PASSWORD_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CA_PATH")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_CA_PATH")]
 		public const string PHASE2_CA_PATH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CLIENT_CERT")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_CLIENT_CERT")]
 		public const string PHASE2_CLIENT_CERT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CLIENT_CERT_PASSWORD")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_CLIENT_CERT_PASSWORD")]
 		public const string PHASE2_CLIENT_CERT_PASSWORD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_CLIENT_CERT_PASSWORD_FLAGS")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_CLIENT_CERT_PASSWORD_FLAGS")]
 		public const string PHASE2_CLIENT_CERT_PASSWORD_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_DOMAIN_MATCH")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_DOMAIN_MATCH")]
 		public const string PHASE2_DOMAIN_MATCH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_DOMAIN_SUFFIX_MATCH")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_DOMAIN_SUFFIX_MATCH")]
 		public const string PHASE2_DOMAIN_SUFFIX_MATCH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_PRIVATE_KEY")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_PRIVATE_KEY")]
 		public const string PHASE2_PRIVATE_KEY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_PRIVATE_KEY_PASSWORD")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_PRIVATE_KEY_PASSWORD")]
 		public const string PHASE2_PRIVATE_KEY_PASSWORD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_PRIVATE_KEY_PASSWORD_FLAGS")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_PRIVATE_KEY_PASSWORD_FLAGS")]
 		public const string PHASE2_PRIVATE_KEY_PASSWORD_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PHASE2_SUBJECT_MATCH")]
+		[CCode (cname = "NM_SETTING_802_1X_PHASE2_SUBJECT_MATCH")]
 		public const string PHASE2_SUBJECT_MATCH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PIN")]
+		[CCode (cname = "NM_SETTING_802_1X_PIN")]
 		public const string PIN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PIN_FLAGS")]
+		[CCode (cname = "NM_SETTING_802_1X_PIN_FLAGS")]
 		public const string PIN_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PRIVATE_KEY")]
+		[CCode (cname = "NM_SETTING_802_1X_PRIVATE_KEY")]
 		public const string PRIVATE_KEY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PRIVATE_KEY_PASSWORD")]
+		[CCode (cname = "NM_SETTING_802_1X_PRIVATE_KEY_PASSWORD")]
 		public const string PRIVATE_KEY_PASSWORD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_PRIVATE_KEY_PASSWORD_FLAGS")]
+		[CCode (cname = "NM_SETTING_802_1X_PRIVATE_KEY_PASSWORD_FLAGS")]
 		public const string PRIVATE_KEY_PASSWORD_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_802_1X_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_SUBJECT_MATCH")]
+		[CCode (cname = "NM_SETTING_802_1X_SUBJECT_MATCH")]
 		public const string SUBJECT_MATCH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_802_1X_SYSTEM_CA_CERTS")]
+		[CCode (cname = "NM_SETTING_802_1X_SYSTEM_CA_CERTS")]
 		public const string SYSTEM_CA_CERTS;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public Setting8021x ();
@@ -2377,32 +2760,32 @@ namespace NM {
 		public bool system_ca_certs { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_adsl_get_type ()")]
-	public class SettingAdsl : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_ENCAPSULATION")]
+	public sealed class SettingAdsl : NM.Setting {
+		[CCode (cname = "NM_SETTING_ADSL_ENCAPSULATION")]
 		public const string ENCAPSULATION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_ENCAPSULATION_LLC")]
+		[CCode (cname = "NM_SETTING_ADSL_ENCAPSULATION_LLC")]
 		public const string ENCAPSULATION_LLC;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_ENCAPSULATION_VCMUX")]
+		[CCode (cname = "NM_SETTING_ADSL_ENCAPSULATION_VCMUX")]
 		public const string ENCAPSULATION_VCMUX;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_PASSWORD")]
+		[CCode (cname = "NM_SETTING_ADSL_PASSWORD")]
 		public const string PASSWORD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_PASSWORD_FLAGS")]
+		[CCode (cname = "NM_SETTING_ADSL_PASSWORD_FLAGS")]
 		public const string PASSWORD_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_PROTOCOL")]
+		[CCode (cname = "NM_SETTING_ADSL_PROTOCOL")]
 		public const string PROTOCOL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_PROTOCOL_IPOATM")]
+		[CCode (cname = "NM_SETTING_ADSL_PROTOCOL_IPOATM")]
 		public const string PROTOCOL_IPOATM;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_PROTOCOL_PPPOA")]
+		[CCode (cname = "NM_SETTING_ADSL_PROTOCOL_PPPOA")]
 		public const string PROTOCOL_PPPOA;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_PROTOCOL_PPPOE")]
+		[CCode (cname = "NM_SETTING_ADSL_PROTOCOL_PPPOE")]
 		public const string PROTOCOL_PPPOE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_ADSL_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_USERNAME")]
+		[CCode (cname = "NM_SETTING_ADSL_USERNAME")]
 		public const string USERNAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_VCI")]
+		[CCode (cname = "NM_SETTING_ADSL_VCI")]
 		public const string VCI;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ADSL_VPI")]
+		[CCode (cname = "NM_SETTING_ADSL_VPI")]
 		public const string VPI;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingAdsl ();
@@ -2429,18 +2812,18 @@ namespace NM {
 		public uint vpi { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_bluetooth_get_type ()")]
-	public class SettingBluetooth : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BLUETOOTH_BDADDR")]
+	public sealed class SettingBluetooth : NM.Setting {
+		[CCode (cname = "NM_SETTING_BLUETOOTH_BDADDR")]
 		public const string BDADDR;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BLUETOOTH_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_BLUETOOTH_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BLUETOOTH_TYPE")]
+		[CCode (cname = "NM_SETTING_BLUETOOTH_TYPE")]
 		public const string TYPE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BLUETOOTH_TYPE_DUN")]
+		[CCode (cname = "NM_SETTING_BLUETOOTH_TYPE_DUN")]
 		public const string TYPE_DUN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BLUETOOTH_TYPE_NAP")]
+		[CCode (cname = "NM_SETTING_BLUETOOTH_TYPE_NAP")]
 		public const string TYPE_NAP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BLUETOOTH_TYPE_PANU")]
+		[CCode (cname = "NM_SETTING_BLUETOOTH_TYPE_PANU")]
 		public const string TYPE_PANU;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingBluetooth ();
@@ -2452,72 +2835,80 @@ namespace NM {
 		public string type { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_bond_get_type ()")]
-	public class SettingBond : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTIONS")]
+	public sealed class SettingBond : NM.Setting {
+		[CCode (cname = "NM_SETTING_BOND_OPTIONS")]
 		public const string OPTIONS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_ACTIVE_SLAVE")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_ACTIVE_SLAVE")]
 		public const string OPTION_ACTIVE_SLAVE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_AD_ACTOR_SYSTEM")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_AD_ACTOR_SYSTEM")]
 		public const string OPTION_AD_ACTOR_SYSTEM;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_AD_ACTOR_SYS_PRIO")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_AD_ACTOR_SYS_PRIO")]
 		public const string OPTION_AD_ACTOR_SYS_PRIO;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_AD_SELECT")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_AD_SELECT")]
 		public const string OPTION_AD_SELECT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_AD_USER_PORT_KEY")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_AD_USER_PORT_KEY")]
 		public const string OPTION_AD_USER_PORT_KEY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_ALL_SLAVES_ACTIVE")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_ALL_SLAVES_ACTIVE")]
 		public const string OPTION_ALL_SLAVES_ACTIVE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_ARP_ALL_TARGETS")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_ARP_ALL_TARGETS")]
 		public const string OPTION_ARP_ALL_TARGETS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_ARP_INTERVAL")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_ARP_INTERVAL")]
 		public const string OPTION_ARP_INTERVAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_ARP_IP_TARGET")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_ARP_IP_TARGET")]
 		public const string OPTION_ARP_IP_TARGET;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_ARP_VALIDATE")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_ARP_MISSED_MAX")]
+		public const string OPTION_ARP_MISSED_MAX;
+		[CCode (cname = "NM_SETTING_BOND_OPTION_ARP_VALIDATE")]
 		public const string OPTION_ARP_VALIDATE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_BALANCE_SLB")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_BALANCE_SLB")]
 		public const string OPTION_BALANCE_SLB;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_DOWNDELAY")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_DOWNDELAY")]
 		public const string OPTION_DOWNDELAY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_FAIL_OVER_MAC")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_FAIL_OVER_MAC")]
 		public const string OPTION_FAIL_OVER_MAC;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_LACP_RATE")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_LACP_ACTIVE")]
+		public const string OPTION_LACP_ACTIVE;
+		[CCode (cname = "NM_SETTING_BOND_OPTION_LACP_RATE")]
 		public const string OPTION_LACP_RATE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_LP_INTERVAL")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_LP_INTERVAL")]
 		public const string OPTION_LP_INTERVAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_MIIMON")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_MIIMON")]
 		public const string OPTION_MIIMON;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_MIN_LINKS")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_MIN_LINKS")]
 		public const string OPTION_MIN_LINKS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_MODE")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_MODE")]
 		public const string OPTION_MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_NUM_GRAT_ARP")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_NS_IP6_TARGET")]
+		public const string OPTION_NS_IP6_TARGET;
+		[CCode (cname = "NM_SETTING_BOND_OPTION_NUM_GRAT_ARP")]
 		public const string OPTION_NUM_GRAT_ARP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_NUM_UNSOL_NA")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_NUM_UNSOL_NA")]
 		public const string OPTION_NUM_UNSOL_NA;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_PACKETS_PER_SLAVE")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_PACKETS_PER_SLAVE")]
 		public const string OPTION_PACKETS_PER_SLAVE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_PEER_NOTIF_DELAY")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_PEER_NOTIF_DELAY")]
 		public const string OPTION_PEER_NOTIF_DELAY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_PRIMARY")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_PRIMARY")]
 		public const string OPTION_PRIMARY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_PRIMARY_RESELECT")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_PRIMARY_RESELECT")]
 		public const string OPTION_PRIMARY_RESELECT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_RESEND_IGMP")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_RESEND_IGMP")]
 		public const string OPTION_RESEND_IGMP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_TLB_DYNAMIC_LB")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_TLB_DYNAMIC_LB")]
 		public const string OPTION_TLB_DYNAMIC_LB;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_UPDELAY")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_UPDELAY")]
 		public const string OPTION_UPDELAY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_USE_CARRIER")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_USE_CARRIER")]
 		public const string OPTION_USE_CARRIER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_OPTION_XMIT_HASH_POLICY")]
+		[CCode (cname = "NM_SETTING_BOND_OPTION_XMIT_HASH_POLICY")]
 		public const string OPTION_XMIT_HASH_POLICY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_PORT_QUEUE_ID")]
+		[CCode (cname = "NM_SETTING_BOND_PORT_PRIO")]
+		public const string PORT_PRIO;
+		[CCode (cname = "NM_SETTING_BOND_PORT_QUEUE_ID")]
 		public const string PORT_QUEUE_ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_PORT_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_BOND_PORT_SETTING_NAME")]
 		public const string PORT_SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BOND_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_BOND_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingBond ();
@@ -2529,90 +2920,95 @@ namespace NM {
 		[Version (since = "1.24")]
 		public unowned string get_option_normalized (string name);
 		[CCode (array_length = false, array_null_terminated = true)]
-		public unowned string[] get_valid_options ();
+		public unowned string[]? get_valid_options ();
 		public bool remove_option (string name);
 		public static bool validate_option (string name, string? value);
 		[NoAccessorMethod]
 		public GLib.HashTable<string,string> options { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_bond_port_get_type ()")]
-	public class SettingBondPort : NM.Setting {
+	public sealed class SettingBondPort : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.34")]
 		public SettingBondPort ();
+		[Version (since = "1.44")]
+		public int32 get_prio ();
 		[Version (since = "1.34")]
 		public uint32 get_queue_id ();
+		[NoAccessorMethod]
+		[Version (since = "1.44")]
+		public int prio { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.34")]
 		public uint queue_id { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_bridge_get_type ()")]
-	public class SettingBridge : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_AGEING_TIME")]
+	public sealed class SettingBridge : NM.Setting {
+		[CCode (cname = "NM_SETTING_BRIDGE_AGEING_TIME")]
 		public const string AGEING_TIME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_FORWARD_DELAY")]
+		[CCode (cname = "NM_SETTING_BRIDGE_FORWARD_DELAY")]
 		public const string FORWARD_DELAY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_GROUP_ADDRESS")]
+		[CCode (cname = "NM_SETTING_BRIDGE_GROUP_ADDRESS")]
 		public const string GROUP_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_GROUP_FORWARD_MASK")]
+		[CCode (cname = "NM_SETTING_BRIDGE_GROUP_FORWARD_MASK")]
 		public const string GROUP_FORWARD_MASK;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_HELLO_TIME")]
+		[CCode (cname = "NM_SETTING_BRIDGE_HELLO_TIME")]
 		public const string HELLO_TIME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MAC_ADDRESS")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MAC_ADDRESS")]
 		public const string MAC_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MAX_AGE")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MAX_AGE")]
 		public const string MAX_AGE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_HASH_MAX")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_HASH_MAX")]
 		public const string MULTICAST_HASH_MAX;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_LAST_MEMBER_COUNT")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_LAST_MEMBER_COUNT")]
 		public const string MULTICAST_LAST_MEMBER_COUNT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_LAST_MEMBER_INTERVAL")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_LAST_MEMBER_INTERVAL")]
 		public const string MULTICAST_LAST_MEMBER_INTERVAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_MEMBERSHIP_INTERVAL")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_MEMBERSHIP_INTERVAL")]
 		public const string MULTICAST_MEMBERSHIP_INTERVAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_QUERIER")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_QUERIER")]
 		public const string MULTICAST_QUERIER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_QUERIER_INTERVAL")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_QUERIER_INTERVAL")]
 		public const string MULTICAST_QUERIER_INTERVAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_QUERY_INTERVAL")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_QUERY_INTERVAL")]
 		public const string MULTICAST_QUERY_INTERVAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_QUERY_RESPONSE_INTERVAL")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_QUERY_RESPONSE_INTERVAL")]
 		public const string MULTICAST_QUERY_RESPONSE_INTERVAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_QUERY_USE_IFADDR")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_QUERY_USE_IFADDR")]
 		public const string MULTICAST_QUERY_USE_IFADDR;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_ROUTER")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_ROUTER")]
 		public const string MULTICAST_ROUTER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_SNOOPING")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_SNOOPING")]
 		public const string MULTICAST_SNOOPING;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_STARTUP_QUERY_COUNT")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_STARTUP_QUERY_COUNT")]
 		public const string MULTICAST_STARTUP_QUERY_COUNT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_MULTICAST_STARTUP_QUERY_INTERVAL")]
+		[CCode (cname = "NM_SETTING_BRIDGE_MULTICAST_STARTUP_QUERY_INTERVAL")]
 		public const string MULTICAST_STARTUP_QUERY_INTERVAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_PORT_HAIRPIN_MODE")]
+		[CCode (cname = "NM_SETTING_BRIDGE_PORT_HAIRPIN_MODE")]
 		public const string PORT_HAIRPIN_MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_PORT_PATH_COST")]
+		[CCode (cname = "NM_SETTING_BRIDGE_PORT_PATH_COST")]
 		public const string PORT_PATH_COST;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_PORT_PRIORITY")]
+		[CCode (cname = "NM_SETTING_BRIDGE_PORT_PRIORITY")]
 		public const string PORT_PRIORITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_PORT_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_BRIDGE_PORT_SETTING_NAME")]
 		public const string PORT_SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_PORT_VLANS")]
+		[CCode (cname = "NM_SETTING_BRIDGE_PORT_VLANS")]
 		public const string PORT_VLANS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_PRIORITY")]
+		[CCode (cname = "NM_SETTING_BRIDGE_PRIORITY")]
 		public const string PRIORITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_BRIDGE_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_STP")]
+		[CCode (cname = "NM_SETTING_BRIDGE_STP")]
 		public const string STP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_VLANS")]
+		[CCode (cname = "NM_SETTING_BRIDGE_VLANS")]
 		public const string VLANS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_VLAN_DEFAULT_PVID")]
+		[CCode (cname = "NM_SETTING_BRIDGE_VLAN_DEFAULT_PVID")]
 		public const string VLAN_DEFAULT_PVID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_VLAN_FILTERING")]
+		[CCode (cname = "NM_SETTING_BRIDGE_VLAN_FILTERING")]
 		public const string VLAN_FILTERING;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_VLAN_PROTOCOL")]
+		[CCode (cname = "NM_SETTING_BRIDGE_VLAN_PROTOCOL")]
 		public const string VLAN_PROTOCOL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_BRIDGE_VLAN_STATS_ENABLED")]
+		[CCode (cname = "NM_SETTING_BRIDGE_VLAN_STATS_ENABLED")]
 		public const string VLAN_STATS_ENABLED;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingBridge ();
@@ -2737,7 +3133,7 @@ namespace NM {
 		public GLib.GenericArray<NM.BridgeVlan> vlans { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_bridge_port_get_type ()")]
-	public class SettingBridgePort : NM.Setting {
+	public sealed class SettingBridgePort : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingBridgePort ();
 		[Version (since = "1.18")]
@@ -2766,18 +3162,18 @@ namespace NM {
 		public GLib.GenericArray<NM.BridgeVlan> vlans { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_cdma_get_type ()")]
-	public class SettingCdma : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CDMA_MTU")]
+	public sealed class SettingCdma : NM.Setting {
+		[CCode (cname = "NM_SETTING_CDMA_MTU")]
 		public const string MTU;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CDMA_NUMBER")]
+		[CCode (cname = "NM_SETTING_CDMA_NUMBER")]
 		public const string NUMBER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CDMA_PASSWORD")]
+		[CCode (cname = "NM_SETTING_CDMA_PASSWORD")]
 		public const string PASSWORD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CDMA_PASSWORD_FLAGS")]
+		[CCode (cname = "NM_SETTING_CDMA_PASSWORD_FLAGS")]
 		public const string PASSWORD_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CDMA_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_CDMA_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CDMA_USERNAME")]
+		[CCode (cname = "NM_SETTING_CDMA_USERNAME")]
 		public const string USERNAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingCdma ();
@@ -2800,70 +3196,70 @@ namespace NM {
 		public string username { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_connection_get_type ()")]
-	public class SettingConnection : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_AUTH_RETRIES")]
+	public sealed class SettingConnection : NM.Setting {
+		[CCode (cname = "NM_SETTING_CONNECTION_AUTH_RETRIES")]
 		public const string AUTH_RETRIES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_AUTOCONNECT")]
+		[CCode (cname = "NM_SETTING_CONNECTION_AUTOCONNECT")]
 		public const string AUTOCONNECT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY")]
+		[CCode (cname = "NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY")]
 		public const string AUTOCONNECT_PRIORITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY_DEFAULT")]
+		[CCode (cname = "NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY_DEFAULT")]
 		public const int AUTOCONNECT_PRIORITY_DEFAULT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY_MAX")]
+		[CCode (cname = "NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY_MAX")]
 		public const int AUTOCONNECT_PRIORITY_MAX;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY_MIN")]
+		[CCode (cname = "NM_SETTING_CONNECTION_AUTOCONNECT_PRIORITY_MIN")]
 		public const int AUTOCONNECT_PRIORITY_MIN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_AUTOCONNECT_RETRIES")]
+		[CCode (cname = "NM_SETTING_CONNECTION_AUTOCONNECT_RETRIES")]
 		public const string AUTOCONNECT_RETRIES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_AUTOCONNECT_SLAVES")]
+		[CCode (cname = "NM_SETTING_CONNECTION_AUTOCONNECT_SLAVES")]
 		public const string AUTOCONNECT_SLAVES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_DNS_OVER_TLS")]
+		[CCode (cname = "NM_SETTING_CONNECTION_DNS_OVER_TLS")]
 		public const string DNS_OVER_TLS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_GATEWAY_PING_TIMEOUT")]
+		[CCode (cname = "NM_SETTING_CONNECTION_GATEWAY_PING_TIMEOUT")]
 		public const string GATEWAY_PING_TIMEOUT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_ID")]
+		[CCode (cname = "NM_SETTING_CONNECTION_ID")]
 		public const string ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_INTERFACE_NAME")]
+		[CCode (cname = "NM_SETTING_CONNECTION_INTERFACE_NAME")]
 		public const string INTERFACE_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_LLDP")]
+		[CCode (cname = "NM_SETTING_CONNECTION_LLDP")]
 		public const string LLDP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_LLMNR")]
+		[CCode (cname = "NM_SETTING_CONNECTION_LLMNR")]
 		public const string LLMNR;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_MASTER")]
+		[CCode (cname = "NM_SETTING_CONNECTION_MASTER")]
 		public const string MASTER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_MDNS")]
+		[CCode (cname = "NM_SETTING_CONNECTION_MDNS")]
 		public const string MDNS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_METERED")]
+		[CCode (cname = "NM_SETTING_CONNECTION_METERED")]
 		public const string METERED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_MPTCP_FLAGS")]
+		[CCode (cname = "NM_SETTING_CONNECTION_MPTCP_FLAGS")]
 		public const string MPTCP_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_MUD_URL")]
+		[CCode (cname = "NM_SETTING_CONNECTION_MUD_URL")]
 		public const string MUD_URL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_MULTI_CONNECT")]
+		[CCode (cname = "NM_SETTING_CONNECTION_MULTI_CONNECT")]
 		public const string MULTI_CONNECT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_PERMISSIONS")]
+		[CCode (cname = "NM_SETTING_CONNECTION_PERMISSIONS")]
 		public const string PERMISSIONS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_READ_ONLY")]
+		[CCode (cname = "NM_SETTING_CONNECTION_READ_ONLY")]
 		public const string READ_ONLY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_SECONDARIES")]
+		[CCode (cname = "NM_SETTING_CONNECTION_SECONDARIES")]
 		public const string SECONDARIES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_CONNECTION_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_SLAVE_TYPE")]
+		[CCode (cname = "NM_SETTING_CONNECTION_SLAVE_TYPE")]
 		public const string SLAVE_TYPE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_STABLE_ID")]
+		[CCode (cname = "NM_SETTING_CONNECTION_STABLE_ID")]
 		public const string STABLE_ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_TIMESTAMP")]
+		[CCode (cname = "NM_SETTING_CONNECTION_TIMESTAMP")]
 		public const string TIMESTAMP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_TYPE")]
+		[CCode (cname = "NM_SETTING_CONNECTION_TYPE")]
 		public const string TYPE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_UUID")]
+		[CCode (cname = "NM_SETTING_CONNECTION_UUID")]
 		public const string UUID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_WAIT_ACTIVATION_DELAY")]
+		[CCode (cname = "NM_SETTING_CONNECTION_WAIT_ACTIVATION_DELAY")]
 		public const string WAIT_ACTIVATION_DELAY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_WAIT_DEVICE_TIMEOUT")]
+		[CCode (cname = "NM_SETTING_CONNECTION_WAIT_DEVICE_TIMEOUT")]
 		public const string WAIT_DEVICE_TIMEOUT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_CONNECTION_ZONE")]
+		[CCode (cname = "NM_SETTING_CONNECTION_ZONE")]
 		public const string ZONE;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingConnection ();
@@ -2901,6 +3297,7 @@ namespace NM {
 		public uint32 get_num_permissions ();
 		public uint32 get_num_secondaries ();
 		public bool get_permission (uint32 idx, string out_ptype, string out_pitem, string out_detail);
+		[Version (deprecated = true, deprecated_since = "1.44")]
 		public bool get_read_only ();
 		public unowned string get_secondary (uint32 idx);
 		public unowned string get_slave_type ();
@@ -2967,6 +3364,7 @@ namespace NM {
 		[NoAccessorMethod]
 		public string[] permissions { owned get; set; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "1.44")]
 		public bool read_only { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
@@ -2992,42 +3390,42 @@ namespace NM {
 		public string zone { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_dcb_get_type ()")]
-	public class SettingDcb : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_APP_FCOE_FLAGS")]
+	public sealed class SettingDcb : NM.Setting {
+		[CCode (cname = "NM_SETTING_DCB_APP_FCOE_FLAGS")]
 		public const string APP_FCOE_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_APP_FCOE_MODE")]
+		[CCode (cname = "NM_SETTING_DCB_APP_FCOE_MODE")]
 		public const string APP_FCOE_MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_APP_FCOE_PRIORITY")]
+		[CCode (cname = "NM_SETTING_DCB_APP_FCOE_PRIORITY")]
 		public const string APP_FCOE_PRIORITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_APP_FIP_FLAGS")]
+		[CCode (cname = "NM_SETTING_DCB_APP_FIP_FLAGS")]
 		public const string APP_FIP_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_APP_FIP_PRIORITY")]
+		[CCode (cname = "NM_SETTING_DCB_APP_FIP_PRIORITY")]
 		public const string APP_FIP_PRIORITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_APP_ISCSI_FLAGS")]
+		[CCode (cname = "NM_SETTING_DCB_APP_ISCSI_FLAGS")]
 		public const string APP_ISCSI_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_APP_ISCSI_PRIORITY")]
+		[CCode (cname = "NM_SETTING_DCB_APP_ISCSI_PRIORITY")]
 		public const string APP_ISCSI_PRIORITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_FCOE_MODE_FABRIC")]
+		[CCode (cname = "NM_SETTING_DCB_FCOE_MODE_FABRIC")]
 		public const string FCOE_MODE_FABRIC;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_FCOE_MODE_VN2VN")]
+		[CCode (cname = "NM_SETTING_DCB_FCOE_MODE_VN2VN")]
 		public const string FCOE_MODE_VN2VN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_PRIORITY_BANDWIDTH")]
+		[CCode (cname = "NM_SETTING_DCB_PRIORITY_BANDWIDTH")]
 		public const string PRIORITY_BANDWIDTH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_PRIORITY_FLOW_CONTROL")]
+		[CCode (cname = "NM_SETTING_DCB_PRIORITY_FLOW_CONTROL")]
 		public const string PRIORITY_FLOW_CONTROL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_PRIORITY_FLOW_CONTROL_FLAGS")]
+		[CCode (cname = "NM_SETTING_DCB_PRIORITY_FLOW_CONTROL_FLAGS")]
 		public const string PRIORITY_FLOW_CONTROL_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_PRIORITY_GROUP_BANDWIDTH")]
+		[CCode (cname = "NM_SETTING_DCB_PRIORITY_GROUP_BANDWIDTH")]
 		public const string PRIORITY_GROUP_BANDWIDTH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_PRIORITY_GROUP_FLAGS")]
+		[CCode (cname = "NM_SETTING_DCB_PRIORITY_GROUP_FLAGS")]
 		public const string PRIORITY_GROUP_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_PRIORITY_GROUP_ID")]
+		[CCode (cname = "NM_SETTING_DCB_PRIORITY_GROUP_ID")]
 		public const string PRIORITY_GROUP_ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_PRIORITY_STRICT_BANDWIDTH")]
+		[CCode (cname = "NM_SETTING_DCB_PRIORITY_STRICT_BANDWIDTH")]
 		public const string PRIORITY_STRICT_BANDWIDTH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_PRIORITY_TRAFFIC_CLASS")]
+		[CCode (cname = "NM_SETTING_DCB_PRIORITY_TRAFFIC_CLASS")]
 		public const string PRIORITY_TRAFFIC_CLASS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DCB_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_DCB_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingDcb ();
@@ -3084,14 +3482,18 @@ namespace NM {
 		public GLib.Array<uint> priority_traffic_class { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_dummy_get_type ()")]
-	public class SettingDummy : NM.Setting {
+	public sealed class SettingDummy : NM.Setting {
+		[CCode (cname = "NM_SETTING_DUMMY_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.8")]
 		public SettingDummy ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ethtool_get_type ()")]
 	[Version (since = "1.14")]
-	public class SettingEthtool : NM.Setting {
+	public sealed class SettingEthtool : NM.Setting {
+		[CCode (cname = "NM_SETTING_ETHTOOL_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingEthtool ();
 		[Version (deprecated = true, deprecated_since = "1.26", since = "1.14")]
@@ -3105,43 +3507,47 @@ namespace NM {
 		public void set_feature (string optname, NM.Ternary value);
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_generic_get_type ()")]
-	public class SettingGeneric : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GENERIC_SETTING_NAME")]
+	public sealed class SettingGeneric : NM.Setting {
+		[CCode (cname = "NM_SETTING_GENERIC_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingGeneric ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_gsm_get_type ()")]
-	public class SettingGsm : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_APN")]
+	public sealed class SettingGsm : NM.Setting {
+		[CCode (cname = "NM_SETTING_GSM_APN")]
 		public const string APN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_AUTO_CONFIG")]
+		[CCode (cname = "NM_SETTING_GSM_AUTO_CONFIG")]
 		public const string AUTO_CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_DEVICE_ID")]
+		[CCode (cname = "NM_SETTING_GSM_DEVICE_ID")]
 		public const string DEVICE_ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_HOME_ONLY")]
+		[CCode (cname = "NM_SETTING_GSM_HOME_ONLY")]
 		public const string HOME_ONLY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_MTU")]
+		[CCode (cname = "NM_SETTING_GSM_INITIAL_EPS_BEARER_APN")]
+		public const string INITIAL_EPS_BEARER_APN;
+		[CCode (cname = "NM_SETTING_GSM_INITIAL_EPS_BEARER_CONFIGURE")]
+		public const string INITIAL_EPS_BEARER_CONFIGURE;
+		[CCode (cname = "NM_SETTING_GSM_MTU")]
 		public const string MTU;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_NETWORK_ID")]
+		[CCode (cname = "NM_SETTING_GSM_NETWORK_ID")]
 		public const string NETWORK_ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_NUMBER")]
+		[CCode (cname = "NM_SETTING_GSM_NUMBER")]
 		public const string NUMBER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_PASSWORD")]
+		[CCode (cname = "NM_SETTING_GSM_PASSWORD")]
 		public const string PASSWORD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_PASSWORD_FLAGS")]
+		[CCode (cname = "NM_SETTING_GSM_PASSWORD_FLAGS")]
 		public const string PASSWORD_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_PIN")]
+		[CCode (cname = "NM_SETTING_GSM_PIN")]
 		public const string PIN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_PIN_FLAGS")]
+		[CCode (cname = "NM_SETTING_GSM_PIN_FLAGS")]
 		public const string PIN_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_GSM_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_SIM_ID")]
+		[CCode (cname = "NM_SETTING_GSM_SIM_ID")]
 		public const string SIM_ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_SIM_OPERATOR_ID")]
+		[CCode (cname = "NM_SETTING_GSM_SIM_OPERATOR_ID")]
 		public const string SIM_OPERATOR_ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_GSM_USERNAME")]
+		[CCode (cname = "NM_SETTING_GSM_USERNAME")]
 		public const string USERNAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingGsm ();
@@ -3151,6 +3557,10 @@ namespace NM {
 		[Version (since = "1.2")]
 		public unowned string get_device_id ();
 		public bool get_home_only ();
+		[Version (since = "1.44")]
+		public unowned string get_initial_eps_apn ();
+		[Version (since = "1.44")]
+		public bool get_initial_eps_config ();
 		[Version (since = "1.8")]
 		public uint32 get_mtu ();
 		public unowned string get_network_id ();
@@ -3175,6 +3585,12 @@ namespace NM {
 		public string device_id { owned get; set; }
 		[NoAccessorMethod]
 		public bool home_only { get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.44")]
+		public string initial_eps_bearer_apn { owned get; set; }
+		[NoAccessorMethod]
+		[Version (since = "1.44")]
+		public bool initial_eps_bearer_configure { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.8")]
 		public uint mtu { get; set; }
@@ -3202,7 +3618,17 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_hostname_get_type ()")]
 	[Version (since = "1.30")]
-	public class SettingHostname : NM.Setting {
+	public sealed class SettingHostname : NM.Setting {
+		[CCode (cname = "NM_SETTING_HOSTNAME_FROM_DHCP")]
+		public const string FROM_DHCP;
+		[CCode (cname = "NM_SETTING_HOSTNAME_FROM_DNS_LOOKUP")]
+		public const string FROM_DNS_LOOKUP;
+		[CCode (cname = "NM_SETTING_HOSTNAME_ONLY_FROM_DEFAULT")]
+		public const string ONLY_FROM_DEFAULT;
+		[CCode (cname = "NM_SETTING_HOSTNAME_PRIORITY")]
+		public const string PRIORITY;
+		[CCode (cname = "NM_SETTING_HOSTNAME_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.42")]
 		public SettingHostname ();
@@ -3220,26 +3646,26 @@ namespace NM {
 		public int priority { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ip4_config_get_type ()")]
-	public class SettingIP4Config : NM.SettingIPConfig {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_DHCP_CLIENT_ID")]
+	public sealed class SettingIP4Config : NM.SettingIPConfig {
+		[CCode (cname = "NM_SETTING_IP4_CONFIG_DHCP_CLIENT_ID")]
 		public const string DHCP_CLIENT_ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_DHCP_FQDN")]
+		[CCode (cname = "NM_SETTING_IP4_CONFIG_DHCP_FQDN")]
 		public const string DHCP_FQDN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_DHCP_VENDOR_CLASS_IDENTIFIER")]
+		[CCode (cname = "NM_SETTING_IP4_CONFIG_DHCP_VENDOR_CLASS_IDENTIFIER")]
 		public const string DHCP_VENDOR_CLASS_IDENTIFIER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_LINK_LOCAL")]
+		[CCode (cname = "NM_SETTING_IP4_CONFIG_LINK_LOCAL")]
 		public const string LINK_LOCAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_METHOD_AUTO")]
+		[CCode (cname = "NM_SETTING_IP4_CONFIG_METHOD_AUTO")]
 		public const string METHOD_AUTO;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_METHOD_DISABLED")]
+		[CCode (cname = "NM_SETTING_IP4_CONFIG_METHOD_DISABLED")]
 		public const string METHOD_DISABLED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_METHOD_LINK_LOCAL")]
+		[CCode (cname = "NM_SETTING_IP4_CONFIG_METHOD_LINK_LOCAL")]
 		public const string METHOD_LINK_LOCAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_METHOD_MANUAL")]
+		[CCode (cname = "NM_SETTING_IP4_CONFIG_METHOD_MANUAL")]
 		public const string METHOD_MANUAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_METHOD_SHARED")]
+		[CCode (cname = "NM_SETTING_IP4_CONFIG_METHOD_SHARED")]
 		public const string METHOD_SHARED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP4_CONFIG_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_IP4_CONFIG_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingIP4Config ();
@@ -3263,35 +3689,37 @@ namespace NM {
 		public int link_local { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ip6_config_get_type ()")]
-	public class SettingIP6Config : NM.SettingIPConfig {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_ADDR_GEN_MODE")]
+	public sealed class SettingIP6Config : NM.SettingIPConfig {
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_ADDR_GEN_MODE")]
 		public const string ADDR_GEN_MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_DHCP_DUID")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_DHCP_DUID")]
 		public const string DHCP_DUID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_IP6_PRIVACY")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_DHCP_PD_HINT")]
+		public const string DHCP_PD_HINT;
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_IP6_PRIVACY")]
 		public const string IP6_PRIVACY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_AUTO")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_METHOD_AUTO")]
 		public const string METHOD_AUTO;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_DHCP")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_METHOD_DHCP")]
 		public const string METHOD_DHCP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_DISABLED")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_METHOD_DISABLED")]
 		[Version (since = "1.20")]
 		public const string METHOD_DISABLED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_IGNORE")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_METHOD_IGNORE")]
 		public const string METHOD_IGNORE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_LINK_LOCAL")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_METHOD_LINK_LOCAL")]
 		public const string METHOD_LINK_LOCAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_MANUAL")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_METHOD_MANUAL")]
 		public const string METHOD_MANUAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_METHOD_SHARED")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_METHOD_SHARED")]
 		public const string METHOD_SHARED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_MTU")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_MTU")]
 		public const string MTU;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_RA_TIMEOUT")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_RA_TIMEOUT")]
 		public const string RA_TIMEOUT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP6_CONFIG_TOKEN")]
+		[CCode (cname = "NM_SETTING_IP6_CONFIG_TOKEN")]
 		public const string TOKEN;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingIP6Config ();
@@ -3299,6 +3727,8 @@ namespace NM {
 		public NM.SettingIP6ConfigAddrGenMode get_addr_gen_mode ();
 		[Version (since = "1.12")]
 		public unowned string get_dhcp_duid ();
+		[Version (since = "1.44")]
+		public unowned string get_dhcp_pd_hint ();
 		public NM.SettingIP6ConfigPrivacy get_ip6_privacy ();
 		[Version (since = "1.40")]
 		public uint32 get_mtu ();
@@ -3313,6 +3743,9 @@ namespace NM {
 		[Version (since = "1.12")]
 		public string dhcp_duid { owned get; set; }
 		[NoAccessorMethod]
+		[Version (since = "1.44")]
+		public string dhcp_pd_hint { owned get; set; }
+		[NoAccessorMethod]
 		public NM.SettingIP6ConfigPrivacy ip6_privacy { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.40")]
@@ -3326,55 +3759,57 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ip_config_get_type ()")]
 	public abstract class SettingIPConfig : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ADDRESSES")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_ADDRESSES")]
 		public const string ADDRESSES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_AUTO_ROUTE_EXT_GW")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_AUTO_ROUTE_EXT_GW")]
 		public const string AUTO_ROUTE_EXT_GW;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DAD_TIMEOUT")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_DAD_TIMEOUT")]
 		public const string DAD_TIMEOUT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DAD_TIMEOUT_MAX")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_DAD_TIMEOUT_MAX")]
 		public const int DAD_TIMEOUT_MAX;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_HOSTNAME")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_DHCP_HOSTNAME")]
 		public const string DHCP_HOSTNAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_HOSTNAME_FLAGS")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_DHCP_HOSTNAME_FLAGS")]
 		public const string DHCP_HOSTNAME_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_IAID")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_DHCP_IAID")]
 		public const string DHCP_IAID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_REJECT_SERVERS")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_DHCP_REJECT_SERVERS")]
 		public const string DHCP_REJECT_SERVERS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_SEND_HOSTNAME")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_DHCP_SEND_HOSTNAME")]
 		public const string DHCP_SEND_HOSTNAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DHCP_TIMEOUT")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_DHCP_TIMEOUT")]
 		public const string DHCP_TIMEOUT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DNS")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_DNS")]
 		public const string DNS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DNS_OPTIONS")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_DNS_OPTIONS")]
 		public const string DNS_OPTIONS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DNS_PRIORITY")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_DNS_PRIORITY")]
 		public const string DNS_PRIORITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_DNS_SEARCH")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_DNS_SEARCH")]
 		public const string DNS_SEARCH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_GATEWAY")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_GATEWAY")]
 		public const string GATEWAY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_IGNORE_AUTO_DNS")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_IGNORE_AUTO_DNS")]
 		public const string IGNORE_AUTO_DNS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_IGNORE_AUTO_ROUTES")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_IGNORE_AUTO_ROUTES")]
 		public const string IGNORE_AUTO_ROUTES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_MAY_FAIL")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_MAY_FAIL")]
 		public const string MAY_FAIL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_METHOD")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_METHOD")]
 		public const string METHOD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_NEVER_DEFAULT")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_NEVER_DEFAULT")]
 		public const string NEVER_DEFAULT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_REQUIRED_TIMEOUT")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_REPLACE_LOCAL_RULE")]
+		public const string REPLACE_LOCAL_RULE;
+		[CCode (cname = "NM_SETTING_IP_CONFIG_REQUIRED_TIMEOUT")]
 		public const string REQUIRED_TIMEOUT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTES")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_ROUTES")]
 		public const string ROUTES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTE_METRIC")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_ROUTE_METRIC")]
 		public const string ROUTE_METRIC;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTE_TABLE")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_ROUTE_TABLE")]
 		public const string ROUTE_TABLE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_CONFIG_ROUTING_RULES")]
+		[CCode (cname = "NM_SETTING_IP_CONFIG_ROUTING_RULES")]
 		public const string ROUTING_RULES;
 		[CCode (has_construct_function = false)]
 		protected SettingIPConfig ();
@@ -3434,6 +3869,8 @@ namespace NM {
 		public uint get_num_routes ();
 		[Version (since = "1.18")]
 		public uint get_num_routing_rules ();
+		[Version (since = "1.44")]
+		public NM.Ternary get_replace_local_rule ();
 		[Version (since = "1.34")]
 		public int get_required_timeout ();
 		public unowned NM.IPRoute get_route (int idx);
@@ -3510,6 +3947,9 @@ namespace NM {
 		[NoAccessorMethod]
 		public bool never_default { get; set; }
 		[NoAccessorMethod]
+		[Version (since = "1.44")]
+		public NM.Ternary replace_local_rule { get; set; }
+		[NoAccessorMethod]
 		[Version (since = "1.34")]
 		public int required_timeout { get; set; }
 		[NoAccessorMethod]
@@ -3521,36 +3961,36 @@ namespace NM {
 		public GLib.GenericArray<NM.IPRoute> routes { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ip_tunnel_get_type ()")]
-	public class SettingIPTunnel : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_ENCAPSULATION_LIMIT")]
+	public sealed class SettingIPTunnel : NM.Setting {
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_ENCAPSULATION_LIMIT")]
 		public const string ENCAPSULATION_LIMIT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_FLAGS")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_FLAGS")]
 		public const string FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_FLOW_LABEL")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_FLOW_LABEL")]
 		public const string FLOW_LABEL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_FWMARK")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_FWMARK")]
 		public const string FWMARK;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_INPUT_KEY")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_INPUT_KEY")]
 		public const string INPUT_KEY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_LOCAL")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_LOCAL")]
 		public const string LOCAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_MODE")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_MODE")]
 		public const string MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_MTU")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_MTU")]
 		public const string MTU;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_OUTPUT_KEY")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_OUTPUT_KEY")]
 		public const string OUTPUT_KEY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_PARENT")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_PARENT")]
 		public const string PARENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_PATH_MTU_DISCOVERY")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_PATH_MTU_DISCOVERY")]
 		public const string PATH_MTU_DISCOVERY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_REMOTE")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_REMOTE")]
 		public const string REMOTE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_TOS")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_TOS")]
 		public const string TOS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_IP_TUNNEL_TTL")]
+		[CCode (cname = "NM_SETTING_IP_TUNNEL_TTL")]
 		public const string TTL;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.2")]
@@ -3627,18 +4067,18 @@ namespace NM {
 		public uint ttl { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_infiniband_get_type ()")]
-	public class SettingInfiniband : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_INFINIBAND_MAC_ADDRESS")]
+	public sealed class SettingInfiniband : NM.Setting {
+		[CCode (cname = "NM_SETTING_INFINIBAND_MAC_ADDRESS")]
 		public const string MAC_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_INFINIBAND_MTU")]
+		[CCode (cname = "NM_SETTING_INFINIBAND_MTU")]
 		public const string MTU;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_INFINIBAND_PARENT")]
+		[CCode (cname = "NM_SETTING_INFINIBAND_PARENT")]
 		public const string PARENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_INFINIBAND_P_KEY")]
+		[CCode (cname = "NM_SETTING_INFINIBAND_P_KEY")]
 		public const string P_KEY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_INFINIBAND_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_INFINIBAND_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_INFINIBAND_TRANSPORT_MODE")]
+		[CCode (cname = "NM_SETTING_INFINIBAND_TRANSPORT_MODE")]
 		public const string TRANSPORT_MODE;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingInfiniband ();
@@ -3659,9 +4099,41 @@ namespace NM {
 		[NoAccessorMethod]
 		public string transport_mode { owned get; set; }
 	}
+	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_link_get_type ()")]
+	[Version (since = "1.44")]
+	public sealed class SettingLink : NM.Setting {
+		[CCode (cname = "NM_SETTING_LINK_GRO_MAX_SIZE")]
+		public const string GRO_MAX_SIZE;
+		[CCode (cname = "NM_SETTING_LINK_GSO_MAX_SEGMENTS")]
+		public const string GSO_MAX_SEGMENTS;
+		[CCode (cname = "NM_SETTING_LINK_GSO_MAX_SIZE")]
+		public const string GSO_MAX_SIZE;
+		[CCode (cname = "NM_SETTING_LINK_SETTING_NAME")]
+		public const string SETTING_NAME;
+		[CCode (cname = "NM_SETTING_LINK_TX_QUEUE_LENGTH")]
+		public const string TX_QUEUE_LENGTH;
+		[CCode (has_construct_function = false, type = "NMSetting*")]
+		public SettingLink ();
+		public int64 get_gro_max_size ();
+		public int64 get_gso_max_segments ();
+		public int64 get_gso_max_size ();
+		public int64 get_tx_queue_length ();
+		[NoAccessorMethod]
+		public int64 gro_max_size { get; set; }
+		[NoAccessorMethod]
+		public int64 gso_max_segments { get; set; }
+		[NoAccessorMethod]
+		public int64 gso_max_size { get; set; }
+		[NoAccessorMethod]
+		public int64 tx_queue_length { get; set; }
+	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_loopback_get_type ()")]
 	[Version (since = "1.42")]
-	public class SettingLoopback : NM.Setting {
+	public sealed class SettingLoopback : NM.Setting {
+		[CCode (cname = "NM_SETTING_LOOPBACK_MTU")]
+		public const string MTU;
+		[CCode (cname = "NM_SETTING_LOOPBACK_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingLoopback ();
 		public uint32 get_mtu ();
@@ -3669,7 +4141,31 @@ namespace NM {
 		public uint mtu { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_macsec_get_type ()")]
-	public class SettingMacsec : NM.Setting {
+	public sealed class SettingMacsec : NM.Setting {
+		[CCode (cname = "NM_SETTING_MACSEC_ENCRYPT")]
+		public const string ENCRYPT;
+		[CCode (cname = "NM_SETTING_MACSEC_MKA_CAK")]
+		public const string MKA_CAK;
+		[CCode (cname = "NM_SETTING_MACSEC_MKA_CAK_FLAGS")]
+		public const string MKA_CAK_FLAGS;
+		[CCode (cname = "NM_SETTING_MACSEC_MKA_CAK_LENGTH")]
+		public const int MKA_CAK_LENGTH;
+		[CCode (cname = "NM_SETTING_MACSEC_MKA_CKN")]
+		public const string MKA_CKN;
+		[CCode (cname = "NM_SETTING_MACSEC_MKA_CKN_LENGTH")]
+		public const int MKA_CKN_LENGTH;
+		[CCode (cname = "NM_SETTING_MACSEC_MODE")]
+		public const string MODE;
+		[CCode (cname = "NM_SETTING_MACSEC_PARENT")]
+		public const string PARENT;
+		[CCode (cname = "NM_SETTING_MACSEC_PORT")]
+		public const string PORT;
+		[CCode (cname = "NM_SETTING_MACSEC_SEND_SCI")]
+		public const string SEND_SCI;
+		[CCode (cname = "NM_SETTING_MACSEC_SETTING_NAME")]
+		public const string SETTING_NAME;
+		[CCode (cname = "NM_SETTING_MACSEC_VALIDATION")]
+		public const string VALIDATION;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.6")]
 		public SettingMacsec ();
@@ -3720,16 +4216,16 @@ namespace NM {
 		public int validation { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_macvlan_get_type ()")]
-	public class SettingMacvlan : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACVLAN_MODE")]
+	public sealed class SettingMacvlan : NM.Setting {
+		[CCode (cname = "NM_SETTING_MACVLAN_MODE")]
 		public const string MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACVLAN_PARENT")]
+		[CCode (cname = "NM_SETTING_MACVLAN_PARENT")]
 		public const string PARENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACVLAN_PROMISCUOUS")]
+		[CCode (cname = "NM_SETTING_MACVLAN_PROMISCUOUS")]
 		public const string PROMISCUOUS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACVLAN_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_MACVLAN_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACVLAN_TAP")]
+		[CCode (cname = "NM_SETTING_MACVLAN_TAP")]
 		public const string TAP;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.2")]
@@ -3757,7 +4253,17 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_match_get_type ()")]
 	[Version (since = "1.14")]
-	public class SettingMatch : NM.Setting {
+	public sealed class SettingMatch : NM.Setting {
+		[CCode (cname = "NM_SETTING_MATCH_DRIVER")]
+		public const string DRIVER;
+		[CCode (cname = "NM_SETTING_MATCH_INTERFACE_NAME")]
+		public const string INTERFACE_NAME;
+		[CCode (cname = "NM_SETTING_MATCH_KERNEL_COMMAND_LINE")]
+		public const string KERNEL_COMMAND_LINE;
+		[CCode (cname = "NM_SETTING_MATCH_PATH")]
+		public const string PATH;
+		[CCode (cname = "NM_SETTING_MATCH_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.32")]
 		public SettingMatch ();
@@ -3831,14 +4337,14 @@ namespace NM {
 		public string[] path { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_olpc_mesh_get_type ()")]
-	public class SettingOlpcMesh : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OLPC_MESH_CHANNEL")]
+	public sealed class SettingOlpcMesh : NM.Setting {
+		[CCode (cname = "NM_SETTING_OLPC_MESH_CHANNEL")]
 		public const string CHANNEL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OLPC_MESH_DHCP_ANYCAST_ADDRESS")]
+		[CCode (cname = "NM_SETTING_OLPC_MESH_DHCP_ANYCAST_ADDRESS")]
 		public const string DHCP_ANYCAST_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OLPC_MESH_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_OLPC_MESH_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OLPC_MESH_SSID")]
+		[CCode (cname = "NM_SETTING_OLPC_MESH_SSID")]
 		public const string SSID;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingOlpcMesh ();
@@ -3853,7 +4359,19 @@ namespace NM {
 		public GLib.Bytes ssid { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_bridge_get_type ()")]
-	public class SettingOvsBridge : NM.Setting {
+	public sealed class SettingOvsBridge : NM.Setting {
+		[CCode (cname = "NM_SETTING_OVS_BRIDGE_DATAPATH_TYPE")]
+		public const string DATAPATH_TYPE;
+		[CCode (cname = "NM_SETTING_OVS_BRIDGE_FAIL_MODE")]
+		public const string FAIL_MODE;
+		[CCode (cname = "NM_SETTING_OVS_BRIDGE_MCAST_SNOOPING_ENABLE")]
+		public const string MCAST_SNOOPING_ENABLE;
+		[CCode (cname = "NM_SETTING_OVS_BRIDGE_RSTP_ENABLE")]
+		public const string RSTP_ENABLE;
+		[CCode (cname = "NM_SETTING_OVS_BRIDGE_SETTING_NAME")]
+		public const string SETTING_NAME;
+		[CCode (cname = "NM_SETTING_OVS_BRIDGE_STP_ENABLE")]
+		public const string STP_ENABLE;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.10")]
 		public SettingOvsBridge ();
@@ -3884,7 +4402,17 @@ namespace NM {
 		public bool stp_enable { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_dpdk_get_type ()")]
-	public class SettingOvsDpdk : NM.Setting {
+	public sealed class SettingOvsDpdk : NM.Setting {
+		[CCode (cname = "NM_SETTING_OVS_DPDK_DEVARGS")]
+		public const string DEVARGS;
+		[CCode (cname = "NM_SETTING_OVS_DPDK_N_RXQ")]
+		public const string N_RXQ;
+		[CCode (cname = "NM_SETTING_OVS_DPDK_N_RXQ_DESC")]
+		public const string N_RXQ_DESC;
+		[CCode (cname = "NM_SETTING_OVS_DPDK_N_TXQ_DESC")]
+		public const string N_TXQ_DESC;
+		[CCode (cname = "NM_SETTING_OVS_DPDK_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.20")]
 		public SettingOvsDpdk ();
@@ -3910,7 +4438,11 @@ namespace NM {
 		public uint n_txq_desc { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_external_ids_get_type ()")]
-	public class SettingOvsExternalIDs : NM.Setting {
+	public sealed class SettingOvsExternalIDs : NM.Setting {
+		[CCode (cname = "NM_SETTING_OVS_EXTERNAL_IDS_DATA")]
+		public const string DATA;
+		[CCode (cname = "NM_SETTING_OVS_EXTERNAL_IDS_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.30")]
 		public SettingOvsExternalIDs ();
@@ -3930,7 +4462,13 @@ namespace NM {
 		public GLib.HashTable<string,string> data { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_interface_get_type ()")]
-	public class SettingOvsInterface : NM.Setting {
+	public sealed class SettingOvsInterface : NM.Setting {
+		[CCode (cname = "NM_SETTING_OVS_INTERFACE_OFPORT_REQUEST")]
+		public const string OFPORT_REQUEST;
+		[CCode (cname = "NM_SETTING_OVS_INTERFACE_SETTING_NAME")]
+		public const string SETTING_NAME;
+		[CCode (cname = "NM_SETTING_OVS_INTERFACE_TYPE")]
+		public const string TYPE;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.10")]
 		public SettingOvsInterface ();
@@ -3947,7 +4485,11 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_other_config_get_type ()")]
 	[Version (since = "1.42")]
-	public class SettingOvsOtherConfig : NM.Setting {
+	public sealed class SettingOvsOtherConfig : NM.Setting {
+		[CCode (cname = "NM_SETTING_OVS_OTHER_CONFIG_DATA")]
+		public const string DATA;
+		[CCode (cname = "NM_SETTING_OVS_OTHER_CONFIG_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingOvsOtherConfig ();
 		public unowned string get_data (string key);
@@ -3958,7 +4500,11 @@ namespace NM {
 		public GLib.HashTable<string,string> data { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_patch_get_type ()")]
-	public class SettingOvsPatch : NM.Setting {
+	public sealed class SettingOvsPatch : NM.Setting {
+		[CCode (cname = "NM_SETTING_OVS_PATCH_PEER")]
+		public const string PEER;
+		[CCode (cname = "NM_SETTING_OVS_PATCH_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.10")]
 		public SettingOvsPatch ();
@@ -3969,7 +4515,23 @@ namespace NM {
 		public string peer { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ovs_port_get_type ()")]
-	public class SettingOvsPort : NM.Setting {
+	public sealed class SettingOvsPort : NM.Setting {
+		[CCode (cname = "NM_SETTING_OVS_PORT_BOND_DOWNDELAY")]
+		public const string BOND_DOWNDELAY;
+		[CCode (cname = "NM_SETTING_OVS_PORT_BOND_MODE")]
+		public const string BOND_MODE;
+		[CCode (cname = "NM_SETTING_OVS_PORT_BOND_UPDELAY")]
+		public const string BOND_UPDELAY;
+		[CCode (cname = "NM_SETTING_OVS_PORT_LACP")]
+		public const string LACP;
+		[CCode (cname = "NM_SETTING_OVS_PORT_SETTING_NAME")]
+		public const string SETTING_NAME;
+		[CCode (cname = "NM_SETTING_OVS_PORT_TAG")]
+		public const string TAG;
+		[CCode (cname = "NM_SETTING_OVS_PORT_TRUNKS")]
+		public const string TRUNKS;
+		[CCode (cname = "NM_SETTING_OVS_PORT_VLAN_MODE")]
+		public const string VLAN_MODE;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.10")]
 		public SettingOvsPort ();
@@ -4020,44 +4582,44 @@ namespace NM {
 		public string vlan_mode { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_ppp_get_type ()")]
-	public class SettingPpp : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_BAUD")]
+	public sealed class SettingPpp : NM.Setting {
+		[CCode (cname = "NM_SETTING_PPP_BAUD")]
 		public const string BAUD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_CRTSCTS")]
+		[CCode (cname = "NM_SETTING_PPP_CRTSCTS")]
 		public const string CRTSCTS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_LCP_ECHO_FAILURE")]
+		[CCode (cname = "NM_SETTING_PPP_LCP_ECHO_FAILURE")]
 		public const string LCP_ECHO_FAILURE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_LCP_ECHO_INTERVAL")]
+		[CCode (cname = "NM_SETTING_PPP_LCP_ECHO_INTERVAL")]
 		public const string LCP_ECHO_INTERVAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_MPPE_STATEFUL")]
+		[CCode (cname = "NM_SETTING_PPP_MPPE_STATEFUL")]
 		public const string MPPE_STATEFUL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_MRU")]
+		[CCode (cname = "NM_SETTING_PPP_MRU")]
 		public const string MRU;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_MTU")]
+		[CCode (cname = "NM_SETTING_PPP_MTU")]
 		public const string MTU;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_NOAUTH")]
+		[CCode (cname = "NM_SETTING_PPP_NOAUTH")]
 		public const string NOAUTH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_NOBSDCOMP")]
+		[CCode (cname = "NM_SETTING_PPP_NOBSDCOMP")]
 		public const string NOBSDCOMP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_NODEFLATE")]
+		[CCode (cname = "NM_SETTING_PPP_NODEFLATE")]
 		public const string NODEFLATE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_NO_VJ_COMP")]
+		[CCode (cname = "NM_SETTING_PPP_NO_VJ_COMP")]
 		public const string NO_VJ_COMP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_REFUSE_CHAP")]
+		[CCode (cname = "NM_SETTING_PPP_REFUSE_CHAP")]
 		public const string REFUSE_CHAP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_REFUSE_EAP")]
+		[CCode (cname = "NM_SETTING_PPP_REFUSE_EAP")]
 		public const string REFUSE_EAP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_REFUSE_MSCHAP")]
+		[CCode (cname = "NM_SETTING_PPP_REFUSE_MSCHAP")]
 		public const string REFUSE_MSCHAP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_REFUSE_MSCHAPV2")]
+		[CCode (cname = "NM_SETTING_PPP_REFUSE_MSCHAPV2")]
 		public const string REFUSE_MSCHAPV2;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_REFUSE_PAP")]
+		[CCode (cname = "NM_SETTING_PPP_REFUSE_PAP")]
 		public const string REFUSE_PAP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_REQUIRE_MPPE")]
+		[CCode (cname = "NM_SETTING_PPP_REQUIRE_MPPE")]
 		public const string REQUIRE_MPPE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_REQUIRE_MPPE_128")]
+		[CCode (cname = "NM_SETTING_PPP_REQUIRE_MPPE_128")]
 		public const string REQUIRE_MPPE_128;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPP_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_PPP_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingPpp ();
@@ -4117,18 +4679,18 @@ namespace NM {
 		public bool require_mppe_128 { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_pppoe_get_type ()")]
-	public class SettingPppoe : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPPOE_PARENT")]
+	public sealed class SettingPppoe : NM.Setting {
+		[CCode (cname = "NM_SETTING_PPPOE_PARENT")]
 		public const string PARENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPPOE_PASSWORD")]
+		[CCode (cname = "NM_SETTING_PPPOE_PASSWORD")]
 		public const string PASSWORD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPPOE_PASSWORD_FLAGS")]
+		[CCode (cname = "NM_SETTING_PPPOE_PASSWORD_FLAGS")]
 		public const string PASSWORD_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPPOE_SERVICE")]
+		[CCode (cname = "NM_SETTING_PPPOE_SERVICE")]
 		public const string SERVICE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPPOE_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_PPPOE_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PPPOE_USERNAME")]
+		[CCode (cname = "NM_SETTING_PPPOE_USERNAME")]
 		public const string USERNAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingPppoe ();
@@ -4151,16 +4713,16 @@ namespace NM {
 		public string username { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_proxy_get_type ()")]
-	public class SettingProxy : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PROXY_BROWSER_ONLY")]
+	public sealed class SettingProxy : NM.Setting {
+		[CCode (cname = "NM_SETTING_PROXY_BROWSER_ONLY")]
 		public const string BROWSER_ONLY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PROXY_METHOD")]
+		[CCode (cname = "NM_SETTING_PROXY_METHOD")]
 		public const string METHOD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PROXY_PAC_SCRIPT")]
+		[CCode (cname = "NM_SETTING_PROXY_PAC_SCRIPT")]
 		public const string PAC_SCRIPT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PROXY_PAC_URL")]
+		[CCode (cname = "NM_SETTING_PROXY_PAC_URL")]
 		public const string PAC_URL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_PROXY_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_PROXY_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.6")]
@@ -4187,18 +4749,18 @@ namespace NM {
 		public string pac_url { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_serial_get_type ()")]
-	public class SettingSerial : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SERIAL_BAUD")]
+	public sealed class SettingSerial : NM.Setting {
+		[CCode (cname = "NM_SETTING_SERIAL_BAUD")]
 		public const string BAUD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SERIAL_BITS")]
+		[CCode (cname = "NM_SETTING_SERIAL_BITS")]
 		public const string BITS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SERIAL_PARITY")]
+		[CCode (cname = "NM_SETTING_SERIAL_PARITY")]
 		public const string PARITY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SERIAL_SEND_DELAY")]
+		[CCode (cname = "NM_SETTING_SERIAL_SEND_DELAY")]
 		public const string SEND_DELAY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SERIAL_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_SERIAL_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SERIAL_STOPBITS")]
+		[CCode (cname = "NM_SETTING_SERIAL_STOPBITS")]
 		public const string STOPBITS;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingSerial ();
@@ -4220,7 +4782,15 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_sriov_get_type ()")]
 	[Version (since = "1.14")]
-	public class SettingSriov : NM.Setting {
+	public sealed class SettingSriov : NM.Setting {
+		[CCode (cname = "NM_SETTING_SRIOV_AUTOPROBE_DRIVERS")]
+		public const string AUTOPROBE_DRIVERS;
+		[CCode (cname = "NM_SETTING_SRIOV_SETTING_NAME")]
+		public const string SETTING_NAME;
+		[CCode (cname = "NM_SETTING_SRIOV_TOTAL_VFS")]
+		public const string TOTAL_VFS;
+		[CCode (cname = "NM_SETTING_SRIOV_VFS")]
+		public const string VFS;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingSriov ();
 		public void add_vf (NM.SriovVF vf);
@@ -4240,7 +4810,13 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_tc_config_get_type ()")]
 	[Version (since = "1.12")]
-	public class SettingTCConfig : NM.Setting {
+	public sealed class SettingTCConfig : NM.Setting {
+		[CCode (cname = "NM_SETTING_TC_CONFIG_QDISCS")]
+		public const string QDISCS;
+		[CCode (cname = "NM_SETTING_TC_CONFIG_SETTING_NAME")]
+		public const string SETTING_NAME;
+		[CCode (cname = "NM_SETTING_TC_CONFIG_TFILTERS")]
+		public const string TFILTERS;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingTCConfig ();
 		public bool add_qdisc (NM.TCQdisc qdisc);
@@ -4261,96 +4837,96 @@ namespace NM {
 		public GLib.GenericArray<NM.TCTfilter> tfilters { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_team_get_type ()")]
-	public class SettingTeam : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_CONFIG")]
+	public sealed class SettingTeam : NM.Setting {
+		[CCode (cname = "NM_SETTING_TEAM_CONFIG")]
 		public const string CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_LINK_WATCHERS")]
+		[CCode (cname = "NM_SETTING_TEAM_LINK_WATCHERS")]
 		public const string LINK_WATCHERS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_MCAST_REJOIN_COUNT")]
+		[CCode (cname = "NM_SETTING_TEAM_MCAST_REJOIN_COUNT")]
 		public const string MCAST_REJOIN_COUNT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_MCAST_REJOIN_INTERVAL")]
+		[CCode (cname = "NM_SETTING_TEAM_MCAST_REJOIN_INTERVAL")]
 		public const string MCAST_REJOIN_INTERVAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_NOTIFY_MCAST_COUNT_ACTIVEBACKUP_DEFAULT")]
+		[CCode (cname = "NM_SETTING_TEAM_NOTIFY_MCAST_COUNT_ACTIVEBACKUP_DEFAULT")]
 		public const int NOTIFY_MCAST_COUNT_ACTIVEBACKUP_DEFAULT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_NOTIFY_PEERS_COUNT")]
+		[CCode (cname = "NM_SETTING_TEAM_NOTIFY_PEERS_COUNT")]
 		public const string NOTIFY_PEERS_COUNT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_NOTIFY_PEERS_COUNT_ACTIVEBACKUP_DEFAULT")]
+		[CCode (cname = "NM_SETTING_TEAM_NOTIFY_PEERS_COUNT_ACTIVEBACKUP_DEFAULT")]
 		public const int NOTIFY_PEERS_COUNT_ACTIVEBACKUP_DEFAULT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_NOTIFY_PEERS_INTERVAL")]
+		[CCode (cname = "NM_SETTING_TEAM_NOTIFY_PEERS_INTERVAL")]
 		public const string NOTIFY_PEERS_INTERVAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_CONFIG")]
+		[CCode (cname = "NM_SETTING_TEAM_PORT_CONFIG")]
 		public const string PORT_CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_LACP_KEY")]
+		[CCode (cname = "NM_SETTING_TEAM_PORT_LACP_KEY")]
 		public const string PORT_LACP_KEY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_LACP_PRIO")]
+		[CCode (cname = "NM_SETTING_TEAM_PORT_LACP_PRIO")]
 		public const string PORT_LACP_PRIO;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_LACP_PRIO_DEFAULT")]
+		[CCode (cname = "NM_SETTING_TEAM_PORT_LACP_PRIO_DEFAULT")]
 		public const int PORT_LACP_PRIO_DEFAULT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_LINK_WATCHERS")]
+		[CCode (cname = "NM_SETTING_TEAM_PORT_LINK_WATCHERS")]
 		public const string PORT_LINK_WATCHERS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_PRIO")]
+		[CCode (cname = "NM_SETTING_TEAM_PORT_PRIO")]
 		public const string PORT_PRIO;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_QUEUE_ID")]
+		[CCode (cname = "NM_SETTING_TEAM_PORT_QUEUE_ID")]
 		public const string PORT_QUEUE_ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_QUEUE_ID_DEFAULT")]
+		[CCode (cname = "NM_SETTING_TEAM_PORT_QUEUE_ID_DEFAULT")]
 		public const int PORT_QUEUE_ID_DEFAULT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_TEAM_PORT_SETTING_NAME")]
 		public const string PORT_SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_PORT_STICKY")]
+		[CCode (cname = "NM_SETTING_TEAM_PORT_STICKY")]
 		public const string PORT_STICKY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER")]
 		public const string RUNNER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_ACTIVE")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_ACTIVE")]
 		public const string RUNNER_ACTIVE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_ACTIVEBACKUP")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_ACTIVEBACKUP")]
 		public const string RUNNER_ACTIVEBACKUP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY")]
 		public const string RUNNER_AGG_SELECT_POLICY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_BANDWIDTH")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_BANDWIDTH")]
 		public const string RUNNER_AGG_SELECT_POLICY_BANDWIDTH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_COUNT")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_COUNT")]
 		public const string RUNNER_AGG_SELECT_POLICY_COUNT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_LACP_PRIO")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_LACP_PRIO")]
 		public const string RUNNER_AGG_SELECT_POLICY_LACP_PRIO;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_LACP_PRIO_STABLE")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_LACP_PRIO_STABLE")]
 		public const string RUNNER_AGG_SELECT_POLICY_LACP_PRIO_STABLE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_PORT_CONFIG")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_AGG_SELECT_POLICY_PORT_CONFIG")]
 		public const string RUNNER_AGG_SELECT_POLICY_PORT_CONFIG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_BROADCAST")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_BROADCAST")]
 		public const string RUNNER_BROADCAST;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_FAST_RATE")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_FAST_RATE")]
 		public const string RUNNER_FAST_RATE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_HWADDR_POLICY")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_HWADDR_POLICY")]
 		public const string RUNNER_HWADDR_POLICY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_HWADDR_POLICY_BY_ACTIVE")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_HWADDR_POLICY_BY_ACTIVE")]
 		public const string RUNNER_HWADDR_POLICY_BY_ACTIVE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_HWADDR_POLICY_ONLY_ACTIVE")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_HWADDR_POLICY_ONLY_ACTIVE")]
 		public const string RUNNER_HWADDR_POLICY_ONLY_ACTIVE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_HWADDR_POLICY_SAME_ALL")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_HWADDR_POLICY_SAME_ALL")]
 		public const string RUNNER_HWADDR_POLICY_SAME_ALL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_LACP")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_LACP")]
 		public const string RUNNER_LACP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_LOADBALANCE")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_LOADBALANCE")]
 		public const string RUNNER_LOADBALANCE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_MIN_PORTS")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_MIN_PORTS")]
 		public const string RUNNER_MIN_PORTS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_RANDOM")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_RANDOM")]
 		public const string RUNNER_RANDOM;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_ROUNDROBIN")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_ROUNDROBIN")]
 		public const string RUNNER_ROUNDROBIN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_SYS_PRIO")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_SYS_PRIO")]
 		public const string RUNNER_SYS_PRIO;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_SYS_PRIO_DEFAULT")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_SYS_PRIO_DEFAULT")]
 		public const int RUNNER_SYS_PRIO_DEFAULT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_TX_BALANCER")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_TX_BALANCER")]
 		public const string RUNNER_TX_BALANCER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_TX_BALANCER_INTERVAL")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_TX_BALANCER_INTERVAL")]
 		public const string RUNNER_TX_BALANCER_INTERVAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_TX_BALANCER_INTERVAL_DEFAULT")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_TX_BALANCER_INTERVAL_DEFAULT")]
 		public const int RUNNER_TX_BALANCER_INTERVAL_DEFAULT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_RUNNER_TX_HASH")]
+		[CCode (cname = "NM_SETTING_TEAM_RUNNER_TX_HASH")]
 		public const string RUNNER_TX_HASH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TEAM_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_TEAM_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingTeam ();
@@ -4453,7 +5029,7 @@ namespace NM {
 		public string[] runner_tx_hash { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_team_port_get_type ()")]
-	public class SettingTeamPort : NM.Setting {
+	public sealed class SettingTeamPort : NM.Setting {
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingTeamPort ();
 		[Version (since = "1.12")]
@@ -4501,20 +5077,20 @@ namespace NM {
 		public bool sticky { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_tun_get_type ()")]
-	public class SettingTun : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TUN_GROUP")]
+	public sealed class SettingTun : NM.Setting {
+		[CCode (cname = "NM_SETTING_TUN_GROUP")]
 		public const string GROUP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TUN_MODE")]
+		[CCode (cname = "NM_SETTING_TUN_MODE")]
 		public const string MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TUN_MULTI_QUEUE")]
+		[CCode (cname = "NM_SETTING_TUN_MULTI_QUEUE")]
 		public const string MULTI_QUEUE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TUN_OWNER")]
+		[CCode (cname = "NM_SETTING_TUN_OWNER")]
 		public const string OWNER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TUN_PI")]
+		[CCode (cname = "NM_SETTING_TUN_PI")]
 		public const string PI;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TUN_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_TUN_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TUN_VNET_HDR")]
+		[CCode (cname = "NM_SETTING_TUN_VNET_HDR")]
 		public const string VNET_HDR;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.2")]
@@ -4552,7 +5128,11 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_user_get_type ()")]
 	[Version (since = "1.8")]
-	public class SettingUser : NM.Setting {
+	public sealed class SettingUser : NM.Setting {
+		[CCode (cname = "NM_SETTING_USER_DATA")]
+		public const string DATA;
+		[CCode (cname = "NM_SETTING_USER_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingUser ();
 		public static bool check_key (string key) throws GLib.Error;
@@ -4565,7 +5145,11 @@ namespace NM {
 		public GLib.HashTable<string,string> data { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_veth_get_type ()")]
-	public class SettingVeth : NM.Setting {
+	public sealed class SettingVeth : NM.Setting {
+		[CCode (cname = "NM_SETTING_VETH_PEER")]
+		public const string PEER;
+		[CCode (cname = "NM_SETTING_VETH_SETTING_NAME")]
+		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.30")]
 		public SettingVeth ();
@@ -4576,20 +5160,20 @@ namespace NM {
 		public string peer { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_vlan_get_type ()")]
-	public class SettingVlan : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VLAN_EGRESS_PRIORITY_MAP")]
+	public sealed class SettingVlan : NM.Setting {
+		[CCode (cname = "NM_SETTING_VLAN_EGRESS_PRIORITY_MAP")]
 		public const string EGRESS_PRIORITY_MAP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VLAN_FLAGS")]
+		[CCode (cname = "NM_SETTING_VLAN_FLAGS")]
 		public const string FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VLAN_ID")]
+		[CCode (cname = "NM_SETTING_VLAN_ID")]
 		public const string ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VLAN_INGRESS_PRIORITY_MAP")]
+		[CCode (cname = "NM_SETTING_VLAN_INGRESS_PRIORITY_MAP")]
 		public const string INGRESS_PRIORITY_MAP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VLAN_PARENT")]
+		[CCode (cname = "NM_SETTING_VLAN_PARENT")]
 		public const string PARENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VLAN_PROTOCOL")]
+		[CCode (cname = "NM_SETTING_VLAN_PROTOCOL")]
 		public const string PROTOCOL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VLAN_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_VLAN_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingVlan ();
@@ -4623,20 +5207,20 @@ namespace NM {
 		public string protocol { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_vpn_get_type ()")]
-	public class SettingVpn : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VPN_DATA")]
+	public sealed class SettingVpn : NM.Setting {
+		[CCode (cname = "NM_SETTING_VPN_DATA")]
 		public const string DATA;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VPN_PERSISTENT")]
+		[CCode (cname = "NM_SETTING_VPN_PERSISTENT")]
 		public const string PERSISTENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VPN_SECRETS")]
+		[CCode (cname = "NM_SETTING_VPN_SECRETS")]
 		public const string SECRETS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VPN_SERVICE_TYPE")]
+		[CCode (cname = "NM_SETTING_VPN_SERVICE_TYPE")]
 		public const string SERVICE_TYPE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VPN_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_VPN_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VPN_TIMEOUT")]
+		[CCode (cname = "NM_SETTING_VPN_TIMEOUT")]
 		public const string TIMEOUT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VPN_USER_NAME")]
+		[CCode (cname = "NM_SETTING_VPN_USER_NAME")]
 		public const string USER_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingVpn ();
@@ -4647,7 +5231,7 @@ namespace NM {
 		public unowned string get_data_item (string key);
 		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
 		[Version (since = "1.12")]
-		public (unowned string)[] get_data_keys ();
+		public (unowned string)[]? get_data_keys ();
 		public uint32 get_num_data_items ();
 		public uint32 get_num_secrets ();
 		[Version (since = "1.42")]
@@ -4655,7 +5239,7 @@ namespace NM {
 		public unowned string get_secret (string key);
 		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
 		[Version (since = "1.12")]
-		public (unowned string)[] get_secret_keys ();
+		public (unowned string)[]? get_secret_keys ();
 		public unowned string get_service_type ();
 		[Version (since = "1.2")]
 		public uint32 get_timeout ();
@@ -4678,7 +5262,11 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_vrf_get_type ()")]
 	[Version (since = "1.24")]
-	public class SettingVrf : NM.Setting {
+	public sealed class SettingVrf : NM.Setting {
+		[CCode (cname = "NM_SETTING_VRF_SETTING_NAME")]
+		public const string SETTING_NAME;
+		[CCode (cname = "NM_SETTING_VRF_TABLE")]
+		public const string TABLE;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingVrf ();
 		public uint32 get_table ();
@@ -4686,40 +5274,40 @@ namespace NM {
 		public uint table { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_vxlan_get_type ()")]
-	public class SettingVxlan : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_AGEING")]
+	public sealed class SettingVxlan : NM.Setting {
+		[CCode (cname = "NM_SETTING_VXLAN_AGEING")]
 		public const string AGEING;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_DESTINATION_PORT")]
+		[CCode (cname = "NM_SETTING_VXLAN_DESTINATION_PORT")]
 		public const string DESTINATION_PORT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_ID")]
+		[CCode (cname = "NM_SETTING_VXLAN_ID")]
 		public const string ID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_L2_MISS")]
+		[CCode (cname = "NM_SETTING_VXLAN_L2_MISS")]
 		public const string L2_MISS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_L3_MISS")]
+		[CCode (cname = "NM_SETTING_VXLAN_L3_MISS")]
 		public const string L3_MISS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_LEARNING")]
+		[CCode (cname = "NM_SETTING_VXLAN_LEARNING")]
 		public const string LEARNING;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_LIMIT")]
+		[CCode (cname = "NM_SETTING_VXLAN_LIMIT")]
 		public const string LIMIT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_LOCAL")]
+		[CCode (cname = "NM_SETTING_VXLAN_LOCAL")]
 		public const string LOCAL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_PARENT")]
+		[CCode (cname = "NM_SETTING_VXLAN_PARENT")]
 		public const string PARENT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_PROXY")]
+		[CCode (cname = "NM_SETTING_VXLAN_PROXY")]
 		public const string PROXY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_REMOTE")]
+		[CCode (cname = "NM_SETTING_VXLAN_REMOTE")]
 		public const string REMOTE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_RSC")]
+		[CCode (cname = "NM_SETTING_VXLAN_RSC")]
 		public const string RSC;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_VXLAN_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_SOURCE_PORT_MAX")]
+		[CCode (cname = "NM_SETTING_VXLAN_SOURCE_PORT_MAX")]
 		public const string SOURCE_PORT_MAX;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_SOURCE_PORT_MIN")]
+		[CCode (cname = "NM_SETTING_VXLAN_SOURCE_PORT_MIN")]
 		public const string SOURCE_PORT_MIN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_TOS")]
+		[CCode (cname = "NM_SETTING_VXLAN_TOS")]
 		public const string TOS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VXLAN_TTL")]
+		[CCode (cname = "NM_SETTING_VXLAN_TTL")]
 		public const string TTL;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.2")]
@@ -4807,14 +5395,14 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_wifi_p2p", type_id = "nm_setting_wifi_p2p_get_type ()")]
 	[Version (since = "1.16")]
-	public class SettingWifiP2P : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIFI_P2P_PEER")]
+	public sealed class SettingWifiP2P : NM.Setting {
+		[CCode (cname = "NM_SETTING_WIFI_P2P_PEER")]
 		public const string PEER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIFI_P2P_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_WIFI_P2P_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIFI_P2P_WFD_IES")]
+		[CCode (cname = "NM_SETTING_WIFI_P2P_WFD_IES")]
 		public const string WFD_IES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIFI_P2P_WPS_METHOD")]
+		[CCode (cname = "NM_SETTING_WIFI_P2P_WPS_METHOD")]
 		public const string WPS_METHOD;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingWifiP2P ();
@@ -4829,12 +5417,12 @@ namespace NM {
 		public uint wps_method { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_wimax_get_type ()")]
-	public class SettingWimax : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIMAX_MAC_ADDRESS")]
+	public sealed class SettingWimax : NM.Setting {
+		[CCode (cname = "NM_SETTING_WIMAX_MAC_ADDRESS")]
 		public const string MAC_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIMAX_NETWORK_NAME")]
+		[CCode (cname = "NM_SETTING_WIMAX_NETWORK_NAME")]
 		public const string NETWORK_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIMAX_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_WIMAX_SETTING_NAME")]
 		public const string SETTING_NAME;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (deprecated = true, deprecated_since = "1.2")]
@@ -4852,27 +5440,31 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "setting_wireguard", type_id = "nm_setting_wireguard_get_type ()")]
 	[Version (since = "1.16")]
-	public class SettingWireGuard : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_FWMARK")]
+	public sealed class SettingWireGuard : NM.Setting {
+		[CCode (cname = "NM_SETTING_WIREGUARD_FWMARK")]
 		public const string FWMARK;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_IP4_AUTO_DEFAULT_ROUTE")]
+		[CCode (cname = "NM_SETTING_WIREGUARD_IP4_AUTO_DEFAULT_ROUTE")]
 		public const string IP4_AUTO_DEFAULT_ROUTE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_IP6_AUTO_DEFAULT_ROUTE")]
+		[CCode (cname = "NM_SETTING_WIREGUARD_IP6_AUTO_DEFAULT_ROUTE")]
 		public const string IP6_AUTO_DEFAULT_ROUTE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_LISTEN_PORT")]
+		[CCode (cname = "NM_SETTING_WIREGUARD_LISTEN_PORT")]
 		public const string LISTEN_PORT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_MTU")]
+		[CCode (cname = "NM_SETTING_WIREGUARD_MTU")]
 		public const string MTU;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PEERS")]
+		[CCode (cname = "NM_SETTING_WIREGUARD_PEERS")]
 		public const string PEERS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PEER_ROUTES")]
+		[CCode (cname = "NM_SETTING_WIREGUARD_PEER_ROUTES")]
 		public const string PEER_ROUTES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PRIVATE_KEY")]
+		[CCode (cname = "NM_SETTING_WIREGUARD_PRIVATE_KEY")]
 		public const string PRIVATE_KEY;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_PRIVATE_KEY_FLAGS")]
+		[CCode (cname = "NM_SETTING_WIREGUARD_PRIVATE_KEY_FLAGS")]
 		public const string PRIVATE_KEY_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIREGUARD_SETTING_NAME")]
+		[CCode (cname = "NM_WIREGUARD_PUBLIC_KEY_LEN")]
+		public const int PUBLIC_KEY_LEN;
+		[CCode (cname = "NM_SETTING_WIREGUARD_SETTING_NAME")]
 		public const string SETTING_NAME;
+		[CCode (cname = "NM_WIREGUARD_SYMMETRIC_KEY_LEN")]
+		public const int SYMMETRIC_KEY_LEN;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingWireGuard ();
 		public void append_peer (NM.WireGuardPeer peer);
@@ -4885,7 +5477,7 @@ namespace NM {
 		public uint16 get_listen_port ();
 		public uint32 get_mtu ();
 		public unowned NM.WireGuardPeer get_peer (uint idx);
-		public unowned NM.WireGuardPeer get_peer_by_public_key (string public_key, out uint out_idx);
+		public unowned NM.WireGuardPeer? get_peer_by_public_key (string public_key, out uint out_idx);
 		public bool get_peer_routes ();
 		public uint get_peers_len ();
 		public unowned string get_private_key ();
@@ -4912,38 +5504,38 @@ namespace NM {
 		public NM.SettingSecretFlags private_key_flags { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_wired_get_type ()")]
-	public class SettingWired : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_ACCEPT_ALL_MAC_ADDRESSES")]
+	public sealed class SettingWired : NM.Setting {
+		[CCode (cname = "NM_SETTING_WIRED_ACCEPT_ALL_MAC_ADDRESSES")]
 		public const string ACCEPT_ALL_MAC_ADDRESSES;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_AUTO_NEGOTIATE")]
+		[CCode (cname = "NM_SETTING_WIRED_AUTO_NEGOTIATE")]
 		public const string AUTO_NEGOTIATE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_CLONED_MAC_ADDRESS")]
+		[CCode (cname = "NM_SETTING_WIRED_CLONED_MAC_ADDRESS")]
 		public const string CLONED_MAC_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_DUPLEX")]
+		[CCode (cname = "NM_SETTING_WIRED_DUPLEX")]
 		public const string DUPLEX;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_GENERATE_MAC_ADDRESS_MASK")]
+		[CCode (cname = "NM_SETTING_WIRED_GENERATE_MAC_ADDRESS_MASK")]
 		public const string GENERATE_MAC_ADDRESS_MASK;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_MAC_ADDRESS")]
+		[CCode (cname = "NM_SETTING_WIRED_MAC_ADDRESS")]
 		public const string MAC_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_MAC_ADDRESS_BLACKLIST")]
+		[CCode (cname = "NM_SETTING_WIRED_MAC_ADDRESS_BLACKLIST")]
 		public const string MAC_ADDRESS_BLACKLIST;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_MTU")]
+		[CCode (cname = "NM_SETTING_WIRED_MTU")]
 		public const string MTU;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_PORT")]
+		[CCode (cname = "NM_SETTING_WIRED_PORT")]
 		public const string PORT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_S390_NETTYPE")]
+		[CCode (cname = "NM_SETTING_WIRED_S390_NETTYPE")]
 		public const string S390_NETTYPE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_S390_OPTIONS")]
+		[CCode (cname = "NM_SETTING_WIRED_S390_OPTIONS")]
 		public const string S390_OPTIONS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_S390_SUBCHANNELS")]
+		[CCode (cname = "NM_SETTING_WIRED_S390_SUBCHANNELS")]
 		public const string S390_SUBCHANNELS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_WIRED_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_SPEED")]
+		[CCode (cname = "NM_SETTING_WIRED_SPEED")]
 		public const string SPEED;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_WAKE_ON_LAN")]
+		[CCode (cname = "NM_SETTING_WIRED_WAKE_ON_LAN")]
 		public const string WAKE_ON_LAN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRED_WAKE_ON_LAN_PASSWORD")]
+		[CCode (cname = "NM_SETTING_WIRED_WAKE_ON_LAN_PASSWORD")]
 		public const string WAKE_ON_LAN_PASSWORD;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingWired ();
@@ -4966,7 +5558,7 @@ namespace NM {
 		public uint32 get_num_s390_options ();
 		public unowned string get_port ();
 		public unowned string get_s390_nettype ();
-		public bool get_s390_option (uint32 idx, out unowned string out_key, out unowned string out_value);
+		public bool get_s390_option (uint32 idx, out unowned string? out_key, out unowned string? out_value);
 		public unowned string get_s390_option_by_key (string key);
 		[CCode (array_length = false, array_null_terminated = true)]
 		public unowned string[] get_s390_subchannels ();
@@ -5017,95 +5609,53 @@ namespace NM {
 		public string wake_on_lan_password { owned get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_wireless_get_type ()")]
-	public class SettingWireless : NM.Setting {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_AP_ISOLATION")]
+	public sealed class SettingWireless : NM.Setting {
+		[CCode (cname = "NM_SETTING_WIRELESS_AP_ISOLATION")]
 		public const string AP_ISOLATION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_BAND")]
+		[CCode (cname = "NM_SETTING_WIRELESS_BAND")]
 		public const string BAND;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_BSSID")]
+		[CCode (cname = "NM_SETTING_WIRELESS_BSSID")]
 		public const string BSSID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_CHANNEL")]
+		[CCode (cname = "NM_SETTING_WIRELESS_CHANNEL")]
 		public const string CHANNEL;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_CLONED_MAC_ADDRESS")]
+		[CCode (cname = "NM_SETTING_WIRELESS_CLONED_MAC_ADDRESS")]
 		public const string CLONED_MAC_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_GENERATE_MAC_ADDRESS_MASK")]
+		[CCode (cname = "NM_SETTING_WIRELESS_GENERATE_MAC_ADDRESS_MASK")]
 		public const string GENERATE_MAC_ADDRESS_MASK;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_HIDDEN")]
+		[CCode (cname = "NM_SETTING_WIRELESS_HIDDEN")]
 		public const string HIDDEN;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MAC_ADDRESS")]
+		[CCode (cname = "NM_SETTING_WIRELESS_MAC_ADDRESS")]
 		public const string MAC_ADDRESS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MAC_ADDRESS_BLACKLIST")]
+		[CCode (cname = "NM_SETTING_WIRELESS_MAC_ADDRESS_BLACKLIST")]
 		public const string MAC_ADDRESS_BLACKLIST;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MAC_ADDRESS_RANDOMIZATION")]
+		[CCode (cname = "NM_SETTING_WIRELESS_MAC_ADDRESS_RANDOMIZATION")]
 		public const string MAC_ADDRESS_RANDOMIZATION;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MODE")]
+		[CCode (cname = "NM_SETTING_WIRELESS_MODE")]
 		public const string MODE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MODE_ADHOC")]
+		[CCode (cname = "NM_SETTING_WIRELESS_MODE_ADHOC")]
 		public const string MODE_ADHOC;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MODE_AP")]
+		[CCode (cname = "NM_SETTING_WIRELESS_MODE_AP")]
 		public const string MODE_AP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MODE_INFRA")]
+		[CCode (cname = "NM_SETTING_WIRELESS_MODE_INFRA")]
 		public const string MODE_INFRA;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MODE_MESH")]
+		[CCode (cname = "NM_SETTING_WIRELESS_MODE_MESH")]
 		[Version (since = "1.20")]
 		public const string MODE_MESH;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_MTU")]
+		[CCode (cname = "NM_SETTING_WIRELESS_MTU")]
 		public const string MTU;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_POWERSAVE")]
+		[CCode (cname = "NM_SETTING_WIRELESS_POWERSAVE")]
 		public const string POWERSAVE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_RATE")]
+		[CCode (cname = "NM_SETTING_WIRELESS_RATE")]
 		public const string RATE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_AUTH_ALG")]
-		public const string SECURITY_AUTH_ALG;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_FILS")]
-		public const string SECURITY_FILS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_GROUP")]
-		public const string SECURITY_GROUP;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_KEY_MGMT")]
-		public const string SECURITY_KEY_MGMT;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_LEAP_PASSWORD")]
-		public const string SECURITY_LEAP_PASSWORD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_LEAP_PASSWORD_FLAGS")]
-		public const string SECURITY_LEAP_PASSWORD_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_LEAP_USERNAME")]
-		public const string SECURITY_LEAP_USERNAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_PAIRWISE")]
-		public const string SECURITY_PAIRWISE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_PMF")]
-		public const string SECURITY_PMF;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_PROTO")]
-		public const string SECURITY_PROTO;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_PSK")]
-		public const string SECURITY_PSK;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_PSK_FLAGS")]
-		public const string SECURITY_PSK_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_SETTING_NAME")]
-		public const string SECURITY_SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_WEP_KEY0")]
-		public const string SECURITY_WEP_KEY0;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_WEP_KEY1")]
-		public const string SECURITY_WEP_KEY1;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_WEP_KEY2")]
-		public const string SECURITY_WEP_KEY2;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_WEP_KEY3")]
-		public const string SECURITY_WEP_KEY3;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_WEP_KEY_FLAGS")]
-		public const string SECURITY_WEP_KEY_FLAGS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_WEP_KEY_TYPE")]
-		public const string SECURITY_WEP_KEY_TYPE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_WEP_TX_KEYIDX")]
-		public const string SECURITY_WEP_TX_KEYIDX;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SECURITY_WPS_METHOD")]
-		public const string SECURITY_WPS_METHOD;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SEEN_BSSIDS")]
+		[CCode (cname = "NM_SETTING_WIRELESS_SEEN_BSSIDS")]
 		public const string SEEN_BSSIDS;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SETTING_NAME")]
+		[CCode (cname = "NM_SETTING_WIRELESS_SETTING_NAME")]
 		public const string SETTING_NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_SSID")]
+		[CCode (cname = "NM_SETTING_WIRELESS_SSID")]
 		public const string SSID;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_TX_POWER")]
+		[CCode (cname = "NM_SETTING_WIRELESS_TX_POWER")]
 		public const string TX_POWER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WIRELESS_WAKE_ON_WLAN")]
+		[CCode (cname = "NM_SETTING_WIRELESS_WAKE_ON_WLAN")]
 		public const string WAKE_ON_WLAN;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingWireless ();
@@ -5134,9 +5684,11 @@ namespace NM {
 		public uint32 get_num_seen_bssids ();
 		[Version (since = "1.2")]
 		public uint32 get_powersave ();
+		[Version (deprecated = true, deprecated_since = "1.44")]
 		public uint32 get_rate ();
 		public unowned string get_seen_bssid (uint32 i);
 		public unowned GLib.Bytes get_ssid ();
+		[Version (deprecated = true, deprecated_since = "1.44")]
 		public uint32 get_tx_power ();
 		[Version (since = "1.12")]
 		public NM.SettingWirelessWakeOnWLan get_wake_on_wlan ();
@@ -5173,6 +5725,7 @@ namespace NM {
 		[Version (since = "1.2")]
 		public uint powersave { get; set; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "1.44")]
 		public uint rate { get; set; }
 		[CCode (array_length = false, array_null_terminated = true)]
 		[NoAccessorMethod]
@@ -5180,13 +5733,56 @@ namespace NM {
 		[NoAccessorMethod]
 		public GLib.Bytes ssid { owned get; set; }
 		[NoAccessorMethod]
+		[Version (deprecated = true, deprecated_since = "1.44")]
 		public uint tx_power { get; set; }
 		[NoAccessorMethod]
 		[Version (since = "1.12")]
 		public uint wake_on_wlan { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_wireless_security_get_type ()")]
-	public class SettingWirelessSecurity : NM.Setting {
+	public sealed class SettingWirelessSecurity : NM.Setting {
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_AUTH_ALG")]
+		public const string AUTH_ALG;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_FILS")]
+		public const string FILS;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_GROUP")]
+		public const string GROUP;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_KEY_MGMT")]
+		public const string KEY_MGMT;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_LEAP_PASSWORD")]
+		public const string LEAP_PASSWORD;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_LEAP_PASSWORD_FLAGS")]
+		public const string LEAP_PASSWORD_FLAGS;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_LEAP_USERNAME")]
+		public const string LEAP_USERNAME;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_PAIRWISE")]
+		public const string PAIRWISE;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_PMF")]
+		public const string PMF;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_PROTO")]
+		public const string PROTO;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_PSK")]
+		public const string PSK;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_PSK_FLAGS")]
+		public const string PSK_FLAGS;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_SETTING_NAME")]
+		public const string SETTING_NAME;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_WEP_KEY0")]
+		public const string WEP_KEY0;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_WEP_KEY1")]
+		public const string WEP_KEY1;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_WEP_KEY2")]
+		public const string WEP_KEY2;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_WEP_KEY3")]
+		public const string WEP_KEY3;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_WEP_KEY_FLAGS")]
+		public const string WEP_KEY_FLAGS;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_WEP_KEY_TYPE")]
+		public const string WEP_KEY_TYPE;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_WEP_TX_KEYIDX")]
+		public const string WEP_TX_KEYIDX;
+		[CCode (cname = "NM_SETTING_WIRELESS_SECURITY_WPS_METHOD")]
+		public const string WPS_METHOD;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		public SettingWirelessSecurity ();
 		public bool add_group (string group);
@@ -5274,7 +5870,23 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_setting_wpan_get_type ()")]
 	[Version (since = "1.14")]
-	public class SettingWpan : NM.Setting {
+	public sealed class SettingWpan : NM.Setting {
+		[CCode (cname = "NM_SETTING_WPAN_CHANNEL")]
+		public const string CHANNEL;
+		[CCode (cname = "NM_SETTING_WPAN_CHANNEL_DEFAULT")]
+		public const int CHANNEL_DEFAULT;
+		[CCode (cname = "NM_SETTING_WPAN_MAC_ADDRESS")]
+		public const string MAC_ADDRESS;
+		[CCode (cname = "NM_SETTING_WPAN_PAGE")]
+		public const string PAGE;
+		[CCode (cname = "NM_SETTING_WPAN_PAGE_DEFAULT")]
+		public const int PAGE_DEFAULT;
+		[CCode (cname = "NM_SETTING_WPAN_PAN_ID")]
+		public const string PAN_ID;
+		[CCode (cname = "NM_SETTING_WPAN_SETTING_NAME")]
+		public const string SETTING_NAME;
+		[CCode (cname = "NM_SETTING_WPAN_SHORT_ADDRESS")]
+		public const string SHORT_ADDRESS;
 		[CCode (has_construct_function = false, type = "NMSetting*")]
 		[Version (since = "1.42")]
 		public SettingWpan ();
@@ -5302,7 +5914,7 @@ namespace NM {
 		public uint short_address { get; set; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_simple_connection_get_type ()")]
-	public class SimpleConnection : GLib.Object, NM.Connection {
+	public sealed class SimpleConnection : GLib.Object, NM.Connection {
 		[CCode (has_construct_function = false)]
 		protected SimpleConnection ();
 		public static NM.Connection @new ();
@@ -5434,6 +6046,12 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager.h", ref_function = "nm_team_link_watcher_ref", type_id = "nm_team_link_watcher_get_type ()", unref_function = "nm_team_link_watcher_unref")]
 	[Compact]
 	public class TeamLinkWatcher {
+		[CCode (cname = "NM_TEAM_LINK_WATCHER_ARP_PING")]
+		public const string ARP_PING;
+		[CCode (cname = "NM_TEAM_LINK_WATCHER_ETHTOOL")]
+		public const string ETHTOOL;
+		[CCode (cname = "NM_TEAM_LINK_WATCHER_NSNA_PING")]
+		public const string NSNA_PING;
 		[CCode (has_construct_function = false)]
 		[Version (since = "1.12")]
 		public TeamLinkWatcher.arp_ping (int init_wait, int interval, int missed_max, string target_host, string source_host, NM.TeamLinkWatcherArpPingFlags flags) throws GLib.Error;
@@ -5480,10 +6098,10 @@ namespace NM {
 	public class VariantAttributeSpec {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_vpn_connection_get_type ()")]
-	public class VpnConnection : NM.ActiveConnection {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VPN_CONNECTION_BANNER")]
+	public sealed class VpnConnection : NM.ActiveConnection {
+		[CCode (cname = "NM_VPN_CONNECTION_BANNER")]
 		public const string BANNER;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VPN_CONNECTION_VPN_STATE")]
+		[CCode (cname = "NM_VPN_CONNECTION_VPN_STATE")]
 		public const string VPN_STATE;
 		[CCode (has_construct_function = false)]
 		protected VpnConnection ();
@@ -5498,7 +6116,7 @@ namespace NM {
 	public class VpnEditorPluginVT {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_vpn_plugin_info_get_type ()")]
-	public class VpnPluginInfo : GLib.Object, GLib.Initable {
+	public sealed class VpnPluginInfo : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected VpnPluginInfo ();
 		[CCode (has_construct_function = false)]
@@ -5650,7 +6268,27 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", lower_case_csuffix = "wifi_p2p_peer", type_id = "nm_wifi_p2p_peer_get_type ()")]
 	[Version (since = "1.16")]
-	public class WifiP2PPeer : NM.Object {
+	public sealed class WifiP2PPeer : NM.Object {
+		[CCode (cname = "NM_WIFI_P2P_PEER_FLAGS")]
+		public const string FLAGS;
+		[CCode (cname = "NM_WIFI_P2P_PEER_HW_ADDRESS")]
+		public const string HW_ADDRESS;
+		[CCode (cname = "NM_WIFI_P2P_PEER_LAST_SEEN")]
+		public const string LAST_SEEN;
+		[CCode (cname = "NM_WIFI_P2P_PEER_MANUFACTURER")]
+		public const string MANUFACTURER;
+		[CCode (cname = "NM_WIFI_P2P_PEER_MODEL")]
+		public const string MODEL;
+		[CCode (cname = "NM_WIFI_P2P_PEER_MODEL_NUMBER")]
+		public const string MODEL_NUMBER;
+		[CCode (cname = "NM_WIFI_P2P_PEER_NAME")]
+		public const string NAME;
+		[CCode (cname = "NM_WIFI_P2P_PEER_SERIAL")]
+		public const string SERIAL;
+		[CCode (cname = "NM_WIFI_P2P_PEER_STRENGTH")]
+		public const string STRENGTH;
+		[CCode (cname = "NM_WIFI_P2P_PEER_WFD_IES")]
+		public const string WFD_IES;
 		[CCode (has_construct_function = false)]
 		protected WifiP2PPeer ();
 		public bool connection_valid (NM.Connection connection);
@@ -5678,12 +6316,12 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_wimax_nsp_get_type ()")]
 	[Version (deprecated = true, deprecated_since = "1.22")]
-	public class WimaxNsp : NM.Object {
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIMAX_NSP_NAME")]
+	public sealed class WimaxNsp : NM.Object {
+		[CCode (cname = "NM_WIMAX_NSP_NAME")]
 		public const string NAME;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIMAX_NSP_NETWORK_TYPE")]
+		[CCode (cname = "NM_WIMAX_NSP_NETWORK_TYPE")]
 		public const string NETWORK_TYPE;
-		[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIMAX_NSP_SIGNAL_QUALITY")]
+		[CCode (cname = "NM_WIMAX_NSP_SIGNAL_QUALITY")]
 		public const string SIGNAL_QUALITY;
 		[CCode (has_construct_function = false)]
 		protected WimaxNsp ();
@@ -5705,7 +6343,7 @@ namespace NM {
 		public bool append_allowed_ip (string allowed_ip, bool accept_invalid);
 		public void clear_allowed_ips ();
 		public int cmp (NM.WireGuardPeer? b, NM.SettingCompareFlags compare_flags);
-		public unowned string get_allowed_ip (uint idx, bool? out_is_valid);
+		public unowned string? get_allowed_ip (uint idx, bool? out_is_valid);
 		public uint get_allowed_ips_len ();
 		public unowned string get_endpoint ();
 		public uint16 get_persistent_keepalive ();
@@ -5727,14 +6365,22 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_cname = "NMConnectionInterface", type_id = "nm_connection_get_type ()")]
 	public interface Connection : GLib.Object {
+		[CCode (cname = "NM_CONNECTION_CHANGED")]
+		public const string CHANGED;
+		[CCode (cname = "NM_CONNECTION_NORMALIZE_PARAM_IP4_CONFIG_METHOD")]
+		public const string NORMALIZE_PARAM_IP4_CONFIG_METHOD;
+		[CCode (cname = "NM_CONNECTION_NORMALIZE_PARAM_IP6_CONFIG_METHOD")]
+		public const string NORMALIZE_PARAM_IP6_CONFIG_METHOD;
+		[CCode (cname = "NM_CONNECTION_SECRETS_CLEARED")]
+		public const string SECRETS_CLEARED;
+		[CCode (cname = "NM_CONNECTION_SECRETS_UPDATED")]
+		public const string SECRETS_UPDATED;
 		public void add_setting (owned NM.Setting setting);
 		public void clear_secrets ();
 		public void clear_secrets_with_flags (NM.SettingClearSecretsWithFlagsFn? func);
 		public void clear_settings ();
 		public bool compare (NM.Connection b, NM.SettingCompareFlags flags);
-		public bool diff (NM.Connection b, NM.SettingCompareFlags flags, GLib.HashTable<string,GLib.HashTable<void*,void*>> out_settings);
 		public void dump ();
-		[CCode (cheader_filename = "NetworkManager.h")]
 		[Version (replacement = "ConnectionError.quark")]
 		public static GLib.Quark error_quark ();
 		public void for_each_setting_value (NM.SettingValueIterFn func);
@@ -5796,12 +6442,12 @@ namespace NM {
 		public unowned NM.SettingWirelessSecurity get_setting_wireless_security ();
 		[CCode (array_length_pos = 0.1, array_length_type = "guint")]
 		[Version (since = "1.10")]
-		public (unowned NM.Setting)[] get_settings ();
+		public (unowned NM.Setting)[]? get_settings ();
 		public unowned string get_uuid ();
 		public string get_virtual_device_description ();
 		public bool is_type (string type);
 		public bool is_virtual ();
-		public unowned string need_secrets (out GLib.GenericArray<weak string> hints);
+		public unowned string? need_secrets (out GLib.GenericArray<weak string>? hints);
 		public bool normalize (GLib.HashTable<string,void*>? parameters, out bool modified) throws GLib.Error;
 		public void remove_setting (GLib.Type setting_type);
 		public bool replace_settings (GLib.Variant new_settings) throws GLib.Error;
@@ -5834,6 +6480,9 @@ namespace NM {
 		public abstract string get_suggested_filename (NM.Connection connection);
 		[Version (since = "1.4")]
 		public size_t get_vt (out unowned NM.VpnEditorPluginVT vt, size_t vt_size);
+		[CCode (vfunc_name = "get_vt")]
+		[NoWrapper]
+		public abstract unowned NM.VpnEditorPluginVT get_vt_impl (out size_t out_vt_size);
 		public NM.Connection import (string path) throws GLib.Error;
 		[Version (since = "1.4")]
 		public static NM.VpnEditorPlugin load (string plugin_name, string check_service) throws GLib.Error;
@@ -6647,7 +7296,9 @@ namespace NM {
 		REORDER_HEADERS,
 		GVRP,
 		LOOSE_BINDING,
-		MVRP
+		MVRP;
+		[CCode (cname = "NM_VLAN_FLAGS_ALL")]
+		public const NM.VlanFlags ALL;
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_VLAN_", type_id = "nm_vlan_priority_map_get_type ()")]
 	public enum VlanPriorityMap {
@@ -6906,28 +7557,6 @@ namespace NM {
 	public delegate bool UtilsPredicateStr (string str);
 	[CCode (cheader_filename = "NetworkManager.h", instance_pos = 2.9)]
 	public delegate void VpnIterFunc (string key, string value);
-	[CCode (cheader_filename = "NetworkManager.h", cname = "_NMConnectionForEachSecretFunc", instance_pos = 1.9)]
-	public delegate bool _ConnectionForEachSecretFunc (NM.SettingSecretFlags flags);
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_BRIDGE_VLAN_VID_MAX")]
-	public const int BRIDGE_VLAN_VID_MAX;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_BRIDGE_VLAN_VID_MIN")]
-	public const int BRIDGE_VLAN_VID_MIN;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CHECKPOINT_CREATED")]
-	public const string CHECKPOINT_CREATED;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CHECKPOINT_DEVICES")]
-	public const string CHECKPOINT_DEVICES;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CHECKPOINT_ROLLBACK_TIMEOUT")]
-	public const string CHECKPOINT_ROLLBACK_TIMEOUT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CONNECTION_CHANGED")]
-	public const string CONNECTION_CHANGED;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CONNECTION_NORMALIZE_PARAM_IP4_CONFIG_METHOD")]
-	public const string CONNECTION_NORMALIZE_PARAM_IP4_CONFIG_METHOD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CONNECTION_NORMALIZE_PARAM_IP6_CONFIG_METHOD")]
-	public const string CONNECTION_NORMALIZE_PARAM_IP6_CONFIG_METHOD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CONNECTION_SECRETS_CLEARED")]
-	public const string CONNECTION_SECRETS_CLEARED;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_CONNECTION_SECRETS_UPDATED")]
-	public const string CONNECTION_SECRETS_UPDATED;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DBUS_INTERFACE")]
 	public const string DBUS_INTERFACE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DBUS_INTERFACE_DNS_MANAGER")]
@@ -6998,272 +7627,6 @@ namespace NM {
 	public const string DBUS_VPN_STOPPING_IN_PROGRESS;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DBUS_VPN_WRONG_STATE")]
 	public const string DBUS_VPN_WRONG_STATE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_DHCP_CONFIG_FAMILY")]
-	public const string DHCP_CONFIG_FAMILY;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_ADAPTIVE_RX")]
-	public const string ETHTOOL_OPTNAME_COALESCE_ADAPTIVE_RX;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_ADAPTIVE_TX")]
-	public const string ETHTOOL_OPTNAME_COALESCE_ADAPTIVE_TX;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_PKT_RATE_HIGH")]
-	public const string ETHTOOL_OPTNAME_COALESCE_PKT_RATE_HIGH;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_PKT_RATE_LOW")]
-	public const string ETHTOOL_OPTNAME_COALESCE_PKT_RATE_LOW;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_FRAMES")]
-	public const string ETHTOOL_OPTNAME_COALESCE_RX_FRAMES;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_HIGH")]
-	public const string ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_HIGH;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_IRQ")]
-	public const string ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_IRQ;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_LOW")]
-	public const string ETHTOOL_OPTNAME_COALESCE_RX_FRAMES_LOW;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_USECS")]
-	public const string ETHTOOL_OPTNAME_COALESCE_RX_USECS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_USECS_HIGH")]
-	public const string ETHTOOL_OPTNAME_COALESCE_RX_USECS_HIGH;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_USECS_IRQ")]
-	public const string ETHTOOL_OPTNAME_COALESCE_RX_USECS_IRQ;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_RX_USECS_LOW")]
-	public const string ETHTOOL_OPTNAME_COALESCE_RX_USECS_LOW;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_SAMPLE_INTERVAL")]
-	public const string ETHTOOL_OPTNAME_COALESCE_SAMPLE_INTERVAL;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_STATS_BLOCK_USECS")]
-	public const string ETHTOOL_OPTNAME_COALESCE_STATS_BLOCK_USECS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_FRAMES")]
-	public const string ETHTOOL_OPTNAME_COALESCE_TX_FRAMES;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_HIGH")]
-	public const string ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_HIGH;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_IRQ")]
-	public const string ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_IRQ;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_LOW")]
-	public const string ETHTOOL_OPTNAME_COALESCE_TX_FRAMES_LOW;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_USECS")]
-	public const string ETHTOOL_OPTNAME_COALESCE_TX_USECS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_USECS_HIGH")]
-	public const string ETHTOOL_OPTNAME_COALESCE_TX_USECS_HIGH;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_USECS_IRQ")]
-	public const string ETHTOOL_OPTNAME_COALESCE_TX_USECS_IRQ;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_COALESCE_TX_USECS_LOW")]
-	public const string ETHTOOL_OPTNAME_COALESCE_TX_USECS_LOW;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_ESP_HW_OFFLOAD")]
-	public const string ETHTOOL_OPTNAME_FEATURE_ESP_HW_OFFLOAD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_ESP_TX_CSUM_HW_OFFLOAD")]
-	public const string ETHTOOL_OPTNAME_FEATURE_ESP_TX_CSUM_HW_OFFLOAD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_FCOE_MTU")]
-	public const string ETHTOOL_OPTNAME_FEATURE_FCOE_MTU;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_GRO")]
-	public const string ETHTOOL_OPTNAME_FEATURE_GRO;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_GSO")]
-	public const string ETHTOOL_OPTNAME_FEATURE_GSO;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_HIGHDMA")]
-	public const string ETHTOOL_OPTNAME_FEATURE_HIGHDMA;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_HW_TC_OFFLOAD")]
-	public const string ETHTOOL_OPTNAME_FEATURE_HW_TC_OFFLOAD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_L2_FWD_OFFLOAD")]
-	public const string ETHTOOL_OPTNAME_FEATURE_L2_FWD_OFFLOAD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_LOOPBACK")]
-	public const string ETHTOOL_OPTNAME_FEATURE_LOOPBACK;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_LRO")]
-	public const string ETHTOOL_OPTNAME_FEATURE_LRO;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_MACSEC_HW_OFFLOAD")]
-	public const string ETHTOOL_OPTNAME_FEATURE_MACSEC_HW_OFFLOAD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_NTUPLE")]
-	public const string ETHTOOL_OPTNAME_FEATURE_NTUPLE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX")]
-	public const string ETHTOOL_OPTNAME_FEATURE_RX;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RXHASH")]
-	public const string ETHTOOL_OPTNAME_FEATURE_RXHASH;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RXVLAN")]
-	public const string ETHTOOL_OPTNAME_FEATURE_RXVLAN;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_ALL")]
-	public const string ETHTOOL_OPTNAME_FEATURE_RX_ALL;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_FCS")]
-	public const string ETHTOOL_OPTNAME_FEATURE_RX_FCS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_GRO_HW")]
-	public const string ETHTOOL_OPTNAME_FEATURE_RX_GRO_HW;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_GRO_LIST")]
-	public const string ETHTOOL_OPTNAME_FEATURE_RX_GRO_LIST;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_UDP_GRO_FORWARDING")]
-	public const string ETHTOOL_OPTNAME_FEATURE_RX_UDP_GRO_FORWARDING;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_UDP_TUNNEL_PORT_OFFLOAD")]
-	public const string ETHTOOL_OPTNAME_FEATURE_RX_UDP_TUNNEL_PORT_OFFLOAD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_VLAN_FILTER")]
-	public const string ETHTOOL_OPTNAME_FEATURE_RX_VLAN_FILTER;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_VLAN_STAG_FILTER")]
-	public const string ETHTOOL_OPTNAME_FEATURE_RX_VLAN_STAG_FILTER;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_RX_VLAN_STAG_HW_PARSE")]
-	public const string ETHTOOL_OPTNAME_FEATURE_RX_VLAN_STAG_HW_PARSE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_SG")]
-	public const string ETHTOOL_OPTNAME_FEATURE_SG;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TLS_HW_RECORD")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TLS_HW_RECORD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TLS_HW_RX_OFFLOAD")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TLS_HW_RX_OFFLOAD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TLS_HW_TX_OFFLOAD")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TLS_HW_TX_OFFLOAD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TSO")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TSO;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TXVLAN")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TXVLAN;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_FCOE_CRC")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_FCOE_CRC;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IPV4")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IPV4;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IPV6")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IPV6;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IP_GENERIC")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_IP_GENERIC;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_SCTP")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_CHECKSUM_SCTP;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_ESP_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_ESP_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_FCOE_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_FCOE_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GRE_CSUM_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_GRE_CSUM_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GRE_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_GRE_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GSO_LIST")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_GSO_LIST;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GSO_PARTIAL")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_GSO_PARTIAL;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_GSO_ROBUST")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_GSO_ROBUST;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_IPXIP4_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_IPXIP4_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_IPXIP6_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_IPXIP6_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_NOCACHE_COPY")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_NOCACHE_COPY;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_SCATTER_GATHER")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_SCATTER_GATHER;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_SCATTER_GATHER_FRAGLIST")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_SCATTER_GATHER_FRAGLIST;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_SCTP_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_SCTP_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP6_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_TCP6_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP_ECN_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_TCP_ECN_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP_MANGLEID_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_TCP_MANGLEID_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TCP_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_TCP_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_TUNNEL_REMCSUM_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_TUNNEL_REMCSUM_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_UDP_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_UDP_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_CSUM_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_CSUM_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_SEGMENTATION")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_UDP_TNL_SEGMENTATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_FEATURE_TX_VLAN_STAG_HW_INSERT")]
-	public const string ETHTOOL_OPTNAME_FEATURE_TX_VLAN_STAG_HW_INSERT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_PAUSE_AUTONEG")]
-	public const string ETHTOOL_OPTNAME_PAUSE_AUTONEG;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_PAUSE_RX")]
-	public const string ETHTOOL_OPTNAME_PAUSE_RX;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_PAUSE_TX")]
-	public const string ETHTOOL_OPTNAME_PAUSE_TX;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_RX")]
-	public const string ETHTOOL_OPTNAME_RING_RX;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_RX_JUMBO")]
-	public const string ETHTOOL_OPTNAME_RING_RX_JUMBO;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_RX_MINI")]
-	public const string ETHTOOL_OPTNAME_RING_RX_MINI;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_ETHTOOL_OPTNAME_RING_TX")]
-	public const string ETHTOOL_OPTNAME_RING_TX;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ADDRESS_ATTRIBUTE_LABEL")]
-	public const string IP_ADDRESS_ATTRIBUTE_LABEL;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_ADVMSS")]
-	public const string IP_ROUTE_ATTRIBUTE_ADVMSS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_CWND")]
-	public const string IP_ROUTE_ATTRIBUTE_CWND;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_FROM")]
-	public const string IP_ROUTE_ATTRIBUTE_FROM;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_INITCWND")]
-	public const string IP_ROUTE_ATTRIBUTE_INITCWND;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_INITRWND")]
-	public const string IP_ROUTE_ATTRIBUTE_INITRWND;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_ADVMSS")]
-	public const string IP_ROUTE_ATTRIBUTE_LOCK_ADVMSS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_CWND")]
-	public const string IP_ROUTE_ATTRIBUTE_LOCK_CWND;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_INITCWND")]
-	public const string IP_ROUTE_ATTRIBUTE_LOCK_INITCWND;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_INITRWND")]
-	public const string IP_ROUTE_ATTRIBUTE_LOCK_INITRWND;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_MTU")]
-	public const string IP_ROUTE_ATTRIBUTE_LOCK_MTU;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_LOCK_WINDOW")]
-	public const string IP_ROUTE_ATTRIBUTE_LOCK_WINDOW;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_MTU")]
-	public const string IP_ROUTE_ATTRIBUTE_MTU;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_ONLINK")]
-	public const string IP_ROUTE_ATTRIBUTE_ONLINK;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_QUICKACK")]
-	public const string IP_ROUTE_ATTRIBUTE_QUICKACK;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_RTO_MIN")]
-	public const string IP_ROUTE_ATTRIBUTE_RTO_MIN;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_SCOPE")]
-	public const string IP_ROUTE_ATTRIBUTE_SCOPE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_SRC")]
-	public const string IP_ROUTE_ATTRIBUTE_SRC;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TABLE")]
-	public const string IP_ROUTE_ATTRIBUTE_TABLE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TOS")]
-	public const string IP_ROUTE_ATTRIBUTE_TOS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_TYPE")]
-	public const string IP_ROUTE_ATTRIBUTE_TYPE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_WEIGHT")]
-	public const string IP_ROUTE_ATTRIBUTE_WEIGHT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_IP_ROUTE_ATTRIBUTE_WINDOW")]
-	public const string IP_ROUTE_ATTRIBUTE_WINDOW;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_CHASSIS_ID")]
-	public const string LLDP_ATTR_CHASSIS_ID;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_CHASSIS_ID_TYPE")]
-	public const string LLDP_ATTR_CHASSIS_ID_TYPE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_DESTINATION")]
-	public const string LLDP_ATTR_DESTINATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_PPVID")]
-	public const string LLDP_ATTR_IEEE_802_1_PPVID;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_PPVIDS")]
-	public const string LLDP_ATTR_IEEE_802_1_PPVIDS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_PPVID_FLAGS")]
-	public const string LLDP_ATTR_IEEE_802_1_PPVID_FLAGS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_PVID")]
-	public const string LLDP_ATTR_IEEE_802_1_PVID;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_VID")]
-	public const string LLDP_ATTR_IEEE_802_1_VID;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_VLANS")]
-	public const string LLDP_ATTR_IEEE_802_1_VLANS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_1_VLAN_NAME")]
-	public const string LLDP_ATTR_IEEE_802_1_VLAN_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_3_MAC_PHY_CONF")]
-	public const string LLDP_ATTR_IEEE_802_3_MAC_PHY_CONF;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_3_MAX_FRAME_SIZE")]
-	public const string LLDP_ATTR_IEEE_802_3_MAX_FRAME_SIZE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_IEEE_802_3_POWER_VIA_MDI")]
-	public const string LLDP_ATTR_IEEE_802_3_POWER_VIA_MDI;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_MANAGEMENT_ADDRESSES")]
-	public const string LLDP_ATTR_MANAGEMENT_ADDRESSES;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_MUD_URL")]
-	public const string LLDP_ATTR_MUD_URL;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_PORT_DESCRIPTION")]
-	public const string LLDP_ATTR_PORT_DESCRIPTION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_PORT_ID")]
-	public const string LLDP_ATTR_PORT_ID;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_PORT_ID_TYPE")]
-	public const string LLDP_ATTR_PORT_ID_TYPE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_RAW")]
-	public const string LLDP_ATTR_RAW;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_SYSTEM_CAPABILITIES")]
-	public const string LLDP_ATTR_SYSTEM_CAPABILITIES;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_SYSTEM_DESCRIPTION")]
-	public const string LLDP_ATTR_SYSTEM_DESCRIPTION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_ATTR_SYSTEM_NAME")]
-	public const string LLDP_ATTR_SYSTEM_NAME;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_DEST_NEAREST_BRIDGE")]
 	public const string LLDP_DEST_NEAREST_BRIDGE;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_LLDP_DEST_NEAREST_CUSTOMER_BRIDGE")]
@@ -7276,260 +7639,6 @@ namespace NM {
 	public const int MICRO_VERSION;
 	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_MINOR_VERSION")]
 	public const int MINOR_VERSION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_AUTO_REGISTER")]
-	public const string SECRET_AGENT_OLD_AUTO_REGISTER;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_CAPABILITIES")]
-	public const string SECRET_AGENT_OLD_CAPABILITIES;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_DBUS_CONNECTION")]
-	public const string SECRET_AGENT_OLD_DBUS_CONNECTION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_IDENTIFIER")]
-	public const string SECRET_AGENT_OLD_IDENTIFIER;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SECRET_AGENT_OLD_REGISTERED")]
-	public const string SECRET_AGENT_OLD_REGISTERED;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_6LOWPAN_PARENT")]
-	public const string SETTING_6LOWPAN_PARENT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_6LOWPAN_SETTING_NAME")]
-	public const string SETTING_6LOWPAN_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_ATTEMPTS")]
-	public const string SETTING_DNS_OPTION_ATTEMPTS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_DEBUG")]
-	public const string SETTING_DNS_OPTION_DEBUG;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_EDNS0")]
-	public const string SETTING_DNS_OPTION_EDNS0;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_INET6")]
-	public const string SETTING_DNS_OPTION_INET6;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_IP6_BYTESTRING")]
-	public const string SETTING_DNS_OPTION_IP6_BYTESTRING;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_IP6_DOTINT")]
-	public const string SETTING_DNS_OPTION_IP6_DOTINT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NDOTS")]
-	public const string SETTING_DNS_OPTION_NDOTS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NO_CHECK_NAMES")]
-	public const string SETTING_DNS_OPTION_NO_CHECK_NAMES;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NO_IP6_DOTINT")]
-	public const string SETTING_DNS_OPTION_NO_IP6_DOTINT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NO_RELOAD")]
-	public const string SETTING_DNS_OPTION_NO_RELOAD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_NO_TLD_QUERY")]
-	public const string SETTING_DNS_OPTION_NO_TLD_QUERY;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_ROTATE")]
-	public const string SETTING_DNS_OPTION_ROTATE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_SINGLE_REQUEST")]
-	public const string SETTING_DNS_OPTION_SINGLE_REQUEST;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_SINGLE_REQUEST_REOPEN")]
-	public const string SETTING_DNS_OPTION_SINGLE_REQUEST_REOPEN;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_TIMEOUT")]
-	public const string SETTING_DNS_OPTION_TIMEOUT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_TRUST_AD")]
-	public const string SETTING_DNS_OPTION_TRUST_AD;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DNS_OPTION_USE_VC")]
-	public const string SETTING_DNS_OPTION_USE_VC;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_DUMMY_SETTING_NAME")]
-	public const string SETTING_DUMMY_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_ETHTOOL_SETTING_NAME")]
-	public const string SETTING_ETHTOOL_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_HOSTNAME_FROM_DHCP")]
-	public const string SETTING_HOSTNAME_FROM_DHCP;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_HOSTNAME_FROM_DNS_LOOKUP")]
-	public const string SETTING_HOSTNAME_FROM_DNS_LOOKUP;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_HOSTNAME_ONLY_FROM_DEFAULT")]
-	public const string SETTING_HOSTNAME_ONLY_FROM_DEFAULT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_HOSTNAME_PRIORITY")]
-	public const string SETTING_HOSTNAME_PRIORITY;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_HOSTNAME_SETTING_NAME")]
-	public const string SETTING_HOSTNAME_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_LOOPBACK_MTU")]
-	public const string SETTING_LOOPBACK_MTU;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_LOOPBACK_SETTING_NAME")]
-	public const string SETTING_LOOPBACK_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_ENCRYPT")]
-	public const string SETTING_MACSEC_ENCRYPT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CAK")]
-	public const string SETTING_MACSEC_MKA_CAK;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CAK_FLAGS")]
-	public const string SETTING_MACSEC_MKA_CAK_FLAGS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CAK_LENGTH")]
-	public const int SETTING_MACSEC_MKA_CAK_LENGTH;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CKN")]
-	public const string SETTING_MACSEC_MKA_CKN;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MKA_CKN_LENGTH")]
-	public const int SETTING_MACSEC_MKA_CKN_LENGTH;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_MODE")]
-	public const string SETTING_MACSEC_MODE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_PARENT")]
-	public const string SETTING_MACSEC_PARENT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_PORT")]
-	public const string SETTING_MACSEC_PORT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_SEND_SCI")]
-	public const string SETTING_MACSEC_SEND_SCI;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_SETTING_NAME")]
-	public const string SETTING_MACSEC_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MACSEC_VALIDATION")]
-	public const string SETTING_MACSEC_VALIDATION;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_DRIVER")]
-	public const string SETTING_MATCH_DRIVER;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_INTERFACE_NAME")]
-	public const string SETTING_MATCH_INTERFACE_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_KERNEL_COMMAND_LINE")]
-	public const string SETTING_MATCH_KERNEL_COMMAND_LINE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_PATH")]
-	public const string SETTING_MATCH_PATH;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_MATCH_SETTING_NAME")]
-	public const string SETTING_MATCH_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_NAME")]
-	public const string SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_DATAPATH_TYPE")]
-	public const string SETTING_OVS_BRIDGE_DATAPATH_TYPE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_FAIL_MODE")]
-	public const string SETTING_OVS_BRIDGE_FAIL_MODE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_MCAST_SNOOPING_ENABLE")]
-	public const string SETTING_OVS_BRIDGE_MCAST_SNOOPING_ENABLE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_RSTP_ENABLE")]
-	public const string SETTING_OVS_BRIDGE_RSTP_ENABLE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_SETTING_NAME")]
-	public const string SETTING_OVS_BRIDGE_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_BRIDGE_STP_ENABLE")]
-	public const string SETTING_OVS_BRIDGE_STP_ENABLE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_DEVARGS")]
-	public const string SETTING_OVS_DPDK_DEVARGS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_N_RXQ")]
-	public const string SETTING_OVS_DPDK_N_RXQ;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_N_RXQ_DESC")]
-	public const string SETTING_OVS_DPDK_N_RXQ_DESC;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_N_TXQ_DESC")]
-	public const string SETTING_OVS_DPDK_N_TXQ_DESC;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_DPDK_SETTING_NAME")]
-	public const string SETTING_OVS_DPDK_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_EXTERNAL_IDS_DATA")]
-	public const string SETTING_OVS_EXTERNAL_IDS_DATA;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_EXTERNAL_IDS_SETTING_NAME")]
-	public const string SETTING_OVS_EXTERNAL_IDS_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_INTERFACE_OFPORT_REQUEST")]
-	public const string SETTING_OVS_INTERFACE_OFPORT_REQUEST;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_INTERFACE_SETTING_NAME")]
-	public const string SETTING_OVS_INTERFACE_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_INTERFACE_TYPE")]
-	public const string SETTING_OVS_INTERFACE_TYPE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_OTHER_CONFIG_DATA")]
-	public const string SETTING_OVS_OTHER_CONFIG_DATA;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_OTHER_CONFIG_SETTING_NAME")]
-	public const string SETTING_OVS_OTHER_CONFIG_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PATCH_PEER")]
-	public const string SETTING_OVS_PATCH_PEER;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PATCH_SETTING_NAME")]
-	public const string SETTING_OVS_PATCH_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_BOND_DOWNDELAY")]
-	public const string SETTING_OVS_PORT_BOND_DOWNDELAY;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_BOND_MODE")]
-	public const string SETTING_OVS_PORT_BOND_MODE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_BOND_UPDELAY")]
-	public const string SETTING_OVS_PORT_BOND_UPDELAY;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_LACP")]
-	public const string SETTING_OVS_PORT_LACP;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_SETTING_NAME")]
-	public const string SETTING_OVS_PORT_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_TAG")]
-	public const string SETTING_OVS_PORT_TAG;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_TRUNKS")]
-	public const string SETTING_OVS_PORT_TRUNKS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_OVS_PORT_VLAN_MODE")]
-	public const string SETTING_OVS_PORT_VLAN_MODE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SRIOV_AUTOPROBE_DRIVERS")]
-	public const string SETTING_SRIOV_AUTOPROBE_DRIVERS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SRIOV_SETTING_NAME")]
-	public const string SETTING_SRIOV_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SRIOV_TOTAL_VFS")]
-	public const string SETTING_SRIOV_TOTAL_VFS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_SRIOV_VFS")]
-	public const string SETTING_SRIOV_VFS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TC_CONFIG_QDISCS")]
-	public const string SETTING_TC_CONFIG_QDISCS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TC_CONFIG_SETTING_NAME")]
-	public const string SETTING_TC_CONFIG_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_TC_CONFIG_TFILTERS")]
-	public const string SETTING_TC_CONFIG_TFILTERS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_DATA")]
-	public const string SETTING_USER_DATA;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_USER_SETTING_NAME")]
-	public const string SETTING_USER_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VETH_PEER")]
-	public const string SETTING_VETH_PEER;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VETH_SETTING_NAME")]
-	public const string SETTING_VETH_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VRF_SETTING_NAME")]
-	public const string SETTING_VRF_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_VRF_TABLE")]
-	public const string SETTING_VRF_TABLE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_CHANNEL")]
-	public const string SETTING_WPAN_CHANNEL;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_CHANNEL_DEFAULT")]
-	public const int SETTING_WPAN_CHANNEL_DEFAULT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_MAC_ADDRESS")]
-	public const string SETTING_WPAN_MAC_ADDRESS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_PAGE")]
-	public const string SETTING_WPAN_PAGE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_PAGE_DEFAULT")]
-	public const int SETTING_WPAN_PAGE_DEFAULT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_PAN_ID")]
-	public const string SETTING_WPAN_PAN_ID;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_SETTING_NAME")]
-	public const string SETTING_WPAN_SETTING_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SETTING_WPAN_SHORT_ADDRESS")]
-	public const string SETTING_WPAN_SHORT_ADDRESS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_MAC")]
-	public const string SRIOV_VF_ATTRIBUTE_MAC;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_MAX_TX_RATE")]
-	public const string SRIOV_VF_ATTRIBUTE_MAX_TX_RATE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_MIN_TX_RATE")]
-	public const string SRIOV_VF_ATTRIBUTE_MIN_TX_RATE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_SPOOF_CHECK")]
-	public const string SRIOV_VF_ATTRIBUTE_SPOOF_CHECK;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_SRIOV_VF_ATTRIBUTE_TRUST")]
-	public const string SRIOV_VF_ATTRIBUTE_TRUST;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_TEAM_LINK_WATCHER_ARP_PING")]
-	public const string TEAM_LINK_WATCHER_ARP_PING;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_TEAM_LINK_WATCHER_ETHTOOL")]
-	public const string TEAM_LINK_WATCHER_ETHTOOL;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_TEAM_LINK_WATCHER_NSNA_PING")]
-	public const string TEAM_LINK_WATCHER_NSNA_PING;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_VLAN_FLAGS_ALL")]
-	public const int VLAN_FLAGS_ALL;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_FLAGS")]
-	public const string WIFI_P2P_PEER_FLAGS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_HW_ADDRESS")]
-	public const string WIFI_P2P_PEER_HW_ADDRESS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_LAST_SEEN")]
-	public const string WIFI_P2P_PEER_LAST_SEEN;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_MANUFACTURER")]
-	public const string WIFI_P2P_PEER_MANUFACTURER;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_MODEL")]
-	public const string WIFI_P2P_PEER_MODEL;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_MODEL_NUMBER")]
-	public const string WIFI_P2P_PEER_MODEL_NUMBER;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_NAME")]
-	public const string WIFI_P2P_PEER_NAME;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_SERIAL")]
-	public const string WIFI_P2P_PEER_SERIAL;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_STRENGTH")]
-	public const string WIFI_P2P_PEER_STRENGTH;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIFI_P2P_PEER_WFD_IES")]
-	public const string WIFI_P2P_PEER_WFD_IES;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_ALLOWED_IPS")]
-	public const string WIREGUARD_PEER_ATTR_ALLOWED_IPS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_ENDPOINT")]
-	public const string WIREGUARD_PEER_ATTR_ENDPOINT;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_PERSISTENT_KEEPALIVE")]
-	public const string WIREGUARD_PEER_ATTR_PERSISTENT_KEEPALIVE;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_PRESHARED_KEY")]
-	public const string WIREGUARD_PEER_ATTR_PRESHARED_KEY;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_PRESHARED_KEY_FLAGS")]
-	public const string WIREGUARD_PEER_ATTR_PRESHARED_KEY_FLAGS;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PEER_ATTR_PUBLIC_KEY")]
-	public const string WIREGUARD_PEER_ATTR_PUBLIC_KEY;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_PUBLIC_KEY_LEN")]
-	public const int WIREGUARD_PUBLIC_KEY_LEN;
-	[CCode (cheader_filename = "NetworkManager.h", cname = "NM_WIREGUARD_SYMMETRIC_KEY_LEN")]
-	public const int WIREGUARD_SYMMETRIC_KEY_LEN;
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (replacement = "AgentManagerError.quark")]
 	public static GLib.Quark agent_manager_error_quark ();
@@ -7548,18 +7657,6 @@ namespace NM {
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (replacement = "DeviceError.quark")]
 	public static GLib.Quark device_error_quark ();
-	[CCode (cheader_filename = "NetworkManager.h")]
-	[Version (since = "1.26")]
-	public static bool ethtool_optname_is_coalesce (string? optname);
-	[CCode (cheader_filename = "NetworkManager.h")]
-	[Version (since = "1.20")]
-	public static bool ethtool_optname_is_feature (string? optname);
-	[CCode (cheader_filename = "NetworkManager.h")]
-	[Version (since = "1.32")]
-	public static bool ethtool_optname_is_pause (string? optname);
-	[CCode (cheader_filename = "NetworkManager.h")]
-	[Version (since = "1.26")]
-	public static bool ethtool_optname_is_ring (string? optname);
 	[CCode (cheader_filename = "NetworkManager.h")]
 	[Version (replacement = "IPRoute.attribute_validate", since = "1.8")]
 	public static bool ip_route_attribute_validate (string name, GLib.Variant value, int family, out bool known) throws GLib.Error;

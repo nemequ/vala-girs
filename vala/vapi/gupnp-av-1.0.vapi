@@ -323,7 +323,7 @@ namespace GUPnP {
 		public string version { get; construct; }
 	}
 	[CCode (cheader_filename = "libgupnp-av/gupnp-av.h", type_id = "gupnp_feature_list_parser_get_type ()")]
-	public class FeatureListParser : GLib.Object {
+	public sealed class FeatureListParser : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public FeatureListParser ();
 		public GLib.List<GUPnP.Feature>? parse_text (string text) throws GLib.Error;

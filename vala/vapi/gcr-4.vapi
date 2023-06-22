@@ -30,7 +30,7 @@ namespace Gcr {
 		public GLib.Value value { owned get; }
 	}
 	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_request_get_type ()")]
-	public class CertificateRequest : GLib.Object {
+	public sealed class CertificateRequest : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected CertificateRequest ();
 		public static bool capable (Gck.Object private_key, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -130,7 +130,7 @@ namespace Gcr {
 		public SimpleCertificate ([CCode (array_length_cname = "n_data", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] data);
 	}
 	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_ssh_askpass_get_type ()")]
-	public class SshAskpass : GLib.Object {
+	public sealed class SshAskpass : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SshAskpass (GLib.TlsInteraction interaction);
 		public static void child_setup (void* askpass);

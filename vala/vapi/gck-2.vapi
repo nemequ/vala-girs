@@ -95,7 +95,7 @@ namespace Gck {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "gck/gck.h", type_id = "gck_enumerator_get_type ()")]
-	public class Enumerator : GLib.Object {
+	public sealed class Enumerator : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Enumerator ();
 		public Gck.Enumerator? get_chained ();
@@ -184,7 +184,7 @@ namespace Gck {
 		public Gck.Session session { owned get; construct; }
 	}
 	[CCode (cheader_filename = "gck/gck.h", type_id = "gck_password_get_type ()")]
-	public class Password : GLib.TlsPassword {
+	public sealed class Password : GLib.TlsPassword {
 		[CCode (has_construct_function = false)]
 		protected Password ();
 		public Gck.Object get_key ();
@@ -280,7 +280,7 @@ namespace Gck {
 		public void free ();
 	}
 	[CCode (cheader_filename = "gck/gck.h", type_id = "gck_slot_get_type ()")]
-	public class Slot : GLib.Object {
+	public sealed class Slot : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Slot ();
 		public Gck.Enumerator enumerate_objects (Gck.Attributes match, Gck.SessionOptions options);

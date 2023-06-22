@@ -6,15 +6,17 @@ and/or use gtk-doc annotations.  -->
             xmlns="http://www.gtk.org/introspection/core/1.0"
             xmlns:c="http://www.gtk.org/introspection/c/1.0"
             xmlns:glib="http://www.gtk.org/introspection/glib/1.0">
-  <include name="Gdk" version="3.0"/>
-  <include name="Gtk" version="3.0"/>
+  <include name="Gdk" version="4.0"/>
+  <include name="Graphene" version="1.0"/>
+  <include name="Gsk" version="4.0"/>
+  <include name="Gtk" version="4.0"/>
   <include name="Pango" version="1.0"/>
   <include name="cairo" version="1.0"/>
-  <package name="vte-2.91"/>
+  <package name="vte-2.91-gtk4"/>
   <c:include name="vte/vte.h"/>
   <namespace name="Vte"
-             version="2.91"
-             shared-library="libvte-2.91.so.0"
+             version="3.91"
+             shared-library="libvte-2.91-gtk4.so.0"
              c:identifier-prefixes="Vte"
              c:symbol-prefixes="vte">
     <enumeration name="Align"
@@ -1524,8 +1526,9 @@ a cell has to be selected or not.</doc>
            glib:get-type="vte_terminal_get_type"
            glib:type-struct="TerminalClass">
       <source-position filename="src/vte/vteterminal.h" line="129"/>
-      <implements name="Atk.ImplementorIface"/>
+      <implements name="Gtk.Accessible"/>
       <implements name="Gtk.Buildable"/>
+      <implements name="Gtk.ConstraintTarget"/>
       <implements name="Gtk.Scrollable"/>
       <constructor name="new" c:identifier="vte_terminal_new">
         <doc xml:space="preserve"
@@ -1839,53 +1842,6 @@ user presses Shift+Insert.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
-      <virtual-method name="text_deleted">
-        <source-position filename="src/vte/vteterminal.h" line="102"/>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="text_inserted">
-        <source-position filename="src/vte/vteterminal.h" line="101"/>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="text_modified">
-        <source-position filename="src/vte/vteterminal.h" line="100"/>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-        </parameters>
-      </virtual-method>
-      <virtual-method name="text_scrolled">
-        <source-position filename="src/vte/vteterminal.h" line="103"/>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="delta" transfer-ownership="none">
-            <type name="gint" c:type="gint"/>
-          </parameter>
-        </parameters>
-      </virtual-method>
       <virtual-method name="window_title_changed">
         <source-position filename="src/vte/vteterminal.h" line="75"/>
         <return-value transfer-ownership="none">
@@ -1897,6 +1853,225 @@ user presses Shift+Insert.</doc>
           </instance-parameter>
         </parameters>
       </virtual-method>
+      <method name="check_hyperlink_at"
+              c:identifier="vte_terminal_check_hyperlink_at"
+              version="0.70">
+        <doc xml:space="preserve"
+             filename="src/vtegtk.cc"
+             line="3226">Returns a nonempty string: the target of the explicit hyperlink (printed using the OSC 8
+escape sequence) at the position (x, y), or %NULL.
+
+Proper use of the escape sequence should result in URI-encoded URIs with a proper scheme
+like "http://", "https://", "file://", "mailto:" etc. This is, however, not enforced by VTE.
+The caller must tolerate the returned string potentially not being a valid URI.</doc>
+        <source-position filename="src/vte/vteterminal.h" line="453"/>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve"
+               filename="src/vtegtk.cc"
+               line="3239">a newly allocated string containing the target of the hyperlink,
+ or %NULL</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3228">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+          <parameter name="x" transfer-ownership="none">
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="y" transfer-ownership="none">
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="check_match_at"
+              c:identifier="vte_terminal_check_match_at"
+              version="0.70">
+        <doc xml:space="preserve"
+             filename="src/vtegtk.cc"
+             line="3189">Checks if the text in and around the position (x, y) matches any of the
+regular expressions previously set using vte_terminal_match_add().  If a
+match exists, the text string is returned and if @tag is not %NULL, the number
+associated with the matched regular expression will be stored in @tag.
+
+If more than one regular expression has been set with
+vte_terminal_match_add(), then expressions are checked in the order in
+which they were added.</doc>
+        <source-position filename="src/vte/vteterminal.h" line="504"/>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve"
+               filename="src/vtegtk.cc"
+               line="3205">a newly allocated string which matches one of the previously
+  set regular expressions, or %NULL if there is no match</doc>
+          <type name="utf8" c:type="char*"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3191">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+          <parameter name="x" transfer-ownership="none">
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="y" transfer-ownership="none">
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="tag"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3194">a location to store the tag, or %NULL</doc>
+            <type name="gint" c:type="int*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="check_regex_array_at"
+              c:identifier="vte_terminal_check_regex_array_at"
+              shadows="check_regex_simple_at"
+              version="0.70">
+        <doc xml:space="preserve"
+             filename="src/vtegtk.cc"
+             line="3259">Like vte_terminal_check_regex_simple_at(), but returns an array of strings,
+containing the matching text (or %NULL if no match) corresponding to each of the
+regexes in @regexes.
+
+You must free each string and the array; but note that this is *not* a %NULL-terminated
+string array, and so you must *not* use g_strfreev() on it.</doc>
+        <source-position filename="src/vte/vteterminal.h" line="510"/>
+        <return-value transfer-ownership="full" nullable="1">
+          <doc xml:space="preserve"
+               filename="src/vtegtk.cc"
+               line="3276">a newly allocated array of strings,
+  or %NULL if none of the regexes matched</doc>
+          <array length="5" zero-terminated="0" c:type="char**">
+            <type name="utf8"/>
+          </array>
+        </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3261">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+          <parameter name="x" transfer-ownership="none">
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="y" transfer-ownership="none">
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="regexes" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3264">an array of #VteRegex</doc>
+            <array length="3" zero-terminated="0" c:type="VteRegex**">
+              <type name="Regex" c:type="VteRegex*"/>
+            </array>
+          </parameter>
+          <parameter name="n_regexes" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3265">number of items in @regexes</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="match_flags" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3266">PCRE2 match flags, or 0</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+          <parameter name="n_matches"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full"
+                     optional="1"
+                     allow-none="1">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3267">number of items in @matches, which is always equal to @n_regexes</doc>
+            <type name="gsize" c:type="gsize*"/>
+          </parameter>
+        </parameters>
+      </method>
+      <method name="check_regex_simple_at"
+              c:identifier="vte_terminal_check_regex_simple_at"
+              shadowed-by="check_regex_array_at"
+              version="0.70"
+              introspectable="0">
+        <doc xml:space="preserve"
+             filename="src/vtegtk.cc"
+             line="3314">Checks each regex in @regexes if the text in and around the position (x, y)
+matches the regular expressions.  If a match exists, the matched
+text is stored in @matches at the position of the regex in @regexes; otherwise
+%NULL is stored there.  Each non-%NULL element of @matches should be freed with
+g_free().
+
+Note that the regexes in @regexes should have been created using the %PCRE2_MULTILINE flag.</doc>
+        <source-position filename="src/vte/vteterminal.h" line="519"/>
+        <return-value transfer-ownership="none">
+          <doc xml:space="preserve"
+               filename="src/vtegtk.cc"
+               line="3332">%TRUE iff any of the regexes produced a match</doc>
+          <type name="gboolean" c:type="gboolean"/>
+        </return-value>
+        <parameters>
+          <instance-parameter name="terminal" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3316">a #VteTerminal</doc>
+            <type name="Terminal" c:type="VteTerminal*"/>
+          </instance-parameter>
+          <parameter name="x" transfer-ownership="none">
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="y" transfer-ownership="none">
+            <type name="gdouble" c:type="double"/>
+          </parameter>
+          <parameter name="regexes" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3319">an array of #VteRegex</doc>
+            <array length="3" zero-terminated="0" c:type="VteRegex**">
+              <type name="Regex" c:type="VteRegex*"/>
+            </array>
+          </parameter>
+          <parameter name="n_regexes"
+                     direction="out"
+                     caller-allocates="0"
+                     transfer-ownership="full">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3320">number of items in @regexes</doc>
+            <type name="gsize" c:type="gsize"/>
+          </parameter>
+          <parameter name="match_flags" transfer-ownership="none">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3321">PCRE2 match flags, or 0</doc>
+            <type name="guint32" c:type="guint32"/>
+          </parameter>
+          <parameter name="matches"
+                     direction="out"
+                     caller-allocates="1"
+                     transfer-ownership="full">
+            <doc xml:space="preserve"
+                 filename="src/vtegtk.cc"
+                 line="3322">a location to store the matches</doc>
+            <array length="3" zero-terminated="0" c:type="char**">
+              <type name="utf8" c:type="char*"/>
+            </array>
+          </parameter>
+        </parameters>
+      </method>
       <method name="copy_clipboard"
               c:identifier="vte_terminal_copy_clipboard"
               deprecated="1"
@@ -1969,210 +2144,6 @@ selection.</doc>
                  line="2827">a #VteTerminal</doc>
             <type name="Terminal" c:type="VteTerminal*"/>
           </instance-parameter>
-        </parameters>
-      </method>
-      <method name="event_check_gregex_simple"
-              c:identifier="vte_terminal_event_check_gregex_simple"
-              version="0.44"
-              deprecated="1"
-              deprecated-version="0.46">
-        <doc xml:space="preserve"
-             filename="src/vtegtk.cc"
-             line="3370">This function does nothing.</doc>
-        <doc-deprecated xml:space="preserve">Use vte_terminal_event_check_regex_simple() instead.</doc-deprecated>
-        <source-position filename="src/vte/vtedeprecated.h" line="70"/>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve"
-               filename="src/vtegtk.cc"
-               line="3381">%FALSE</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3372">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="event" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3373">a #GdkEvent</doc>
-            <type name="Gdk.Event" c:type="GdkEvent*"/>
-          </parameter>
-          <parameter name="regexes" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3374">an array of #GRegex</doc>
-            <array length="2" zero-terminated="0" c:type="GRegex**">
-              <type name="GLib.Regex" c:type="GRegex*"/>
-            </array>
-          </parameter>
-          <parameter name="n_regexes"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3375">number of items in @regexes</doc>
-            <type name="gsize" c:type="gsize"/>
-          </parameter>
-          <parameter name="match_flags" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3376">the #GRegexMatchFlags to use when matching the regexes</doc>
-            <type name="GLib.RegexMatchFlags" c:type="GRegexMatchFlags"/>
-          </parameter>
-          <parameter name="matches"
-                     direction="out"
-                     caller-allocates="1"
-                     transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3377">a location to store the matches</doc>
-            <array length="2" zero-terminated="0" c:type="char**">
-              <type name="utf8" c:type="char*"/>
-            </array>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="event_check_regex_array"
-              c:identifier="vte_terminal_event_check_regex_array"
-              shadows="event_check_regex_simple"
-              version="0.62">
-        <doc xml:space="preserve"
-             filename="src/vtegtk.cc"
-             line="3082">Like vte_terminal_event_check_regex_simple(), but returns an array of strings,
-containing the matching text (or %NULL if no match) corresponding to each of the
-regexes in @regexes.
-
-You must free each string and the array; but note that this is *not* a %NULL-terminated
-string array, and so you must *not* use g_strfreev() on it.</doc>
-        <source-position filename="src/vte/vteterminal.h" line="487"/>
-        <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve"
-               filename="src/vtegtk.cc"
-               line="3098">a newly allocated array of strings,
-  or %NULL if none of the regexes matched</doc>
-          <array length="4" zero-terminated="0" c:type="char**">
-            <type name="utf8"/>
-          </array>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3084">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="event" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3085">a #GdkEvent</doc>
-            <type name="Gdk.Event" c:type="GdkEvent*"/>
-          </parameter>
-          <parameter name="regexes" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3086">an array of #VteRegex</doc>
-            <array length="2" zero-terminated="0" c:type="VteRegex**">
-              <type name="Regex" c:type="VteRegex*"/>
-            </array>
-          </parameter>
-          <parameter name="n_regexes" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3087">number of items in @regexes</doc>
-            <type name="gsize" c:type="gsize"/>
-          </parameter>
-          <parameter name="match_flags" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3088">PCRE2 match flags, or 0</doc>
-            <type name="guint32" c:type="guint32"/>
-          </parameter>
-          <parameter name="n_matches"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full"
-                     optional="1"
-                     allow-none="1">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3089">number of items in @matches, which is always equal to @n_regexes</doc>
-            <type name="gsize" c:type="gsize*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="event_check_regex_simple"
-              c:identifier="vte_terminal_event_check_regex_simple"
-              shadowed-by="event_check_regex_array"
-              version="0.46"
-              introspectable="0">
-        <doc xml:space="preserve"
-             filename="src/vtegtk.cc"
-             line="3135">Checks each regex in @regexes if the text in and around the position of
-the event matches the regular expressions.  If a match exists, the matched
-text is stored in @matches at the position of the regex in @regexes; otherwise
-%NULL is stored there.  Each non-%NULL element of @matches should be freed with
-g_free().
-
-Note that the regexes in @regexes should have been created using the
-&lt;literal&gt;PCRE2_MULTILINE&lt;/literal&gt; flag.</doc>
-        <source-position filename="src/vte/vteterminal.h" line="494"/>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve"
-               filename="src/vtegtk.cc"
-               line="3153">%TRUE iff any of the regexes produced a match</doc>
-          <type name="gboolean" c:type="gboolean"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3137">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="event" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3138">a #GdkEvent</doc>
-            <type name="Gdk.Event" c:type="GdkEvent*"/>
-          </parameter>
-          <parameter name="regexes" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3139">an array of #VteRegex</doc>
-            <array length="2" zero-terminated="0" c:type="VteRegex**">
-              <type name="Regex" c:type="VteRegex*"/>
-            </array>
-          </parameter>
-          <parameter name="n_regexes"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3140">number of items in @regexes</doc>
-            <type name="gsize" c:type="gsize"/>
-          </parameter>
-          <parameter name="match_flags" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3141">PCRE2 match flags, or 0</doc>
-            <type name="guint32" c:type="guint32"/>
-          </parameter>
-          <parameter name="matches"
-                     direction="out"
-                     caller-allocates="1"
-                     transfer-ownership="full">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3142">a location to store the matches</doc>
-            <array length="2" zero-terminated="0" c:type="char**">
-              <type name="utf8" c:type="char*"/>
-            </array>
-          </parameter>
         </parameters>
       </method>
       <method name="feed" c:identifier="vte_terminal_feed">
@@ -2843,53 +2814,6 @@ terminal uses to render text at the default font scale of 1.0.</doc>
                  line="5657">a #VteTerminal</doc>
             <type name="Terminal" c:type="VteTerminal*"/>
           </instance-parameter>
-        </parameters>
-      </method>
-      <method name="get_geometry_hints"
-              c:identifier="vte_terminal_get_geometry_hints"
-              deprecated="1"
-              deprecated-version="0.52">
-        <doc xml:space="preserve"
-             filename="src/vtegtk.cc"
-             line="5804">Fills in some @hints from @terminal's geometry. The hints
-filled are those covered by the %GDK_HINT_RESIZE_INC,
-%GDK_HINT_MIN_SIZE and %GDK_HINT_BASE_SIZE flags.
-
-See gtk_window_set_geometry_hints() for more information.
-
-@terminal must be realized (see gtk_widget_get_realized()).</doc>
-        <source-position filename="src/vte/vtedeprecated.h" line="115"/>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="5806">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="hints"
-                     direction="out"
-                     caller-allocates="1"
-                     transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="5807">a #GdkGeometry to fill in</doc>
-            <type name="Gdk.Geometry" c:type="GdkGeometry*"/>
-          </parameter>
-          <parameter name="min_rows" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="5808">the minimum number of rows to request</doc>
-            <type name="gint" c:type="int"/>
-          </parameter>
-          <parameter name="min_columns" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="5809">the minimum number of columns to request</doc>
-            <type name="gint" c:type="int"/>
-          </parameter>
         </parameters>
       </method>
       <method name="get_has_selection"
@@ -3621,76 +3545,6 @@ If %NULL, a built-in set is used.</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="hyperlink_check_event"
-              c:identifier="vte_terminal_hyperlink_check_event"
-              version="0.50">
-        <doc xml:space="preserve"
-             filename="src/vtegtk.cc"
-             line="3051">Returns a nonempty string: the target of the explicit hyperlink (printed using the OSC 8
-escape sequence) at the position of the event, or %NULL.
-
-Proper use of the escape sequence should result in URI-encoded URIs with a proper scheme
-like "http://", "https://", "file://", "mailto:" etc. This is, however, not enforced by VTE.
-The caller must tolerate the returned string potentially not being a valid URI.</doc>
-        <source-position filename="src/vte/vteterminal.h" line="447"/>
-        <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve"
-               filename="src/vtegtk.cc"
-               line="3063">a newly allocated string containing the target of the hyperlink,
- or %NULL</doc>
-          <type name="utf8" c:type="char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3053">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="event" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3054">a #GdkEvent</doc>
-            <type name="Gdk.Event" c:type="GdkEvent*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="match_add_gregex"
-              c:identifier="vte_terminal_match_add_gregex"
-              deprecated="1"
-              deprecated-version="0.46">
-        <doc xml:space="preserve"
-             filename="src/vtegtk.cc"
-             line="2917">This function does nothing since version 0.60.</doc>
-        <doc-deprecated xml:space="preserve">Use vte_terminal_match_add_regex() instead.</doc-deprecated>
-        <source-position filename="src/vte/vtedeprecated.h" line="40"/>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve"
-               filename="src/vtegtk.cc"
-               line="2925">-1</doc>
-          <type name="gint" c:type="int"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="2919">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="gregex" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="2920">a #GRegex</doc>
-            <type name="GLib.Regex" c:type="GRegex*"/>
-          </parameter>
-          <parameter name="gflags" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="2921">the #GRegexMatchFlags to use when matching the regex</doc>
-            <type name="GLib.RegexMatchFlags" c:type="GRegexMatchFlags"/>
-          </parameter>
-        </parameters>
-      </method>
       <method name="match_add_regex"
               c:identifier="vte_terminal_match_add_regex"
               version="0.46">
@@ -3781,52 +3635,6 @@ which they were added.</doc>
             <doc xml:space="preserve"
                  filename="src/vtegtk.cc"
                  line="2984">a location to store the tag, or %NULL</doc>
-            <type name="gint" c:type="int*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="match_check_event"
-              c:identifier="vte_terminal_match_check_event">
-        <doc xml:space="preserve"
-             filename="src/vtegtk.cc"
-             line="3018">Checks if the text in and around the position of the event matches any of the
-regular expressions previously set using vte_terminal_match_add().  If a
-match exists, the text string is returned and if @tag is not %NULL, the number
-associated with the matched regular expression will be stored in @tag.
-
-If more than one regular expression has been set with
-vte_terminal_match_add(), then expressions are checked in the order in
-which they were added.</doc>
-        <source-position filename="src/vte/vteterminal.h" line="482"/>
-        <return-value transfer-ownership="full" nullable="1">
-          <doc xml:space="preserve"
-               filename="src/vtegtk.cc"
-               line="3033">a newly allocated string which matches one of the previously
-  set regular expressions, or %NULL if there is no match</doc>
-          <type name="utf8" c:type="char*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3020">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="event" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3021">a #GdkEvent</doc>
-            <type name="Gdk.Event" c:type="GdkEvent*"/>
-          </parameter>
-          <parameter name="tag"
-                     direction="out"
-                     caller-allocates="0"
-                     transfer-ownership="full"
-                     optional="1"
-                     allow-none="1">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3022">a location to store the tag, or %NULL</doc>
             <type name="gint" c:type="int*"/>
           </parameter>
         </parameters>
@@ -3941,40 +3749,6 @@ specified by @tag.</doc>
                  filename="src/vtegtk.cc"
                  line="3461">the name of the cursor</doc>
             <type name="utf8" c:type="const char*"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="match_set_cursor_type"
-              c:identifier="vte_terminal_match_set_cursor_type"
-              deprecated="1"
-              deprecated-version="0.54">
-        <doc xml:space="preserve"
-             filename="src/vtegtk.cc"
-             line="3429">Sets which cursor the terminal will use if the pointer is over the pattern
-specified by @tag.</doc>
-        <doc-deprecated xml:space="preserve">Use vte_terminal_match_set_cursor_name() instead.</doc-deprecated>
-        <source-position filename="src/vte/vtedeprecated.h" line="55"/>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3431">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="tag" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3432">the tag of the regex which should use the specified cursor</doc>
-            <type name="gint" c:type="int"/>
-          </parameter>
-          <parameter name="cursor_type" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3433">a #GdkCursorType</doc>
-            <type name="Gdk.CursorType" c:type="GdkCursorType"/>
           </parameter>
         </parameters>
       </method>
@@ -4162,27 +3936,6 @@ vte_terminal_search_set_regex().</doc>
           </instance-parameter>
         </parameters>
       </method>
-      <method name="search_get_gregex"
-              c:identifier="vte_terminal_search_get_gregex"
-              deprecated="1"
-              deprecated-version="0.46">
-        <doc-deprecated xml:space="preserve">use vte_terminal_search_get_regex() instead.</doc-deprecated>
-        <source-position filename="src/vte/vtedeprecated.h" line="85"/>
-        <return-value transfer-ownership="none">
-          <doc xml:space="preserve"
-               filename="src/vtegtk.cc"
-               line="3642">%NULL</doc>
-          <type name="GLib.Regex" c:type="GRegex*"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3640">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-        </parameters>
-      </method>
       <method name="search_get_regex"
               c:identifier="vte_terminal_search_get_regex"
               version="0.46">
@@ -4218,42 +3971,6 @@ vte_terminal_search_set_regex().</doc>
                  line="3680">a #VteTerminal</doc>
             <type name="Terminal" c:type="VteTerminal*"/>
           </instance-parameter>
-        </parameters>
-      </method>
-      <method name="search_set_gregex"
-              c:identifier="vte_terminal_search_set_gregex"
-              deprecated="1"
-              deprecated-version="0.46">
-        <doc xml:space="preserve"
-             filename="src/vtegtk.cc"
-             line="3621">This function does nothing since version 0.60.</doc>
-        <doc-deprecated xml:space="preserve">use vte_terminal_search_set_regex() instead.</doc-deprecated>
-        <source-position filename="src/vte/vtedeprecated.h" line="79"/>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3623">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="gregex"
-                     transfer-ownership="none"
-                     nullable="1"
-                     allow-none="1">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3624">a #GRegex, or %NULL</doc>
-            <type name="GLib.Regex" c:type="GRegex*"/>
-          </parameter>
-          <parameter name="gflags" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="3625">flags from #GRegexMatchFlags</doc>
-            <type name="GLib.RegexMatchFlags" c:type="GRegexMatchFlags"/>
-          </parameter>
         </parameters>
       </method>
       <method name="search_set_regex"
@@ -5177,35 +4894,6 @@ function to set a #cairo_font_options_t that has
                  filename="src/vtegtk.cc"
                  line="5678">the font scale</doc>
             <type name="gdouble" c:type="gdouble"/>
-          </parameter>
-        </parameters>
-      </method>
-      <method name="set_geometry_hints_for_window"
-              c:identifier="vte_terminal_set_geometry_hints_for_window"
-              deprecated="1"
-              deprecated-version="0.52">
-        <doc xml:space="preserve"
-             filename="src/vtegtk.cc"
-             line="5860">Sets @terminal as @window's geometry widget. See
-gtk_window_set_geometry_hints() for more information.
-
-@terminal must be realized (see gtk_widget_get_realized()).</doc>
-        <source-position filename="src/vte/vtedeprecated.h" line="122"/>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <instance-parameter name="terminal" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="5862">a #VteTerminal</doc>
-            <type name="Terminal" c:type="VteTerminal*"/>
-          </instance-parameter>
-          <parameter name="window" transfer-ownership="none">
-            <doc xml:space="preserve"
-                 filename="src/vtegtk.cc"
-                 line="5863">a #GtkWindow</doc>
-            <type name="Gtk.Window" c:type="GtkWindow*"/>
           </parameter>
         </parameters>
       </method>
@@ -6681,11 +6369,6 @@ If %NULL, a built-in set is used.</doc>
       <field name="widget">
         <type name="Gtk.Widget" c:type="GtkWidget"/>
       </field>
-      <field name="_unused_padding" readable="0" private="1">
-        <array zero-terminated="0" fixed-size="1">
-          <type name="gpointer" c:type="gpointer*"/>
-        </array>
-      </field>
       <glib:signal name="bell" when="last">
         <doc xml:space="preserve"
              filename="src/vtegtk.cc"
@@ -7017,47 +6700,6 @@ same hyperlink. This might change in a future VTE version without notice.</doc>
           <type name="none" c:type="void"/>
         </return-value>
       </glib:signal>
-      <glib:signal name="text-deleted"
-                   when="last"
-                   deprecated="1"
-                   deprecated-version="0.66">
-        <doc-deprecated xml:space="preserve">This signal is never emitted.</doc-deprecated>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
-      <glib:signal name="text-inserted"
-                   when="last"
-                   deprecated="1"
-                   deprecated-version="0.66">
-        <doc-deprecated xml:space="preserve">This signal is never emitted.</doc-deprecated>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
-      <glib:signal name="text-modified"
-                   when="last"
-                   deprecated="1"
-                   deprecated-version="0.66">
-        <doc-deprecated xml:space="preserve">This signal is never emitted.</doc-deprecated>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-      </glib:signal>
-      <glib:signal name="text-scrolled"
-                   when="last"
-                   deprecated="1"
-                   deprecated-version="0.66">
-        <doc-deprecated xml:space="preserve">This signal is never emitted.</doc-deprecated>
-        <return-value transfer-ownership="none">
-          <type name="none" c:type="void"/>
-        </return-value>
-        <parameters>
-          <parameter name="delta" transfer-ownership="none">
-            <type name="gint" c:type="gint"/>
-          </parameter>
-        </parameters>
-      </glib:signal>
       <glib:signal name="window-title-changed" when="last">
         <doc xml:space="preserve"
              filename="src/vtegtk.cc"
@@ -7377,61 +7019,6 @@ same hyperlink. This might change in a future VTE version without notice.</doc>
           </parameters>
         </callback>
       </field>
-      <field name="text_modified">
-        <callback name="text_modified">
-          <source-position filename="src/vte/vteterminal.h" line="100"/>
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="terminal" transfer-ownership="none">
-              <type name="Terminal" c:type="VteTerminal*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="text_inserted">
-        <callback name="text_inserted">
-          <source-position filename="src/vte/vteterminal.h" line="101"/>
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="terminal" transfer-ownership="none">
-              <type name="Terminal" c:type="VteTerminal*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="text_deleted">
-        <callback name="text_deleted">
-          <source-position filename="src/vte/vteterminal.h" line="102"/>
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="terminal" transfer-ownership="none">
-              <type name="Terminal" c:type="VteTerminal*"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
-      <field name="text_scrolled">
-        <callback name="text_scrolled">
-          <source-position filename="src/vte/vteterminal.h" line="103"/>
-          <return-value transfer-ownership="none">
-            <type name="none" c:type="void"/>
-          </return-value>
-          <parameters>
-            <parameter name="terminal" transfer-ownership="none">
-              <type name="Terminal" c:type="VteTerminal*"/>
-            </parameter>
-            <parameter name="delta" transfer-ownership="none">
-              <type name="gint" c:type="gint"/>
-            </parameter>
-          </parameters>
-        </callback>
-      </field>
       <field name="copy_clipboard">
         <callback name="copy_clipboard">
           <source-position filename="src/vte/vteterminal.h" line="107"/>
@@ -7477,17 +7064,12 @@ same hyperlink. This might change in a future VTE version without notice.</doc>
           </parameters>
         </callback>
       </field>
-      <field name="_extra_padding" readable="0" private="1">
-        <array zero-terminated="0" fixed-size="3">
+      <field name="_padding">
+        <array zero-terminated="0" fixed-size="16">
           <type name="gpointer" c:type="gpointer"/>
         </array>
       </field>
-      <field name="_padding" readable="0" private="1">
-        <array zero-terminated="0" fixed-size="13">
-          <type name="gpointer" c:type="gpointer"/>
-        </array>
-      </field>
-      <field name="priv" readable="0" private="1">
+      <field name="priv">
         <type name="TerminalClassPrivate" c:type="VteTerminalClassPrivate*"/>
       </field>
     </record>

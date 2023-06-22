@@ -12,7 +12,7 @@ namespace Ggit {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_blame_get_type ()")]
-	public class Blame : Ggit.Native {
+	public sealed class Blame : Ggit.Native {
 		[CCode (has_construct_function = false)]
 		protected Blame ();
 		public Ggit.Blame? from_buffer ([CCode (array_length_cname = "buffer_length", array_length_pos = 1.1, array_length_type = "gsize")] uint8[] buffer) throws GLib.Error;
@@ -56,7 +56,7 @@ namespace Ggit {
 		public void set_oldest_commit (Ggit.OId? oid);
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_blob_get_type ()")]
-	public class Blob : Ggit.Object {
+	public sealed class Blob : Ggit.Object {
 		[CCode (has_construct_function = false)]
 		protected Blob ();
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
@@ -183,7 +183,7 @@ namespace Ggit {
 		public Ggit.OId? get_tree_id ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_commit_parents_get_type ()")]
-	public class CommitParents : GLib.Object {
+	public sealed class CommitParents : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public CommitParents (Ggit.Commit commit);
 		public Ggit.Commit? @get (uint idx);
@@ -194,7 +194,7 @@ namespace Ggit {
 		public uint size { get; }
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_config_get_type ()")]
-	public class Config : Ggit.Native {
+	public sealed class Config : Ggit.Native {
 		[CCode (has_construct_function = false)]
 		public Config ();
 		public void add_file (GLib.File file, Ggit.ConfigLevel level, bool force) throws GLib.Error;
@@ -267,7 +267,7 @@ namespace Ggit {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_cred_ssh_key_from_agent_get_type ()")]
-	public class CredSshKeyFromAgent : Ggit.Cred, GLib.Initable {
+	public sealed class CredSshKeyFromAgent : Ggit.Cred, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		public CredSshKeyFromAgent (string username) throws GLib.Error;
 		public unowned string? get_username ();
@@ -457,7 +457,7 @@ namespace Ggit {
 		public void set_remote_callbacks (Ggit.RemoteCallbacks? callbacks);
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_index_get_type ()")]
-	public class Index : Ggit.Native, GLib.Initable {
+	public sealed class Index : Ggit.Native, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected Index ();
 		public bool add (Ggit.IndexEntry entry) throws GLib.Error;
@@ -533,7 +533,7 @@ namespace Ggit {
 		public void unref ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_mailmap_get_type ()")]
-	public class Mailmap : Ggit.Native {
+	public sealed class Mailmap : Ggit.Native {
 		[CCode (has_construct_function = false)]
 		public Mailmap () throws GLib.Error;
 		public void add_entry (string? real_name, string? real_email, string? replace_name, string replace_email) throws GLib.Error;
@@ -601,7 +601,7 @@ namespace Ggit {
 		public Ggit.Repository? get_owner ();
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_object_factory_get_type ()")]
-	public class ObjectFactory : GLib.Object {
+	public sealed class ObjectFactory : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected ObjectFactory ();
 		public GLib.Object? @construct (GLib.ObjectClass parent_class, GLib.Type basetype, [CCode (array_length_cname = "n_construct_properties", array_length_pos = 2.5, array_length_type = "guint")] GLib.ObjectConstructParam[] construct_properties);
@@ -649,7 +649,7 @@ namespace Ggit {
 		public int parallelism { get; set construct; }
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_rebase_get_type ()")]
-	public class Rebase : Ggit.Native {
+	public sealed class Rebase : Ggit.Native {
 		[CCode (has_construct_function = false)]
 		protected Rebase ();
 		public void abort () throws GLib.Error;
@@ -930,7 +930,7 @@ namespace Ggit {
 		public Ggit.Repository repository { owned get; set construct; }
 	}
 	[CCode (cheader_filename = "libgit2-glib/ggit.h", type_id = "ggit_signature_get_type ()")]
-	public class Signature : Ggit.Native {
+	public sealed class Signature : Ggit.Native {
 		[CCode (has_construct_function = false)]
 		public Signature (string name, string email, GLib.DateTime signature_time) throws GLib.Error;
 		public Ggit.Signature? copy ();

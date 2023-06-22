@@ -3,7 +3,7 @@
 [CCode (cprefix = "GUsb", gir_namespace = "GUsb", gir_version = "1.0", lower_case_cprefix = "g_usb_")]
 namespace GUsb {
 	[CCode (cheader_filename = "gusb.h", type_id = "g_usb_bos_descriptor_get_type ()")]
-	public class BosDescriptor : GLib.Object {
+	public sealed class BosDescriptor : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected BosDescriptor ();
 		[Version (since = "0.4.0")]
@@ -176,7 +176,7 @@ namespace GUsb {
 		public string platform_id { construct; }
 	}
 	[CCode (cheader_filename = "gusb.h", type_id = "g_usb_device_event_get_type ()")]
-	public class DeviceEvent : GLib.Object {
+	public sealed class DeviceEvent : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected DeviceEvent ();
 		[Version (since = "0.4.0")]
@@ -209,7 +209,7 @@ namespace GUsb {
 		public virtual signal void device_removed (GUsb.Device device);
 	}
 	[CCode (cheader_filename = "gusb.h", type_id = "g_usb_endpoint_get_type ()")]
-	public class Endpoint : GLib.Object {
+	public sealed class Endpoint : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Endpoint ();
 		[Version (since = "0.3.3")]
@@ -232,7 +232,7 @@ namespace GUsb {
 		public uint8 get_synch_address ();
 	}
 	[CCode (cheader_filename = "gusb.h", type_id = "g_usb_interface_get_type ()")]
-	public class Interface : GLib.Object {
+	public sealed class Interface : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Interface ();
 		[Version (since = "0.2.8")]
