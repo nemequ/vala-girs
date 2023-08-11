@@ -331,10 +331,14 @@ namespace Shumate {
 		[CCode (has_construct_function = false)]
 		protected SymbolEvent ();
 		public unowned string get_feature_id ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public (unowned string)[] get_keys ();
 		public unowned string get_layer ();
+		public unowned string get_source_layer ();
 		public unowned string get_tag (string tag_name);
 		public string feature_id { get; }
 		public string layer { get; }
+		public string source_layer { get; }
 	}
 	[CCode (cheader_filename = "shumate/shumate.h", type_id = "shumate_tile_get_type ()")]
 	public sealed class Tile : GLib.Object {

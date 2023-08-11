@@ -17,6 +17,7 @@ namespace GtkSource {
 		public bool get_highlight_syntax ();
 		public bool get_implicit_trailing_newline ();
 		public unowned GtkSource.Language? get_language ();
+		public bool get_loading ();
 		public GLib.SList<weak GtkSource.Mark> get_source_marks_at_iter (Gtk.TextIter iter, string? category);
 		public GLib.SList<weak GtkSource.Mark> get_source_marks_at_line (int line, string? category);
 		public unowned GtkSource.StyleScheme? get_style_scheme ();
@@ -37,6 +38,8 @@ namespace GtkSource {
 		public bool highlight_syntax { get; set; }
 		public bool implicit_trailing_newline { get; set construct; }
 		public GtkSource.Language language { get; set; }
+		[Version (since = "5.10")]
+		public bool loading { get; }
 		public GtkSource.StyleScheme style_scheme { get; set; }
 		public virtual signal void bracket_matched (Gtk.TextIter? iter, GtkSource.BracketMatchType state);
 		public signal void cursor_moved ();

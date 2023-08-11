@@ -19,6 +19,8 @@ namespace E {
 		public void ensure_source_status_connected ();
 		[Version (since = "3.8")]
 		public virtual bool get_destination_address (out string host, out uint16 port);
+		[Version (since = "3.50")]
+		public unowned GLib.NetworkMonitor get_network_monitor ();
 		public bool get_online ();
 		public unowned E.Source get_source ();
 		[Version (since = "3.8")]

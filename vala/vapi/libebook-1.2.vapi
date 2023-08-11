@@ -97,10 +97,18 @@ namespace E {
 	public class BookClientView : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected BookClientView ();
+		[Version (since = "3.50")]
+		public async bool dup_contacts (uint range_start, uint range_length, GLib.Cancellable? cancellable, out uint out_range_start, out GLib.GenericArray<weak E.Contact> out_contacts) throws GLib.Error;
+		[Version (since = "3.50")]
+		public E.BookIndices dup_indices ();
 		[Version (deprecated = true, deprecated_since = "3.10")]
 		public unowned E.BookClient get_client ();
 		[Version (since = "3.8")]
 		public unowned GLib.DBusConnection get_connection ();
+		[Version (since = "3.50")]
+		public size_t get_id ();
+		[Version (since = "3.50")]
+		public uint get_n_total ();
 		[Version (since = "3.8")]
 		public unowned string get_object_path ();
 		public bool is_running ();
@@ -109,12 +117,21 @@ namespace E {
 		public void set_fields_of_interest (GLib.SList<string> fields_of_interest) throws GLib.Error;
 		[Version (since = "3.4")]
 		public void set_flags (E.BookClientViewFlags flags) throws GLib.Error;
+		[Version (since = "3.50")]
+		public bool set_sort_fields_sync (E.BookClientViewSortFields fields, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void start () throws GLib.Error;
 		public void stop () throws GLib.Error;
 		public E.BookClient client { get; construct; }
 		public GLib.DBusConnection connection { get; construct; }
+		[NoAccessorMethod]
+		[Version (since = "3.50")]
+		public E.BookIndices indices { owned get; }
+		[Version (since = "3.50")]
+		public uint n_total { get; }
 		public string object_path { get; construct; }
 		public virtual signal void complete (GLib.Error error);
+		[Version (since = "3.50")]
+		public signal void content_changed ();
 		public signal void objects_added (GLib.SList<E.Contact> objects);
 		public signal void objects_modified (GLib.SList<E.Contact> objects);
 		public signal void objects_removed (GLib.SList<string> uids);

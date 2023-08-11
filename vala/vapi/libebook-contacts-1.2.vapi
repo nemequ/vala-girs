@@ -17,6 +17,32 @@ namespace E {
 		public void free ();
 		public static E.AddressWestern? parse (string? in_address);
 	}
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_book_client_view_sort_fields_get_type ()")]
+	[Compact]
+	[Version (since = "3.50")]
+	public class BookClientViewSortFields {
+		public E.ContactField field;
+		public E.BookCursorSortType sort_type;
+	}
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "e_book_indices_get_type ()")]
+	[Compact]
+	[Version (since = "3.50")]
+	public class BookIndices {
+		public weak string chr;
+		public uint index;
+		public static bool get_ascending_sort (E.BookIndicesUpdater self);
+		public static void set_ascending_sort (E.BookIndicesUpdater self, bool ascending_sort);
+	}
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", type_id = "e_book_indices_updater_get_type ()")]
+	[Version (since = "3.50")]
+	public abstract class BookIndicesUpdater : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected BookIndicesUpdater ();
+		public bool add (string uid, uint indices_index);
+		public unowned E.BookIndices? get_indices ();
+		public bool remove (string uid);
+		public bool take_indices (owned E.BookIndices? indices);
+	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", ref_function = "e_book_query_ref", type_id = "e_book_query_get_type ()", unref_function = "e_book_query_unref")]
 	[Compact]
 	public class BookQuery {
@@ -598,7 +624,8 @@ namespace E {
 	[Version (since = "3.4")]
 	public enum BookClientViewFlags {
 		NONE,
-		NOTIFY_INITIAL
+		NOTIFY_INITIAL,
+		MANUAL_QUERY
 	}
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h", cprefix = "E_BOOK_CURSOR_ORIGIN_", type_id = "e_book_cursor_origin_get_type ()")]
 	[Version (since = "3.12")]
@@ -1047,6 +1074,12 @@ namespace E {
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
 	[Version (replacement = "AddressWestern.parse")]
 	public static E.AddressWestern? address_western_parse (string? in_address);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "BookIndices.get_ascending_sort", since = "3.50")]
+	public static bool book_indices_get_ascending_sort (E.BookIndicesUpdater self);
+	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
+	[Version (replacement = "BookIndices.set_ascending_sort", since = "3.50")]
+	public static void book_indices_set_ascending_sort (E.BookIndicesUpdater self, bool ascending_sort);
 	[CCode (cheader_filename = "libebook-contacts/libebook-contacts.h")]
 	[Version (replacement = "BookQuery.and")]
 	public static E.BookQuery book_query_and (int nqs, E.BookQuery qs, bool unref);

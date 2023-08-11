@@ -402,6 +402,8 @@ namespace Adw {
 	public class ComboRow : Adw.ActionRow, Gtk.Accessible, Gtk.Actionable, Gtk.Buildable, Gtk.ConstraintTarget {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public ComboRow ();
+		[Version (since = "1.4")]
+		public bool get_enable_search ();
 		public unowned Gtk.Expression? get_expression ();
 		public unowned Gtk.ListItemFactory? get_factory ();
 		public unowned Gtk.ListItemFactory? get_list_factory ();
@@ -409,12 +411,16 @@ namespace Adw {
 		public uint get_selected ();
 		public unowned GLib.Object? get_selected_item ();
 		public bool get_use_subtitle ();
+		[Version (since = "1.4")]
+		public void set_enable_search (bool enable_search);
 		public void set_expression (Gtk.Expression? expression);
 		public void set_factory (Gtk.ListItemFactory? factory);
 		public void set_list_factory (Gtk.ListItemFactory? factory);
 		public void set_model (GLib.ListModel? model);
 		public void set_selected (uint position);
 		public void set_use_subtitle (bool use_subtitle);
+		[Version (since = "1.4")]
+		public bool enable_search { get; set; }
 		public Gtk.Expression expression { get; set; }
 		public Gtk.ListItemFactory factory { get; set; }
 		public Gtk.ListItemFactory list_factory { get; set; }
@@ -779,6 +785,7 @@ namespace Adw {
 		public unowned Adw.NavigationPage? find_page (string tag);
 		public bool get_animate_transitions ();
 		public GLib.ListModel get_navigation_stack ();
+		public bool get_pop_on_escape ();
 		public unowned Adw.NavigationPage? get_previous_page (Adw.NavigationPage page);
 		public unowned Adw.NavigationPage? get_visible_page ();
 		public bool pop ();
@@ -790,8 +797,10 @@ namespace Adw {
 		public void replace ([CCode (array_length_cname = "n_pages", array_length_pos = 1.1)] Adw.NavigationPage[] pages);
 		public void replace_with_tags ([CCode (array_length_cname = "n_tags", array_length_pos = 1.1)] string[] tags);
 		public void set_animate_transitions (bool animate_transitions);
+		public void set_pop_on_escape (bool pop_on_escape);
 		public bool animate_transitions { get; set; }
 		public GLib.ListModel navigation_stack { owned get; }
+		public bool pop_on_escape { get; set; }
 		public Adw.NavigationPage visible_page { get; }
 		public signal Adw.NavigationPage? get_next_page ();
 		public signal void popped (Adw.NavigationPage page);
@@ -976,6 +985,7 @@ namespace Adw {
 		public void set_climb_rate (double climb_rate);
 		public void set_digits (uint digits);
 		public void set_numeric (bool numeric);
+		public void set_range (double min, double max);
 		public void set_snap_to_ticks (bool snap_to_ticks);
 		public void set_update_policy (Gtk.SpinButtonUpdatePolicy policy);
 		public void set_value (double value);
@@ -1486,6 +1496,8 @@ namespace Adw {
 		public Adw.ToastPriority get_priority ();
 		public uint get_timeout ();
 		public unowned string? get_title ();
+		[Version (since = "1.4")]
+		public bool get_use_markup ();
 		public void set_action_name (string? action_name);
 		public void set_action_target (string? format_string, ...);
 		public void set_action_target_value (GLib.Variant? action_target);
@@ -1496,6 +1508,8 @@ namespace Adw {
 		public void set_priority (Adw.ToastPriority priority);
 		public void set_timeout (uint timeout);
 		public void set_title (string title);
+		[Version (since = "1.4")]
+		public void set_use_markup (bool use_markup);
 		public string action_name { get; set; }
 		[NoAccessorMethod]
 		public GLib.Variant action_target { owned get; set; }
@@ -1505,6 +1519,8 @@ namespace Adw {
 		public Adw.ToastPriority priority { get; set; }
 		public uint timeout { get; set; }
 		public string title { get; set; }
+		[Version (since = "1.4")]
+		public bool use_markup { get; set; }
 		[Version (since = "1.2")]
 		public signal void button_clicked ();
 		public signal void dismissed ();
@@ -1606,6 +1622,15 @@ namespace Adw {
 		public string title { get; set; }
 		public bool use_underline { get; set; }
 		public bool visible { get; set; }
+	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_view_stack_pages_get_type ()")]
+	[Version (since = "1.4")]
+	public sealed class ViewStackPages : GLib.Object, GLib.ListModel, Gtk.SelectionModel {
+		[CCode (has_construct_function = false)]
+		protected ViewStackPages ();
+		public unowned Adw.ViewStackPage? get_selected_page ();
+		public void set_selected_page (Adw.ViewStackPage page);
+		public Adw.ViewStackPage selected_page { get; set; }
 	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_view_switcher_get_type ()")]
 	public sealed class ViewSwitcher : Gtk.Widget, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
@@ -1834,7 +1859,8 @@ namespace Adw {
 	[Version (since = "1.4")]
 	public enum ToolbarStyle {
 		FLAT,
-		RAISED
+		RAISED,
+		RAISED_BORDER
 	}
 	[CCode (cheader_filename = "adwaita.h", cprefix = "ADW_VIEW_SWITCHER_POLICY_", type_id = "adw_view_switcher_policy_get_type ()")]
 	public enum ViewSwitcherPolicy {

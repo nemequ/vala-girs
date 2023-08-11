@@ -1064,6 +1064,10 @@ namespace E {
 		public bool get_locate_keys ();
 		[Version (since = "3.20")]
 		public bool get_prefer_inline ();
+		[Version (since = "3.50")]
+		public bool get_send_prefer_encrypt ();
+		[Version (since = "3.50")]
+		public bool get_send_public_key ();
 		public bool get_sign_by_default ();
 		public unowned string get_signing_algorithm ();
 		public void set_always_trust (bool always_trust);
@@ -1075,6 +1079,10 @@ namespace E {
 		public void set_locate_keys (bool locate_keys);
 		[Version (since = "3.20")]
 		public void set_prefer_inline (bool prefer_inline);
+		[Version (since = "3.50")]
+		public void set_send_prefer_encrypt (bool send_prefer_encrypt);
+		[Version (since = "3.50")]
+		public void set_send_public_key (bool send_public_key);
 		public void set_sign_by_default (bool sign_by_default);
 		public void set_signing_algorithm (string signing_algorithm);
 		public bool always_trust { get; set construct; }
@@ -1083,6 +1091,8 @@ namespace E {
 		public string key_id { get; set construct; }
 		public bool locate_keys { get; set construct; }
 		public bool prefer_inline { get; set construct; }
+		public bool send_prefer_encrypt { get; set construct; }
+		public bool send_public_key { get; set construct; }
 		public bool sign_by_default { get; set construct; }
 		public string signing_algorithm { get; set construct; }
 	}
@@ -1151,10 +1161,15 @@ namespace E {
 		[CCode (has_construct_function = false)]
 		protected SourceRefresh ();
 		public bool get_enabled ();
+		[Version (since = "3.50")]
+		public bool get_enabled_on_metered_network ();
 		public uint get_interval_minutes ();
 		public void set_enabled (bool enabled);
+		[Version (since = "3.50")]
+		public void set_enabled_on_metered_network (bool enabled);
 		public void set_interval_minutes (uint interval_minutes);
 		public bool enabled { get; set construct; }
+		public bool enabled_on_metered_network { get; set construct; }
 		public uint interval_minutes { get; set construct; }
 	}
 	[CCode (cheader_filename = "libedataserver/libedataserver.h", type_id = "e_source_registry_get_type ()")]
@@ -1524,10 +1539,13 @@ namespace E {
 		public bool acl_sync (string? uri, E.XmlDocument xml, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool copy_sync (string source_uri, string destination_uri, string depth, bool can_overwrite, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool delete_sync (string uri, string? depth, string? etag, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public bool delete_with_headers_sync (string uri, string? depth, string? etag, Soup.MessageHeaders? in_headers, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.24")]
 		public string ensure_full_uri (GLib.Uri? request_uri, string href);
 		public bool get_acl_restrictions_sync (string? uri, out uint32 out_restrictions, out E.WebDAVACEPrincipalKind out_principal_kind, out GLib.SList<string> out_principal_hrefs, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_acl_sync (string? uri, out GLib.SList<E.WebDAVAccessControlEntry> out_entries, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public bool get_current_user_privilege_set_full_sync (string? uri, out GLib.SList<E.WebDAVPrivilege> out_privileges, out GLib.HashTable<void*,void*> out_capabilities, out GLib.HashTable<void*,void*> out_allows, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_current_user_privilege_set_sync (string? uri, out GLib.SList<E.WebDAVPrivilege> out_privileges, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_data_sync (string uri, out string? out_href, out string? out_etag, out Soup.MessageHeaders out_headers, out string out_bytes, out size_t out_length, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.36")]
@@ -2352,6 +2370,9 @@ namespace E {
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	[Version (since = "2.22")]
 	public static E.TimeParseStatus time_parse_date_ex (string value, [CCode (type = "tm*")] Posix.tm result, bool two_digit_year);
+	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
+	[Version (since = "3.50")]
+	public static E.TimeParseStatus time_parse_date_format (string value, string format, out void* out_result, out bool out_two_digit_year);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]
 	public static E.TimeParseStatus time_parse_time (string value, [CCode (type = "tm*")] Posix.tm result);
 	[CCode (cheader_filename = "libedataserver/libedataserver.h")]

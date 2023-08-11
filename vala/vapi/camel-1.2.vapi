@@ -95,7 +95,7 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_cipher_context_get_type ()")]
 	public class CipherContext : GLib.Object {
 		[CCode (has_construct_function = false)]
-		public CipherContext (Camel.Session session);
+		public CipherContext (Camel.Session? session);
 		[Version (since = "3.0")]
 		public async Camel.CipherValidity decrypt (Camel.MimePart ipart, Camel.MimePart opart, int io_priority, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.0")]
@@ -104,8 +104,9 @@ namespace Camel {
 		public async bool encrypt (string? userid, GLib.GenericArray<string> recipients, Camel.MimePart ipart, Camel.MimePart opart, int io_priority, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.0")]
 		public virtual bool encrypt_sync (string? userid, GLib.GenericArray<string> recipients, Camel.MimePart ipart, Camel.MimePart opart, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public static GLib.Quark error_quark ();
 		[Version (since = "2.32")]
-		public unowned Camel.Session get_session ();
+		public unowned Camel.Session? get_session ();
 		public virtual unowned string hash_to_id (Camel.CipherHash hash);
 		public virtual Camel.CipherHash id_to_hash (string id);
 		[Version (since = "3.0")]
@@ -726,14 +727,26 @@ namespace Camel {
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_gpg_context_get_type ()")]
 	public class GpgContext : Camel.CipherContext {
 		[CCode (has_construct_function = false, type = "CamelCipherContext*")]
-		public GpgContext (Camel.Session session);
+		public GpgContext (Camel.Session? session);
 		[Version (since = "2.32")]
 		public bool get_always_trust ();
+		[Version (since = "3.50")]
+		public bool get_key_data_info_sync (uint8 data, size_t data_size, uint32 flags, out GLib.SList<Camel.GpgKeyInfo> out_infos, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.46")]
 		public bool get_locate_keys ();
 		[Version (since = "3.20")]
 		public bool get_prefer_inline ();
+		[Version (since = "3.50")]
+		public bool get_public_key_info_sync (string keyid, uint32 flags, out GLib.SList<Camel.GpgKeyInfo> out_infos, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public bool get_public_key_sync (string keyid, uint32 flags, out uint8 out_data, out size_t out_data_size, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public bool has_public_key_sync (string keyid, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public bool import_key_sync (uint8 data, size_t data_size, uint32 flags, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public void set_always_trust (bool always_trust);
+		[Version (since = "3.50")]
+		public bool set_key_trust_sync (string keyid, Camel.GpgTrust trust, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.46")]
 		public void set_locate_keys (bool locate_keys);
 		[Version (since = "3.20")]
@@ -741,6 +754,18 @@ namespace Camel {
 		public bool always_trust { get; set construct; }
 		public bool locate_keys { get; set construct; }
 		public bool prefer_inline { get; set construct; }
+	}
+	[CCode (cheader_filename = "camel/camel.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "camel_gpg_key_info_get_type ()")]
+	[Compact]
+	[Version (since = "3.50")]
+	public class GpgKeyInfo {
+		public Camel.GpgKeyInfo? copy ();
+		public void free ();
+		public int64 get_creation_date ();
+		public unowned string get_fingerprint ();
+		public unowned string get_id ();
+		public Camel.GpgTrust get_trust ();
+		public unowned GLib.SList<string> get_user_ids ();
 	}
 	[CCode (cheader_filename = "camel/camel.h", type_id = "camel_html_parser_get_type ()")]
 	public class HTMLParser : GLib.Object {
@@ -2190,10 +2215,14 @@ namespace Camel {
 	public abstract class Transport : Camel.Service, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		protected Transport ();
+		[Version (since = "3.50")]
+		public bool get_request_dsn ();
 		[Version (since = "3.0")]
 		public async bool send_to (Camel.MimeMessage message, Camel.Address from, Camel.Address recipients, int io_priority, GLib.Cancellable? cancellable = null, out bool out_sent_message_saved) throws GLib.Error;
 		[Version (since = "3.0")]
 		public virtual bool send_to_sync (Camel.MimeMessage message, Camel.Address from, Camel.Address recipients, out bool out_sent_message_saved, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public void set_request_dsn (bool request_dsn);
 	}
 	[CCode (cheader_filename = "camel/camel.h", has_type_id = false)]
 	[Compact]
@@ -2822,6 +2851,12 @@ namespace Camel {
 		ULTIMATE,
 		TEMPORARY
 	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_CIPHER_CONTEXT_ERROR_KEY_NOT_", has_type_id = false)]
+	[Version (since = "3.50")]
+	public enum CipherContextError {
+		[CCode (cname = "CAMEL_CIPHER_CONTEXT_ERROR_KEY_NOT_FOUND")]
+		CIPHER_CONTEXT_ERROR_KEY_NOT_FOUND
+	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_CIPHER_HASH_", has_type_id = false)]
 	public enum CipherHash {
 		DEFAULT,
@@ -2968,6 +3003,16 @@ namespace Camel {
 	public enum FolderSummaryFlags {
 		DIRTY,
 		IN_MEMORY_ONLY
+	}
+	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_GPG_TRUST_", type_id = "camel_gpg_trust_get_type ()")]
+	[Version (since = "3.50")]
+	public enum GpgTrust {
+		NONE,
+		UNKNOWN,
+		NEVER,
+		MARGINAL,
+		FULL,
+		ULTIMATE
 	}
 	[CCode (cheader_filename = "camel/camel.h", cprefix = "CAMEL_HTML_PARSER_", has_type_id = false)]
 	public enum HTMLParserState {

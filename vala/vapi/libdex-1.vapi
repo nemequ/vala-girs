@@ -139,6 +139,9 @@ namespace Dex {
 		public Future.@catch (owned Dex.Future future, owned Dex.FutureCallback callback);
 		[CCode (cname = "dex_future_catch_loop", has_construct_function = false)]
 		public Future.catch_loop (owned Dex.Future future, owned Dex.FutureCallback callback);
+		[DestroysInstance]
+		[Version (since = "0.4")]
+		public void disown ();
 		[CCode (cname = "dex_future_finally", has_construct_function = false)]
 		public Future.@finally (owned Dex.Future future, owned Dex.FutureCallback callback);
 		[CCode (cname = "dex_future_finally_loop", has_construct_function = false)]
@@ -204,7 +207,7 @@ namespace Dex {
 		[CCode (has_construct_function = false)]
 		protected MainScheduler ();
 	}
-	[CCode (cheader_filename = "libdex.h", type_id = "dex_object_get_type ()")]
+	[CCode (cheader_filename = "libdex.h", ref_function = "dex_ref", type_id = "dex_object_get_type ()", unref_function = "dex_unref")]
 	public abstract class Object {
 		[CCode (has_construct_function = false)]
 		protected Object ();

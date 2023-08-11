@@ -25,6 +25,12 @@ namespace E {
 		public string dup_cache_dir ();
 		[Version (since = "3.12")]
 		public string dup_locale ();
+		[Version (since = "3.50")]
+		public GLib.GenericArray<weak E.Contact>? dup_view_contacts (size_t view_id, uint range_start, uint range_length);
+		[Version (since = "3.50")]
+		public E.BookIndices? dup_view_indices (size_t view_id);
+		[Version (since = "3.50")]
+		public E.BookClientViewSortFields dup_view_sort_fields (size_t view_id);
 		[Version (since = "3.34")]
 		public bool foreach_view (E.BookBackendForeachViewFunc? func);
 		[Version (since = "3.34")]
@@ -49,6 +55,8 @@ namespace E {
 		public E.DataBookDirect? get_direct_book ();
 		[Version (since = "3.6")]
 		public unowned E.SourceRegistry get_registry ();
+		[Version (since = "3.50")]
+		public uint get_view_n_total (size_t view_id);
 		[Version (since = "3.8")]
 		public bool get_writable ();
 		[NoWrapper]
@@ -62,6 +70,8 @@ namespace E {
 		[NoWrapper]
 		public virtual string impl_dup_locale ();
 		[NoWrapper]
+		public virtual E.BookIndices impl_dup_view_indices (size_t view_id);
+		[NoWrapper]
 		public virtual string impl_get_backend_property (string prop_name);
 		[NoWrapper]
 		public virtual void impl_get_contact (E.DataBook book, uint32 opid, GLib.Cancellable? cancellable, string id);
@@ -69,6 +79,8 @@ namespace E {
 		public virtual void impl_get_contact_list (E.DataBook book, uint32 opid, GLib.Cancellable? cancellable, string query);
 		[NoWrapper]
 		public virtual void impl_get_contact_list_uids (E.DataBook book, uint32 opid, GLib.Cancellable? cancellable, string query);
+		[NoWrapper]
+		public virtual uint impl_get_view_n_total (size_t view_id);
 		[NoWrapper]
 		public virtual void impl_modify_contacts (E.DataBook book, uint32 opid, GLib.Cancellable? cancellable, string vcards, uint32 opflags);
 		[NoWrapper]
@@ -81,6 +93,8 @@ namespace E {
 		public virtual void impl_remove_contacts (E.DataBook book, uint32 opid, GLib.Cancellable? cancellable, string uids, uint32 opflags);
 		[NoWrapper]
 		public virtual bool impl_set_locale (string locale, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[NoWrapper]
+		public virtual void impl_set_view_sort_fields (size_t view_id, E.BookClientViewSortFields fields);
 		[NoWrapper]
 		public virtual void impl_start_view (E.DataBookView view);
 		[NoWrapper]
@@ -112,6 +126,10 @@ namespace E {
 		public E.DataBook? ref_data_book ();
 		[Version (since = "3.12")]
 		public GLib.ProxyResolver? ref_proxy_resolver ();
+		[Version (since = "3.50")]
+		public E.DataBookView? ref_view (size_t view_id);
+		[Version (since = "3.50")]
+		public GLib.Object ref_view_user_data (size_t view_id);
 		[Version (since = "3.10")]
 		public async bool refresh (GLib.Cancellable? cancellable) throws GLib.Error;
 		[Version (since = "3.10")]
@@ -129,11 +147,19 @@ namespace E {
 		public void set_data_book (E.DataBook data_book);
 		[Version (since = "3.12")]
 		public bool set_locale (string locale, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public void set_view_indices (size_t view_id, E.BookIndices? indices);
+		[Version (since = "3.50")]
+		public void set_view_n_total (size_t view_id, uint n_total);
+		[Version (since = "3.50")]
+		public void set_view_sort_fields (size_t view_id, E.BookClientViewSortFields? fields);
 		[Version (since = "3.8")]
 		public void set_writable (bool writable);
 		public void start_view (E.DataBookView view);
 		public void stop_view (E.DataBookView view);
 		public void sync ();
+		[Version (since = "3.50")]
+		public void take_view_user_data (size_t view_id, owned GLib.Object? user_data);
 		public string cache_dir { get; set; }
 		[NoAccessorMethod]
 		public GLib.ProxyResolver proxy_resolver { owned get; }
@@ -161,6 +187,8 @@ namespace E {
 		public unowned string text ();
 		[Version (since = "3.34")]
 		public void @unlock ();
+		[Version (since = "3.50")]
+		public static bool util_phone_compare (string phone_value, string lookup_value, E.BookBackendSexpCompareKind compare_kind);
 	}
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", type_id = "e_book_backend_sync_get_type ()")]
 	public class BookBackendSync : E.BookBackend {
@@ -198,6 +226,8 @@ namespace E {
 		public BookCache (string filename, E.Source? source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "3.44")]
 		public bool contains_email (string email_address, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public bool count_query (string? sexp, out uint out_n_total, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool cursor_calculate (E.BookCacheCursor cursor, out int out_total, out int out_position, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public int cursor_compare_contact (E.BookCacheCursor cursor, E.Contact contact, out bool out_matches_sexp);
 		public void cursor_free (E.BookCacheCursor cursor);
@@ -207,6 +237,12 @@ namespace E {
 		[Version (since = "3.48")]
 		public string? dup_categories ();
 		public string dup_locale ();
+		[Version (since = "3.50")]
+		public bool dup_query_contacts (string? sexp, E.ContactField sort_field, E.BookCursorSortType sort_type, uint n_offset, uint n_limit, owned GLib.GenericArray<weak E.Contact> out_contacts, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public bool dup_query_field (E.ContactField summary_field, string? sexp, E.ContactField sort_field, E.BookCursorSortType sort_type, uint n_offset, uint n_limit, owned GLib.GenericArray<weak string> out_uids, owned GLib.GenericArray<weak string> out_values, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public bool dup_summary_field (E.ContactField summary_field, string uid, out string out_value, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (has_construct_function = false)]
 		public BookCache.full (string filename, E.Source? source, E.SourceBackendSummarySetup? setup, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool get_contact (string uid, bool meta_contact, out E.Contact out_contact, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -317,6 +353,14 @@ namespace E {
 		public BookSqlite (string path, E.Source? source, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool add_contact (E.Contact contact, string extra, bool replace, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool add_contacts (GLib.SList<E.Contact> contacts, GLib.SList<string>? extra, bool replace, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public bool count_query (string? sexp, out uint out_n_total, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public bool dup_query_contacts (string? sexp, E.ContactField sort_field, E.BookCursorSortType sort_type, uint n_offset, uint n_limit, owned GLib.GenericArray<weak E.Contact> out_contacts, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public bool dup_query_field (E.ContactField summary_field, string? sexp, E.ContactField sort_field, E.BookCursorSortType sort_type, uint n_offset, uint n_limit, owned GLib.GenericArray<weak string> out_uids, owned GLib.GenericArray<weak string> out_values, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "3.50")]
+		public bool dup_summary_field (E.ContactField summary_field, string uid, out string out_value, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static GLib.Quark error_quark ();
 		[Version (since = "3.48")]
 		public bool exec (string sql_stmt, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -460,11 +504,23 @@ namespace E {
 	public class DataBookView : GLib.Object, GLib.Initable {
 		[CCode (has_construct_function = false)]
 		public DataBookView (E.BookBackend backend, E.BookBackendSExp sexp, GLib.DBusConnection connection, string object_path) throws GLib.Error;
+		[Version (since = "3.50")]
+		public void claim_contact_uid (string uid);
+		[Version (since = "3.50")]
+		public GLib.GenericArray<weak E.Contact>? dup_contacts (uint range_start, uint range_length);
+		[Version (since = "3.50")]
+		public E.BookIndices? dup_indices ();
 		[Version (since = "3.8")]
 		public unowned GLib.DBusConnection get_connection ();
 		public unowned GLib.HashTable<string,int>? get_fields_of_interest ();
 		[Version (since = "3.4")]
 		public E.BookClientViewFlags get_flags ();
+		[Version (since = "3.50")]
+		public bool get_force_initial_notifications ();
+		[Version (since = "3.50")]
+		public size_t get_id ();
+		[Version (since = "3.50")]
+		public uint get_n_total ();
 		[Version (since = "3.8")]
 		public unowned string get_object_path ();
 		[Version (since = "3.8")]
@@ -472,6 +528,8 @@ namespace E {
 		[Version (since = "3.34")]
 		public bool is_completed ();
 		public void notify_complete (GLib.Error error);
+		[Version (since = "3.50")]
+		public void notify_content_changed ();
 		[Version (since = "3.2")]
 		public void notify_progress (uint percent, string message);
 		public void notify_remove (string id);
@@ -480,11 +538,53 @@ namespace E {
 		public void notify_update_vcard (string id, string vcard);
 		[Version (since = "3.34")]
 		public E.BookBackend? ref_backend ();
+		[Version (since = "3.50")]
+		public void set_force_initial_notifications (bool value);
+		[Version (since = "3.50")]
+		public void set_indices (E.BookIndices indices);
+		[Version (since = "3.50")]
+		public void set_n_total (uint n_total);
+		[Version (since = "3.50")]
+		public void set_sort_fields (E.BookClientViewSortFields fields);
 		[NoAccessorMethod]
 		public E.BookBackend backend { owned get; construct; }
 		public GLib.DBusConnection connection { get; construct; }
+		[NoAccessorMethod]
+		public void* indices { get; set; }
+		public uint n_total { get; set; }
 		public string object_path { get; construct; }
 		public E.BookBackendSExp sexp { get; construct; }
+		[Version (since = "3.50")]
+		public signal void objects_added ([CCode (array_length = false, array_null_terminated = true)] string[] vcards);
+		[Version (since = "3.50")]
+		public signal void objects_modified ([CCode (array_length = false, array_null_terminated = true)] string[] vcards);
+		[Version (since = "3.50")]
+		public signal void objects_removed ([CCode (array_length = false, array_null_terminated = true)] string[] uids);
+	}
+	[CCode (cheader_filename = "libedata-book/libedata-book.h", type_id = "e_data_book_view_watcher_cache_get_type ()")]
+	[Version (since = "3.50")]
+	public class DataBookViewWatcherCache : E.BookIndicesUpdater {
+		[CCode (has_construct_function = false, type = "GObject*")]
+		public DataBookViewWatcherCache (E.BookBackend backend, E.BookCache cache, E.DataBookView view);
+		public GLib.GenericArray<weak E.Contact>? dup_contacts (uint range_start, uint range_length);
+		public void take_sort_fields (owned E.BookClientViewSortFields? sort_fields);
+	}
+	[CCode (cheader_filename = "libedata-book/libedata-book.h", type_id = "e_data_book_view_watcher_memory_get_type ()")]
+	[Version (since = "3.50")]
+	public class DataBookViewWatcherMemory : E.BookIndicesUpdater {
+		[CCode (has_construct_function = false, type = "GObject*")]
+		public DataBookViewWatcherMemory (E.BookBackend backend, E.DataBookView view);
+		public GLib.GenericArray<weak E.Contact>? dup_contacts (uint range_start, uint range_length);
+		public void set_locale (string? locale);
+		public void take_sort_fields (owned E.BookClientViewSortFields? sort_fields);
+	}
+	[CCode (cheader_filename = "libedata-book/libedata-book.h", type_id = "e_data_book_view_watcher_sqlite_get_type ()")]
+	[Version (since = "3.50")]
+	public class DataBookViewWatcherSqlite : E.BookIndicesUpdater {
+		[CCode (has_construct_function = false, type = "GObject*")]
+		public DataBookViewWatcherSqlite (E.BookBackend backend, E.BookSqlite ebsql, E.DataBookView view);
+		public GLib.GenericArray<weak E.Contact>? dup_contacts (uint range_start, uint range_length);
+		public void take_sort_fields (owned E.BookClientViewSortFields? sort_fields);
 	}
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", type_id = "e_subprocess_book_factory_get_type ()")]
 	public class SubprocessBookFactory : E.SubprocessFactory, GLib.Initable {
@@ -513,6 +613,15 @@ namespace E {
 		public weak string uid;
 		public weak string vcard;
 		public weak string extra;
+	}
+	[CCode (cheader_filename = "libedata-book/libedata-book.h", cprefix = "E_BOOK_BACKEND_SEXP_COMPARE_KIND_", has_type_id = false)]
+	[Version (since = "3.50")]
+	public enum BookBackendSexpCompareKind {
+		UNKNOWN,
+		BEGINS_WITH,
+		ENDS_WITH,
+		CONTAINS,
+		IS
 	}
 	[CCode (cheader_filename = "libedata-book/libedata-book.h", cprefix = "E_BOOK_CACHE_CURSOR_ORIGIN_", has_type_id = false)]
 	[Version (since = "3.26")]

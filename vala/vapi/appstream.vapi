@@ -491,10 +491,10 @@ namespace AppStream {
 		public AppStream.ParseFlags get_parse_flags ();
 		public bool get_update_existing ();
 		public bool get_write_header ();
-		public bool parse (string data, AppStream.FormatKind format) throws GLib.Error;
 		[Version (since = "0.14.0")]
 		public bool parse_bytes (GLib.Bytes bytes, AppStream.FormatKind format) throws GLib.Error;
-		public bool parse_desktop_data (string data, string cid) throws GLib.Error;
+		public bool parse_data (string data, ssize_t data_len, AppStream.FormatKind format) throws GLib.Error;
+		public bool parse_desktop_data (string cid, string data, ssize_t data_len) throws GLib.Error;
 		public bool parse_file (GLib.File file, AppStream.FormatKind format) throws GLib.Error;
 		[Version (since = "0.16.0")]
 		public GLib.GenericArray<weak AppStream.Release>? parse_releases_bytes (GLib.Bytes bytes) throws GLib.Error;

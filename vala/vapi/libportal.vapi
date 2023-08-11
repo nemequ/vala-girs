@@ -70,6 +70,7 @@ namespace Xdp {
 		[CCode (has_construct_function = false)]
 		protected Session ();
 		public void close ();
+		public int connect_to_eis () throws GLib.Error;
 		public Xdp.DeviceType get_devices ();
 		public Xdp.PersistMode get_persist_mode ();
 		public string? get_restore_token ();

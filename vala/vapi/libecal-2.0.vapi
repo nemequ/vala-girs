@@ -1080,6 +1080,9 @@ namespace ECal {
 	public const string STATIC_CAPABILITY_DELEGATE_TO_MANY;
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_HAS_UNACCEPTED_MEETING")]
 	public const string STATIC_CAPABILITY_HAS_UNACCEPTED_MEETING;
+	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_ITIP_SUPPRESS_ON_REMOVE_SUPPORTED")]
+	[Version (since = "3.50")]
+	public const string STATIC_CAPABILITY_ITIP_SUPPRESS_ON_REMOVE_SUPPORTED;
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_NO_ALARM_AFTER_START")]
 	[Version (since = "3.8")]
 	public const string STATIC_CAPABILITY_NO_ALARM_AFTER_START;
@@ -1131,6 +1134,9 @@ namespace ECal {
 	public const string STATIC_CAPABILITY_REMOVE_ONLY_THIS;
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_REQ_SEND_OPTIONS")]
 	public const string STATIC_CAPABILITY_REQ_SEND_OPTIONS;
+	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_RETRACT_SUPPORTED")]
+	[Version (since = "3.50")]
+	public const string STATIC_CAPABILITY_RETRACT_SUPPORTED;
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_SAVE_SCHEDULES")]
 	public const string STATIC_CAPABILITY_SAVE_SCHEDULES;
 	[CCode (cheader_filename = "libecal/libecal.h", cname = "E_CAL_STATIC_CAPABILITY_SIMPLE_MEMO")]
@@ -1278,6 +1284,9 @@ namespace ECal {
 	[Version (since = "3.48")]
 	public static void util_diff_categories (ICal.Component? old_comp, ICal.Component? new_comp, out GLib.HashTable<weak string,int> out_added, out GLib.HashTable<weak string,int> out_removed);
 	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.50")]
+	public static bool util_email_addresses_equal (string? email1, string? email2);
+	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.48")]
 	public static void util_foreach_category (ICal.Component comp, ECal.UtilForeachCategoryFunc func);
 	[CCode (cheader_filename = "libecal/libecal.h")]
@@ -1288,8 +1297,20 @@ namespace ECal {
 	[Version (since = "3.48")]
 	public static ECal.ComponentAlarms? util_generate_alarms_for_uid_sync (void* client, string uid, long start, long end, ECal.ComponentAlarmAction omit, [CCode (delegate_target_pos = 6.5)] ECal.RecurResolveTimezoneCb resolve_tzid, ICal.Timezone default_timezone, GLib.Cancellable? cancellable = null) throws GLib.Error;
 	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.50")]
+	public static unowned string? util_get_attendee_email (ECal.ComponentAttendee? attendee);
+	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.32")]
 	public static void util_get_component_occur_times (ECal.Component comp, out long out_start, out long out_end, [CCode (delegate_target_pos = 4.5)] ECal.RecurResolveTimezoneCb tz_cb, ICal.Timezone default_timezone, ICal.ComponentKind kind);
+	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.50")]
+	public static bool util_get_default_name_and_address (E.SourceRegistry registry, out string out_name, out string out_address);
+	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.50")]
+	public static unowned string? util_get_organizer_email (ECal.ComponentOrganizer? organizer);
+	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.50")]
+	public static unowned string? util_get_property_email (ICal.Property prop);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.28")]
 	public static unowned ICal.Timezone? util_get_system_timezone ();
@@ -1356,6 +1377,9 @@ namespace ECal {
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "3.38")]
 	public static ICal.Component? util_split_at_instance_ex (ICal.Component icalcomp, ICal.Time rid, ICal.Time? master_dtstart, ECal.RecurResolveTimezoneCb tz_cb);
+	[CCode (cheader_filename = "libecal/libecal.h")]
+	[Version (since = "3.50")]
+	public static unowned string util_strip_mailto (string? address);
 	[CCode (cheader_filename = "libecal/libecal.h")]
 	[Version (since = "2.22")]
 	public static ICal.Time util_tm_to_icaltime ([CCode (type = "tm*")] Posix.tm tm, bool is_date);

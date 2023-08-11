@@ -110,6 +110,10 @@ namespace GUsb {
 		public uint8 get_device_subclass ();
 		[Version (since = "0.4.0")]
 		public GLib.GenericArray<weak GUsb.DeviceEvent> get_events ();
+		[Version (since = "0.4.7")]
+		public GLib.Bytes get_hid_descriptor_default () throws GLib.Error;
+		[Version (since = "0.4.7")]
+		public GLib.GenericArray<weak GLib.Bytes> get_hid_descriptors () throws GLib.Error;
 		[Version (since = "0.2.8")]
 		public GUsb.Interface get_interface (uint8 class_id, uint8 subclass_id, uint8 protocol_id) throws GLib.Error;
 		[Version (since = "0.2.8")]

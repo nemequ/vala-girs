@@ -125,13 +125,13 @@ namespace Vte {
 		public unowned string? get_window_title ();
 		[Version (since = "0.40")]
 		public unowned string? get_word_char_exceptions ();
-		[Version (since = "0.74")]
+		[Version (since = "0.76")]
 		public Vte.Align get_xalign ();
-		[Version (since = "0.74")]
+		[Version (since = "0.76")]
 		public bool get_xfill ();
-		[Version (since = "0.74")]
+		[Version (since = "0.76")]
 		public Vte.Align get_yalign ();
-		[Version (since = "0.74")]
+		[Version (since = "0.76")]
 		public bool get_yfill ();
 		[Version (since = "0.46")]
 		public int match_add_regex (Vte.Regex regex, uint32 flags);
@@ -213,13 +213,13 @@ namespace Vte {
 		public void set_text_blink_mode (Vte.TextBlinkMode text_blink_mode);
 		[Version (since = "0.40")]
 		public void set_word_char_exceptions (string exceptions);
-		[Version (since = "0.74")]
+		[Version (since = "0.76")]
 		public void set_xalign (Vte.Align align);
-		[Version (since = "0.74")]
+		[Version (since = "0.76")]
 		public void set_xfill (bool fill);
-		[Version (since = "0.74")]
+		[Version (since = "0.76")]
 		public void set_yalign (Vte.Align align);
-		[Version (since = "0.74")]
+		[Version (since = "0.76")]
 		public void set_yfill (bool fill);
 		[Version (since = "0.48")]
 		public void spawn_async (Vte.PtyFlags pty_flags, string? working_directory, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length = false, array_null_terminated = true)] string[]? envv, GLib.SpawnFlags spawn_flags, [CCode (delegate_target_pos = 6.33333, destroy_notify_pos = 6.66667)] owned GLib.SpawnChildSetupFunc? child_setup, int timeout, GLib.Cancellable? cancellable, [CCode (scope = "async")] Vte.TerminalSpawnAsyncCallback? callback);
@@ -286,13 +286,13 @@ namespace Vte {
 		public string window_title { get; }
 		[Version (since = "0.40")]
 		public string word_char_exceptions { get; }
-		[Version (since = "0.74")]
+		[Version (since = "0.76")]
 		public Vte.Align xalign { get; set; }
-		[Version (since = "0.74")]
+		[Version (since = "0.76")]
 		public bool xfill { get; set; }
-		[Version (since = "0.74")]
+		[Version (since = "0.76")]
 		public Vte.Align yalign { get; set; }
-		[Version (since = "0.74")]
+		[Version (since = "0.76")]
 		public bool yfill { get; set; }
 		public virtual signal void bell ();
 		public virtual signal void char_size_changed (uint char_width, uint char_height);
@@ -339,7 +339,7 @@ namespace Vte {
 	public struct CharAttributes {
 	}
 	[CCode (cheader_filename = "vte/vte.h", cprefix = "VTE_ALIGN_", type_id = "vte_align_get_type ()")]
-	[Version (since = "0.68")]
+	[Version (since = "0.76")]
 	public enum Align {
 		START,
 		CENTER,

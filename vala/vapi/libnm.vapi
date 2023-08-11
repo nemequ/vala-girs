@@ -642,6 +642,8 @@ namespace NM {
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_access_point_get_type ()")]
 	public sealed class AccessPoint : NM.Object {
+		[CCode (cname = "NM_ACCESS_POINT_BANDWIDTH")]
+		public const string BANDWIDTH;
 		[CCode (cname = "NM_ACCESS_POINT_BSSID")]
 		public const string BSSID;
 		[CCode (cname = "NM_ACCESS_POINT_FLAGS")]
@@ -668,6 +670,8 @@ namespace NM {
 		protected AccessPoint ();
 		public bool connection_valid (NM.Connection connection);
 		public GLib.GenericArray<NM.Connection> filter_connections (GLib.GenericArray<NM.Connection> connections);
+		[Version (since = "1.46")]
+		public uint32 get_bandwidth ();
 		public unowned string get_bssid ();
 		public NM.80211ApFlags get_flags ();
 		public uint32 get_frequency ();
@@ -679,6 +683,8 @@ namespace NM {
 		public unowned GLib.Bytes get_ssid ();
 		public uint8 get_strength ();
 		public NM.80211ApSecurityFlags get_wpa_flags ();
+		[Version (since = "1.46")]
+		public uint bandwidth { get; }
 		public string bssid { get; }
 		public NM.80211ApFlags flags { get; }
 		public uint frequency { get; }
@@ -2291,6 +2297,8 @@ namespace NM {
 		public const string PATH;
 		[CCode (cname = "NM_REMOTE_CONNECTION_UNSAVED")]
 		public const string UNSAVED;
+		[CCode (cname = "NM_REMOTE_CONNECTION_VERSION_ID")]
+		public const string VERSION_ID;
 		[CCode (cname = "NM_REMOTE_CONNECTION_VISIBLE")]
 		public const string VISIBLE;
 		[CCode (has_construct_function = false)]
@@ -2308,6 +2316,8 @@ namespace NM {
 		public GLib.Variant get_secrets (string setting_name, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async GLib.Variant get_secrets_async (string setting_name, GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool get_unsaved ();
+		[Version (since = "1.44")]
+		public uint64 get_version_id ();
 		public bool get_visible ();
 		[Version (deprecated = true, deprecated_since = "1.22")]
 		public bool save (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -2319,6 +2329,8 @@ namespace NM {
 		[Version (since = "1.12")]
 		public uint flags { get; }
 		public bool unsaved { get; }
+		[Version (since = "1.44")]
+		public uint64 version_id { get; }
 		public bool visible { get; }
 	}
 	[CCode (cheader_filename = "NetworkManager.h", type_id = "nm_secret_agent_old_get_type ()")]
@@ -7506,7 +7518,11 @@ namespace NM {
 		[CCode (cname = "NM_SETTINGS_ERROR_INVALID_HOSTNAME")]
 		INVALIDHOSTNAME,
 		[CCode (cname = "NM_SETTINGS_ERROR_INVALID_ARGUMENTS")]
-		INVALIDARGUMENTS;
+		INVALIDARGUMENTS,
+		[CCode (cname = "NM_SETTINGS_ERROR_VERSION_ID_MISMATCH")]
+		VERSIONIDMISMATCH,
+		[CCode (cname = "NM_SETTINGS_ERROR_NOT_SUPPORTED_BY_PLUGIN")]
+		NOTSUPPORTEDBYPLUGIN;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "NetworkManager.h", cprefix = "NM_VPN_PLUGIN_ERROR_", type_id = "nm_vpn_plugin_error_get_type ()")]

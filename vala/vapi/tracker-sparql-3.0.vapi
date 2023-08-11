@@ -186,6 +186,8 @@ namespace Tracker {
 	public abstract class Batch : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Batch ();
+		[Version (since = "3.6")]
+		public void add_rdf (Tracker.DeserializeFlags flags, Tracker.RdfFormat format, string default_graph, GLib.InputStream stream);
 		public void add_resource (string? graph, Tracker.Resource resource);
 		public void add_sparql (string sparql);
 		[Version (since = "3.5")]
