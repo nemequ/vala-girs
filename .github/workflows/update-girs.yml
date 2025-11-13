@@ -1,0 +1,39 @@
+name: update-girs
+run-name: Update .gir files
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "3 0 * * *"
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/gnome_infrastructure/gnome-build-meta:sdk-nightly
+    steps:
+      - uses: actions/checkout@v5
+      - name: Copy .gir files from GNOME nightly
+        run: cp /usr/share/gir-1.0/*.gir ./gir-1.0/
+      - name: Copy .vapi files from GNOME nightly
+        run: cp /usr/share/vala/vapi/* ./vala/vapi/
+
+      - name: Check for Changes
+        id: check_changes
+        run: |
+          git config --global --add safe.directory $PWD
+          if [[ -n "$(git diff --exit-code)" ]]; then
+            echo "Changes detected."
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "No changes detected."
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Commit and Push Changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -a -m 'Automatic update of .gir and .vapi files'
+          git push
