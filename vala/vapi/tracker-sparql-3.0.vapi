@@ -49,14 +49,18 @@ namespace Tracker {
 			public async bool deserialize_async (Tracker.DeserializeFlags flags, Tracker.RdfFormat format, string default_graph, GLib.InputStream stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
 			public unowned Tracker.NamespaceManager get_namespace_manager ();
 			[Version (since = "3.3")]
-			public Tracker.Sparql.Statement? load_statement_from_gresource (string resource_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
+			public Tracker.Sparql.Statement load_statement_from_gresource (string resource_path, GLib.Cancellable? cancellable = null) throws GLib.Error;
 			[Version (since = "3.3")]
 			public void map_connection (string handle_name, Tracker.Sparql.Connection service_connection);
 			public static Tracker.Sparql.Connection @new (Tracker.Sparql.ConnectionFlags flags, GLib.File? store, GLib.File? ontology, GLib.Cancellable? cancellable = null) throws GLib.Error;
 			public static async Tracker.Sparql.Connection new_async (Tracker.Sparql.ConnectionFlags flags, GLib.File? store, GLib.File? ontology, GLib.Cancellable? cancellable = null) throws GLib.Error;
+			[Version (since = "3.11")]
+			public static Tracker.Sparql.Connection new_from_rdf (Tracker.Sparql.ConnectionFlags flags, GLib.File? store, Tracker.DeserializeFlags deserialize_flags, Tracker.RdfFormat rdf_format, GLib.InputStream rdf_stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
+			[Version (since = "3.11")]
+			public static async Tracker.Sparql.Connection new_from_rdf_async (Tracker.Sparql.ConnectionFlags flags, GLib.File? store, Tracker.DeserializeFlags deserialize_flags, Tracker.RdfFormat rdf_format, GLib.InputStream rdf_stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
 			public Tracker.Sparql.Cursor query (string sparql, GLib.Cancellable? cancellable = null) throws GLib.Error;
 			public async Tracker.Sparql.Cursor query_async (string sparql, GLib.Cancellable? cancellable = null) throws GLib.Error;
-			public Tracker.Sparql.Statement? query_statement (string sparql, GLib.Cancellable? cancellable = null) throws GLib.Error;
+			public Tracker.Sparql.Statement query_statement (string sparql, GLib.Cancellable? cancellable = null) throws GLib.Error;
 			public static Tracker.Sparql.Connection remote_new (string uri_base);
 			[Version (since = "3.3")]
 			public async GLib.InputStream serialize_async (Tracker.SerializeFlags flags, Tracker.RdfFormat format, string query, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -72,7 +76,7 @@ namespace Tracker {
 			[Version (since = "3.1")]
 			public async bool update_resource_async (string? graph, Tracker.Resource resource, GLib.Cancellable? cancellable = null) throws GLib.Error;
 			[Version (since = "3.5")]
-			public Tracker.Sparql.Statement? update_statement (string sparql, GLib.Cancellable? cancellable = null) throws GLib.Error;
+			public Tracker.Sparql.Statement update_statement (string sparql, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		}
 		[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", type_id = "tracker_sparql_cursor_get_type ()")]
 		[GIR (name = "SparqlCursor")]
@@ -86,6 +90,8 @@ namespace Tracker {
 			public GLib.DateTime? get_datetime (int column);
 			public double get_double (int column);
 			public int64 get_integer (int column);
+			[Version (since = "3.7")]
+			public unowned string? get_langstring (int column, out string langtag, out long length);
 			public int get_n_columns ();
 			public unowned string? get_string (int column, out long length = null);
 			public Tracker.Sparql.ValueType get_value_type (int column);
@@ -108,6 +114,8 @@ namespace Tracker {
 			public void bind_datetime (string name, GLib.DateTime value);
 			public void bind_double (string name, double value);
 			public void bind_int (string name, int64 value);
+			[Version (since = "3.7")]
+			public void bind_langstring (string name, string value, string langtag);
 			public void bind_string (string name, string value);
 			public void clear_bindings ();
 			public Tracker.Sparql.Cursor execute (GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -133,7 +141,11 @@ namespace Tracker {
 			FTS_ENABLE_UNACCENT,
 			FTS_ENABLE_STOP_WORDS,
 			FTS_IGNORE_NUMBERS,
-			ANONYMOUS_BNODES
+			ANONYMOUS_BNODES,
+			[Version (since = "3.11")]
+			DISABLE_SYNTAX_EXTENSIONS,
+			[Version (since = "3.11")]
+			SPARQL_STRICT
 		}
 		[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", cprefix = "TRACKER_SPARQL_VALUE_TYPE_", has_type_id = false)]
 		[GIR (name = "SparqlValueType")]
@@ -201,7 +213,29 @@ namespace Tracker {
 	public abstract class Endpoint : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Endpoint ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "3.7")]
+		public string[] get_allowed_graphs ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "3.7")]
+		public string[] get_allowed_services ();
+		[Version (since = "3.7")]
+		public bool get_readonly ();
 		public unowned Tracker.Sparql.Connection get_sparql_connection ();
+		[Version (since = "3.7")]
+		public void set_allowed_graphs (string graphs);
+		[Version (since = "3.7")]
+		public void set_allowed_services (string services);
+		[Version (since = "3.7")]
+		public void set_readonly (bool readonly);
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "3.7")]
+		public string[] allowed_graphs { owned get; set; }
+		[CCode (array_length = false, array_null_terminated = true)]
+		[Version (since = "3.7")]
+		public string[] allowed_services { owned get; set; }
+		[Version (since = "3.7")]
+		public bool readonly { get; set; }
 		public Tracker.Sparql.Connection sparql_connection { get; construct; }
 	}
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", type_id = "tracker_endpoint_dbus_get_type ()")]
@@ -212,6 +246,7 @@ namespace Tracker {
 		public GLib.DBusConnection dbus_connection { owned get; construct; }
 		[NoAccessorMethod]
 		public string object_path { owned get; construct; }
+		public signal bool block_call (string object);
 	}
 	[CCode (cheader_filename = "libtracker-sparql/tracker-sparql.h", type_id = "tracker_endpoint_http_get_type ()")]
 	[Version (since = "3.1")]
@@ -243,7 +278,7 @@ namespace Tracker {
 	public class Notifier : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Notifier ();
-		public uint signal_subscribe (GLib.DBusConnection connection, string service, string? object_path, string? graph);
+		public uint signal_subscribe (GLib.DBusConnection connection, string? service, string? object_path, string? graph);
 		public void signal_unsubscribe (uint handler_id);
 		[NoAccessorMethod]
 		public Tracker.Sparql.Connection connection { owned get; construct; }

@@ -6,6 +6,12 @@ namespace Manette {
 	public sealed class Device : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected Device ();
+		[Version (since = "0.2.10")]
+		public Manette.DeviceType get_device_type ();
+		[Version (since = "0.2.10")]
+		public unowned string get_guid ();
+		[Version (since = "0.2.10")]
+		public string? get_mapping ();
 		public unowned string get_name ();
 		public bool has_input (uint type, uint code);
 		public bool has_rumble ();
@@ -13,6 +19,8 @@ namespace Manette {
 		public void remove_user_mapping ();
 		public bool rumble (uint16 strong_magnitude, uint16 weak_magnitude, uint16 milliseconds);
 		public void save_user_mapping (string mapping_string);
+		[Version (since = "0.2.10")]
+		public bool supports_mapping ();
 		public signal void absolute_axis_event (Manette.Event event);
 		public signal void button_press_event (Manette.Event event);
 		public signal void button_release_event (Manette.Event event);
@@ -47,6 +55,12 @@ namespace Manette {
 	public class MonitorIter {
 		public bool next (out unowned Manette.Device? device);
 	}
+	[CCode (cheader_filename = "libmanette.h", cprefix = "MANETTE_DEVICE_", type_id = "manette_device_type_get_type ()")]
+	[Version (since = "0.2.10")]
+	public enum DeviceType {
+		GENERIC,
+		STEAM_DECK
+	}
 	[CCode (cheader_filename = "libmanette.h", cprefix = "MANETTE_EVENT_", type_id = "manette_event_type_get_type ()")]
 	public enum EventType {
 		[CCode (cname = "MANETTE_EVENT_NOTHING")]
@@ -60,6 +74,24 @@ namespace Manette {
 		[CCode (cname = "MANETTE_EVENT_HAT")]
 		EVENT_HAT
 	}
+	[CCode (cheader_filename = "libmanette.h", cname = "MANETTE_MAJOR_VERSION")]
+	[Version (since = "0.2.10")]
+	public const int MAJOR_VERSION;
+	[CCode (cheader_filename = "libmanette.h", cname = "MANETTE_MICRO_VERSION")]
+	[Version (since = "0.2.10")]
+	public const int MICRO_VERSION;
+	[CCode (cheader_filename = "libmanette.h", cname = "MANETTE_MINOR_VERSION")]
+	[Version (since = "0.2.10")]
+	public const int MINOR_VERSION;
+	[CCode (cheader_filename = "libmanette.h", cname = "MANETTE_VERSION_S")]
+	[Version (since = "0.2.10")]
+	public const string VERSION_S;
+	[CCode (cheader_filename = "libmanette.h")]
+	public static uint get_major_version ();
+	[CCode (cheader_filename = "libmanette.h")]
+	public static uint get_micro_version ();
+	[CCode (cheader_filename = "libmanette.h")]
+	public static uint get_minor_version ();
 	[CCode (cheader_filename = "libmanette.h")]
 	public static GLib.Resource get_resource ();
 }
