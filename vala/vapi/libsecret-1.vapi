@@ -241,7 +241,15 @@ namespace Secret {
 		IS_LOCKED,
 		NO_SUCH_OBJECT,
 		ALREADY_EXISTS,
-		INVALID_FILE_FORMAT;
+		INVALID_FILE_FORMAT,
+		[Version (since = "0.21.2")]
+		MISMATCHED_SCHEMA,
+		[Version (since = "0.21.2")]
+		NO_MATCHING_ATTRIBUTE,
+		[Version (since = "0.21.2")]
+		WRONG_TYPE,
+		[Version (since = "0.21.2")]
+		EMPTY_TABLE;
 		public static GLib.Quark get_quark ();
 	}
 	[CCode (cheader_filename = "libsecret/secret.h", cprefix = "SECRET_ITEM_CREATE_", type_id = "secret_item_create_flags_get_type ()")]
@@ -305,6 +313,9 @@ namespace Secret {
 	public static GLib.HashTable<string,string> attributes_build (Secret.Schema schema, ...);
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	public static GLib.HashTable<string,string> attributes_buildv (Secret.Schema schema, va_list va);
+	[CCode (cheader_filename = "libsecret/secret.h")]
+	[Version (since = "0.21.2")]
+	public static bool attributes_validate (Secret.Schema schema, GLib.HashTable<void*,void*> attributes) throws GLib.Error;
 	[CCode (cheader_filename = "libsecret/secret.h")]
 	[Version (replacement = "Backend.get", since = "0.19.0")]
 	public static async Secret.Backend backend_get (Secret.BackendFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;

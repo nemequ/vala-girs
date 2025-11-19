@@ -58,8 +58,8 @@ namespace GClue {
 	public class Simple : GLib.Object, GLib.AsyncInitable {
 		[CCode (cname = "gclue_simple_new", has_construct_function = false)]
 		public async Simple (string desktop_id, GClue.AccuracyLevel accuracy_level, GLib.Cancellable? cancellable) throws GLib.Error;
-		public unowned GClue.ClientProxy get_client ();
-		public unowned GClue.Location get_location ();
+		public unowned GClue.ClientProxy? get_client ();
+		public unowned GClue.Location? get_location ();
 		[CCode (has_construct_function = false)]
 		public Simple.sync (string desktop_id, GClue.AccuracyLevel accuracy_level, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[CCode (cname = "gclue_simple_new_with_thresholds", has_construct_function = false)]

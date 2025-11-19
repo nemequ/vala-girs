@@ -6,7 +6,7 @@ namespace Soup {
 		[CCode (cheader_filename = "libsoup/soup.h")]
 		public static GLib.HashTable<weak string,weak string> decode (string encoded_form);
 		[CCode (cheader_filename = "libsoup/soup.h")]
-		public static GLib.HashTable<weak string,weak string>? decode_multipart (Soup.Multipart multipart, string? file_control_name, out string filename, out string content_type, out GLib.Bytes file);
+		public static GLib.HashTable<weak string,weak string>? decode_multipart (owned Soup.Multipart multipart, string? file_control_name, out string filename, out string content_type, out GLib.Bytes file);
 		[CCode (cheader_filename = "libsoup/soup.h")]
 		public static string encode (...);
 		[CCode (cheader_filename = "libsoup/soup.h")]
@@ -202,7 +202,7 @@ namespace Soup {
 		public Soup.CookieJarAcceptPolicy accept_policy { get; set; }
 		[NoAccessorMethod]
 		public bool read_only { get; construct; }
-		public virtual signal void changed (Soup.Cookie old_cookie, Soup.Cookie new_cookie);
+		public virtual signal void changed (Soup.Cookie? old_cookie, Soup.Cookie? new_cookie);
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_cookie_jar_db_get_type ()")]
 	public sealed class CookieJarDB : Soup.CookieJar, Soup.SessionFeature {
@@ -632,6 +632,8 @@ namespace Soup {
 		public unowned GLib.List<Soup.WebsocketExtension> get_extensions ();
 		public unowned GLib.IOStream get_io_stream ();
 		public uint get_keepalive_interval ();
+		[Version (since = "3.6")]
+		public uint get_keepalive_pong_timeout ();
 		public uint64 get_max_incoming_payload_size ();
 		public unowned string? get_origin ();
 		public unowned string? get_protocol ();
@@ -641,11 +643,15 @@ namespace Soup {
 		public void send_message (Soup.WebsocketDataType type, GLib.Bytes message);
 		public void send_text (string text);
 		public void set_keepalive_interval (uint interval);
+		[Version (since = "3.6")]
+		public void set_keepalive_pong_timeout (uint pong_timeout);
 		public void set_max_incoming_payload_size (uint64 max_incoming_payload_size);
 		public Soup.WebsocketConnectionType connection_type { get; construct; }
 		public void* extensions { get; construct; }
 		public GLib.IOStream io_stream { get; construct; }
 		public uint keepalive_interval { get; set construct; }
+		[Version (since = "3.6")]
+		public uint keepalive_pong_timeout { get; set construct; }
 		public uint64 max_incoming_payload_size { get; set construct; }
 		public string origin { get; construct; }
 		public string protocol { get; construct; }
@@ -986,6 +992,9 @@ namespace Soup {
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static bool header_contains (string header, string token);
 	[CCode (cheader_filename = "libsoup/soup.h")]
+	[Version (since = "3.8")]
+	public static bool header_contains_case_sensitive (string header, string token);
+	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static void header_free_param_list (GLib.HashTable<string,string> param_list);
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static void header_g_string_append_param (GLib.StringBuilder string, string name, string? value);
@@ -1015,6 +1024,9 @@ namespace Soup {
 	[Version (replacement = "MessageHeadersIter.init")]
 	public static void message_headers_iter_init (out Soup.MessageHeadersIter iter, Soup.MessageHeaders hdrs);
 	[CCode (cheader_filename = "libsoup/soup.h")]
+	[Version (replacement = "MessageHeadersIter.next")]
+	public static bool message_headers_iter_next (ref Soup.MessageHeadersIter iter, out unowned string name, out unowned string value);
+	[CCode (cheader_filename = "libsoup/soup.h")]
 	[Version (replacement = "SessionError.quark")]
 	public static GLib.Quark session_error_quark ();
 	[CCode (cheader_filename = "libsoup/soup.h")]
@@ -1027,7 +1039,7 @@ namespace Soup {
 	public static GLib.Quark tld_error_quark ();
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static unowned string tld_get_base_domain (string hostname) throws GLib.Error;
-	[CCode (cheader_filename = "libsoup/soup.h")]
+	[CCode (cheader_filename = "libsoup/soup.h", sentinel = "SOUP_URI_NONE")]
 	public static GLib.Uri uri_copy (GLib.Uri uri, ...);
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static GLib.Bytes uri_decode_data_uri (string uri, out string? content_type);

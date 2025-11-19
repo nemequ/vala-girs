@@ -74,7 +74,7 @@ namespace Gcr {
 		public Gck.Object object { owned get; set; }
 	}
 	[CCode (cheader_filename = "ui/gcr-ui.h", type_id = "gcr_key_widget_get_type ()")]
-	public class KeyWidget : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class KeyWidget : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false)]
 		public KeyWidget (Gck.Attributes? attrs);
 		public unowned Gck.Attributes? get_attributes ();
@@ -120,7 +120,7 @@ namespace Gcr {
 		public void* columns { get; construct; }
 	}
 	[CCode (cheader_filename = "ui/gcr-ui.h", type_id = "gcr_unlock_options_widget_get_type ()")]
-	public class UnlockOptionsWidget : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
+	public sealed class UnlockOptionsWidget : Gtk.Bin, Atk.Implementor, Gtk.Buildable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public UnlockOptionsWidget ();
 		public unowned string get_choice ();
@@ -135,7 +135,7 @@ namespace Gcr {
 		public uint ttl { get; set; }
 	}
 	[CCode (cheader_filename = "ui/gcr-ui.h", type_id = "gcr_viewer_widget_get_type ()")]
-	public class ViewerWidget : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
+	public sealed class ViewerWidget : Gtk.Box, Atk.Implementor, Gtk.Buildable, Gtk.Orientable {
 		[CCode (has_construct_function = false)]
 		public ViewerWidget ();
 		public void clear_error ();

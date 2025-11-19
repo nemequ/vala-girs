@@ -2,6 +2,40 @@
 
 [CCode (cprefix = "GtkSource", gir_namespace = "GtkSource", gir_version = "5", lower_case_cprefix = "gtk_source_")]
 namespace GtkSource {
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_annotation_get_type ()")]
+	[Version (since = "5.18")]
+	public sealed class Annotation : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public Annotation (string? description, owned GLib.Icon? icon, int line, GtkSource.AnnotationStyle style);
+		public unowned string get_description ();
+		public unowned GLib.Icon? get_icon ();
+		public int get_line ();
+		public GtkSource.AnnotationStyle get_style ();
+		public string description { get; }
+		public GLib.Icon icon { get; }
+		public uint line { get; }
+		public GtkSource.AnnotationStyle style { get; }
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_annotation_provider_get_type ()")]
+	[Version (since = "5.18")]
+	public class AnnotationProvider : GLib.Object {
+		[CCode (has_construct_function = false)]
+		public AnnotationProvider ();
+		public void add_annotation (GtkSource.Annotation annotation);
+		public virtual async bool populate_hover_async (GtkSource.Annotation annotation, GtkSource.HoverDisplay display, GLib.Cancellable? cancellable) throws GLib.Error;
+		public void remove_all ();
+		public bool remove_annotation (GtkSource.Annotation annotation);
+		public signal void changed ();
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_annotations_get_type ()")]
+	[Version (since = "5.18")]
+	public sealed class Annotations : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected Annotations ();
+		public void add_provider (GtkSource.AnnotationProvider provider);
+		public bool remove_provider (GtkSource.AnnotationProvider provider);
+		public signal void changed ();
+	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_buffer_get_type ()")]
 	public class Buffer : Gtk.TextBuffer {
 		[CCode (has_construct_function = false)]
@@ -18,6 +52,8 @@ namespace GtkSource {
 		public bool get_implicit_trailing_newline ();
 		public unowned GtkSource.Language? get_language ();
 		public bool get_loading ();
+		[Version (since = "5.18")]
+		public string get_markup (Gtk.TextIter start, Gtk.TextIter end);
 		public GLib.SList<weak GtkSource.Mark> get_source_marks_at_iter (Gtk.TextIter iter, string? category);
 		public GLib.SList<weak GtkSource.Mark> get_source_marks_at_line (int line, string? category);
 		public unowned GtkSource.StyleScheme? get_style_scheme ();
@@ -251,6 +287,8 @@ namespace GtkSource {
 		public uint get_first ();
 		public void get_iter_at_line (out Gtk.TextIter iter, uint line);
 		public uint get_last ();
+		[Version (since = "5.18")]
+		public void get_line_extent (uint line, GtkSource.GutterRendererAlignmentMode mode, out double y, out double height);
 		public void get_line_yrange (uint line, GtkSource.GutterRendererAlignmentMode mode, out int y, out int height);
 		public unowned Gtk.TextView get_view ();
 		[Version (since = "5.6")]
@@ -350,7 +388,7 @@ namespace GtkSource {
 		protected HoverContext ();
 		public bool get_bounds (out Gtk.TextIter begin, out Gtk.TextIter end);
 		public unowned GtkSource.Buffer get_buffer ();
-		public bool get_iter (Gtk.TextIter iter);
+		public bool get_iter (out Gtk.TextIter iter);
 		public unowned GtkSource.View get_view ();
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_hover_display_get_type ()")]
@@ -406,7 +444,7 @@ namespace GtkSource {
 		public string[] search_path { get; set; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_map_get_type ()")]
-	public class Map : GtkSource.View, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Scrollable {
+	public class Map : GtkSource.View, Gtk.Accessible, Gtk.AccessibleText, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Scrollable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public Map ();
 		public unowned GtkSource.View? get_view ();
@@ -554,16 +592,22 @@ namespace GtkSource {
 		public bool get_case_sensitive ();
 		public bool get_regex_enabled ();
 		public unowned string? get_search_text ();
+		[Version (since = "5.12")]
+		public bool get_visible_only ();
 		public bool get_wrap_around ();
 		public void set_at_word_boundaries (bool at_word_boundaries);
 		public void set_case_sensitive (bool case_sensitive);
 		public void set_regex_enabled (bool regex_enabled);
 		public void set_search_text (string? search_text);
+		[Version (since = "5.12")]
+		public void set_visible_only (bool visible_only);
 		public void set_wrap_around (bool wrap_around);
 		public bool at_word_boundaries { get; set construct; }
 		public bool case_sensitive { get; set construct; }
 		public bool regex_enabled { get; set construct; }
 		public string search_text { get; set construct; }
+		[Version (since = "5.12")]
+		public bool visible_only { get; set construct; }
 		public bool wrap_around { get; set construct; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_snippet_get_type ()")]
@@ -780,9 +824,11 @@ namespace GtkSource {
 		public bool draw_spaces_set { get; set; }
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_view_get_type ()")]
-	public class View : Gtk.TextView, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Scrollable {
+	public class View : Gtk.TextView, Gtk.Accessible, Gtk.AccessibleText, Gtk.Buildable, Gtk.ConstraintTarget, Gtk.Scrollable {
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public View ();
+		[Version (since = "5.18")]
+		public unowned GtkSource.Annotations get_annotations ();
 		public bool get_auto_indent ();
 		public GtkSource.BackgroundPatternType get_background_pattern ();
 		public unowned GtkSource.Completion get_completion ();
@@ -824,6 +870,8 @@ namespace GtkSource {
 		public void unindent_lines (Gtk.TextIter start, Gtk.TextIter end);
 		[CCode (has_construct_function = false, type = "GtkWidget*")]
 		public View.with_buffer (GtkSource.Buffer buffer);
+		[Version (since = "5.18")]
+		public GtkSource.Annotations annotations { get; }
 		public bool auto_indent { get; set; }
 		public GtkSource.BackgroundPatternType background_pattern { get; set; }
 		public GtkSource.Completion completion { get; }
@@ -907,6 +955,14 @@ namespace GtkSource {
 		public bool is_end ();
 		public bool next ();
 	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_ANNOTATION_STYLE_", type_id = "gtk_source_annotation_style_get_type ()")]
+	[Version (since = "5.18")]
+	public enum AnnotationStyle {
+		NONE,
+		WARNING,
+		ERROR,
+		ACCENT
+	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_BACKGROUND_PATTERN_TYPE_", type_id = "gtk_source_background_pattern_type_get_type ()")]
 	public enum BackgroundPatternType {
 		NONE,
@@ -979,7 +1035,9 @@ namespace GtkSource {
 		NONE,
 		CASE_SENSITIVE,
 		REVERSE_ORDER,
-		REMOVE_DUPLICATES
+		REMOVE_DUPLICATES,
+		[Version (since = "5.16")]
+		FILENAME
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_SPACE_LOCATION_", type_id = "gtk_source_space_location_flags_get_type ()")]
 	[Flags]
@@ -1062,7 +1120,7 @@ namespace GtkSource {
 	public static void init ();
 	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
 	[Version (since = "5.2")]
-	public static size_t scheduler_add ([CCode (scope = "async")] GtkSource.SchedulerCallback callback);
+	public static size_t scheduler_add (GtkSource.SchedulerCallback callback);
 	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
 	[Version (since = "5.2")]
 	public static size_t scheduler_add_full (owned GtkSource.SchedulerCallback callback);

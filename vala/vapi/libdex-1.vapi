@@ -104,6 +104,10 @@ namespace Dex {
 		[CCode (cname = "dex_await_enum")]
 		[DestroysInstance]
 		public uint await_enum () throws GLib.Error;
+		[CCode (cname = "dex_await_fd")]
+		[DestroysInstance]
+		[Version (since = "0.10")]
+		public int await_fd () throws GLib.Error;
 		[CCode (cname = "dex_await_flags")]
 		[DestroysInstance]
 		public uint await_flags () throws GLib.Error;
@@ -158,6 +162,9 @@ namespace Dex {
 		[CCode (has_construct_function = false)]
 		public Future.for_error (owned GLib.Error error);
 		[CCode (has_construct_function = false)]
+		[Version (since = "0.10")]
+		public Future.for_fd (int fd);
+		[CCode (has_construct_function = false)]
 		public Future.for_float (float v_float);
 		[CCode (has_construct_function = false)]
 		public Future.for_int (int v_int);
@@ -181,14 +188,27 @@ namespace Dex {
 		[CCode (has_construct_function = false)]
 		[Version (since = "0.4")]
 		public Future.infinite ();
+		public bool is_pending ();
+		public bool is_rejected ();
+		public bool is_resolved ();
+		[DestroysInstance]
+		[Version (since = "1.1")]
+		public GLib.ListModel list_model_new ();
 		[CCode (has_construct_function = false)]
-		public Future.take_object (owned GLib.Object value);
+		public Future.take_object (owned GLib.Object? value);
 		[CCode (has_construct_function = false)]
 		public Future.take_string (owned string string);
 		[CCode (cname = "dex_future_then", has_construct_function = false)]
 		public Future.then (owned Dex.Future future, owned Dex.FutureCallback callback);
 		[CCode (cname = "dex_future_then_loop", has_construct_function = false)]
 		public Future.then_loop (owned Dex.Future future, owned Dex.FutureCallback callback);
+	}
+	[CCode (cheader_filename = "libdex.h", type_id = "dex_future_list_model_get_type ()")]
+	[Version (since = "1.1")]
+	public sealed class FutureListModel : GLib.Object, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		protected FutureListModel ();
+		public Dex.Future dup_future ();
 	}
 	[CCode (cheader_filename = "libdex.h", type_id = "dex_future_set_get_type ()")]
 	public sealed class FutureSet : Dex.Future {
@@ -227,16 +247,21 @@ namespace Dex {
 		public void reject (owned GLib.Error error);
 		public void resolve (GLib.Value value);
 		public void resolve_boolean (bool value);
+		[Version (since = "0.10")]
+		public void resolve_boxed (GLib.Type boxed_type, owned void* instance);
 		public void resolve_double (double value);
+		public void resolve_fd (int fd);
 		public void resolve_float (float value);
 		public void resolve_int (int value);
 		public void resolve_int64 (int64 value);
 		public void resolve_long (long value);
-		public void resolve_object (owned void* object);
+		public void resolve_object (owned GLib.Object? object);
 		public void resolve_string (owned string value);
 		public void resolve_uint (uint value);
 		public void resolve_uint64 (uint64 value);
 		public void resolve_ulong (long value);
+		[Version (since = "0.8")]
+		public void resolve_variant (owned GLib.Variant? variant);
 	}
 	[CCode (cheader_filename = "libdex.h", type_id = "dex_scheduler_get_type ()")]
 	public abstract class Scheduler : Dex.Object {
@@ -247,7 +272,7 @@ namespace Dex {
 		public static unowned Dex.Scheduler? get_thread_default ();
 		public void push ([CCode (scope = "async")] Dex.SchedulerFunc func);
 		public static Dex.Scheduler? ref_thread_default ();
-		public Dex.Future spawn (size_t stack_size, owned Dex.FiberFunc? func);
+		public Dex.Future spawn (size_t stack_size, owned Dex.FiberFunc func);
 	}
 	[CCode (cheader_filename = "libdex.h", type_id = "dex_static_future_get_type ()")]
 	public sealed class StaticFuture : Dex.Future {
@@ -278,6 +303,7 @@ namespace Dex {
 	public sealed class UnixSignal : Dex.Future {
 		[CCode (has_construct_function = false, type = "DexFuture*")]
 		public UnixSignal (int signum);
+		[Version (since = "1.0")]
 		public int get_signum ();
 	}
 	[CCode (cheader_filename = "libdex.h", has_type_id = false)]
@@ -319,24 +345,38 @@ namespace Dex {
 	public delegate Dex.Future? FutureCallback (Dex.Future future);
 	[CCode (cheader_filename = "libdex.h", instance_pos = 0.9)]
 	public delegate void SchedulerFunc ();
+	[CCode (cheader_filename = "libdex.h", instance_pos = 0.9)]
+	[Version (since = "1.0")]
+	public delegate Dex.Future ThreadFunc ();
 	[CCode (cheader_filename = "libdex.h")]
-	public static Dex.Future aio_read (Dex.AioContext aio_context, int fd, void* buffer, size_t count, int64 offset);
+	public static Dex.Future aio_read (Dex.AioContext? aio_context, int fd, [CCode (array_length_cname = "count", array_length_pos = 3.5, array_length_type = "gsize")] out unowned uint8[] buffer, int64 offset);
 	[CCode (cheader_filename = "libdex.h")]
-	public static Dex.Future aio_write (Dex.AioContext aio_context, int fd, void* buffer, size_t count, int64 offset);
+	public static Dex.Future aio_write (Dex.AioContext? aio_context, int fd, [CCode (array_length_cname = "count", array_length_pos = 3.5, array_length_type = "gsize")] uint8[] buffer, int64 offset);
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.0")]
+	public static Dex.Future async_initable_init (GLib.AsyncInitable initable, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
 	[Version (since = "0.4")]
 	public static Dex.Future bus_get (GLib.BusType bus_type);
 	[CCode (cheader_filename = "libdex.h")]
-	[Version (since = "0.4")]
-	public static Dex.Future dbus_connection_call (GLib.DBusConnection connection, string bus_name, string object_path, string interface_name, string method_name, GLib.Variant parameters, GLib.VariantType reply_type, GLib.DBusCallFlags flags, int timeout_msec);
+	[Version (since = "1.1")]
+	public static void bus_own_name_on_connection (GLib.DBusConnection connection, string name, GLib.BusNameOwnerFlags flags, out Dex.Future out_name_acquired_future, out Dex.Future out_name_lost_future);
 	[CCode (cheader_filename = "libdex.h")]
 	[Version (since = "0.4")]
-	public static Dex.Future dbus_connection_call_with_unix_fd_list (GLib.DBusConnection connection, string bus_name, string object_path, string interface_name, string method_name, GLib.Variant parameters, GLib.VariantType reply_type, GLib.DBusCallFlags flags, int timeout_msec, GLib.UnixFDList? fd_list);
+	public static Dex.Future dbus_connection_call (GLib.DBusConnection connection, string? bus_name, string object_path, string interface_name, string method_name, GLib.Variant? parameters, GLib.VariantType? reply_type, GLib.DBusCallFlags flags, int timeout_msec);
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "0.4")]
+	public static Dex.Future dbus_connection_call_with_unix_fd_list (GLib.DBusConnection connection, string? bus_name, string object_path, string interface_name, string method_name, GLib.Variant? parameters, GLib.VariantType? reply_type, GLib.DBusCallFlags flags, int timeout_msec, GLib.UnixFDList? fd_list);
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.0")]
+	public static Dex.Future dbus_connection_close (GLib.DBusConnection connection);
 	[CCode (cheader_filename = "libdex.h")]
 	[Version (since = "0.4")]
 	public static Dex.Future dbus_connection_send_message_with_reply (GLib.DBusConnection connection, GLib.DBusMessage message, GLib.DBusSendMessageFlags flags, int timeout_msec, out uint32 out_serial);
 	[CCode (cheader_filename = "libdex.h")]
 	public static Dex.Future file_copy (GLib.File source, GLib.File destination, GLib.FileCopyFlags flags, int io_priority);
+	[CCode (cheader_filename = "libdex.h")]
+	public static Dex.Future file_delete (GLib.File file, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
 	public static Dex.Future file_enumerate_children (GLib.File file, string attributes, GLib.FileQueryInfoFlags flags, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
@@ -346,13 +386,40 @@ namespace Dex {
 	[CCode (cheader_filename = "libdex.h")]
 	public static Dex.Future file_make_directory (GLib.File file, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.0")]
+	public static Dex.Future file_make_directory_with_parents (GLib.File file);
+	[CCode (cheader_filename = "libdex.h")]
+	public static Dex.Future file_move (GLib.File source, GLib.File destination, GLib.FileCopyFlags flags, int io_priority, owned GLib.FileProgressCallback progress_callback);
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "0.6")]
+	public static Dex.Future file_query_exists (GLib.File file);
+	[CCode (cheader_filename = "libdex.h")]
+	public static Dex.Future file_query_file_type (GLib.File file, GLib.FileQueryInfoFlags flags, int io_priority);
+	[CCode (cheader_filename = "libdex.h")]
 	public static Dex.Future file_query_info (GLib.File file, string attributes, GLib.FileQueryInfoFlags flags, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
 	public static Dex.Future file_read (GLib.File file, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
-	public static Dex.Future file_replace (GLib.File file, string etag, bool make_backup, GLib.FileCreateFlags flags, int io_priority);
+	public static Dex.Future file_replace (GLib.File file, string? etag, bool make_backup, GLib.FileCreateFlags flags, int io_priority);
+	[CCode (cheader_filename = "libdex.h")]
+	public static Dex.Future file_replace_contents_bytes (GLib.File file, GLib.Bytes contents, string? etag, bool make_backup, GLib.FileCreateFlags flags);
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.0")]
+	public static Dex.Future file_set_attributes (GLib.File file, GLib.FileInfo file_info, GLib.FileQueryInfoFlags flags, int io_priority);
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.1")]
+	public static Dex.Future find_program_in_path (string program);
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.1")]
+	public static int get_major_version ();
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.1")]
+	public static int get_micro_version ();
 	[CCode (cheader_filename = "libdex.h")]
 	public static size_t get_min_stack_size ();
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.1")]
+	public static int get_minor_version ();
 	[CCode (cheader_filename = "libdex.h")]
 	public static size_t get_page_size ();
 	[CCode (cheader_filename = "libdex.h")]
@@ -360,21 +427,24 @@ namespace Dex {
 	[CCode (cheader_filename = "libdex.h")]
 	public static Dex.Future input_stream_close (GLib.InputStream self, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
-	public static Dex.Future input_stream_read (GLib.InputStream self, void* buffer, size_t count, int io_priority);
+	public static Dex.Future input_stream_read (GLib.InputStream self, [CCode (array_length_cname = "count", array_length_pos = 2.5, array_length_type = "gsize")] out unowned uint8[] buffer, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
-	public static Dex.Future input_stream_read_bytes (GLib.InputStream self, size_t count, int io_priority);
+	public static Dex.Future input_stream_read_bytes (GLib.InputStream stream, size_t count, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
 	public static Dex.Future input_stream_skip (GLib.InputStream self, size_t count, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
 	public static Dex.Future io_stream_close (GLib.IOStream io_stream, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.1")]
+	public static Dex.Future mkdir_with_parents (string path, int mode);
+	[CCode (cheader_filename = "libdex.h")]
 	public static Dex.Future output_stream_close (GLib.OutputStream self, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
 	public static Dex.Future output_stream_splice (GLib.OutputStream output, GLib.InputStream input, GLib.OutputStreamSpliceFlags flags, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
-	public static Dex.Future output_stream_write (GLib.OutputStream self, void* buffer, size_t count, int io_priority);
+	public static Dex.Future output_stream_write (GLib.OutputStream self, [CCode (array_length_cname = "count", array_length_pos = 2.5, array_length_type = "gsize")] uint8[] buffer, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
-	public static Dex.Future output_stream_write_bytes (GLib.OutputStream self, GLib.Bytes bytes, int io_priority);
+	public static Dex.Future output_stream_write_bytes (GLib.OutputStream stream, GLib.Bytes bytes, int io_priority);
 	[CCode (cheader_filename = "libdex.h")]
 	public static Dex.Future resolver_lookup_by_name (GLib.Resolver resolver, string address);
 	[CCode (cheader_filename = "libdex.h")]
@@ -384,6 +454,18 @@ namespace Dex {
 	[CCode (cheader_filename = "libdex.h")]
 	[Version (since = "0.4")]
 	public static Dex.Future subprocess_wait_check (GLib.Subprocess subprocess);
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.0")]
+	public static Dex.Future thread_spawn (string? thread_name, owned Dex.ThreadFunc thread_func);
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.0")]
+	public static bool thread_wait_for (owned Dex.Future future) throws GLib.Error;
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.1")]
+	public static Dex.Future unlink (string path);
+	[CCode (cheader_filename = "libdex.h")]
+	[Version (since = "1.0")]
+	public static Dex.Object? value_dup_object (GLib.Value value);
 	[CCode (cheader_filename = "libdex.h")]
 	[Version (since = "0.4")]
 	public static unowned Dex.Object? value_get_object (GLib.Value value);

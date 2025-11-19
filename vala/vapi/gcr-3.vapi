@@ -17,7 +17,7 @@ namespace Gcr {
 		public uint length { get; }
 	}
 	[CCode (cheader_filename = "gcr/gcr-base.h", type_id = "gcr_certificate_request_get_type ()")]
-	public class CertificateRequest : GLib.Object {
+	public sealed class CertificateRequest : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected CertificateRequest ();
 		public static bool capable (Gck.Object private_key, GLib.Cancellable? cancellable = null) throws GLib.Error;
@@ -105,7 +105,7 @@ namespace Gcr {
 		public virtual bool generate_exchange_key (string scheme, uint8 public_key, size_t n_public_key);
 		public unowned string get_protocol ();
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
-		public unowned string[] get_secret ();
+		public unowned char[] get_secret ();
 		public bool receive (string exchange);
 		public string send (string? secret, ssize_t secret_len);
 		public string protocol { get; construct; }
@@ -123,7 +123,7 @@ namespace Gcr {
 		public void remove (GLib.Object object);
 	}
 	[CCode (cheader_filename = "gcr/gcr-base.h", type_id = "gcr_ssh_askpass_get_type ()")]
-	public class SshAskpass : GLib.Object {
+	public sealed class SshAskpass : GLib.Object {
 		[CCode (has_construct_function = false)]
 		public SshAskpass (GLib.TlsInteraction interaction);
 		public static void child_setup (void* askpass);

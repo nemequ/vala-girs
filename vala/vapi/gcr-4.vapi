@@ -2,6 +2,15 @@
 
 [CCode (cprefix = "Gcr", gir_namespace = "Gcr", gir_version = "4", lower_case_cprefix = "gcr_")]
 namespace Gcr {
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_access_description_get_type ()")]
+	[Version (since = "4.3.91")]
+	public sealed class AccessDescription : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected AccessDescription ();
+		public unowned Gcr.GeneralName get_location ();
+		public unowned string get_method_name ();
+		public unowned string get_method_oid ();
+	}
 	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_chain_get_type ()")]
 	public class CertificateChain : GLib.Object {
 		[CCode (has_construct_function = false)]
@@ -16,18 +25,135 @@ namespace Gcr {
 		public Gcr.CertificateChainStatus get_status ();
 		public uint length { get; }
 	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_extension_get_type ()")]
+	[Version (since = "4.3.90")]
+	public class CertificateExtension : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected CertificateExtension ();
+		public unowned string? get_description ();
+		public unowned string get_oid ();
+		public unowned GLib.Bytes get_value ();
+		public bool is_critical ();
+		[NoAccessorMethod]
+		public bool critical { get; construct; }
+		public string oid { get; }
+		public GLib.Bytes value { get; construct; }
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_extension_authority_info_access_get_type ()")]
+	[Version (since = "4.3.91")]
+	public sealed class CertificateExtensionAuthorityInfoAccess : Gcr.CertificateExtension, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		protected CertificateExtensionAuthorityInfoAccess ();
+		public unowned Gcr.AccessDescription get_description (uint position);
+		[NoAccessorMethod]
+		public uint n_items { get; }
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_extension_authority_key_identifier_get_type ()")]
+	[Version (since = "4.3.91")]
+	public sealed class CertificateExtensionAuthorityKeyIdentifier : Gcr.CertificateExtension {
+		[CCode (has_construct_function = false)]
+		protected CertificateExtensionAuthorityKeyIdentifier ();
+		public unowned Gcr.GeneralNames? get_authority_cert_issuer ();
+		public unowned GLib.Bytes? get_authority_cert_serial_number ();
+		public unowned GLib.Bytes? get_key_id ();
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_extension_basic_constraints_get_type ()")]
+	[Version (since = "4.3.90")]
+	public sealed class CertificateExtensionBasicConstraints : Gcr.CertificateExtension {
+		[CCode (has_construct_function = false)]
+		protected CertificateExtensionBasicConstraints ();
+		public int get_path_len_constraint ();
+		public bool is_ca ();
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_extension_certificate_policies_get_type ()")]
+	[Version (since = "4.3.91")]
+	public sealed class CertificateExtensionCertificatePolicies : Gcr.CertificateExtension, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		protected CertificateExtensionCertificatePolicies ();
+		public unowned Gcr.CertificatePolicy get_policy (uint position);
+		[NoAccessorMethod]
+		public uint n_items { get; }
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_extension_crl_distribution_points_get_type ()")]
+	[Version (since = "4.3.91")]
+	public sealed class CertificateExtensionCrlDistributionPoints : Gcr.CertificateExtension, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		protected CertificateExtensionCrlDistributionPoints ();
+		public unowned Gcr.DistributionPoint get_distribution_point (uint position);
+		[NoAccessorMethod]
+		public uint n_items { get; }
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_extension_extended_key_usage_get_type ()")]
+	[Version (since = "4.3.90")]
+	public sealed class CertificateExtensionExtendedKeyUsage : Gcr.CertificateExtension {
+		[CCode (has_construct_function = false)]
+		protected CertificateExtensionExtendedKeyUsage ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] get_descriptions ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] get_oids ();
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_extension_key_usage_get_type ()")]
+	[Version (since = "4.3.90")]
+	public sealed class CertificateExtensionKeyUsage : Gcr.CertificateExtension {
+		[CCode (has_construct_function = false)]
+		protected CertificateExtensionKeyUsage ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public string[] get_descriptions ();
+		public ulong get_usages ();
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_extension_list_get_type ()")]
+	[Version (since = "4.3.90")]
+	public sealed class CertificateExtensionList : GLib.Object, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		protected CertificateExtensionList ();
+		public unowned Gcr.CertificateExtension? find_by_oid (string oid);
+		public unowned Gcr.CertificateExtension get_extension (uint position);
+		[NoAccessorMethod]
+		public uint n_items { get; }
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_extension_subject_alt_name_get_type ()")]
+	[Version (since = "4.3.90")]
+	public sealed class CertificateExtensionSubjectAltName : Gcr.CertificateExtension, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		protected CertificateExtensionSubjectAltName ();
+		public unowned Gcr.GeneralName get_name (uint position);
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_extension_subject_key_identifier_get_type ()")]
+	[Version (since = "4.3.90")]
+	public sealed class CertificateExtensionSubjectKeyIdentifier : Gcr.CertificateExtension {
+		[CCode (has_construct_function = false)]
+		protected CertificateExtensionSubjectKeyIdentifier ();
+		public unowned GLib.Bytes get_key_id ();
+	}
 	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_field_get_type ()")]
 	public sealed class CertificateField : GLib.Object {
 		[CCode (has_construct_function = false)]
 		protected CertificateField ();
 		public unowned string get_label ();
 		public unowned Gcr.CertificateSection get_section ();
-		public bool get_value (out GLib.Value value);
+		public bool get_value (ref GLib.Value value);
 		public GLib.Type get_value_type ();
 		public string label { get; construct; }
 		public Gcr.CertificateSection section { get; construct; }
 		[NoAccessorMethod]
 		public GLib.Value value { owned get; }
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_policy_get_type ()")]
+	[Version (since = "4.3.91")]
+	public sealed class CertificatePolicy : GLib.Object, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		protected CertificatePolicy ();
+		public unowned string get_name ();
+		public unowned string get_oid ();
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_policy_qualifier_get_type ()")]
+	[Version (since = "4.3.91")]
+	public sealed class CertificatePolicyQualifier : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected CertificatePolicyQualifier ();
+		public unowned string get_name ();
+		public unowned string get_oid ();
 	}
 	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_certificate_request_get_type ()")]
 	public sealed class CertificateRequest : GLib.Object {
@@ -54,6 +180,30 @@ namespace Gcr {
 		public unowned string get_label ();
 		public GLib.ListModel fields { get; }
 		public string label { get; construct; }
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_distribution_point_get_type ()")]
+	[Version (since = "4.3.91")]
+	public sealed class DistributionPoint : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected DistributionPoint ();
+		public unowned Gcr.GeneralNames? get_full_name ();
+		public string? get_relative_name_part (string part);
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_general_name_get_type ()")]
+	[Version (since = "4.3.90")]
+	public sealed class GeneralName : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected GeneralName ();
+		public unowned string get_description ();
+		public unowned string get_value ();
+		public GLib.Bytes get_value_raw ();
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_general_names_get_type ()")]
+	[Version (since = "4.3.91")]
+	public sealed class GeneralNames : GLib.Object, GLib.ListModel {
+		[CCode (has_construct_function = false)]
+		protected GeneralNames ();
+		public unowned Gcr.GeneralName get_name (uint position);
 	}
 	[CCode (cheader_filename = "gcr/gcr.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gcr_parsed_get_type ()")]
 	[Compact]
@@ -102,8 +252,8 @@ namespace Gcr {
 		[CCode (has_construct_function = false)]
 		protected Pkcs11Certificate ();
 		public unowned Gck.Attributes get_attributes ();
-		public static Gcr.Certificate lookup_issuer (Gcr.Certificate certificate, GLib.Cancellable? cancellable = null) throws GLib.Error;
-		public static async Gcr.Certificate lookup_issuer_async (Gcr.Certificate certificate, GLib.Cancellable? cancellable) throws GLib.Error;
+		public static Gcr.Certificate? lookup_issuer (Gcr.Certificate certificate, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public static async Gcr.Certificate? lookup_issuer_async (Gcr.Certificate certificate, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static Gcr.Certificate? new_from_uri (string pkcs11_uri, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public static async Gcr.Certificate? new_from_uri_async (string pkcs11_uri, GLib.Cancellable? cancellable) throws GLib.Error;
 		public Gck.Attributes attributes { get; construct; }
@@ -119,7 +269,7 @@ namespace Gcr {
 		public virtual bool generate_exchange_key (string scheme, uint8 public_key, size_t n_public_key);
 		public unowned string get_protocol ();
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
-		public unowned string[] get_secret ();
+		public unowned char[] get_secret ();
 		public bool receive (string exchange);
 		public string send (string? secret, ssize_t secret_len);
 		public string protocol { get; construct; }
@@ -136,6 +286,17 @@ namespace Gcr {
 		public static void child_setup (void* askpass);
 		public unowned GLib.TlsInteraction get_interaction ();
 		public GLib.TlsInteraction interaction { get; construct; }
+	}
+	[CCode (cheader_filename = "gcr/gcr.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "gcr_subject_public_key_info_get_type ()")]
+	[Compact]
+	public class SubjectPublicKeyInfo {
+		public Gcr.SubjectPublicKeyInfo copy ();
+		public void free ();
+		public unowned string get_algorithm_description ();
+		public unowned string get_algorithm_oid ();
+		public unowned GLib.Bytes get_algorithm_parameters_raw ();
+		public unowned GLib.Bytes get_key ();
+		public uint get_key_size ();
 	}
 	[CCode (cheader_filename = "gcr/gcr.h", type_id = "gcr_system_prompt_get_type ()")]
 	public class SystemPrompt : GLib.Object, Gcr.Prompt, GLib.AsyncInitable, GLib.Initable {
@@ -187,6 +348,7 @@ namespace Gcr {
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
 		public uint8[]? get_issuer_raw ();
 		public uint get_key_size ();
+		public unowned Gcr.SubjectPublicKeyInfo get_public_key_info ();
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
 		public unowned uint8[]? get_serial_number ();
 		public string? get_serial_number_hex ();
@@ -196,7 +358,10 @@ namespace Gcr {
 		public string? get_subject_part (string part);
 		[CCode (array_length_pos = 0.1, array_length_type = "gsize")]
 		public uint8[]? get_subject_raw ();
+		public ulong get_version ();
 		public bool is_issuer (Gcr.Certificate issuer);
+		[Version (since = "4.3.90")]
+		public Gcr.CertificateExtensionList list_extensions ();
 		public void mixin_emit_notify ();
 		[NoAccessorMethod]
 		public abstract string description { owned get; }
