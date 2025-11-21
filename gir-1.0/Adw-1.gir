@@ -7229,8 +7229,8 @@ The state can be controlled with [method@Animation.play],
     <callback name="AnimationTargetFunc" c:type="AdwAnimationTargetFunc">
       <doc xml:space="preserve"
            filename="src/adw-animation-target.h"
-           line="25">Prototype for animation targets based on user callbacks.</doc>
-      <source-position filename="src/adw-animation-target.h" line="32"/>
+           line="32">Prototype for animation targets based on user callbacks.</doc>
+      <source-position filename="src/adw-animation-target.h" line="39"/>
       <return-value transfer-ownership="none">
         <type name="none" c:type="void"/>
       </return-value>
@@ -7238,7 +7238,7 @@ The state can be controlled with [method@Animation.play],
         <parameter name="value" transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/adw-animation-target.h"
-               line="27">The animation value</doc>
+               line="34">The animation value</doc>
           <type name="gdouble" c:type="double"/>
         </parameter>
         <parameter name="user_data"
@@ -7248,7 +7248,7 @@ The state can be controlled with [method@Animation.play],
                    closure="1">
           <doc xml:space="preserve"
                filename="src/adw-animation-target.h"
-               line="28">The user data provided when creating the target</doc>
+               line="35">The user data provided when creating the target</doc>
           <type name="gpointer" c:type="gpointer"/>
         </parameter>
       </parameters>
@@ -7272,6 +7272,10 @@ any Adwaita or GTK API.
 
 ## Automatic Resources
 
+`AdwApplication` will automatically load certain resources located in the
+application's resource base path (see
+[method@Gio.Application.set_resource_base_path], if they're present.
+
 ### Shortcuts Dialog
 
 If there's a resource located at `shortcuts-dialog.ui` which defines an
@@ -7281,26 +7285,24 @@ as well as a &lt;kbd&gt;Ctrl&lt;/kbd&gt;&lt;kbd&gt;?&lt;/kbd&gt; accelerator for
 
 ### Stylesheet
 
-`AdwApplication` will automatically load stylesheets located in the
-application's resource base path (see
-[method@Gio.Application.set_resource_base_path], if they're present.
+If there's a resource located at `style.css`, `AdwApplication` will load
+styles from it. This can be used to add custom styles to the application.
 
-They can be used to add custom styles to the application, as follows:
+#### Additional styles (deprecated)
 
-- `style.css` contains styles that are always present.
+`AdwApplication` will also load the following stylesheets conditionally:
 
-- `style-dark.css` contains styles only used when
-[property@StyleManager:dark] is `TRUE`.
+- `style-dark.css` when [property@StyleManager:dark] is `TRUE`.
 
-- `style-hc.css` contains styles used when the system high contrast
-  preference is enabled.
+- `style-hc.css` when the system high contrast preference is enabled.
 
-- `style-hc-dark.css` contains styles used when the system high contrast
-  preference is enabled and [property@StyleManager:dark] is `TRUE`.
+- `style-hc-dark.css` when the system high contrast preference is enabled and
+  [property@StyleManager:dark] is `TRUE`.
 
-:::note
-    `style.css` can contain styles for dark and high contrast appearance as
-    well, using media queries:
+:::warning
+    These resources are deprecated since 1.9.
+
+    Use `style.css` with the following media queries instead:
 
     - `prefers-color-scheme: dark` for styles used only for dark appearance.
     - `prefers-contrast: more` for styles used only when the system high
@@ -7311,7 +7313,7 @@ They can be used to add custom styles to the application, as follows:
       <constructor name="new" c:identifier="adw_application_new">
         <doc xml:space="preserve"
              filename="src/adw-application.c"
-             line="425">Creates a new `AdwApplication`.
+             line="433">Creates a new `AdwApplication`.
 
 If `application_id` is not `NULL`, then it must be valid. See
 [func@Gio.Application.id_is_valid].
@@ -7322,7 +7324,7 @@ uniqueness) will be disabled.</doc>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/adw-application.c"
-               line="438">the newly created `AdwApplication`</doc>
+               line="446">the newly created `AdwApplication`</doc>
           <type name="Application" c:type="AdwApplication*"/>
         </return-value>
         <parameters>
@@ -7332,13 +7334,13 @@ uniqueness) will be disabled.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/adw-application.c"
-                 line="427">The application ID</doc>
+                 line="435">The application ID</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
           <parameter name="flags" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-application.c"
-                 line="428">The application flags</doc>
+                 line="436">The application flags</doc>
             <type name="Gio.ApplicationFlags" c:type="GApplicationFlags"/>
           </parameter>
         </parameters>
@@ -7348,7 +7350,7 @@ uniqueness) will be disabled.</doc>
               glib:get-property="style-manager">
         <doc xml:space="preserve"
              filename="src/adw-application.c"
-             line="450">Gets the style manager for @self.
+             line="458">Gets the style manager for @self.
 
 This is a convenience property allowing to access `AdwStyleManager` through
 property bindings or expressions.</doc>
@@ -7356,14 +7358,14 @@ property bindings or expressions.</doc>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/adw-application.c"
-               line="459">the style manager</doc>
+               line="467">the style manager</doc>
           <type name="StyleManager" c:type="AdwStyleManager*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-application.c"
-                 line="452">an application</doc>
+                 line="460">an application</doc>
             <type name="Application" c:type="AdwApplication*"/>
           </instance-parameter>
         </parameters>
@@ -7373,7 +7375,7 @@ property bindings or expressions.</doc>
                 getter="get_style_manager">
         <doc xml:space="preserve"
              filename="src/adw-application.c"
-             line="404">The style manager for this application.
+             line="412">The style manager for this application.
 
 This is a convenience property allowing to access `AdwStyleManager` through
 property bindings or expressions.</doc>
@@ -11364,19 +11366,19 @@ of Adwaita is greater than the required one.</doc>
            glib:type-struct="CallbackAnimationTargetClass">
       <doc xml:space="preserve"
            filename="src/adw-animation-target.c"
-           line="17">An [class@AnimationTarget] that calls a given callback during the
+           line="25">An [class@AnimationTarget] that calls a given callback during the
 animation.</doc>
-      <source-position filename="src/adw-animation-target.h" line="38"/>
+      <source-position filename="src/adw-animation-target.h" line="45"/>
       <constructor name="new" c:identifier="adw_callback_animation_target_new">
         <doc xml:space="preserve"
              filename="src/adw-animation-target.c"
-             line="119">Creates a new `AdwAnimationTarget` that calls the given @callback during
+             line="173">Creates a new `AdwAnimationTarget` that calls the given @callback during
 the animation.</doc>
-        <source-position filename="src/adw-animation-target.h" line="41"/>
+        <source-position filename="src/adw-animation-target.h" line="48"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/adw-animation-target.c"
-               line="129">the newly created callback target</doc>
+               line="183">the newly created callback target</doc>
           <type name="AnimationTarget" c:type="AdwAnimationTarget*"/>
         </return-value>
         <parameters>
@@ -11387,7 +11389,7 @@ the animation.</doc>
                      destroy="2">
             <doc xml:space="preserve"
                  filename="src/adw-animation-target.c"
-                 line="121">the callback to call</doc>
+                 line="175">the callback to call</doc>
             <type name="AnimationTargetFunc" c:type="AdwAnimationTargetFunc"/>
           </parameter>
           <parameter name="user_data"
@@ -11397,7 +11399,7 @@ the animation.</doc>
                      scope="notified">
             <doc xml:space="preserve"
                  filename="src/adw-animation-target.c"
-                 line="122">the data to be passed to @callback</doc>
+                 line="176">the data to be passed to @callback</doc>
             <type name="gpointer" c:type="gpointer"/>
           </parameter>
           <parameter name="destroy"
@@ -11406,7 +11408,7 @@ the animation.</doc>
                      destroy="1">
             <doc xml:space="preserve"
                  filename="src/adw-animation-target.c"
-                 line="123">the function to be called when the
+                 line="177">the function to be called when the
   callback action is finalized</doc>
             <type name="GLib.DestroyNotify" c:type="GDestroyNotify"/>
           </parameter>
@@ -11418,7 +11420,7 @@ the animation.</doc>
             disguised="1"
             opaque="1"
             glib:is-gtype-struct-for="CallbackAnimationTarget">
-      <source-position filename="src/adw-animation-target.h" line="38"/>
+      <source-position filename="src/adw-animation-target.h" line="45"/>
     </record>
     <class name="Carousel"
            c:symbol-prefix="carousel"
@@ -25957,6 +25959,41 @@ See [method@NavigationView.replace].</doc>
         <type name="Gtk.WidgetClass" c:type="GtkWidgetClass"/>
       </field>
     </record>
+    <class name="NoneAnimationTarget"
+           c:symbol-prefix="none_animation_target"
+           c:type="AdwNoneAnimationTarget"
+           version="1.9"
+           parent="AnimationTarget"
+           final="1"
+           glib:type-name="AdwNoneAnimationTarget"
+           glib:get-type="adw_none_animation_target_get_type"
+           glib:type-struct="NoneAnimationTargetClass">
+      <doc xml:space="preserve"
+           filename="src/adw-animation-target.c"
+           line="17">An [class@AnimationTarget] that doesn't do anything.</doc>
+      <source-position filename="src/adw-animation-target.h" line="27"/>
+      <constructor name="new"
+                   c:identifier="adw_none_animation_target_new"
+                   version="1.9">
+        <doc xml:space="preserve"
+             filename="src/adw-animation-target.c"
+             line="106">Creates a new `AdwAnimationTarget` that doesn't do anything.</doc>
+        <source-position filename="src/adw-animation-target.h" line="30"/>
+        <return-value transfer-ownership="full">
+          <doc xml:space="preserve"
+               filename="src/adw-animation-target.c"
+               line="111">the newly created target</doc>
+          <type name="AnimationTarget" c:type="AdwAnimationTarget*"/>
+        </return-value>
+      </constructor>
+    </class>
+    <record name="NoneAnimationTargetClass"
+            c:type="AdwNoneAnimationTargetClass"
+            disguised="1"
+            opaque="1"
+            glib:is-gtype-struct-for="NoneAnimationTarget">
+      <source-position filename="src/adw-animation-target.h" line="27"/>
+    </record>
     <class name="OverlaySplitView"
            c:symbol-prefix="overlay_split_view"
            c:type="AdwOverlaySplitView"
@@ -27914,19 +27951,19 @@ of a preferences window.
       <constructor name="new" c:identifier="adw_preferences_page_new">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="320">Creates a new `AdwPreferencesPage`.</doc>
+             line="325">Creates a new `AdwPreferencesPage`.</doc>
         <source-position filename="src/adw-preferences-page.h" line="39"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/adw-preferences-page.c"
-               line="325">the newly created `AdwPreferencesPage`</doc>
+               line="330">the newly created `AdwPreferencesPage`</doc>
           <type name="Gtk.Widget" c:type="GtkWidget*"/>
         </return-value>
       </constructor>
       <method name="add" c:identifier="adw_preferences_page_add">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="333">Adds a preferences group to @self.</doc>
+             line="338">Adds a preferences group to @self.</doc>
         <source-position filename="src/adw-preferences-page.h" line="42"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -27935,13 +27972,13 @@ of a preferences window.
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="335">a preferences page</doc>
+                 line="340">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
           <parameter name="group" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="336">the group to add</doc>
+                 line="341">the group to add</doc>
             <type name="PreferencesGroup" c:type="AdwPreferencesGroup*"/>
           </parameter>
         </parameters>
@@ -27952,19 +27989,19 @@ of a preferences window.
               version="1.7">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="739">Gets the banner displayed at the top of the page.</doc>
+             line="744">Gets the banner displayed at the top of the page.</doc>
         <source-position filename="src/adw-preferences-page.h" line="93"/>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="src/adw-preferences-page.c"
-               line="745">the banner for @self</doc>
+               line="750">the banner for @self</doc>
           <type name="Banner" c:type="AdwBanner*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="741">a preferences page</doc>
+                 line="746">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
         </parameters>
@@ -27975,19 +28012,19 @@ of a preferences window.
               version="1.4">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="539">Gets the description of @self.</doc>
+             line="544">Gets the description of @self.</doc>
         <source-position filename="src/adw-preferences-page.h" line="70"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/adw-preferences-page.c"
-               line="545">the description of @self.</doc>
+               line="550">the description of @self.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="541">a preferences page</doc>
+                 line="546">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
         </parameters>
@@ -27998,19 +28035,19 @@ of a preferences window.
               version="1.6">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="682">Gets whether the description is centered.</doc>
+             line="687">Gets whether the description is centered.</doc>
         <source-position filename="src/adw-preferences-page.h" line="87"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/adw-preferences-page.c"
-               line="688">whether the description is centered.</doc>
+               line="693">whether the description is centered.</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="684">a preferences page</doc>
+                 line="689">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
         </parameters>
@@ -28020,27 +28057,27 @@ of a preferences window.
               version="1.8">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="424">Gets the group at @index.
+             line="429">Gets the group at @index.
 
 Can return `NULL` if @index is larger than the number of groups in the page.</doc>
         <source-position filename="src/adw-preferences-page.h" line="54"/>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="src/adw-preferences-page.c"
-               line="433">the group at @index</doc>
+               line="438">the group at @index</doc>
           <type name="PreferencesGroup" c:type="AdwPreferencesGroup*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="426">a preferences page</doc>
+                 line="431">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
           <parameter name="index" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="427">a group index</doc>
+                 line="432">a group index</doc>
             <type name="guint" c:type="guint"/>
           </parameter>
         </parameters>
@@ -28050,19 +28087,19 @@ Can return `NULL` if @index is larger than the number of groups in the page.</do
               glib:get-property="icon-name">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="453">Gets the icon name for @self.</doc>
+             line="458">Gets the icon name for @self.</doc>
         <source-position filename="src/adw-preferences-page.h" line="58"/>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="src/adw-preferences-page.c"
-               line="459">the icon name for @self</doc>
+               line="464">the icon name for @self</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="455">a preferences page</doc>
+                 line="460">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
         </parameters>
@@ -28072,19 +28109,19 @@ Can return `NULL` if @index is larger than the number of groups in the page.</do
               glib:get-property="name">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="592">Gets the name of @self.</doc>
+             line="597">Gets the name of @self.</doc>
         <source-position filename="src/adw-preferences-page.h" line="76"/>
         <return-value transfer-ownership="none" nullable="1">
           <doc xml:space="preserve"
                filename="src/adw-preferences-page.c"
-               line="598">the name of @self</doc>
+               line="603">the name of @self</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="594">a preferences page</doc>
+                 line="599">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
         </parameters>
@@ -28094,19 +28131,19 @@ Can return `NULL` if @index is larger than the number of groups in the page.</do
               glib:get-property="title">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="496">Gets the title of @self.</doc>
+             line="501">Gets the title of @self.</doc>
         <source-position filename="src/adw-preferences-page.h" line="64"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/adw-preferences-page.c"
-               line="502">the title of @self.</doc>
+               line="507">the title of @self.</doc>
           <type name="utf8" c:type="const char*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="498">a preferences page</doc>
+                 line="503">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
         </parameters>
@@ -28116,19 +28153,19 @@ Can return `NULL` if @index is larger than the number of groups in the page.</do
               glib:get-property="use-underline">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="635">Gets whether an embedded underline in the title indicates a mnemonic.</doc>
+             line="640">Gets whether an embedded underline in the title indicates a mnemonic.</doc>
         <source-position filename="src/adw-preferences-page.h" line="82"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/adw-preferences-page.c"
-               line="641">whether an embedded underline in the title indicates a mnemonic</doc>
+               line="646">whether an embedded underline in the title indicates a mnemonic</doc>
           <type name="gboolean" c:type="gboolean"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="637">a preferences page</doc>
+                 line="642">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
         </parameters>
@@ -28138,7 +28175,7 @@ Can return `NULL` if @index is larger than the number of groups in the page.</do
               version="1.8">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="382">Inserts a preferences group to @self at @index.
+             line="387">Inserts a preferences group to @self at @index.
 
 If @index is negative or larger than the number of groups, appends the group,
 same as [method@PreferencesPage.add].</doc>
@@ -28150,19 +28187,19 @@ same as [method@PreferencesPage.add].</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="384">a preferences page</doc>
+                 line="389">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
           <parameter name="group" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="385">the group to add</doc>
+                 line="390">the group to add</doc>
             <type name="PreferencesGroup" c:type="AdwPreferencesGroup*"/>
           </parameter>
           <parameter name="index" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="386">the index to insert @group a</doc>
+                 line="391">the index to insert @group a</doc>
             <type name="gint" c:type="int"/>
           </parameter>
         </parameters>
@@ -28170,7 +28207,7 @@ same as [method@PreferencesPage.add].</doc>
       <method name="remove" c:identifier="adw_preferences_page_remove">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="355">Removes a group from @self.</doc>
+             line="360">Removes a group from @self.</doc>
         <source-position filename="src/adw-preferences-page.h" line="45"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -28179,13 +28216,13 @@ same as [method@PreferencesPage.add].</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="357">a preferences page</doc>
+                 line="362">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
           <parameter name="group" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="358">the group to remove</doc>
+                 line="363">the group to remove</doc>
             <type name="PreferencesGroup" c:type="AdwPreferencesGroup*"/>
           </parameter>
         </parameters>
@@ -28195,7 +28232,7 @@ same as [method@PreferencesPage.add].</doc>
               version="1.3">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="838">Scrolls the scrolled window of @self to the top.</doc>
+             line="843">Scrolls the scrolled window of @self to the top.</doc>
         <source-position filename="src/adw-preferences-page.h" line="99"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -28204,7 +28241,7 @@ same as [method@PreferencesPage.add].</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="840">a preferences page</doc>
+                 line="845">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
         </parameters>
@@ -28215,7 +28252,7 @@ same as [method@PreferencesPage.add].</doc>
               version="1.7">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="761">Sets the banner displayed at the top of the page.</doc>
+             line="766">Sets the banner displayed at the top of the page.</doc>
         <source-position filename="src/adw-preferences-page.h" line="95"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -28224,7 +28261,7 @@ same as [method@PreferencesPage.add].</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="763">a preferences page</doc>
+                 line="768">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
           <parameter name="banner"
@@ -28233,7 +28270,7 @@ same as [method@PreferencesPage.add].</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="764">the banner to display at the top of the page</doc>
+                 line="769">the banner to display at the top of the page</doc>
             <type name="Banner" c:type="AdwBanner*"/>
           </parameter>
         </parameters>
@@ -28244,7 +28281,7 @@ same as [method@PreferencesPage.add].</doc>
               version="1.4">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="561">Sets the description of @self.
+             line="566">Sets the description of @self.
 
 The description is displayed at the top of the page.</doc>
         <source-position filename="src/adw-preferences-page.h" line="72"/>
@@ -28255,13 +28292,13 @@ The description is displayed at the top of the page.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="563">a preferences page</doc>
+                 line="568">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
           <parameter name="description" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="564">the description</doc>
+                 line="569">the description</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -28272,7 +28309,7 @@ The description is displayed at the top of the page.</doc>
               version="1.6">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="704">Sets whether the description should be centered.</doc>
+             line="709">Sets whether the description should be centered.</doc>
         <source-position filename="src/adw-preferences-page.h" line="89"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -28281,13 +28318,13 @@ The description is displayed at the top of the page.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="706">a preferences page</doc>
+                 line="711">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
           <parameter name="centered" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="707">If the description should be centered</doc>
+                 line="712">If the description should be centered</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -28297,7 +28334,7 @@ The description is displayed at the top of the page.</doc>
               glib:set-property="icon-name">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="473">Sets the icon name for @self.</doc>
+             line="478">Sets the icon name for @self.</doc>
         <source-position filename="src/adw-preferences-page.h" line="60"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -28306,7 +28343,7 @@ The description is displayed at the top of the page.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="475">a preferences page</doc>
+                 line="480">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
           <parameter name="icon_name"
@@ -28315,7 +28352,7 @@ The description is displayed at the top of the page.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="476">the icon name</doc>
+                 line="481">the icon name</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -28325,7 +28362,7 @@ The description is displayed at the top of the page.</doc>
               glib:set-property="name">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="612">Sets the name of @self.</doc>
+             line="617">Sets the name of @self.</doc>
         <source-position filename="src/adw-preferences-page.h" line="78"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -28334,7 +28371,7 @@ The description is displayed at the top of the page.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="614">a preferences page</doc>
+                 line="619">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
           <parameter name="name"
@@ -28343,7 +28380,7 @@ The description is displayed at the top of the page.</doc>
                      allow-none="1">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="615">the name</doc>
+                 line="620">the name</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -28353,7 +28390,7 @@ The description is displayed at the top of the page.</doc>
               glib:set-property="title">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="516">Sets the title of @self.</doc>
+             line="521">Sets the title of @self.</doc>
         <source-position filename="src/adw-preferences-page.h" line="66"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -28362,13 +28399,13 @@ The description is displayed at the top of the page.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="518">a preferences page</doc>
+                 line="523">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
           <parameter name="title" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="519">the title</doc>
+                 line="524">the title</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -28378,7 +28415,7 @@ The description is displayed at the top of the page.</doc>
               glib:set-property="use-underline">
         <doc xml:space="preserve"
              filename="src/adw-preferences-page.c"
-             line="655">Sets whether an embedded underline in the title indicates a mnemonic.</doc>
+             line="660">Sets whether an embedded underline in the title indicates a mnemonic.</doc>
         <source-position filename="src/adw-preferences-page.h" line="84"/>
         <return-value transfer-ownership="none">
           <type name="none" c:type="void"/>
@@ -28387,13 +28424,13 @@ The description is displayed at the top of the page.</doc>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="657">a preferences page</doc>
+                 line="662">a preferences page</doc>
             <type name="PreferencesPage" c:type="AdwPreferencesPage*"/>
           </instance-parameter>
           <parameter name="use_underline" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-preferences-page.c"
-                 line="658">`TRUE` if underlines in the text indicate mnemonics</doc>
+                 line="663">`TRUE` if underlines in the text indicate mnemonics</doc>
             <type name="gboolean" c:type="gboolean"/>
           </parameter>
         </parameters>
@@ -29373,34 +29410,34 @@ See [property@PreferencesWindow:visible-page].</doc>
            glib:type-struct="PropertyAnimationTargetClass">
       <doc xml:space="preserve"
            filename="src/adw-animation-target.c"
-           line="24">An [class@AnimationTarget] changing the value of a property of a
+           line="32">An [class@AnimationTarget] changing the value of a property of a
 [class@GObject.Object] instance.</doc>
-      <source-position filename="src/adw-animation-target.h" line="48"/>
+      <source-position filename="src/adw-animation-target.h" line="55"/>
       <constructor name="new"
                    c:identifier="adw_property_animation_target_new"
                    version="1.2">
         <doc xml:space="preserve"
              filename="src/adw-animation-target.c"
-             line="348">Creates a new `AdwPropertyAnimationTarget` for the @property_name property on
+             line="402">Creates a new `AdwPropertyAnimationTarget` for the @property_name property on
 @object.</doc>
-        <source-position filename="src/adw-animation-target.h" line="51"/>
+        <source-position filename="src/adw-animation-target.h" line="58"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/adw-animation-target.c"
-               line="356">the newly created `AdwPropertyAnimationTarget`</doc>
+               line="410">the newly created `AdwPropertyAnimationTarget`</doc>
           <type name="AnimationTarget" c:type="AdwAnimationTarget*"/>
         </return-value>
         <parameters>
           <parameter name="object" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-animation-target.c"
-                 line="350">an object to be animated</doc>
+                 line="404">an object to be animated</doc>
             <type name="GObject.Object" c:type="GObject*"/>
           </parameter>
           <parameter name="property_name" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-animation-target.c"
-                 line="351">the name of the property on @object to animate</doc>
+                 line="405">the name of the property on @object to animate</doc>
             <type name="utf8" c:type="const char*"/>
           </parameter>
         </parameters>
@@ -29410,26 +29447,26 @@ See [property@PreferencesWindow:visible-page].</doc>
                    version="1.2">
         <doc xml:space="preserve"
              filename="src/adw-animation-target.c"
-             line="378">Creates a new `AdwPropertyAnimationTarget` for the @pspec property on
+             line="432">Creates a new `AdwPropertyAnimationTarget` for the @pspec property on
 @object.</doc>
-        <source-position filename="src/adw-animation-target.h" line="54"/>
+        <source-position filename="src/adw-animation-target.h" line="61"/>
         <return-value transfer-ownership="full">
           <doc xml:space="preserve"
                filename="src/adw-animation-target.c"
-               line="386">new newly created `AdwPropertyAnimationTarget`</doc>
+               line="440">new newly created `AdwPropertyAnimationTarget`</doc>
           <type name="AnimationTarget" c:type="AdwAnimationTarget*"/>
         </return-value>
         <parameters>
           <parameter name="object" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-animation-target.c"
-                 line="380">an object to be animated</doc>
+                 line="434">an object to be animated</doc>
             <type name="GObject.Object" c:type="GObject*"/>
           </parameter>
           <parameter name="pspec" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-animation-target.c"
-                 line="381">the param spec of the property on @object to animate</doc>
+                 line="435">the param spec of the property on @object to animate</doc>
             <type name="GObject.ParamSpec" c:type="GParamSpec*"/>
           </parameter>
         </parameters>
@@ -29440,23 +29477,23 @@ See [property@PreferencesWindow:visible-page].</doc>
               version="1.2">
         <doc xml:space="preserve"
              filename="src/adw-animation-target.c"
-             line="403">Gets the object animated by @self.
+             line="457">Gets the object animated by @self.
 
 The `AdwPropertyAnimationTarget` instance does not hold a strong reference on
 the object; make sure the object is kept alive throughout the target's
 lifetime.</doc>
-        <source-position filename="src/adw-animation-target.h" line="58"/>
+        <source-position filename="src/adw-animation-target.h" line="65"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/adw-animation-target.c"
-               line="413">the animated object</doc>
+               line="467">the animated object</doc>
           <type name="GObject.Object" c:type="GObject*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-animation-target.c"
-                 line="405">a property animation target</doc>
+                 line="459">a property animation target</doc>
             <type name="PropertyAnimationTarget"
                   c:type="AdwPropertyAnimationTarget*"/>
           </instance-parameter>
@@ -29468,19 +29505,19 @@ lifetime.</doc>
               version="1.2">
         <doc xml:space="preserve"
              filename="src/adw-animation-target.c"
-             line="425">Gets the `GParamSpec` of the property animated by @self.</doc>
-        <source-position filename="src/adw-animation-target.h" line="60"/>
+             line="479">Gets the `GParamSpec` of the property animated by @self.</doc>
+        <source-position filename="src/adw-animation-target.h" line="67"/>
         <return-value transfer-ownership="none">
           <doc xml:space="preserve"
                filename="src/adw-animation-target.c"
-               line="431">the animated property's `GParamSpec`</doc>
+               line="485">the animated property's `GParamSpec`</doc>
           <type name="GObject.ParamSpec" c:type="GParamSpec*"/>
         </return-value>
         <parameters>
           <instance-parameter name="self" transfer-ownership="none">
             <doc xml:space="preserve"
                  filename="src/adw-animation-target.c"
-                 line="427">a property animation target</doc>
+                 line="481">a property animation target</doc>
             <type name="PropertyAnimationTarget"
                   c:type="AdwPropertyAnimationTarget*"/>
           </instance-parameter>
@@ -29494,7 +29531,7 @@ lifetime.</doc>
                 getter="get_object">
         <doc xml:space="preserve"
              filename="src/adw-animation-target.c"
-             line="310">The object whose property will be animated.
+             line="364">The object whose property will be animated.
 
 The `AdwPropertyAnimationTarget` instance does not hold a strong reference
 on the object; make sure the object is kept alive throughout the target's
@@ -29509,7 +29546,7 @@ lifetime.</doc>
                 getter="get_pspec">
         <doc xml:space="preserve"
              filename="src/adw-animation-target.c"
-             line="326">The `GParamSpec` of the property to be animated.</doc>
+             line="380">The `GParamSpec` of the property to be animated.</doc>
         <type name="GObject.ParamSpec"/>
       </property>
     </class>
@@ -29518,7 +29555,7 @@ lifetime.</doc>
             disguised="1"
             opaque="1"
             glib:is-gtype-struct-for="PropertyAnimationTarget">
-      <source-position filename="src/adw-animation-target.h" line="48"/>
+      <source-position filename="src/adw-animation-target.h" line="55"/>
     </record>
     <enumeration name="ResponseAppearance"
                  version="1.2"

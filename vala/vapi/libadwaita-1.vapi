@@ -1166,6 +1166,12 @@ namespace Adw {
 		public signal void pushed ();
 		public signal void replaced ();
 	}
+	[CCode (cheader_filename = "adwaita.h", type_id = "adw_none_animation_target_get_type ()")]
+	[Version (since = "1.9")]
+	public sealed class NoneAnimationTarget : Adw.AnimationTarget {
+		[CCode (has_construct_function = false, type = "AdwAnimationTarget*")]
+		public NoneAnimationTarget ();
+	}
 	[CCode (cheader_filename = "adwaita.h", type_id = "adw_overlay_split_view_get_type ()")]
 	[Version (since = "1.4")]
 	public sealed class OverlaySplitView : Gtk.Widget, Adw.Swipeable, Gtk.Accessible, Gtk.Buildable, Gtk.ConstraintTarget {
