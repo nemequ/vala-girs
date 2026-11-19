@@ -11,12 +11,34 @@ namespace GCab {
 		public bool add_folder (GCab.Folder folder) throws GLib.Error;
 		public bool extract (GLib.File? path, [CCode (delegate_target_pos = 3.5)] GCab.FileCallback? file_callback, [CCode (delegate_target_pos = 3.5)] GLib.FileProgressCallback? progress_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool extract_simple (GLib.File path, [CCode (delegate_target_pos = 2.5)] GCab.FileCallback? file_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.7")]
+		public uint64 get_extract_ratio_limit ();
+		[Version (since = "1.7")]
+		public uint64 get_extract_size_limit ();
 		public unowned GLib.GenericArray<GCab.Folder> get_folders ();
+		[Version (since = "1.7")]
+		public unowned GCab.Cabinet? get_next ();
+		[Version (since = "1.7")]
+		public unowned string? get_next_name ();
+		[Version (since = "1.7")]
+		public unowned GCab.Cabinet? get_prev ();
+		[Version (since = "1.7")]
+		public unowned string? get_prev_name ();
 		[Version (since = "0.5")]
 		public unowned GLib.ByteArray get_signature (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[Version (since = "1.0")]
 		public uint32 get_size ();
 		public bool load (GLib.InputStream stream, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.7")]
+		public bool load_from_file (GLib.File file, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		[Version (since = "1.7")]
+		public void set_extract_ratio_limit (uint64 limit);
+		[Version (since = "1.7")]
+		public void set_extract_size_limit (uint64 limit);
+		[Version (since = "1.7")]
+		public void set_next (GCab.Cabinet? next);
+		[Version (since = "1.7")]
+		public void set_prev (GCab.Cabinet? prev);
 		public bool write (GLib.OutputStream stream, [CCode (delegate_target_pos = 3.5)] GCab.FileCallback? file_callback, [CCode (delegate_target_pos = 3.5)] GLib.FileProgressCallback? progress_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public bool write_simple (GLib.OutputStream stream, [CCode (delegate_target_pos = 2.5)] GCab.FileCallback? file_callback, GLib.Cancellable? cancellable = null) throws GLib.Error;
 		[NoAccessorMethod]
@@ -41,10 +63,14 @@ namespace GCab {
 		public unowned string get_name ();
 		[Version (since = "0.6")]
 		public uint32 get_size ();
+		[Version (since = "1.7")]
+		public bool is_continued_from_prev ();
+		[Version (since = "1.7")]
+		public bool is_continued_to_next ();
 		[Version (since = "1.0")]
 		public void set_attributes (uint32 attr);
 		[Version (since = "1.5")]
-		public void set_bytes (GLib.Bytes bytes);
+		public void set_bytes (GLib.Bytes? bytes);
 		[Version (since = "1.0")]
 		public void set_date (GLib.TimeVal tv);
 		[Version (since = "1.4")]
@@ -86,6 +112,7 @@ namespace GCab {
 		MASK
 	}
 	[CCode (cheader_filename = "libgcab.h", cprefix = "GCAB_FILE_ATTRIBUTE_", type_id = "gcab_file_attribute_get_type ()")]
+	[Flags]
 	public enum FileAttribute {
 		RDONLY,
 		HIDDEN,

@@ -2,12 +2,16 @@
 
 [CCode (cprefix = "IBus", gir_namespace = "IBus", gir_version = "1.0", lower_case_cprefix = "ibus_")]
 namespace IBus {
-	[CCode (cheader_filename = "ibus.h", type_id = "ibus_attr_list_get_type ()")]
+	[CCode (cheader_filename = "ibusattrlistprivate.h", type_id = "ibus_attr_list_get_type ()")]
 	public class AttrList : IBus.Serializable {
 		public weak GLib.Array<void*> attributes;
 		[CCode (has_construct_function = false)]
 		public AttrList ();
 		public void append (IBus.Attribute attr);
+		[Version (since = "1.5.33")]
+		public unowned IBus.AttrList copy_format_to_hint () throws GLib.Error;
+		[Version (since = "1.5.33")]
+		public unowned IBus.AttrList copy_format_to_rgba (IBus.RGBA? selected_fg, IBus.RGBA? selected_bg) throws GLib.Error;
 		public unowned IBus.Attribute @get (uint index);
 	}
 	[CCode (cheader_filename = "ibus.h", type_id = "ibus_attribute_get_type ()")]
@@ -233,6 +237,8 @@ namespace IBus {
 		public void hide_lookup_table ();
 		public void hide_preedit_text ();
 		public void register_properties (IBus.PropList prop_list);
+		[Version (since = "1.5.33")]
+		public void send_message (IBus.Message message);
 		public void show_auxiliary_text ();
 		public void show_lookup_table ();
 		public void show_preedit_text ();
@@ -391,6 +397,10 @@ namespace IBus {
 		public void set_engine (string name);
 		[Version (since = "1.5.29")]
 		public void set_post_process_key_event (bool enable);
+		[Version (since = "1.5.33")]
+		public void set_preedit_format (IBus.PreeditFormat format);
+		[Version (since = "1.5.33")]
+		public void set_selected_color (IBus.RGBA fg_color, IBus.RGBA bg_color);
 		public void set_surrounding_text (IBus.Text text, uint32 cursor_pos, uint32 anchor_pos);
 		public signal void commit_text (IBus.Text text);
 		public signal void cursor_down_lookup_table ();
@@ -460,6 +470,26 @@ namespace IBus {
 		public void set_page_size (uint page_size);
 		public void set_round (bool round);
 	}
+	[CCode (cheader_filename = "ibus.h", type_id = "ibus_message_get_type ()")]
+	[Version (since = "1.5.33")]
+	public class Message : IBus.Serializable {
+		[CCode (cname = "ibus_message_new", has_construct_function = true)]
+		public Message (uint domain, uint code, string? title, string description, ...);
+		public uint get_code ();
+		public unowned string get_description ();
+		public uint get_domain ();
+		public int get_progress ();
+		public uint get_serial ();
+		public int get_timeout ();
+		public unowned string get_title ();
+		public uint8 code { get; construct; }
+		public string description { get; construct; }
+		public uint8 domain { get; construct; }
+		public int progress { get; construct; }
+		public uint serial { get; construct; }
+		public int timeout { get; construct; }
+		public string title { get; construct; }
+	}
 	[CCode (cheader_filename = "ibus.h", type_id = "ibus_object_get_type ()")]
 	public class Object : GLib.InitiallyUnowned {
 		public uint32 flags;
@@ -490,6 +520,7 @@ namespace IBus {
 		public void commit_text (IBus.Text text);
 		public void cursor_down ();
 		public void cursor_up ();
+		[Version (since = "1.5.32")]
 		public void forward_process_key_event (uint32 keyval, uint32 keycode, uint32 state);
 		public void hide_preedit_text_received ();
 		public void page_down ();
@@ -499,6 +530,12 @@ namespace IBus {
 		public void property_activate (string prop_name, uint prop_state);
 		public void property_hide (string prop_name);
 		public void property_show (string prop_name);
+		[Version (since = "1.5.33")]
+		public void send_message (IBus.Message message);
+		[Version (since = "1.5.33")]
+		public void set_preedit_format (IBus.PreeditFormat format);
+		[Version (since = "1.5.33")]
+		public void set_selected_color (IBus.RGBA fg_color, IBus.RGBA bg_color);
 		public void show_preedit_text_received ();
 		public void update_auxiliary_text_received (IBus.Text text, bool visible);
 		public void update_lookup_table_received (IBus.LookupTable table, bool visible);
@@ -520,6 +557,8 @@ namespace IBus {
 		public virtual signal bool process_key_event (uint keyval, uint keycode, uint state);
 		public virtual signal void register_properties (IBus.PropList prop_list);
 		public virtual signal void reset ();
+		[Version (since = "1.5.33")]
+		public signal void send_message_received (IBus.Message message);
 		public virtual signal void set_content_type (uint purpose, uint hints);
 		public virtual signal void set_cursor_location (int x, int y, int w, int h);
 		public virtual signal void set_cursor_location_relative (int x, int y, int w, int h);
@@ -763,6 +802,14 @@ namespace IBus {
 		public uint state;
 	}
 	[CCode (cheader_filename = "ibus.h", has_type_id = false)]
+	[Version (since = "1.5.33")]
+	public struct RGBA {
+		public float red;
+		public float green;
+		public float blue;
+		public float alpha;
+	}
+	[CCode (cheader_filename = "ibus.h", has_type_id = false)]
 	public struct Rectangle {
 		public int x;
 		public int y;
@@ -770,23 +817,25 @@ namespace IBus {
 		public int height;
 	}
 	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_ATTR_PREEDIT_", type_id = "ibus_attr_preedit_get_type ()")]
+	[Flags]
 	[Version (since = "1.5.29")]
 	public enum AttrPreedit {
 		DEFAULT,
-		NONE,
 		WHOLE,
 		SELECTION,
 		PREDICTION,
 		PREFIX,
 		SUFFIX,
 		ERROR_SPELLING,
-		ERROR_COMPOSE
+		ERROR_COMPOSE,
+		NONE
 	}
 	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_ATTR_TYPE_", type_id = "ibus_attr_type_get_type ()")]
 	public enum AttrType {
 		UNDERLINE,
 		FOREGROUND,
-		BACKGROUND
+		BACKGROUND,
+		HINT
 	}
 	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_ATTR_UNDERLINE_", type_id = "ibus_attr_underline_get_type ()")]
 	public enum AttrUnderline {
@@ -795,6 +844,7 @@ namespace IBus {
 		DOUBLE,
 		LOW,
 		ERROR;
+		[Version (deprecated = true, deprecated_since = "1.5.33")]
 		public static unowned IBus.Attribute @new (uint underline_type, uint start_index, uint end_index);
 	}
 	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_BUS_GLOBAL_BINDING_TYPE_", type_id = "ibus_bus_global_binding_type_get_type ()")]
@@ -836,6 +886,13 @@ namespace IBus {
 		SYNC_PROCESS_KEY,
 		SYNC_PROCESS_KEY_V2
 	}
+	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_ENGINE_MSG_CODE_", type_id = "ibus_engine_msg_code_get_type ()")]
+	[Version (since = "1.5.33")]
+	public enum EngineMsgCode {
+		GENERAL,
+		INVALID_COMPOSE_SEQUENCE,
+		UPDATE_COMPOSE_TABLE
+	}
 	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_INPUT_HINT_", type_id = "ibus_input_hints_get_type ()")]
 	[Flags]
 	[Version (since = "1.5.4")]
@@ -852,7 +909,10 @@ namespace IBus {
 		VERTICAL_WRITING,
 		EMOJI,
 		NO_EMOJI,
-		PRIVATE
+		PRIVATE,
+		HIDDEN_TEXT,
+		LATIN,
+		MULTILINE
 	}
 	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_INPUT_PURPOSE_", type_id = "ibus_input_purpose_get_type ()")]
 	[Version (since = "1.5.4")]
@@ -867,7 +927,17 @@ namespace IBus {
 		NAME,
 		PASSWORD,
 		PIN,
-		TERMINAL
+		TERMINAL,
+		DATE,
+		TIME,
+		DATETIME
+	}
+	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_MESSAGE_DOMAIN_", type_id = "ibus_message_domain_get_type ()")]
+	[Version (since = "1.5.33")]
+	public enum MessageDomain {
+		NONE,
+		ENGINE,
+		PANEL
 	}
 	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_", type_id = "ibus_modifier_type_get_type ()")]
 	[Flags]
@@ -908,10 +978,22 @@ namespace IBus {
 		VERTICAL,
 		SYSTEM
 	}
+	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_PANEL_SERVICE_MSG_CODE_", type_id = "ibus_panel_service_msg_code_get_type ()")]
+	[Version (since = "1.5.33")]
+	public enum PanelServiceMsgCode {
+		GENERAL,
+		LOADING_UNICODE
+	}
 	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_ENGINE_PREEDIT_", type_id = "ibus_preedit_focus_mode_get_type ()")]
 	public enum PreeditFocusMode {
 		CLEAR,
 		COMMIT
+	}
+	[CCode (cheader_filename = "ibus.h", cprefix = "IBUS_PREEDIT_FORMAT_", type_id = "ibus_preedit_format_get_type ()")]
+	[Version (since = "1.5.33")]
+	public enum PreeditFormat {
+		RGBA,
+		HINT
 	}
 	[CCode (cheader_filename = "ibus.h", cprefix = "PROP_STATE_", type_id = "ibus_prop_state_get_type ()")]
 	public enum PropState {
@@ -9573,11 +9655,16 @@ namespace IBus {
 	[CCode (cheader_filename = "ibus.h")]
 	public static bool accelerator_valid (uint keyval, IBus.ModifierType modifiers);
 	[CCode (cheader_filename = "ibus.h")]
+	[Version (deprecated = true, deprecated_since = "1.5.33")]
 	public static unowned IBus.Attribute attr_background_new (uint color, uint start_index, uint end_index);
 	[CCode (cheader_filename = "ibus.h")]
+	[Version (deprecated = true, deprecated_since = "1.5.33")]
 	public static unowned IBus.Attribute attr_foreground_new (uint color, uint start_index, uint end_index);
 	[CCode (cheader_filename = "ibus.h")]
-	[Version (replacement = "AttrUnderline.new")]
+	[Version (since = "1.5.33")]
+	public static unowned IBus.Attribute attr_hint_new (uint hint, uint start_index, uint end_index);
+	[CCode (cheader_filename = "ibus.h")]
+	[Version (deprecated = true, deprecated_since = "1.5.33", replacement = "AttrUnderline.new")]
 	public static unowned IBus.Attribute attr_underline_new (uint underline_type, uint start_index, uint end_index);
 	[CCode (cheader_filename = "ibus.h")]
 	public static unowned GLib.HashTable<string,void*> emoji_dict_load (string path);
@@ -9596,6 +9683,9 @@ namespace IBus {
 	[CCode (cheader_filename = "ibus.h")]
 	[Version (deprecated = true)]
 	public static long get_daemon_uid ();
+	[CCode (cheader_filename = "ibus.h")]
+	[Version (since = "1.5.34")]
+	public static unowned string get_group_name ();
 	[CCode (cheader_filename = "ibus.h")]
 	public static string get_language_name (string _locale);
 	[CCode (cheader_filename = "ibus.h")]

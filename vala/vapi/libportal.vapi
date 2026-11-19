@@ -2,6 +2,96 @@
 
 [CCode (cprefix = "Xdp", gir_namespace = "Xdp", gir_version = "1.0", lower_case_cprefix = "xdp_")]
 namespace Xdp {
+	[CCode (cheader_filename = "libportal/portal.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "xdp_global_shortcut_get_type ()")]
+	[Compact]
+	public class GlobalShortcut {
+		[CCode (has_construct_function = false)]
+		public GlobalShortcut (string shortcut_id, string description, string preferred_trigger);
+		public Xdp.GlobalShortcut copy ();
+		public void free ();
+		public unowned string get_description ();
+		public unowned string get_preferred_trigger ();
+		public unowned string get_shortcut_id ();
+		public void set_description (string description);
+		public void set_preferred_trigger (string preferred_trigger);
+	}
+	[CCode (cheader_filename = "libportal/portal.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "xdp_global_shortcut_assigned_get_type ()")]
+	[Compact]
+	public class GlobalShortcutAssigned {
+		public Xdp.GlobalShortcutAssigned copy ();
+		public void free ();
+		public unowned string get_description ();
+		public unowned string get_shortcut_id ();
+		public unowned string get_trigger_description ();
+	}
+	[CCode (cheader_filename = "libportal/portal.h", type_id = "xdp_global_shortcuts_session_get_type ()")]
+	public sealed class GlobalShortcutsSession : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected GlobalShortcutsSession ();
+		public async GLib.GenericArray<Xdp.GlobalShortcutAssigned> bind_shortcuts (GLib.GenericArray<Xdp.GlobalShortcut> shortcuts, string? parent_window, GLib.Cancellable? cancellable) throws GLib.Error;
+		public void close ();
+		public async bool configure_shortcuts (string? parent_window, string? activation_token, GLib.Cancellable? cancellable) throws GLib.Error;
+		public unowned Xdp.Session get_session ();
+		public async GLib.GenericArray<Xdp.GlobalShortcutAssigned> list_shortcuts (GLib.Cancellable? cancellable) throws GLib.Error;
+		public signal void activated (string shortcut_id, uint64 timestamp, GLib.Variant options);
+		public signal void deactivated (string shortcut_id, uint64 timestamp, GLib.Variant options);
+		public signal void shortcuts_changed (GLib.GenericArray<Xdp.GlobalShortcutAssigned> shortcuts);
+	}
+	[CCode (cheader_filename = "libportal/portal.h", type_id = "xdp_input_capture_pointer_barrier_get_type ()")]
+	public sealed class InputCapturePointerBarrier : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected InputCapturePointerBarrier ();
+		[NoAccessorMethod]
+		public uint id { get; construct; }
+		[NoAccessorMethod]
+		public bool is_active { get; }
+		[NoAccessorMethod]
+		public int x1 { get; construct; }
+		[NoAccessorMethod]
+		public int x2 { get; construct; }
+		[NoAccessorMethod]
+		public int y1 { get; construct; }
+		[NoAccessorMethod]
+		public int y2 { get; construct; }
+	}
+	[CCode (cheader_filename = "libportal/portal.h", type_id = "xdp_input_capture_session_get_type ()")]
+	public sealed class InputCaptureSession : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected InputCaptureSession ();
+		public int connect_to_eis () throws GLib.Error;
+		public void disable ();
+		public void enable ();
+		public unowned string get_restore_token ();
+		public unowned Xdp.Session get_session ();
+		public unowned GLib.List<Xdp.InputCaptureZone> get_zones ();
+		public void release (uint activation_id);
+		public void release_at (uint activation_id, double cursor_x_position, double cursor_y_position);
+		public async GLib.List<Xdp.InputCapturePointerBarrier> set_pointer_barriers (owned GLib.List<weak Xdp.InputCapturePointerBarrier> barriers, GLib.Cancellable? cancellable) throws GLib.Error;
+		public void set_restore_token (string restore_token);
+		public void set_session_persistence (Xdp.InputCaptureSessionPersistence persistence);
+		public async bool start (Xdp.Parent? parent, Xdp.InputCapability capabilities, GLib.Cancellable? cancellable) throws GLib.Error;
+		public signal void activated (uint activation_id, GLib.Variant options);
+		public signal void deactivated (uint activation_id, GLib.Variant options);
+		public signal void disabled (GLib.Variant options);
+		public signal void zones_changed (GLib.Variant options);
+	}
+	[CCode (cheader_filename = "libportal/portal.h", type_id = "xdp_input_capture_zone_get_type ()")]
+	public sealed class InputCaptureZone : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected InputCaptureZone ();
+		[NoAccessorMethod]
+		public uint height { get; construct; }
+		[NoAccessorMethod]
+		public bool is_valid { get; set; }
+		[NoAccessorMethod]
+		public uint width { get; construct; }
+		[NoAccessorMethod]
+		public int x { get; construct; }
+		[NoAccessorMethod]
+		public int y { get; construct; }
+		[NoAccessorMethod]
+		public uint zone_set { get; construct; }
+	}
 	[CCode (cheader_filename = "libportal/portal.h", copy_function = "g_boxed_copy", free_function = "g_boxed_free", type_id = "xdp_parent_get_type ()")]
 	[Compact]
 	public class Parent {
@@ -15,7 +105,12 @@ namespace Xdp {
 		public async bool access_camera (Xdp.Parent? parent, Xdp.CameraFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool add_notification (string id, GLib.Variant notification, Xdp.NotificationFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool compose_email (Xdp.Parent? parent, [CCode (array_length = false, array_null_terminated = true)] string[]? addresses, [CCode (array_length = false, array_null_terminated = true)] string[]? cc, [CCode (array_length = false, array_null_terminated = true)] string[]? bcc, string? subject, string? body, [CCode (array_length = false, array_null_terminated = true)] string[]? attachments, Xdp.EmailFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async Xdp.GlobalShortcutsSession create_global_shortcuts_session (GLib.Cancellable? cancellable) throws GLib.Error;
+		public async Xdp.InputCaptureSession create_input_capture_session (Xdp.Parent? parent, Xdp.InputCapability capabilities, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async Xdp.InputCaptureSession create_input_capture_session2 (GLib.Cancellable? cancellable) throws GLib.Error;
+		public Xdp.InputCaptureSession create_input_capture_session2_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
 		public async Xdp.Session create_remote_desktop_session (Xdp.DeviceType devices, Xdp.OutputType outputs, Xdp.RemoteDesktopFlags flags, Xdp.CursorMode cursor_mode, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async void create_remote_desktop_session_full (Xdp.DeviceType devices, Xdp.OutputType outputs, Xdp.RemoteDesktopFlags flags, Xdp.CursorMode cursor_mode, Xdp.PersistMode persist_mode, string? restore_token, GLib.Cancellable? cancellable);
 		public async Xdp.Session create_screencast_session (Xdp.OutputType outputs, Xdp.ScreencastFlags flags, Xdp.CursorMode cursor_mode, Xdp.PersistMode persist_mode, string? restore_token, GLib.Cancellable? cancellable) throws GLib.Error;
 		public string dynamic_launcher_get_desktop_entry (string desktop_file_id) throws GLib.Error;
 		public GLib.Variant dynamic_launcher_get_icon (string desktop_file_id, string? out_icon_format, uint? out_icon_size) throws GLib.Error;
@@ -24,8 +119,14 @@ namespace Xdp {
 		public async GLib.Variant dynamic_launcher_prepare_install (Xdp.Parent? parent, string name, GLib.Variant icon_v, Xdp.LauncherType launcher_type, string? target, bool editable_name, bool editable_icon, GLib.Cancellable? cancellable) throws GLib.Error;
 		public string dynamic_launcher_request_install_token (string name, GLib.Variant icon_v) throws GLib.Error;
 		public bool dynamic_launcher_uninstall (string desktop_file_id) throws GLib.Error;
+		public async int get_input_capture_version (GLib.Cancellable? cancellable) throws GLib.Error;
+		public int get_input_capture_version_sync (GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public Xdp.Settings get_settings ();
+		[Version (since = "0.9.0")]
+		public unowned GLib.Variant get_supported_notification_options () throws GLib.Error;
 		public async GLib.Variant get_user_information (Xdp.Parent? parent, string? reason, Xdp.UserInformationFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		[CCode (cname = "xdp_portal_initable_new", has_construct_function = false)]
+		[Version (since = "0.7")]
 		public Portal.initable_new () throws GLib.Error;
 		public bool is_camera_present ();
 		public async bool location_monitor_start (Xdp.Parent? parent, uint distance_threshold, uint time_threshold, Xdp.LocationAccuracy accuracy, Xdp.LocationMonitorFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -38,7 +139,7 @@ namespace Xdp {
 		public async GLib.Variant prepare_print (Xdp.Parent? parent, string title, GLib.Variant? settings, GLib.Variant? page_setup, Xdp.PrintFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool print_file (Xdp.Parent? parent, string title, uint token, string file, Xdp.PrintFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void remove_notification (string id);
-		public async bool request_background (Xdp.Parent? parent, string? reason, owned GLib.GenericArray<weak string> commandline, Xdp.BackgroundFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
+		public async bool request_background (Xdp.Parent? parent, string? reason, owned GLib.GenericArray<weak string>? commandline, Xdp.BackgroundFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public static bool running_under_flatpak ();
 		public static bool running_under_sandbox ();
 		public static bool running_under_snap () throws GLib.Error;
@@ -51,8 +152,8 @@ namespace Xdp {
 		public void session_uninhibit (int id);
 		public async bool set_background_status (string? status_message, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool set_wallpaper (Xdp.Parent? parent, string uri, Xdp.WallpaperFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
-		public async int spawn (string cwd, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length_cname = "n_fds", array_length_pos = 4.5)] int[]? fds, [CCode (array_length_cname = "n_fds", array_length_pos = 4.5)] int[]? map_to, [CCode (array_length = false, array_null_terminated = true)] string[]? env, Xdp.SpawnFlags flags, [CCode (array_length = false, array_null_terminated = true)] string[]? sandbox_expose, [CCode (array_length = false, array_null_terminated = true)] string[]? sandbox_expose_ro, GLib.Cancellable? cancellable) throws GLib.Error;
-		public void spawn_signal (int pid, int @signal, bool to_process_group);
+		public async pid_t spawn (string cwd, [CCode (array_length = false, array_null_terminated = true)] string[] argv, [CCode (array_length_cname = "n_fds", array_length_pos = 4.5)] int[]? fds, [CCode (array_length_cname = "n_fds", array_length_pos = 4.5)] int[]? map_to, [CCode (array_length = false, array_null_terminated = true)] string[]? env, Xdp.SpawnFlags flags, [CCode (array_length = false, array_null_terminated = true)] string[]? sandbox_expose, [CCode (array_length = false, array_null_terminated = true)] string[]? sandbox_expose_ro, GLib.Cancellable? cancellable) throws GLib.Error;
+		public void spawn_signal (pid_t pid, int @signal, bool to_process_group);
 		public async string? take_screenshot (Xdp.Parent? parent, Xdp.ScreenshotFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool trash_file (string path, GLib.Cancellable? cancellable) throws GLib.Error;
 		public async bool update_install (Xdp.Parent parent, Xdp.UpdateInstallFlags flags, GLib.Cancellable? cancellable) throws GLib.Error;
@@ -74,9 +175,13 @@ namespace Xdp {
 		public Xdp.DeviceType get_devices ();
 		public Xdp.PersistMode get_persist_mode ();
 		public string? get_restore_token ();
+		[CCode (array_length = false, array_null_terminated = true)]
+		public unowned string[] get_selection_mime_types ();
 		public Xdp.SessionState get_session_state ();
 		public Xdp.SessionType get_session_type ();
 		public GLib.Variant get_streams ();
+		public bool is_clipboard_enabled ();
+		public bool is_selection_owned_by_session ();
 		public void keyboard_key (bool keysym, int key, Xdp.KeyState state);
 		public int open_pipewire_remote ();
 		public void pointer_axis (bool finish, double dx, double dy);
@@ -84,11 +189,28 @@ namespace Xdp {
 		public void pointer_button (int button, Xdp.ButtonState state);
 		public void pointer_motion (double dx, double dy);
 		public void pointer_position (uint stream, double x, double y);
+		public void request_clipboard ();
+		public int selection_read (string mime_type);
+		public int selection_write (uint serial);
+		public void selection_write_done (uint serial, bool success);
+		public void set_selection (string mime_types);
 		public async bool start (Xdp.Parent? parent, GLib.Cancellable? cancellable) throws GLib.Error;
 		public void touch_down (uint stream, uint slot, double x, double y);
 		public void touch_position (uint stream, uint slot, double x, double y);
 		public void touch_up (uint slot);
 		public signal void closed ();
+		public signal void selection_owner_changed ([CCode (array_length = false, array_null_terminated = true)] string[] object, bool p0);
+		public signal void selection_transfer (string object, uint p0);
+	}
+	[CCode (cheader_filename = "libportal/portal.h", type_id = "xdp_settings_get_type ()")]
+	public sealed class Settings : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected Settings ();
+		public GLib.Variant read_all_values (string namespaces, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public string read_string (string namespace_, string key, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public uint read_uint (string namespace_, string key, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public GLib.Variant read_value (string namespace_, string key, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public signal void changed (string namespace_, string key, GLib.Variant value);
 	}
 	[CCode (cheader_filename = "libportal/portal.h", cprefix = "XDP_BACKGROUND_FLAG_", type_id = "xdp_background_flags_get_type ()")]
 	[Flags]
@@ -138,6 +260,20 @@ namespace Xdp {
 		SUSPEND,
 		IDLE
 	}
+	[CCode (cheader_filename = "libportal/portal.h", cprefix = "XDP_INPUT_CAPABILITY_", type_id = "xdp_input_capability_get_type ()")]
+	[Flags]
+	public enum InputCapability {
+		NONE,
+		KEYBOARD,
+		POINTER,
+		TOUCHSCREEN
+	}
+	[CCode (cheader_filename = "libportal/portal.h", cprefix = "XDP_INPUT_CAPTURE_SESSION_PERSISTENCE_", type_id = "xdp_input_capture_session_persistence_get_type ()")]
+	public enum InputCaptureSessionPersistence {
+		NONE,
+		TRANSIENT,
+		PERSISTENT
+	}
 	[CCode (cheader_filename = "libportal/portal.h", cprefix = "XDP_KEY_", type_id = "xdp_key_state_get_type ()")]
 	public enum KeyState {
 		RELEASED,
@@ -176,7 +312,9 @@ namespace Xdp {
 	[Flags]
 	public enum OpenFileFlags {
 		NONE,
-		MULTIPLE
+		MULTIPLE,
+		[Version (since = "0.10")]
+		DIRECTORY
 	}
 	[CCode (cheader_filename = "libportal/portal.h", cprefix = "XDP_OPEN_URI_FLAG_", type_id = "xdp_open_uri_flags_get_type ()")]
 	[Flags]
@@ -238,7 +376,9 @@ namespace Xdp {
 	[CCode (cheader_filename = "libportal/portal.h", cprefix = "XDP_SESSION_", type_id = "xdp_session_type_get_type ()")]
 	public enum SessionType {
 		SCREENCAST,
-		REMOTE_DESKTOP
+		REMOTE_DESKTOP,
+		INPUT_CAPTURE,
+		GLOBAL_SHORTCUTS
 	}
 	[CCode (cheader_filename = "libportal/portal.h", cprefix = "XDP_SPAWN_FLAG_", type_id = "xdp_spawn_flags_get_type ()")]
 	[Flags]

@@ -34,8 +34,7 @@ namespace Gcr {
 		public unowned string get_oid ();
 		public unowned GLib.Bytes get_value ();
 		public bool is_critical ();
-		[NoAccessorMethod]
-		public bool critical { get; construct; }
+		public bool critical { [CCode (cname = "gcr_certificate_extension_is_critical")] get; construct; }
 		public string oid { get; }
 		public GLib.Bytes value { get; construct; }
 	}

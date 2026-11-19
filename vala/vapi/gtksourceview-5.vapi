@@ -51,6 +51,7 @@ namespace GtkSource {
 		public bool get_highlight_syntax ();
 		public bool get_implicit_trailing_newline ();
 		public unowned GtkSource.Language? get_language ();
+		[Version (since = "5.10")]
 		public bool get_loading ();
 		[Version (since = "5.18")]
 		public string get_markup (Gtk.TextIter start, Gtk.TextIter end);
@@ -205,7 +206,7 @@ namespace GtkSource {
 		public void check_file_on_disk ();
 		public GtkSource.CompressionType get_compression_type ();
 		public unowned GtkSource.Encoding get_encoding ();
-		public unowned GLib.File get_location ();
+		public unowned GLib.File? get_location ();
 		public GtkSource.NewlineType get_newline_type ();
 		public bool is_deleted ();
 		public bool is_externally_modified ();
@@ -230,14 +231,51 @@ namespace GtkSource {
 		public unowned GtkSource.Encoding get_encoding ();
 		public unowned GtkSource.File get_file ();
 		public unowned GLib.InputStream? get_input_stream ();
+		[Version (since = "5.24")]
+		public uint64 get_line_count_threshold ();
+		[Version (since = "5.24")]
+		public uint64 get_line_length_threshold ();
 		public unowned GLib.File? get_location ();
+		[Version (since = "5.22")]
+		public uint64 get_max_size ();
 		public GtkSource.NewlineType get_newline_type ();
+		[Version (since = "5.24")]
+		public uint64 get_size_threshold ();
 		public async bool load_async (int io_priority, GLib.Cancellable? cancellable, owned GLib.FileProgressCallback? progress_callback) throws GLib.Error;
 		public void set_candidate_encodings (GLib.SList<GtkSource.Encoding> candidate_encodings);
+		[Version (since = "5.24")]
+		public void set_line_count_threshold (uint64 threshold);
+		[Version (since = "5.24")]
+		public void set_line_length_threshold (uint64 threshold);
+		[Version (since = "5.22")]
+		public void set_max_size (uint64 max_size);
+		[Version (since = "5.24")]
+		public void set_size_threshold (uint64 threshold);
 		public GtkSource.Buffer buffer { get; construct; }
 		public GtkSource.File file { get; construct; }
 		public GLib.InputStream input_stream { get; construct; }
+		[Version (since = "5.24")]
+		public uint64 line_count_threshold { get; set; }
+		[Version (since = "5.24")]
+		public uint64 line_length_threshold { get; set; }
 		public GLib.File location { get; construct; }
+		[Version (since = "5.22")]
+		public uint64 max_size { get; set; }
+		[Version (since = "5.24")]
+		public uint64 size_threshold { get; set; }
+		[Version (since = "5.24")]
+		public signal bool decide_policy (GtkSource.FileLoaderPolicyDecision decision);
+	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_file_loader_policy_decision_get_type ()")]
+	[Version (since = "5.24")]
+	public sealed class FileLoaderPolicyDecision : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected FileLoaderPolicyDecision ();
+		public GtkSource.FileLoaderPolicyReason get_reason ();
+		public uint64 get_threshold ();
+		public uint64 get_value ();
+		public void ignore ();
+		public void use ();
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_file_saver_get_type ()")]
 	public sealed class FileSaver : GLib.Object {
@@ -287,7 +325,7 @@ namespace GtkSource {
 		public uint get_first ();
 		public void get_iter_at_line (out Gtk.TextIter iter, uint line);
 		public uint get_last ();
-		[Version (since = "5.18")]
+		[Version (since = "5.16")]
 		public void get_line_extent (uint line, GtkSource.GutterRendererAlignmentMode mode, out double y, out double height);
 		public void get_line_yrange (uint line, GtkSource.GutterRendererAlignmentMode mode, out int y, out int height);
 		public unowned Gtk.TextView get_view ();
@@ -417,6 +455,8 @@ namespace GtkSource {
 		[CCode (array_length = false, array_null_terminated = true)]
 		public string[]? get_style_ids ();
 		public unowned string? get_style_name (string style_id);
+		[Version (since = "5.24")]
+		public async bool prepare_async (GLib.Cancellable? cancellable) throws GLib.Error;
 		public bool hidden { get; }
 		public string id { get; }
 		public string name { get; }
@@ -568,7 +608,7 @@ namespace GtkSource {
 		public async bool forward_async (Gtk.TextIter iter, GLib.Cancellable? cancellable, out Gtk.TextIter match_start, out Gtk.TextIter match_end, out bool has_wrapped_around) throws GLib.Error;
 		public unowned GtkSource.Buffer get_buffer ();
 		public bool get_highlight ();
-		public unowned GtkSource.Style get_match_style ();
+		public unowned GtkSource.Style? get_match_style ();
 		public int get_occurrence_position (Gtk.TextIter match_start, Gtk.TextIter match_end);
 		public int get_occurrences_count ();
 		public GLib.Error? get_regex_error ();
@@ -899,6 +939,8 @@ namespace GtkSource {
 		[HasEmitter]
 		public virtual signal void push_snippet (GtkSource.Snippet snippet, ref Gtk.TextIter location);
 		public virtual signal void show_completion ();
+		[CCode (cname = "smart-home-end")]
+		public signal void smart_home_end_moved (Gtk.TextIter iter, int count);
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", type_id = "gtk_source_vim_im_context_get_type ()")]
 	[Version (since = "5.4")]
@@ -1002,6 +1044,13 @@ namespace GtkSource {
 		NONE,
 		GZIP
 	}
+	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_FILE_LOADER_POLICY_REASON_", type_id = "gtk_source_file_loader_policy_reason_get_type ()")]
+	[Version (since = "5.24")]
+	public enum FileLoaderPolicyReason {
+		SIZE,
+		LINE_LENGTH,
+		LINE_COUNT
+	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_FILE_SAVER_FLAGS_", type_id = "gtk_source_file_saver_flags_get_type ()")]
 	[Flags]
 	public enum FileSaverFlags {
@@ -1067,7 +1116,9 @@ namespace GtkSource {
 	public errordomain FileLoaderError {
 		TOO_BIG,
 		ENCODING_AUTO_DETECTION_FAILED,
-		CONVERSION_FALLBACK;
+		CONVERSION_FALLBACK,
+		LINE_TOO_LONG,
+		TOO_MANY_LINES;
 		public static GLib.Quark quark ();
 	}
 	[CCode (cheader_filename = "gtksourceview/gtksource.h", cprefix = "GTK_SOURCE_FILE_SAVER_ERROR_", type_id = "gtk_source_file_saver_error_get_type ()")]
@@ -1118,9 +1169,6 @@ namespace GtkSource {
 	public static uint get_minor_version ();
 	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
 	public static void init ();
-	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
-	[Version (since = "5.2")]
-	public static size_t scheduler_add (GtkSource.SchedulerCallback callback);
 	[CCode (cheader_filename = "gtksourceview/gtksource.h")]
 	[Version (since = "5.2")]
 	public static size_t scheduler_add_full (owned GtkSource.SchedulerCallback callback);

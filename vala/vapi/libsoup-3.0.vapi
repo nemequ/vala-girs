@@ -34,10 +34,8 @@ namespace Soup {
 		public virtual bool update (Soup.Message msg, GLib.HashTable<void*,void*> auth_header);
 		[NoAccessorMethod]
 		public string authority { owned get; set; }
-		[NoAccessorMethod]
-		public virtual bool is_authenticated { get; }
-		[NoAccessorMethod]
-		public bool is_cancelled { get; }
+		public virtual bool is_authenticated { [CCode (cname = "soup_auth_is_authenticated")] get; }
+		public bool is_cancelled { [CCode (cname = "soup_auth_is_cancelled")] get; }
 		[NoAccessorMethod]
 		public bool is_for_proxy { get; set; }
 		[NoAccessorMethod]
@@ -138,6 +136,18 @@ namespace Soup {
 		[NoAccessorMethod]
 		public Soup.CacheType cache_type { get; construct; }
 	}
+	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_compression_dictionary_request_get_type ()")]
+	[Version (since = "3.8")]
+	public sealed class CompressionDictionaryRequest : GLib.Object {
+		[CCode (has_construct_function = false)]
+		protected CompressionDictionaryRequest ();
+		public void cancel ();
+		public void set_dictionary (GLib.Bytes dictionary);
+		[NoAccessorMethod]
+		public bool cancelled { get; }
+		[NoAccessorMethod]
+		public GLib.Bytes dictionary { owned get; }
+	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_content_decoder_get_type ()")]
 	public sealed class ContentDecoder : GLib.Object, Soup.SessionFeature {
 		[CCode (has_construct_function = false)]
@@ -205,11 +215,20 @@ namespace Soup {
 		public virtual signal void changed (Soup.Cookie? old_cookie, Soup.Cookie? new_cookie);
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_cookie_jar_db_get_type ()")]
-	public sealed class CookieJarDB : Soup.CookieJar, Soup.SessionFeature {
+	public sealed class CookieJarDB : Soup.CookieJar, GLib.Initable, Soup.SessionFeature {
 		[CCode (has_construct_function = false, type = "SoupCookieJar*")]
 		public CookieJarDB (string filename, bool read_only);
+		[Version (since = "3.8")]
+		public uint64 get_max_size ();
+		[Version (since = "3.8")]
+		public bool set_max_size (uint64 max_size) throws GLib.Error;
+		[CCode (has_construct_function = false, type = "SoupCookieJar*")]
+		[Version (since = "3.8")]
+		public CookieJarDB.with_error (string filename, bool read_only) throws GLib.Error;
 		[NoAccessorMethod]
 		public string filename { owned get; construct; }
+		[Version (since = "3.8")]
+		public uint64 max_size { get; construct; }
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_cookie_jar_text_get_type ()")]
 	public sealed class CookieJarText : Soup.CookieJar, Soup.SessionFeature {
@@ -286,6 +305,10 @@ namespace Soup {
 		public Message.from_multipart (string uri_string, Soup.Multipart multipart);
 		[CCode (has_construct_function = false)]
 		public Message.from_uri (string method, GLib.Uri uri);
+		[Version (since = "3.8")]
+		public unowned GLib.Bytes? get_compression_dictionary_hash ();
+		[Version (since = "3.8")]
+		public unowned string? get_compression_dictionary_id ();
 		public uint64 get_connection_id ();
 		public unowned GLib.Uri get_first_party ();
 		public Soup.MessageFlags get_flags ();
@@ -314,6 +337,10 @@ namespace Soup {
 		public Message.options_ping (GLib.Uri base_uri);
 		public bool query_flags (Soup.MessageFlags flags);
 		public void remove_flags (Soup.MessageFlags flags);
+		[Version (since = "3.8")]
+		public void set_compression_dictionary_hash (GLib.Bytes? hash);
+		[Version (since = "3.8")]
+		public void set_compression_dictionary_id (string? id);
 		public void set_first_party (GLib.Uri first_party);
 		public void set_flags (Soup.MessageFlags flags);
 		[Version (since = "3.4")]
@@ -360,6 +387,8 @@ namespace Soup {
 		public signal void network_event (GLib.SocketClientEvent event, GLib.IOStream connection);
 		public signal bool request_certificate (GLib.TlsClientConnection tls_connection);
 		public signal bool request_certificate_password (GLib.TlsPassword tls_password);
+		[Version (since = "3.8")]
+		public signal bool request_compression_dictionary (Soup.CompressionDictionaryRequest request);
 		public signal void restarted ();
 		public signal void starting ();
 		public signal void wrote_body ();
@@ -635,6 +664,8 @@ namespace Soup {
 		[Version (since = "3.6")]
 		public uint get_keepalive_pong_timeout ();
 		public uint64 get_max_incoming_payload_size ();
+		[Version (since = "3.8")]
+		public uint64 get_max_total_message_size ();
 		public unowned string? get_origin ();
 		public unowned string? get_protocol ();
 		public Soup.WebsocketState get_state ();
@@ -646,6 +677,8 @@ namespace Soup {
 		[Version (since = "3.6")]
 		public void set_keepalive_pong_timeout (uint pong_timeout);
 		public void set_max_incoming_payload_size (uint64 max_incoming_payload_size);
+		[Version (since = "3.8")]
+		public void set_max_total_message_size (uint64 max_total_message_size);
 		public Soup.WebsocketConnectionType connection_type { get; construct; }
 		public void* extensions { get; construct; }
 		public GLib.IOStream io_stream { get; construct; }
@@ -653,6 +686,8 @@ namespace Soup {
 		[Version (since = "3.6")]
 		public uint keepalive_pong_timeout { get; set construct; }
 		public uint64 max_incoming_payload_size { get; set construct; }
+		[Version (since = "3.8")]
+		public uint64 max_total_message_size { get; set construct; }
 		public string origin { get; construct; }
 		public string protocol { get; construct; }
 		public Soup.WebsocketState state { get; }
@@ -671,6 +706,8 @@ namespace Soup {
 		public virtual string? get_request_params ();
 		public virtual string? get_response_params ();
 		public virtual GLib.Bytes process_incoming_message (ref uint8 header, owned GLib.Bytes payload) throws GLib.Error;
+		[Version (since = "3.8")]
+		public virtual GLib.Bytes process_incoming_message_with_limit (ref uint8 header, owned GLib.Bytes payload, uint64 max_output_size) throws GLib.Error;
 		public virtual GLib.Bytes process_outgoing_message (ref uint8 header, owned GLib.Bytes payload) throws GLib.Error;
 	}
 	[CCode (cheader_filename = "libsoup/soup.h", type_id = "soup_websocket_extension_deflate_get_type ()")]
@@ -894,6 +931,12 @@ namespace Soup {
 		CLOSING,
 		CLOSED
 	}
+	[CCode (cheader_filename = "libsoup/soup.h", cprefix = "SOUP_COOKIE_JAR_ERROR_", type_id = "soup_cookie_jar_error_get_type ()")]
+	public errordomain CookieJarError {
+		DB;
+		[Version (since = "3.8")]
+		public static GLib.Quark quark ();
+	}
 	[CCode (cheader_filename = "libsoup/soup.h", cprefix = "SOUP_SESSION_ERROR_", type_id = "soup_session_error_get_type ()")]
 	public errordomain SessionError {
 		PARSING,
@@ -947,7 +990,7 @@ namespace Soup {
 	[CCode (cheader_filename = "libsoup/soup.h", cname = "SOUP_COOKIE_MAX_AGE_ONE_WEEK")]
 	public const int COOKIE_MAX_AGE_ONE_WEEK;
 	[CCode (cheader_filename = "libsoup/soup.h", cname = "SOUP_COOKIE_MAX_AGE_ONE_YEAR")]
-	public const int COOKIE_MAX_AGE_ONE_YEAR;
+	public const double COOKIE_MAX_AGE_ONE_YEAR;
 	[CCode (cheader_filename = "libsoup/soup.h", cname = "SOUP_FORM_MIME_TYPE_MULTIPART")]
 	public const string FORM_MIME_TYPE_MULTIPART;
 	[CCode (cheader_filename = "libsoup/soup.h", cname = "SOUP_FORM_MIME_TYPE_URLENCODED")]
@@ -966,6 +1009,9 @@ namespace Soup {
 	public const int VERSION_MIN_REQUIRED;
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	public static bool check_version (uint major, uint minor, uint micro);
+	[CCode (cheader_filename = "libsoup/soup.h")]
+	[Version (replacement = "CookieJarError.quark", since = "3.8")]
+	public static GLib.Quark cookie_jar_error_quark ();
 	[CCode (cheader_filename = "libsoup/soup.h")]
 	[Version (replacement = "Cookie.parse")]
 	public static Soup.Cookie? cookie_parse (string header, GLib.Uri? origin);
