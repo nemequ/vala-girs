@@ -332,6 +332,8 @@ namespace Dex {
 		public Generator.fiber (Dex.Scheduler? scheduler, size_t stack_size, owned Dex.FiberFunc func);
 		[DestroysInstance]
 		public Dex.Generator filter (owned Dex.GeneratorFilterFunc callback);
+		[CCode (has_construct_function = false)]
+		public Generator.for_channel (owned Dex.Channel channel, owned Dex.Future? completion);
 		public bool is_exhausted ();
 		[DestroysInstance]
 		public Dex.Generator map (owned Dex.GeneratorMapFunc callback);
